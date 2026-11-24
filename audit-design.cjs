@@ -1,6 +1,6 @@
 // Static design audit. Run: node audit-design.cjs [--json]
 // Reports cascade review candidates; does not prove computed-style equivalence.
-function auditDesign(html,rules){
+function auditDesign(html,rules,baseline){
  const css=html.match(/<style\b[^>]*>([\s\S]*?)<\/style>/i)?.[1]||"";
  const version=html.match(/<title>[^<]*\b(v\d+\.\d+)<\/title>/i)?.[1]||null;
  const ids=[...rules.matchAll(/^- ([A-Z][A-Z0-9-]*-\d+):/gm)].map(m=>m[1]);
@@ -94,9 +94,30 @@ function auditDesign(html,rules){
   ].map(([name,pass])=>({name,pass}));
  }catch(e){earlyCloseError=e.message}
  const keyboardEarlyClose=!earlyCloseError&&earlyCloseCases.length===15&&earlyCloseCases.every(c=>c.pass)&&viewportFunction.includes("selectClosingRect(raw,earlyClose")&&html.includes("cancelEarlyClose();InputController.register(e.target)")&&html.includes("e.target===draft&&!InputController.isEditable(e.relatedTarget)");
- const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
- return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
+ const protectedRanges=[["// KeyboardController:","/* Opt-in dynamic"],["let preFocusAnchor=null;","// The form-width ResizeObserver"],["function composerMode(","draft.addEventListener('input',resizeDraft)"],["/* Surface Parent:","/* FL owner:"]];
+ const keyboardBaseline=typeof baseline==="string"&&protectedRanges.every(([a,b])=>{const part=s=>{const x=s.indexOf(a),y=s.indexOf(b,x);return x>=0&&y>x?s.slice(x,y):null};return part(html)!==null&&part(html)===part(baseline)});
+ let inputCases=[],inputError=null;
+ try{
+  const src=html.slice(html.indexOf("function canonicalText("),html.indexOf("function commitNumericField("))+"\n"+html.match(/function normalizeLines\(value\)\{[^\n]+/)[0];
+  const {canonicalText:c,searchText:k,committedMessage:m,numericText:n}=new Function(src+";return {canonicalText,searchText,committedMessage,numericText}")();
+  inputCases=[
+   ["NFC",c("Tie\u0302\u0301ng Vie\u0323\u0302t")==="Tiếng Việt"],
+   ["search NFC",k("Đa\u0323̆ng")===k("Đặng")],
+   ["ellipsis",m("… ...").text==="… ..."],
+   ["Vietnamese",m("đặng thị hồng…").text==="Đặng thị hồng…"],
+   ["original",m("  tiếng việt...  ").originalText==="  tiếng việt...  "],
+   ["link",m("https://example.com/a...").text==="https://example.com/a..."],
+   ["emoji",m("👨‍👩‍👧‍👦 …").text==="👨‍👩‍👧‍👦 …"],
+   ["number",n("12a34",6,false)==="1234"],
+   ["money",n("1.250.000",12,true)==="1.250.000"],
+   ["empty",n("",12,true)===""],
+   ["limit",n("1234567",6,false)==="123456"]
+  ].map(([name,pass])=>({name,pass}));
+ }catch(e){inputError=e.message}
+ const textInputContract=!inputError&&inputCases.length===11&&inputCases.every(c=>c.pass)&&css.includes("--input-font-floor:16px")&&css.includes("--input-font-size:max(var(--input-font-floor),var(--type-input))")&&!html.includes("function normalizeDraft(")&&html.includes("if(isTextComposing(draft,e))return;")&&html.includes("commitNumericField(amount,12,true)")&&html.includes("commitNumericField(qty,6,false)");
+ const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,keyboardBaseline,textInputContract,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
+ return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,inputCases,inputError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
 }
 const fs=require('node:fs');const path=require('node:path');
-const result=auditDesign(fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),fs.readFileSync(path.join(__dirname,'RULES.md'),'utf8'));
+const result=auditDesign(fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),fs.readFileSync(path.join(__dirname,'RULES.md'),'utf8'),fs.readFileSync(path.join(__dirname,'release-v13.27.html'),'utf8'));
 console.log(JSON.stringify(result,null,2));process.exitCode=result.pass?0:1;
