@@ -1,11 +1,13 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.29)
+## 00. Chỉ mục rule đang có hiệu lực (v13.30)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06 | không bỏ qua RULE khi sửa nhỏ |
+| Button / Icon | BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
@@ -349,3 +351,18 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - INPUT-API-04: Áp dụng chat/search hiện có bằng bind; tổng hợp hàng và inputlab dùng create. Nhóm nút +/- và đơn vị tiền là layout/điều khiển con, không tự tính viewport. CSS Surface và Typography là owner riêng. Không thay đổi kích thước hay giao diện đã duyệt.
 - INPUT-API-05: Mọi bài toán có owner độc lập phải có hợp đồng cách gọi, tham số, phần sở hữu, điều cấm và test. Tận dụng ButtonController, IconController, PopupController, MediaController, CardController, TableController, ScrollController hiện có; không tạo controller trùng. Ghi danh mục tại references/COMPONENT-API.md; chưa refactor các owner khác trong vòng này.
 - INPUT-API-06: Audit so sánh 4 đoạn nguyên văn baseline v13.27, test 9 ca API bằng DOM stub, 11 ca Unicode, 12 rect, 8 fast path, 15 early-close, syntax. Chưa có browser/thiết bị thật hoặc Pages; API mới chỉ trong index.html của 0v, chưa xuất package dùng chung cho repo khác. Không sửa production.
+
+## 47. RULE-GATE — bắt buộc đọc, theo và giải trình
+- RULE-GATE-01: Trước mọi thay đổi, kể cả sửa nhỏ hoặc chỉ CSS, đọc AGENTS.md, RULES.md chỉ mục hiện hành, rule của owner liên quan và references/COMPONENT-API.md. Không dùng trí nhớ hoặc version cũ thay tài liệu hiện hành. Ghi mã rule đã đối chiếu trong CHANGE-CHECK.md.
+- RULE-GATE-02: Bắt buộc dùng API cha hiện có nếu đáp ứng yêu cầu; con chỉ truyền loại, dữ liệu, trạng thái và callback. Không viết lại controller, CSS, logic focus hoặc owner riêng theo từng màn. Nếu API cha thiếu, mở rộng hợp đồng cha và test con chịu ảnh hưởng.
+- RULE-GATE-03: Khi không thể theo một rule, không được bỏ qua âm thầm. Ghi mã rule, lý do kỹ thuật và bằng chứng, phương án đã xét, phạm vi/ảnh hưởng, rủi ro, test trước/sau, người duyệt/trạng thái duyệt, cách hoàn nguyên. Ngoại lệ chưa duyệt không được coi là đã nghiệm thu; không tự thay rule để hợp thức hóa lỗi.
+- RULE-GATE-04: Mâu thuẫn rule phải giải bằng owner, phạm vi, lịch sử và bằng chứng; sửa RULE trước hoặc cùng thay đổi code. Baseline Keyboard v13.27 được khóa; thay đổi phá baseline phải có tái hiện và phê duyệt riêng. Không được bỏ kiểm tra vì sửa nhỏ.
+- RULE-GATE-05: Chạy node audit-design.cjs, ghi kết quả thật, kiểm tra phiên bản, snapshot, Pages và thiết bị theo phạm vi. Commit không đồng nghĩa phát hành, test tĩnh không đồng nghĩa UX đạt. Không bỏ qua test thất bại. CHANGE-CHECK.md là hồ sơ vòng hiện hành; Git lưu lịch sử; Google Sheet là sổ tra cứu không tự đồng bộ.
+- RULE-GATE-06: Mọi báo cáo phải nêu rule không theo, lý do và trạng thái; nếu không có ngoại lệ chủ ý, ghi rõ như vậy. Thiếu bằng chứng thì ghi PENDING, không suy diễn PASS. Rule và API phải được đọc lại trước vòng tiếp theo.
+
+## 48. BUTTON-API — v13.30, Button và Icon dùng chung
+- BUTTON-API-01: ButtonController là owner nút, IconController là owner SVG. Button.create({kind,text,label,className,icon,type,disabled,onClick}) tạo nút native; Button.bind(node) đăng ký node có sẵn; không tạo controller trùng. Các kind text/outline/icon/primary kế thừa CSS và Surface hiện hành; class tương thích giữ nguyên.
+- BUTTON-API-02: Nút mới mặc định type=button, submit chỉ khi khai báo rõ; trạng thái disabled dùng native, icon-only cần tên truy cập. Không tự focus/blur, không viết handler keyboard, không tự thực hiện nghiệp vụ. Callback do nơi gọi cấp; không đăng ký lặp.
+- BUTTON-API-03: Icon.create(name) dùng registry glyph cố định, viewBox 24, SVG decorative aria-hidden trong nút có tên; Icon.replace(button,name) thay icon do API quản lý, không thay button hoặc listener, không nhận SVG tùy ý từ dữ liệu. Registry vòng này dùng glyph có sẵn của 0v, không đổi đường nét theo suy đoán.
+- BUTTON-API-04: Chuyển make('button',...) qua Button.create để đăng ký ngay; chuyển nhóm thao tác tin nhắn copy/share/save/forward và trạng thái copied qua registry. Nút tĩnh composer/rail/header giữ nguyên DOM và đăng ký bằng scan; các nút QA ngoài runtime chính và mẫu upstream là phạm vi chẩn đoán, không ép đổi trong vòng này. Không đổi CSS/kích thước, Surface, Input API, Keyboard v13.27.
+- BUTTON-API-05: Kiểm tra API loại nút, mặc định/submit, disabled, tên, glyph, callback, giữ node khi thay icon, không chấp nhận loại/glyph lạ. So sánh baseline và Input. Chưa nghiệm thu browser/thiết bị hoặc Pages; ghi nhận giới hạn ở CHANGE-CHECK.md. Chỉ 0v.
