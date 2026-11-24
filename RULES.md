@@ -125,3 +125,13 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - GL-09: v13.0 dùng Surface export nguyên bản gentpan/liquidglass (MIT, lib/components.js blob 47871d955f37324d654cef8ad3dacde59a8f91ff) và bộ optics LgButton nguyên bản cho nút icon header thực, giữ native button và hit target. Module hosted theo README, chưa khóa revision; lỗi tải giữ CSS cũ. Safari arbitrary DOM chỉ blur theo upstream. Không áp dụng vào composer; GL-03 giữ nguyên. Kiểm thử module, Pages, Safari còn pending.
 
 - GL-10: v13.1 mặc định chỉ dùng CSS có sẵn trước first paint; Surface upstream chỉ bật bằng upstreamglass=1 để tránh đổi vật liệu sau tải. Nút/input tĩnh khai báo metadata cha ngay HTML, không chờ JS. Không đổi keyboard; kiểm tra F5 liên tục Safari còn pending.
+
+## Apple Design — nguồn chuẩn tham chiếu, 2026-11-24
+- APP-01: WWDC25 Meet Liquid Glass, https://developer.apple.com/videos/play/wwdc2025/219/ (đã đọc transcript): điều khiển thuộc lớp chức năng nổi, nội dung thuộc lớp riêng; hình cong lồng đồng tâm.
+- APP-02: Cùng nguồn, chương Adaptivity: duy trì độ đọc khi nền thay đổi, chuyển tiếp mép cuộn mềm, bóng thích ứng.
+- APP-03: Cùng nguồn, chương Principles: tránh kính chồng kính; bảng và danh sách thuộc content layer; ưu tiên Regular, Clear chỉ trong bối cảnh media thích hợp; hạn chế tint.
+- APP-04: Cùng nguồn: phản hồi chạm tại thành phần; hỗ trợ giảm trong suốt, tăng tương phản và giảm chuyển động.
+- APP-05: HIG Materials https://developer.apple.com/design/human-interface-guidelines/materials và Scroll views https://developer.apple.com/design/human-interface-guidelines/scroll-views là nguồn cần đọc bổ sung; lần này trang yêu cầu JS, chưa xác minh nội dung.
+- FL-01: Web prototype v13.2: floating=1 mở lớp composer tuyệt đối trên vùng cuộn; nền frame trong; padding cuối nội dung dùng reserve hiện có. Không chuyển quyền keyboard.
+- FL-02: Chỉ composer cha có blur trong chế độ thử; nút con không thêm kính; nền đặc khi giảm trong suốt. Blur 14px/tint .82 là lựa chọn web thử nghiệm, không phải thông số Apple. Ngoại lệ GL-03 chỉ ở floating=1.
+- FL-03: Nghiệm thu idle, scroll, focus, press, F5, input nhiều dòng, cuối hội thoại, nút xuống cuối, Safari/PWA. G47/G48 chuyển sang kiểm tra overlay và reserve ở chế độ floating. Chưa nghiệm thu thiết bị; không bật mặc định trước khi đạt.
