@@ -30,8 +30,31 @@ function auditDesign(html,rules){
  scan(0,src.length,[]);
  const repeated=[...sameSelector].filter(([,v])=>v.length>1).map(([key,values])=>{const [scope,selector,property]=JSON.parse(key);return{scope,selector,property,values,kind:new Set(values).size===1?"identical":"review"}});
  let scripts=0,syntaxErrors=[];for(const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/type=["']module/.test(m[1]))continue;try{new Function(m[2]);scripts++}catch(e){syntaxErrors.push(e.message)}}
- const checks={version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
- return{version,checks,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
+ // VIEW-05: source-level guard. This is not an iOS performance test.
+ const retired=/--chat-base|--keyboard-inset|--chat-visible-|inset-chat|keyboard-motion|data-kb-mode=native/.test(html);
+ const shellFunction=html.match(/function visibleShellRect\([\s\S]*?\n\}/)?.[0];
+ const viewportFunction=html.match(/function applyViewport\(\)\{[\s\S]*?\n\}/)?.[0]||"";
+ let viewportCases=[],viewportError=null;
+ try{
+  const get=new Function(shellFunction+";return visibleShellRect")();
+  const fallback={height:800,width:390};
+  const cases=[
+   [800,0,390,0],[700,0,390,0],[490,10,390,0],[490,10,390,0],
+   [540,10,390,0],[670,0,390,0],[800,0,390,0],[375.5,4.2,640,3.5],
+   [320,0,320,0],[800,0,390,0]
+  ];
+  viewportCases=cases.map(([height,top,width,left])=>{
+   const r=get({height,width,offsetTop:top,offsetLeft:left},fallback);
+   return {height,top,width,left,pass:r.height===height&&r.width===width&&r.top===top&&r.left===left};
+  });
+  const r=get(undefined,fallback);viewportCases.push({fallback:true,pass:r.height===800&&r.width===390&&r.top===0&&r.left===0});
+  const stable=get({height:490,width:390,offsetTop:10,offsetLeft:0},fallback);
+  const afterBlur=get({height:490,width:390,offsetTop:10,offsetLeft:0,focused:false},fallback);
+  viewportCases.push({blurWithoutViewportChange:true,pass:JSON.stringify(stable)===JSON.stringify(afterBlur)});
+ }catch(e){viewportError=e.message}
+ const singleViewportOwner=!retired&&viewportFunction.includes("visibleShellRect(window.visualViewport")&&viewportFunction.includes("setProperty('--view-'+name")&&!/keyboardComposer\.style|draftForm\.style|\.style\.(bottom|transform|top)/.test(viewportFunction)&&css.includes("inset:auto 0 0;z-index:5");
+ const checks={singleViewportOwner,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
+ return{version,checks,viewportCases,viewportError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
 }
 const fs=require('node:fs');const path=require('node:path');
 const result=auditDesign(fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),fs.readFileSync(path.join(__dirname,'RULES.md'),'utf8'));
