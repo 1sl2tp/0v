@@ -1,5 +1,5 @@
 # RULE — CHAT CRM 0v
-Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.1, commit 8866ef41ffd8e7eb4a97858efd4d23bcaa6bb52e; người dùng phản hồi nhanh, mượt trên Safari. Chưa có phép đo độc lập.
+Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
 ## 00. Chỉ mục rule đang có hiệu lực (v13.27)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
@@ -8,7 +8,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 |---|---|---|
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
-| Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
+| Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–05, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
 | Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung) | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
@@ -324,3 +324,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - KB-CLOSE-04: Tách rawRect dùng phân loại keyboard và rect hiệu lực dùng layout. QA G105/G108 và E5/E6 đo hợp đồng rect hiệu lực; trace keyboardtest vẫn ghi raw/frame/input, đánh dấu early-close. Chênh raw/frame trong pha early-close là chủ ý, nhưng chuyển động thực có thể vẫn nhảy hoặc đích sai khi toolbar thay đổi. Không dùng sai số ổn định để chứng minh mượt.
 - KB-CLOSE-05: Kiểm thử tĩnh 15 ca early-close, 8 ca fast path, 12 ca rect, 6 classic script parse. Kiểm tra trực tiếp các hàm lựa chọn rect; refocus trong phép thử mô phỏng bằng pending=null, chưa chạy focus event trên browser. Giữ nguyên composerMode/resizeDraft và Surface Parent. So sánh cùng thiết bị với earlyclose=0, thử tối thiểu 10 lần đóng/mở, chuyển focus, refocus, scroll và đa dòng. Không coi kết quả mô phỏng là nghiệm thu.
 - KB-CLOSE-06: v13.27 ưu tiên hướng source Adobe thay vì tiếp tục chờ viewport duy nhất. Chưa có xác nhận Pages và iOS thật. Nếu vẫn giật, lấy trace trước/sau và không tự ghép animation; chỉ sửa nguyên nhân có bằng chứng. Chỉ demo 0v.
+
+## 44. KB-LOCK — khóa mốc bàn phím v13.27 được người dùng duyệt
+- KB-LOCK-01: Ngày 2026-11-24, sau nhiều vòng lỗi giật/rơi khi đóng bàn phím, người dùng phản hồi “ngon rồi đánh dấu lại và ghi vào rule đi,” ngay sau v13.27. Trạng thái: USER_ACCEPTED cho hành vi người dùng vừa kiểm tra; chưa xác nhận ma trận Safari/PWA/Android, thiết bị cụ thể, 10 vòng hoặc trace độc lập. Đây là baseline hiện hành thay cho v11.1.
+- KB-LOCK-02: Snapshot bất biến release-v13.27.html; blob Git 2b350f1522a6f11f955948d969fa0d5f11a3de1d; commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91. Không ghi đè snapshot hoặc thay đổi version của nó. Nguồn tham chiếu Adobe React Aria KB-S01/S02, cơ chế KB-CLOSE-01–06.
+- KB-LOCK-03: Bảo vệ nguyên lý một writer root, Input neo đáy cha, focus/blur độc lập, early-close có điều kiện trên iOS WebKit, hai rAF xác nhận không chuyển focus, layout rect sớm và chặn raw cũ, hủy khi refocus/đổi màn/zoom/width, fallback 600ms. Không bỏ cơ chế này khi chỉnh CSS, font, bo góc, glass, input nhiều dòng hay nội dung. Không tạo animation/offset riêng.
+- KB-LOCK-04: Mọi thay đổi liên quan viewport, focus, safe area, scroll, composer phải đối chiếu baseline, chạy audit-design.cjs và nghiệm thu mở/đóng trên thiết bị; nếu hồi quy dừng phát hành thay đổi liên quan. Không tự chuyển sang cơ chế khác chỉ vì refactor. Không dùng kết quả tĩnh làm bằng chứng thay thế trải nghiệm thực tế.
+- KB-LOCK-05: Giữ nguyên index.html, version.json và snapshot trong vòng ghi nhận này. Chỉ cập nhật RULE; không tăng version ứng dụng do không sửa giao diện hoặc hành vi. Không sửa production.
