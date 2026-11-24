@@ -101,3 +101,6 @@ SyncController.create({messages,conversations,transport,stream,initialCursor=0,p
 
 ## v13.57 NoticeDeliveryAPI
 inspect(row,now) / summarize(rows,now): pure evidence projection for delivered order automatic image intent, keyed command/recipient/channel, stage chain intent/envelope/ticket/stored/attached/queued/accepted, expired ticket review, uncertain send reconcile, independent recipient/channel state. Mock ?noticelab=1. Provider acceptance not read receipt. No actual send, durable outbox, retry worker or DB migration.
+
+## v13.58 NoticeRecoveryAPI
+create(notice,now), claim(job,now,token), settle(job,now,token,outcome): pure state transitions, one stage/lease, stale token rejected, evidence success, known-no-effect bounded retry, ambiguous/expired review, permanent/dead. Fixture IndexedDB change(db,id,fn) commits readwrite atomically, isolated synthetic data only. ?recoverylab=1. No actual execution, server durable outbox, permission refresh or provider reconciliation.
