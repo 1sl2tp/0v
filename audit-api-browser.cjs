@@ -203,6 +203,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await rc.close();console.log('Runtime context route, timezone and visibility passed',timezoneId)
  }
 
+ const sy=await browser.newPage({viewport:{width:390,height:844}});await sy.goto(url+'?synclab=1');await sy.locator('.contact[data-id=nv]').evaluate(e=>e.click());await sy.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());
+ const syStatus=sy.locator('[data-sync-status]'),syPress=name=>sy.getByRole('button',{name,exact:true}).evaluate(e=>e.click()),syWait=(state,cursor)=>sy.waitForFunction(([state,cursor])=>{const s=document.querySelector('[data-sync-status]');return s?.dataset.state===state&&s.dataset.cursor===String(cursor)},[state,cursor]);
+ await syWait('ready',6);assert.equal(await syStatus.getAttribute('data-message-count'),'2');const syKh=await sy.locator('[data-sync-row=kh]').elementHandle();
+ await syPress('Mất mạng');await syWait('offline',6);await syPress('Tin mới KH');await syPress('Tin mới NV');assert.equal(await syStatus.getAttribute('data-server-cursor'),'10');assert.equal(await syStatus.getAttribute('data-cursor'),'6');
+ await syPress('Kết nối lại');await syWait('ready',10);assert.equal(await syStatus.getAttribute('data-message-count'),'4');assert(await syKh.evaluate(e=>e.isConnected&&e===document.querySelector('[data-sync-row=kh]')));
+ await syPress('Tín hiệu trùng');await syWait('ready',11);assert.equal(await syStatus.getAttribute('data-message-count'),'4');
+ await syPress('Lỗi tải một lần');await syWait('error',11);assert.equal(await syStatus.getAttribute('data-message-count'),'4');await syPress('Đồng bộ lại');await syWait('ready',13);assert.equal(await syStatus.getAttribute('data-message-count'),'5');
+ await syPress('Thiếu cursor một lần');await syWait('error',13);assert.equal(await syStatus.getAttribute('data-message-count'),'5');await syPress('Đồng bộ lại');await syWait('ready',15);assert.equal(await syStatus.getAttribute('data-message-count'),'6');
+ const syCard=await sy.locator('[data-system-lesson=sync]').elementHandle();await sy.locator('#modules button').first().evaluate(e=>e.click());assert(await syCard.evaluate(e=>e.dataset.syncDisposed==='true'&&!e.isConnected));await syCard.dispose();await syKh.dispose();await sy.close();console.log('SyncController pagination, offline catchup, duplicate, transport failure, gap and disposal passed');
+
  const dyn=await browser.newPage({viewport:{width:390,height:844}});await dyn.goto(url+'?dynamiclab=1');await dyn.locator('.contact[data-id=nv]').evaluate(e=>e.click());await dyn.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());const dv=dyn.locator('[data-virtual-viewport]');
  await dyn.waitForFunction(()=>document.querySelector('[data-virtual-viewport]')?.dataset.virtualCount==='1000');
  async function snapDyn(){return dv.evaluate(el=>{const first=Number(el.dataset.virtualFirst),row=el.querySelector('[data-virtual-index="'+first+'"]'),bounds=el.getBoundingClientRect();return {first,key:row?.dataset.virtualKey,offset:row?row.getBoundingClientRect().top-bounds.top:null,total:el.scrollHeight,top:el.scrollTop,bottom:el.scrollHeight-el.clientHeight-el.scrollTop,mounted:el.querySelectorAll('[data-virtual-key]').length,heights:[...el.querySelectorAll('[data-virtual-key]')].map(r=>r.getBoundingClientRect().height)}})}
