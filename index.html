@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>CHAT CRM — Bố cục v4.8</title>
+<title>CHAT CRM — Bố cục v4.9</title>
 <style>
 :root{color-scheme:light;--ink:#202124;--muted:#73777d;--line:#e7e8eb;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
 *{box-sizing:border-box}
@@ -25,12 +25,12 @@ input,textarea{font-size:16px!important}button[aria-pressed="true"]{background:#
 .dir-bottom{border-top:1px solid var(--line);padding:9px 12px;flex:none}.outline{border:1px solid var(--line);border-radius:12px;padding:0 14px}.dir-bottom .outline{width:100%}
 .conversation .panel-head .title-group{flex:1;min-width:0}.title-group b,.title-group small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.title-group b{font-size:15px}.title-group small{font-size:12px;color:var(--muted)}.chat-view{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}.messages{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;flex:1;min-height:0;padding:16px max(14px,3%);display:flex;flex-direction:column;gap:14px;scrollbar-gutter:stable}.day{text-align:center;color:var(--muted);font-size:12px;padding:5px}.message{max-width:82%;align-self:flex-start}.message.mine{align-self:flex-end}.bubble{line-height:1.55;overflow-wrap:anywhere}.mine .bubble{background:#f1f1f2;border-radius:17px;padding:9px 13px}.message .meta{font-size:11px;color:var(--muted);padding-top:3px}.mine .meta{text-align:right}
 .work-card{width:100%;align-self:stretch;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff;margin:5px 0}.work-card header{height:auto;padding:10px 13px;background:#fafafa;display:flex;align-items:center;justify-content:space-between;gap:8px;border:0}.work-card header strong{font-size:13px}.work-card header small{font-size:11px;color:var(--muted)}.table-wrap{overflow-x:auto}.work-card table{width:100%;border-collapse:collapse;font-size:13px;min-width:260px}.work-card th,.work-card td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left}.work-card th:first-child,.work-card td:first-child{width:42px;text-align:center}.work-card th:nth-child(3),.work-card td:nth-child(3){text-align:center;width:55px}
-.composer-frame{flex:none;padding:8px 14px max(10px,env(safe-area-inset-bottom));background:#fff}.composer{min-height:50px;border:1px solid #d9dade;border-radius:24px;display:flex;align-items:flex-end;gap:4px;padding:3px 5px 3px 6px}.composer textarea{flex:1;min-width:0;resize:none;border:0;outline:none;padding:10px 2px;min-height:42px;max-height:120px;background:transparent;line-height:22px;overflow:auto}.composer .send{background:#27282b;color:#fff;width:42px;min-width:42px;min-height:42px;border-radius:50%;font-size:20px}.composer .send:disabled{opacity:.4}
+.composer-frame{background:#fff}.composer{min-height:50px;border:1px solid #d9dade;border-radius:24px;display:flex;align-items:flex-end;gap:4px;padding:3px 5px 3px 6px}.composer textarea{flex:1;min-width:0;resize:none;border:0;outline:none;padding:10px 2px;min-height:42px;max-height:120px;background:transparent;line-height:22px;overflow:auto}.composer .send{background:#27282b;color:#fff;width:42px;min-width:42px;min-height:42px;border-radius:50%;font-size:20px}.composer .send:disabled{opacity:.4}
 .crm .modules{flex:none;padding:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;border-bottom:1px solid var(--line)}.modules button{border:1px solid var(--line);border-radius:12px;text-align:left;padding:10px;min-height:58px;font-size:13px}.modules button.active{background:#f3f3f4;border-color:#bfc2c7}.module-content{flex:1;overflow:auto;min-height:0;padding:16px}.module-content h3{margin:0 0 7px;font-size:16px}.module-content p{margin:0;color:var(--muted);font-size:13px;line-height:1.65}.fields{margin-top:13px;border:1px solid var(--line);border-radius:12px}.fields .field{display:flex;justify-content:space-between;gap:15px;padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px}.fields .field:last-child{border-bottom:0}.fields .field span:last-child{font-weight:550;text-align:right}.crm-footer{padding:11px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
 .mobile-only{display:none}
 @media(max-width:1199px){#app{grid-template-columns:54px 250px minmax(0,1fr)}.crm{display:none}#app.with-crm{grid-template-columns:54px 235px minmax(0,1fr) 290px}#app.with-crm .crm{display:flex}}
 @media(min-width:768px) and (max-width:999px){#app.with-crm{grid-template-columns:54px minmax(0,1fr) 290px}#app.with-crm .directory{display:none}}
-@media(max-width:767px){#app,#app.with-crm{display:block;height:var(--view-height,100dvh)}.rail{display:none}.directory,.conversation,.crm,#app.with-crm .crm{display:none;height:100%;width:100%;border:0}#app[data-screen="contacts"] .directory,#app[data-screen="chat"] .conversation,#app[data-screen="crm"] .crm{display:flex}.mobile-only{display:grid}.panel-head{height:calc(54px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}.contacts{padding-bottom:env(safe-area-inset-bottom)}.messages{padding:12px 15px;scrollbar-gutter:auto}.message{max-width:87%}.composer-frame{padding:6px 10px max(9px,env(safe-area-inset-bottom))}}
+@media(max-width:767px){#app,#app.with-crm{display:block;height:var(--view-height,100dvh)}.rail{display:none}.directory,.conversation,.crm,#app.with-crm .crm{display:none;height:100%;width:100%;border:0}#app[data-screen="contacts"] .directory,#app[data-screen="chat"] .conversation,#app[data-screen="crm"] .crm{display:flex}.mobile-only{display:grid}.panel-head{height:calc(54px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}.contacts{padding-bottom:env(safe-area-inset-bottom)}.messages{padding:12px 15px;scrollbar-gutter:auto}.message{max-width:87%}}
 .module-note{margin-top:14px!important}.fields .field{align-items:baseline}.fields .field span{min-width:0;overflow-wrap:anywhere}.fields .field span:last-child{font-variant-numeric:tabular-nums}.modules button{min-height:44px;padding:8px 10px}.module-content{padding:12px}.module-content h3{font-size:17px}/* Shared UI tokens and component geometry */
 :root{--gap-xs:4px;--gap-sm:8px;--gap-md:12px;--gap-lg:16px;--touch:44px;--control-radius:12px;--avatar-size:40px;--text-main:15px;--text-sub:12px;--text-title:17px;--header-size:56px}
 .panel-head{height:var(--header-size);gap:var(--gap-sm);padding-inline:var(--gap-md)}
@@ -50,9 +50,9 @@ input,textarea{font-size:16px!important}button[aria-pressed="true"]{background:#
 .fields .field{padding:var(--gap-md);gap:var(--gap-md)}
 .fields .field span:first-child{flex:1;color:var(--muted)}.fields .field span:last-child{flex:1.2}
 .composer textarea{font-size:16px!important;line-height:22px}
-@media(max-width:767px){.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}.composer-frame{padding-inline:var(--gap-sm)}}
+@media(max-width:767px){.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}}
 /* Composer: stable parent geometry, independent input and actions */
-.composer-frame{padding:8px 12px max(10px,env(safe-area-inset-bottom));flex:0 0 auto}
+.composer-frame{flex:0 0 auto}
 .composer{width:100%;max-width:760px;margin-inline:auto;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:end;gap:4px;padding:4px;border-radius:28px;min-height:54px;border:1px solid #dedfe2;box-shadow:none}
 .composer .icon,.composer .send{width:44px;height:44px;min-height:44px;min-width:44px;margin:0;align-self:end;border-radius:50%}
 .composer .icon{background:transparent}
@@ -60,7 +60,7 @@ input,textarea{font-size:16px!important}button[aria-pressed="true"]{background:#
 .composer textarea::-webkit-scrollbar{display:none}
 .composer .send:disabled{background:#e9e9eb;color:#929298;opacity:1;cursor:default}
 .composer:focus-within{border-color:#bfc1c5}
-@media(max-width:767px){.composer-frame{padding-inline:8px}}
+
 .messages{overflow-anchor:none}.composer-frame{overflow-anchor:none}.composer textarea{touch-action:pan-y}
 
 .messages>*{flex-shrink:0}.chat-view{position:relative}#jumpBottom{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:40px;height:40px;min-height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:white;box-shadow:0 2px 8px #0002;z-index:2}#jumpBottom svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.work-card{flex:0 0 auto}
@@ -71,7 +71,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 #app[data-screen="chat"] .conversation{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100%;min-height:0}
 .conversation>.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
 .chat-view{min-height:0;overflow:hidden}.messages{min-height:0;overflow-y:auto}
-.composer-frame{padding:8px 8px max(8px,env(safe-area-inset-bottom));margin:0}
+.composer-frame{padding:8px var(--composer-inset,8px) max(8px,env(safe-area-inset-bottom));margin:0}
 .composer textarea{max-height:132px}
 }
 #geometryDebug{position:fixed;top:var(--view-top,0px);right:4px;z-index:1000;max-width:95vw;background:#222e;color:white;padding:6px 9px;border-radius:8px;font:11px/1.4 monospace;white-space:pre;pointer-events:none}/* Directory row geometry: fixed avatar, flexible identity, right-aligned status. */
@@ -84,7 +84,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 .contact-status{display:grid;grid-template-rows:20px 16px;row-gap:4px;justify-items:end;align-items:center;min-width:0;font-variant-numeric:tabular-nums}
 .contact .time{margin:0;align-self:center;line-height:20px}
 .contact .unread-count{margin:0;min-width:18px;box-sizing:border-box;line-height:16px;padding:0 5px;text-align:center}
-@media(max-width:767px){.composer-frame{padding:8px}} @media(max-width:767px) and (display-mode:standalone){.composer-frame{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
+@media(max-width:767px){.composer-frame{padding:8px var(--composer-inset,8px)}} @media(max-width:767px) and (display-mode:standalone){.composer-frame{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
 /* Shared panel rhythm and optical alignment */
 :root{--panel-inset:12px;--row-gap:12px;--line-gap:4px;--composer-inset:8px}
 .panel-head,.search-zone,.filters,.contact,.dir-bottom,.module-content{padding-inline:var(--panel-inset)}
@@ -97,7 +97,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 .day{padding:4px 0;line-height:16px}
 .message .meta{padding-top:4px;line-height:16px;font-variant-numeric:tabular-nums}
 .mine .bubble{padding:8px 12px}
-.composer-frame{padding-inline:var(--composer-inset)}
+
 .composer{padding:4px;gap:4px}
 .filters{padding-bottom:8px}
 .dir-bottom{padding-block:8px}
@@ -106,9 +106,9 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 </head>
 <body>
 <div id="app" data-screen="contacts">
-<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v4.8</span></nav>
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v4.9</span></nav>
 <aside class="directory" aria-label="Danh bạ">
- <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v4.8</span><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v4.9</span><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
  <div class="search-zone"><input id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
  <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả">Tất cả</button><button data-filter="KH">KH</button><button data-filter="NCC">NCC</button><button data-filter="NV">NV</button><button data-filter="Nhóm">Nhóm</button></div>
  <div class="contacts" id="contacts">
@@ -129,7 +129,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
  </div><button type="button" id="jumpBottom" aria-label="Cuộn đến tin mới nhất" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></section>
  <div class="composer-frame"><form class="composer" id="composer"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
 </main>
-<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v4.8</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v4.9</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
 </div>
 <script>
 (function(){
@@ -267,7 +267,7 @@ if(new URLSearchParams(location.search).get('perf')==='1'){
 const panel=make('div','perf-panel');const output=make('pre');const reset=make('button','','Đo lại');panel.append(output,reset);document.body.append(panel);
 let frames=0,slow=0,total=0,max=0,restores=0,resizes=0,last=0,until=0,raf=0,reportAt=0;
 const sizes=new WeakMap();const observer=new ResizeObserver(entries=>{for(const e of entries){const key=e.contentRect.width.toFixed(1)+'/'+e.contentRect.height.toFixed(1);if(sizes.has(e.target)&&sizes.get(e.target)!==key)resizes++;sizes.set(e.target,key)}});
-function report(){output.textContent='V4.8 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
+function report(){output.textContent='V4.9 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
 function tick(t){raf=0;if(last){const dt=t-last;frames++;total+=dt;max=Math.max(max,dt);if(dt>25)slow++}last=t;if(t-reportAt>500){reportAt=t;report()}if(t<until)raf=requestAnimationFrame(tick);else{last=0;report()}}
 messages.addEventListener('scroll',()=>{until=performance.now()+180;if(!raf){last=0;raf=requestAnimationFrame(tick)}},{passive:true});
 reset.onclick=()=>{frames=slow=total=max=restores=resizes=0;last=0;report()};
@@ -276,7 +276,7 @@ window.scrollPerf={recordRestore(){restores++},observe(){observer.disconnect();f
 if(new URLSearchParams(location.search).get('keyboardtest')==='1'){
 const panel=document.createElement('div');panel.className='perf-panel';const output=document.createElement('pre');panel.append(output);document.body.append(panel);
 let started=0,first=0,lastChange=0,changes=0,heightChanges=0,prev='',prevHeight=0,frame=0,until=0,maxOverflow=0;
-function sample(t){frame=0;const vv=window.visualViewport,bottom=(vv?.offsetTop||0)+(vv?.height||innerHeight),r=document.querySelector('.composer-frame').getBoundingClientRect();if(!r.height){output.textContent='V4.8 · Mở hội thoại để đo';if(t<until)frame=requestAnimationFrame(sample);return}const gap=bottom-r.bottom,key=[Math.round(bottom),Math.round(r.bottom),Math.round(r.height)].join('/');if(key!==prev){if(prev){changes++;if(Math.abs(r.height-prevHeight)>1)heightChanges++}prev=key;prevHeight=r.height;lastChange=t;if(!first&&started)first=t-started}maxOverflow=Math.max(maxOverflow,-gap);output.textContent='V4.8 · Đo bàn phím\nPhản hồi hình học: '+(first?Math.round(first)+' ms':'—')+'\nỔn định: '+(started&&lastChange>=started?Math.round(lastChange-started)+' ms':'—')+'\nĐáy lệch: '+gap.toFixed(1)+' px\nTràn tối đa: '+maxOverflow.toFixed(1)+' px\nĐổi hình học: '+changes+'\nĐổi cao vùng gõ: '+heightChanges;if(t<until)frame=requestAnimationFrame(sample)}
+function sample(t){frame=0;const vv=window.visualViewport,bottom=(vv?.offsetTop||0)+(vv?.height||innerHeight),r=document.querySelector('.composer-frame').getBoundingClientRect();if(!r.height){output.textContent='V4.9 · Mở hội thoại để đo';if(t<until)frame=requestAnimationFrame(sample);return}const gap=bottom-r.bottom,key=[Math.round(bottom),Math.round(r.bottom),Math.round(r.height)].join('/');if(key!==prev){if(prev){changes++;if(Math.abs(r.height-prevHeight)>1)heightChanges++}prev=key;prevHeight=r.height;lastChange=t;if(!first&&started)first=t-started}maxOverflow=Math.max(maxOverflow,-gap);output.textContent='V4.9 · Đo bàn phím\nPhản hồi hình học: '+(first?Math.round(first)+' ms':'—')+'\nỔn định: '+(started&&lastChange>=started?Math.round(lastChange-started)+' ms':'—')+'\nĐáy lệch: '+gap.toFixed(1)+' px\nTràn tối đa: '+maxOverflow.toFixed(1)+' px\nĐổi hình học: '+changes+'\nĐổi cao vùng gõ: '+heightChanges;if(t<until)frame=requestAnimationFrame(sample)}
 function wake(){until=performance.now()+500;if(!frame)frame=requestAnimationFrame(sample)}
 draft.addEventListener('pointerdown',()=>{started=performance.now();first=lastChange=changes=heightChanges=maxOverflow=0;const r=document.querySelector('.composer-frame').getBoundingClientRect(),vv=window.visualViewport;prev=[Math.round((vv?.offsetTop||0)+(vv?.height||innerHeight)),Math.round(r.bottom),Math.round(r.height)].join('/');prevHeight=r.height;wake()},{passive:true});draft.addEventListener('input',wake);draft.addEventListener('blur',wake);window.visualViewport?.addEventListener('resize',wake,{passive:true});window.visualViewport?.addEventListener('scroll',wake,{passive:true});wake();
 }
@@ -328,7 +328,7 @@ const chat=messages.getBoundingClientRect(),root=app.getBoundingClientRect();
 const gap=vTop+vHeight-box.bottom;
 if(box.height){minGap=Math.min(minGap,gap);maxGap=Math.max(maxGap,gap)}
 const n=x=>Math.round(x);
-const audit=auditGeometry();out.textContent=['v4.8 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
+const audit=auditGeometry();out.textContent=['v4.9 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
 }
 let frame=0;function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;measure()})}
 window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);window.addEventListener('resize',schedule);document.addEventListener('focusin',()=>{minGap=Infinity;maxGap=-Infinity;schedule()});document.addEventListener('focusout',schedule);new ResizeObserver(schedule).observe(app);new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
