@@ -1,14 +1,14 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.1, commit 8866ef41ffd8e7eb4a97858efd4d23bcaa6bb52e; người dùng phản hồi nhanh, mượt trên Safari. Chưa có phép đo độc lập.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.23)
+## 00. Chỉ mục rule đang có hiệu lực (v13.24)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
-| Keyboard / viewport | KB-01–08, VP-SAFE-01, KB-RESTORE-01–02, KB-FAST-01–04 | KB-APP-02/05 bridge 120/180ms; lề theo data-keyboard trong rule cũ |
+| Keyboard / viewport | VIEW-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
 | Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung) | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
@@ -30,12 +30,12 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - UI-04: Header, nội dung, composer là vùng riêng; ưu tiên diện tích nội dung khi bàn phím mở.
 
 ## 03. Bàn phím — khóa hồi quy v11.1
-- KB-01: Khung chat ổn định, composer định vị theo phần viewport bị che; không resize toàn app liên tục khi bàn phím chuyển động.
+- KB-01: Khung mobile là visualViewport hiện hữu; composer neo đáy vùng cha. Chỉ ViewportController thay đổi khung theo VIEW-01–06; không dịch composer riêng.
 - KB-02: Focus không tự ý dịch chuyển trang. Với input chat trên touch, dùng focus({preventScroll:true}) theo mốc v11.1; kiểm tra caret, chọn chữ và bàn phím thực tế trước khi mở rộng.
-- KB-03: Composer phản ứng từ thay đổi viewport đầu tiên; ngưỡng 80px chỉ phân loại trạng thái bàn phím, không trì hoãn vị trí composer.
-- KB-04: KeyboardController quản lý inset; composer reserve có một owner; không để nhiều handler tranh quyền.
+- KB-03: Root phản ứng từ thay đổi viewport đầu tiên; ngưỡng 80px chỉ là metadata bàn phím, không điều khiển hình học.
+- KB-04: ViewportController sở hữu rect của root, Composer sở hữu reserve/chiều cao nội dung; không tồn tại keyboard-inset cho vùng con.
 - KB-05: ScrollController độc lập; FOLLOW_TAIL chỉ khi đang ở cuối, USER_AWAY giữ vị trí đọc. Không render lại hội thoại khi focus/blur.
-- KB-06: Không thêm timer/animation để che lỗi hình học. Không quay lại các thử nghiệm v10.2–10.9 nếu chưa có bằng chứng.
+- KB-06: Cấm timer/animation/translate/bottom offset riêng của composer để bù bàn phím. Không quay lại các thử nghiệm v10.2–10.9 hoặc v13.9–13.23 nếu chưa thay đổi hợp đồng VIEW và có nghiệm thu.
 - KB-07: Chạm ngoài đóng bàn phím; vuốt đọc tin không chủ động đóng; gửi giữ bàn phím; chuyển màn đóng; giữ draft.
 - KB-08: Nghiệm thu Safari trực tiếp, trình duyệt trong ChatGPT, PWA; mở/đóng liên tục, input dài, chuyển input, đọc tin cũ, đổi hướng. Không tuyên bố đạt nếu chưa thử.
 
@@ -278,3 +278,11 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - KB-FAST-02: Mobile floating composer neo bottom:0 và translate3d theo -keyboard-inset thực đo; không animation, không nội suy, không timer. Scrollport vẫn có margin-bottom theo inset; không thay đổi floatingViewportGeometry hoặc ngưỡng phân loại. Transform là ngoại lệ được phép của KB-06 chỉ để phản ánh viewport thật, không tạo chuyển động giả. Giữ kiểu kính mặc định không blur động.
 - KB-FAST-03: Dùng kích thước header mobile 52px + safe.top, input 44/22px theo token hiện hành để giảm đọc layout; khi giới hạn chiều cao đổi chỉ gọi resizeDraft nếu naturalHeight chưa biết hoặc vượt giới hạn nhỏ hơn. ResizeObserver theo chiều rộng form tiếp tục đo wrap; bỏ listener resize trùng. Không thay chế độ hai tầng hoặc tỷ lệ hình học. Cần kiểm tra nếu đổi token sau này.
 - KB-FAST-04: keyboardtest thêm bước viewport tối đa và sai lệch bước bám frame để phân biệt viewport báo muộn với frame theo không kịp. 7/7 trường hợp mô phỏng mở/đóng (gồm offsetTop 10px), đáy frame = viewport bottom theo công thức; 6/6 script parse. Đây không phải kết quả đo FPS hay nghiệm thu iOS. Không thể bảo đảm WebKit cung cấp đủ các mẫu chuyển động. Chưa xác nhận Pages hoặc thiết bị, không tuyên bố đã hết giật. Chỉ demo 0v.
+
+## 38. VIEW — v13.24, một khung khả dụng duy nhất
+- VIEW-01: Nguồn tọa độ duy nhất cho shell mobile là visualViewport: top/left/width/height. Root fixed sử dụng --view-top/left/width/height; đáy root = top + height. Khi không có API dùng innerHeight/innerWidth. Giữ số đo fractional, không nội suy. Focus/blur, nhận diện bàn phím, thời gian, nội dung không được ghi vị trí root.
+- VIEW-02: Composer luôn ở đáy panel. Floating = absolute inset:auto 0 0; non-floating = hàng cuối grid. Chỉ padding-bottom của frame quyết định khoảng hở input: max(8px,residual safe area) mobile, 12px desktop. Không cộng inset bàn phím lần hai, không transform, không margin-bottom theo keyboard cho scrollport. Reserve nội dung bằng chiều cao frame đo thực, chỉ dùng để tránh bị che. Khi keyboard mở/đóng root co/giãn theo viewport; composer đi theo cha tự nhiên.
+- VIEW-03: classifyKeyboard chỉ trả metadata open/occluding/reference; ngưỡng 80px không quyết định root hoặc đáy composer. Một luồng rAF applyViewport nhận resize/scroll visualViewport; chỉ ghi giá trị thay đổi. ScrollController giữ ý định đọc; Composer tự giãn hai tầng theo chữ, không được sở hữu tọa độ đáy. Safe-area residual giữ một owner.
+- VIEW-04: Xóa khỏi index.html các cơ chế --chat-base, --chat-visible-*, --keyboard-inset, inset-chat, keyboard-motion, translate riêng, native override cũ. kbmode=light chỉ giảm dữ liệu mẫu để đối chiếu; v11.1 nguyên bản giữ ở file baseline. Rule lịch sử mô tả các cơ chế bị xóa không còn hiệu lực. Desktop breakpoint hiện vẫn 768px; mobile landscape rộng >=768px chưa có nghiệm thu riêng.
+- VIEW-05: G105–G108 bắt buộc: root.bottom=visualViewport.bottom; frame.bottom=root.bottom; frame.transform=none; root.top=visualViewport.top (sai số <=1 CSS px khi ổn định). audit-design.cjs phải chặn cơ chế cũ và kiểm tra hàm nguồn rect qua kịch bản mở/đóng, focus thay đổi, offsetTop/Left, fallback. Nếu thất bại không coi bản sửa đạt. Kiểm thử thiết bị lặp mở/đóng 10 lần, 1 dòng/nhiều dòng, đang đọc tin cũ, Safari/PWA; không rơi, không nhảy, không mất caret. Không chứng nhận mượt chỉ từ phép đo tĩnh.
+- VIEW-06: v13.24 thay kiến trúc v13.23 (chưa nghiệm thu). 6/6 classic scripts parse; 9/9 phép tính rect mô phỏng ban đầu đạt, Composer mode/resizeDraft và Surface Parent giữ nguyên. Chưa có trace WebKit hoặc native keyboard thật; visualViewport có thể báo muộn/nhảy ở một số trình duyệt, hợp đồng không thể tự tạo dữ liệu chuyển động mà trình duyệt không cung cấp. Chưa xác nhận Pages. Chỉ demo 0v, không sửa production.
