@@ -1,11 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.27)
+## 00. Chỉ mục rule đang có hiệu lực (v13.28)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
+| Input / text / zoom | INPUT-TEXT-01–07 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–05, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
@@ -331,3 +332,12 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - KB-LOCK-03: Bảo vệ nguyên lý một writer root, Input neo đáy cha, focus/blur độc lập, early-close có điều kiện trên iOS WebKit, hai rAF xác nhận không chuyển focus, layout rect sớm và chặn raw cũ, hủy khi refocus/đổi màn/zoom/width, fallback 600ms. Không bỏ cơ chế này khi chỉnh CSS, font, bo góc, glass, input nhiều dòng hay nội dung. Không tạo animation/offset riêng.
 - KB-LOCK-04: Mọi thay đổi liên quan viewport, focus, safe area, scroll, composer phải đối chiếu baseline, chạy audit-design.cjs và nghiệm thu mở/đóng trên thiết bị; nếu hồi quy dừng phát hành thay đổi liên quan. Không tự chuyển sang cơ chế khác chỉ vì refactor. Không dùng kết quả tĩnh làm bằng chứng thay thế trải nghiệm thực tế.
 - KB-LOCK-05: Giữ nguyên index.html, version.json và snapshot trong vòng ghi nhận này. Chỉ cập nhật RULE; không tăng version ứng dụng do không sửa giao diện hoặc hành vi. Không sửa production.
+
+## 45. INPUT-TEXT — v13.28, chống autozoom, tiếng Việt và ellipsis
+- INPUT-TEXT-01: Nguồn học tập [references/INPUT-SOURCES.md](references/INPUT-SOURCES.md): Adobe, ProseMirror, W3C, Tailwind, Flutter, Rick Strahl, MDN. Phân biệt source trực tiếp và tài liệu; không nhập dependency. Không tuyên bố font <16px là nguyên nhân đã quan sát trên 0v vì token cũ vốn 17px.
+- INPUT-TEXT-02: Mọi input/textarea/select/contenteditable có font >=16 CSS px ngay trước focus, mặc định 17px, qua --input-font-floor và --input-font-size. Không đổi font hoặc scale khi focus, không dựa vào meta viewport khóa zoom để sửa autozoom. Chính sách pinch lock hiện tại giữ nguyên theo phạm vi demo; cần rà riêng accessibility và viewer ảnh. Không chặn double tap trong input, vùng đọc, danh bạ, module, dialog.
+- INPUT-TEXT-03: Browser/IME sở hữu value, caret, selection, undo trong lúc gõ. Không tự viết hoa, normalize NFC, thay dấu câu hoặc gán value sau mỗi input/compositionend. WeakSet theo compositionstart/end và event.isComposing; chặn submit đang composition. Không can thiệp layout bàn phím. ResizeDraft chỉ đo chữ/điều chỉnh hình học theo hợp đồng cũ.
+- INPUT-TEXT-04: NFC và locale vi-VN trên dữ liệu so sánh/commit, không bỏ dấu. Search không lọc giữa composition, Escape không đóng khi đang composition. Chat gửi giữ originalText nguyên văn; text hiển thị dùng quy tắc viết hoa đầu dòng hiện hành sau commit, không ghi ngược vào draft. Không đổi URL, emoji, dấu … / ... do người dùng nhập thành dấu khác. Chuẩn hóa không phải sửa chính tả.
+- INPUT-TEXT-05: Số lượng/tiền inputlab chỉ làm sạch và định dạng tại change/blur, không mỗi keystroke, không ghi khi composition còn hoạt động. Giới hạn 6/12 chữ số và nhóm nghìn theo vi-VN như trước. Không áp dụng logic số vào text.
+- INPUT-TEXT-06: Ellipsis là CSS overflow:hidden; white-space:nowrap; text-overflow:ellipsis với min-width:0 ở vùng hẹp. Tên/preview/vai trò chỉ rút gọn hiển thị; nội dung đầy đủ giữ nguyên, chat wrap, không cắt value bằng JS; phân biệt dấu … người dùng nhập và ellipsis trình bày. Rule áp dụng từ CSS đầu trang; chưa nghiệm thu F5 trên Safari.
+- INPUT-TEXT-07: audit-design.cjs so sánh bốn đoạn bảo vệ với release-v13.27.html; kiểm tra 11 ca Unicode, dấu, URL, emoji, số, tìm kiếm; 10/10 nhóm kiểm tra tĩnh, 6 classic scripts parse. Test thực tế focus chuyển nhiều input, bàn phím 10 lần, Telex/VNI nhập/sửa/chọn/dán, Enter IME, dấu …, tải lại tên dài, số tiền. Chưa nghiệm thu native IME, computed style, autozoom thực tế hoặc Pages. Giữ nguyên KeyboardController, focus handler, composer sizing, Surface Parent nguyên văn mốc duyệt; không sửa production.
