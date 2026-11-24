@@ -13,3 +13,6 @@ Các đường dẫn @react-aria/*/src cũ không còn hợp lệ ở ref hiện
 
 ## v13.47
 Collection initial contract implemented, see COLLECTION-API-SOURCES. Virtualizer and NumberField further study pending.
+
+## v13.48
+Fixed-height Virtualizer contract and 10k-row synthetic lab implemented, see VIRTUAL-API-SOURCES. Native/dynamic sizes pending.
