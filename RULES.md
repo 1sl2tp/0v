@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.39)
+## 00. Chỉ mục rule đang có hiệu lực (v13.40)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -14,7 +14,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–05, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
-| Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung) | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
+| Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung), SURFACE-API-01–05 | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
 | Bill layout | GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
 | Geometry / Layout | GEO-API-01–08, GEO-ADAPT-03, DESKTOP-04, BOTTOM-04, COMP-04 | phép đo chỉ hợp với composer một hàng |
@@ -447,3 +447,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - MAIN-BUILD-03: Layout.slot là profile chuyên biệt tạo native node với hợp đồng family/slot trước khi append; không gán generic grid bừa. View chỉ là adapter kết hợp cha, không tự định nghĩa thông số. Avatar/Scroll/Layout chuyên biệt vẫn PROVISIONAL theo bài học; các controller Media/Card/Table chưa viết lại hết.
 - MAIN-BUILD-04: Không đổi typography v13.37, paint baseline hay bốn vùng keyboard v13.27. Các ID/class hành vi giữ nguyên. Nội dung demo không gửi thật. Nguồn Radix Flex GEO-S03 blob 0d046a4a8decbbc062c93315beca01651078f427 đọc lại; học composition, không import dependency.
 - MAIN-BUILD-05: CI kiểm tra body không còn cây tĩnh, constructor Main/Contact/Message, DOM source=api, family, token, điều hướng/focus; kiểm thử Chromium không thay thế native. CSS legacy đặc thù, QA và các API tạm chưa coi là hoàn thành.
+
+## 59. SURFACE-API — v13.40, bài toán vật liệu độc lập
+- SURFACE-API-01: Surface.apply/create quản lý paint bằng variant plain/subtle/outlined/raised/selected; token nền, viền, bóng; không đặt font, kích thước, padding, radius. Surface.create gọi Layout.create; chữ gọi Typography. Tất cả variant có cùng border vật lý 1px, viền trong suốt khi không hiển thị.
+- SURFACE-API-02: Surface.bind giữ profile glass g0–g3 hiện có; không trộn glass và variant trên cùng node. Không đổi CSS bảo vệ KB-LOCK, không bật blur mới. High contrast/forced-colors dùng viền rõ và bỏ bóng cho variant mới.
+- SURFACE-API-03: ?surfacelab=1 mở bài học riêng trong Công việc, năm mẫu dùng cùng Layout, kiểm tra computed style. Đây là mẫu API mới độc lập, chưa chuyển Main, Card hay các dự án khác sang variant mới.
+- SURFACE-API-04: Nguồn đọc trực tiếp MUI Paper (variant/outlined/elevation) và Radix Card (composition/slot), xem references/SURFACE-API-SOURCES.md. Không nhập dependency, không sao chép implementation; lựa chọn 5 variant là quy ước của 0v.
+- SURFACE-API-05: Kiểm tra variant hợp lệ, không trộn vật liệu, size không đổi khi chuyển variant, token nền/viền/bóng kế thừa. CI Chromium; native glass/keyboard và thị giác người dùng vẫn PENDING. Chỉ đánh dấu đạt trong phạm vi đã đo.

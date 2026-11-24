@@ -19,3 +19,6 @@ Avatar now has provisional API bind; study remains. Surface.bind uses existing C
 
 ## v13.39
 Main tree is built through parent factories instead of hand-written UI tags. Existing provisional specialized layout, Scroll, Media, Card, Table and Surface study still required; source migration is not a native-device or visual approval.
+
+## v13.40 — STUDY-SURFACE
+Read MUI Paper and Radix Card source, added five paint variants, standalone Surface lab and CI. Legacy glass and Main unchanged. Browser CI and native/visual validation pending at commit; integration decision deferred.
