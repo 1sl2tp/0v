@@ -1,6 +1,21 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.1, commit 8866ef41ffd8e7eb4a97858efd4d23bcaa6bb52e; người dùng phản hồi nhanh, mượt trên Safari. Chưa có phép đo độc lập.
 
+## 00. Chỉ mục rule đang có hiệu lực (v13.21)
+Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
+
+| Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
+|---|---|---|
+| Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
+| Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
+| Keyboard / viewport | KB-01–08, VP-SAFE-01, KB-RESTORE-01–02 | KB-APP-02/05 bridge 120/180ms; lề theo data-keyboard trong rule cũ |
+| Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
+| Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung) | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
+| Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
+| Bill layout | GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
+| Geometry QA | GEO-ADAPT-03, DESKTOP-04, BOTTOM-04, COMP-04 | phép đo chỉ hợp với composer một hàng |
+Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu không được nêu rõ. Khi sửa một owner, phải đối chiếu các owner khác và ghi kết quả chưa kiểm chứng.
+
 ## 01. Quản trị
 - GOV-01: Mọi rule mới ghi tại RULES.md của 0v trước hoặc cùng commit triển khai. Không tạo nguồn rule song song cho dự án này.
 - GOV-02: Mỗi rule có mã, phạm vi, chủ sở hữu, điều kiện nghiệm thu. Sửa rule phải ghi lịch sử.
@@ -32,7 +47,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 ## 05. Hệ thống vùng và token
 - UI-05: Shell → panel (danh bạ, hội thoại, công việc) → region → scroll/control → nội dung. Mỗi vùng khai báo owner; vùng con không tự đặt kích thước màn hình.
 - UI-06: Token chuẩn hiện có: gap 4/8/12/16px, avatar 40px, icon 22px, nét icon 1.7px, touch 44px. Ngoại lệ phải ghi rõ.
-- UI-07: Typography theo vai trò: meta 11, phụ 12, chi tiết 13, nội dung 15, input 16, tiêu đề 17px. Không dùng cỡ chữ tùy ý để chữa tràn.
+- UI-07: Typography theo vai trò, lấy giá trị hiện hành tại TYPE-01–03. Không dùng cỡ chữ tùy ý để chữa tràn.
 - UI-08: Header, hàng danh bạ, vùng gõ, popup và bảng phải kiểm tra trục ngang/dọc, lề quang học, baseline, không chồng lấn tại 320/375/390/430/768px và desktop.
 - UI-09: Vùng cuộn có min-height:0, min-width:0; chỉ vùng được giao quyền cuộn mới overflow. Không dùng cuộn toàn trang để chữa lỗi bàn phím.
 - UI-10: Popup là con của lớp overlay, giới hạn theo viewport; không tự sửa shell. Nút chính/phụ phân cấp theo hành động, icon có nhãn truy cập.
@@ -77,7 +92,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 ## 13. Card cha
 - CARD-01: CardController sở hữu khung, header, row, footer; TableController sở hữu bảng bên trong; dữ liệu nghiệp vụ không sở hữu CSS.
 - CARD-02: Card không vượt cha, min-width:0, radius 12px, border token; header/body/footer cùng trục; số căn phải, tên trường trái, không ép nút căn phải.
-- CARD-03: Bill đối chiếu hai cột giữ layout chuyên biệt hiện có; ghi chú và thao tác không đổi trạng thái giao dịch thật; không thay quy tắc OCR/đối soát khi refactor UI.
+- CARD-03: Bill đối chiếu thích ứng một hoặc hai cột theo GEO-ADAPT-01; ghi chú và thao tác không đổi trạng thái giao dịch thật; không thay quy tắc OCR/đối soát khi refactor UI.
 - CARD-04: Kiểm tra card đơn, cặp bill, tên dài, số lớn, bảng tổng tiền và thao tác; giữ nguyên bàn phím; ghi PENDING nếu chưa nghiệm thu thiết bị.
 
 ## 14. Rà soát tích hợp
@@ -118,7 +133,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - GL-06: v12.7 tách lớp viền phản sáng bằng mask .65px, tint bán trong, bóng mềm; tất cả button trong header cùng vật liệu, không blur composer. Tham khảo gentpan/liquidglass lib/components.js và Nordify README, không nhập engine khúc xạ. Kiểm tra pseudo-element không chặn thao tác; Safari thực tế còn pending.
 
 - GL-07: v12.8 hiệu chỉnh mask viền .75px và tương phản phản sáng; chưa đạt native, không tuyên bố khúc xạ.
-- QA-04: Nút mô phỏng typing chỉ tồn tại trên header khi có typingtest; nút mô phỏng danh bạ hidden ngay HTML, chỉ mở trong chế độ test. F5 mặc định không lộ công cụ thử.
+- QA-06: Nút mô phỏng typing chỉ tồn tại trên header khi có typingtest; nút mô phỏng danh bạ hidden ngay HTML, chỉ mở trong chế độ test. F5 mặc định không lộ công cụ thử.
 
 - GL-08: v12.9 thử upstream MIT lucaperullo/simple-liquid-glass 6.0.0 qua CDN khóa phiên bản, API theo docs/frameworks/vanilla.md. Chỉ tải khi glasslab=1, nền văn bản giả, không đưa capture vào hội thoại thật. Không chỉnh engine hoặc composer; GL-03 tiếp tục áp dụng cho giao diện chính. CDN, khúc xạ và Safari chưa nghiệm thu.
 
@@ -241,3 +256,12 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - BOTTOM-02: Một owner CSS --composer-frame-top/--composer-frame-bottom. Desktop top 8px/bottom 12px; mobile bottom max(8px, residual safe-area bottom), floating top 4px, non-floating top 8px. PWA không gán cứng 34px; nếu inset thực còn 34px thì lề 34px, nếu viewport đã tránh vùng đó thì 8px. Khi bàn phím mở hoặc đang đóng dùng cùng công thức, không đổi padding theo data-keyboard/blur. Xóa các rule cũ 6px/0px và --app-composer-bottom. Các con số lề là lựa chọn thiết kế nội bộ, không phải chuẩn Apple bắt buộc.
 - BOTTOM-03: Chiều rộng không phình theo chữ: desktop tối đa 700px, mobile floating 82% vùng ngang an toàn. Chiều cao textarea tự tăng 44 + 22*(n-1) CSS px với 1–5 dòng hiển thị, giới hạn 132px, sau đó cuộn bên trong. Khung cha mobile floating thêm 4px, desktop thêm 14px. Mobile giữ giới hạn thích ứng viewport hiện có; desktop cửa sổ thấp giảm giới hạn theo nguyên dòng (110/88/66/44px tại ngưỡng cao 317/295/273/251px). Ở chiều cao cực thấp không bảo đảm đủ 96px đọc, vẫn ưu tiên input tối thiểu.
 - BOTTOM-04: Reserve first paint cùng công thức khung + padding; ResizeObserver đo lại frame thực. G98–G102/E5–E6 đo đáy frame, đáy input, lề theo safe-area, giới hạn và cao khung; keyboardtest hiển thị riêng độ lệch frame và lề input. Kiểm tra 6/6 classic scripts parse và đối chiếu nguyên văn KeyboardController, resizeDraft và Surface Parent với v13.19; ví dụ lề và bảng chiều cao là tính toán lý thuyết. Chưa chạy DOM thực, chưa nghiệm thu Safari/PWA/keyboard native, chưa xác nhận Pages v13.20. Chỉ demo 0v, không sửa production.
+
+## 35. TYPE / COMP — v13.21, typography và composer hai hàng
+- TYPE-01: Một bảng token gốc --type-* và --line-*; version kỹ thuật 10px; chú thích/giờ/nhãn bảng 12/16px; chi tiết nghiệp vụ 13/18px; danh bạ và chữ thường 15/20px; tiêu đề 17/22px; chat 17/26px; input 17/22px. Version là metadata kỹ thuật, không dùng cho nội dung nghiệp vụ. Icon glyph dùng token icon riêng 22/20px; không trộn typography với hình học icon. Các số là quyết định thiết kế web dựa trên tham chiếu trước, không phải thông số chính thức ChatGPT.
+- TYPE-02: Alias --text-*, --input-font-size, --input-line-height giữ tương thích, trỏ về token gốc, không định nghĩa số mới. Mobile và desktop cùng vai trò/cỡ chữ; chỉ thay vùng chứa. Bỏ font riêng theo mobile/desktop ở chat/title/input/meta; đồng bộ nhãn bill và bảng. Chưa chuẩn hóa toàn bộ line-height/gap CSS của mọi module; không coi toàn bộ cascade đã sạch.
+- TYPE-03: CSS chính giảm 28 khai báo font-size số px trực tiếp xuống 0; 6/6 classic script parse. Không tính font shorthand của panel debug hoặc chữ nhúng trong ảnh/SVG; không thay đổi ảnh chứng từ. A11/A27 đọc token gốc; cần đo computed style toàn trang để xác minh.
+- COMP-01: Một form, ba con DOM hiện tại, CSS grid areas: single "plus draft send"; expanded "draft draft draft" / "plus . send". Textarea giữ nguyên node/focus/caret, không dựng lại DOM, không đổi chiều rộng shell. Dấu + và nút gửi luôn cùng hàng đáy, vùng chữ expanded dùng toàn bộ chiều rộng trong.
+- COMP-02: InputController đo chiều cao tự nhiên ở chiều rộng giả định single (luôn trừ hai nút và hai gap), chuyển expanded khi vượt minHeight+1px, kể cả wrap tự động hoặc xuống dòng. Đo lại ở chiều rộng expanded để tính chiều cao thực. Dùng ngưỡng single cả khi đang expanded để tránh dao động qua lại. Khi xóa về một dòng vừa chiều rộng single thì thu lại. ResizeObserver chỉ lên lịch đo khi chiều rộng form thay đổi, cùng rAF resizeDraft; không thêm timer hoặc animation. Ảnh hiện vẫn dùng popup preview, chưa có hàng file đính kèm trong composer.
+- COMP-03: 1 dòng giữ mobile 48px / desktop 58px; expanded cộng thêm toolbar 44px + gap 4px ngoài chiều cao textarea. Textarea tối thiểu 44px, tối đa 132px (5 dòng), sau đó cuộn nội bộ. Ví dụ nội dung thực 2 dòng: mobile 118px / desktop 128px. Mobile giới hạn theo viewport dành sẵn 48px toolbar; desktop cửa sổ thấp dịch các ngưỡng giới hạn thêm 48px. Không đổi hàm floatingViewportGeometry, inset hoặc vật liệu. Khoảng dự phòng toolbar ở trạng thái một dòng có thể làm giới hạn số dòng thận trọng hơn, không đổi chiều cao thực một dòng.
+- COMP-04: G86/G87/G102 theo mode, G103/G104 kiểm toolbar/trục chữ, A26/A27 kiểm hàng công cụ và font; S05 kiểm expanded. 6/6 classic scripts parse, 5 giá trị ngưỡng mode mô phỏng, hàm floatingViewportGeometry giống v13.20. Chưa chạy DOM thực, chưa đo caret/IME/scroll và bàn phím thật, chưa xác nhận Pages. Vòng này refactor trọng điểm typography/composer và chỉ mục rule, chưa refactor toàn bộ index.html. Chỉ demo 0v.
