@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.48)
+## 00. Chỉ mục rule đang có hiệu lực (v13.49)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01, COLLECTION-API-01–06, VIRTUAL-API-01–05 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -523,3 +523,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - VIRTUAL-API-03: setItems giữ key dòng đầu + offset nếu còn, nếu không reset đầu; jump clamp; mọi ghi scroll lab đi qua ScrollController.writeLocal, không chạm chat write hay KB-LOCK. Scroll passive + rAF, ResizeObserver và dispose; dọn khi thay module.
 - VIRTUAL-API-04: ?virtuallab=1, 10.000 dòng, test số DOM tối đa theo chiều cao, chiều cao tổng, đầu/giữa/cuối, giữ node overlap, tìm không dấu, empty, resize và dispose. Chỉ đo count DOM/geometry, không tự khẳng định tốc độ thực tế. Native iOS/PWA, dynamic height, focused interactive rows và remote/large data PENDING.
 - VIRTUAL-API-05: Đã đọc Adobe Virtualizer, TanStack Virtual và Astryx Stack; học phạm vi, overscan, reuse và scroll viewport. Không import runtime; ghi source/blob/giới hạn references/VIRTUAL-API-SOURCES.md.
+
+## 71. DYNAMIC-VIRTUAL — v13.49, bài toán 20
+- DYNAMIC-VIRTUAL-01: Mở rộng Virtualizer.mount bằng dynamic/estimate, giữ fixed mode; prefix sum độ cao và binary search range, actual size theo ID, ResizeObserver đo row, 24–4096px là hợp đồng đo; nội dung lớn hơn phạm vi chưa hỗ trợ.
+- DYNAMIC-VIRTUAL-02: Capture key đầu đang nhìn + offset trước mỗi batch đo, rebuild và restore cùng callback; nếu phần trên nở thì bù delta, dòng đang đọc nở xuống không kéo theo. Bám đáy chỉ nếu đã sát đáy và dòng cuối thay đổi. Không thay chat/keyboard.
+- DYNAMIC-VIRTUAL-03: Khi đổi data bỏ cache key không còn hoặc object đổi; thay width xóa đo cũ, reobserve; dispose row/viewport observers và frame. Mọi ghi qua ScrollController.writeLocal; không dùng global viewport.
+- DYNAMIC-VIRTUAL-04: ?dynamiclab=1, 1000 nội dung mô phỏng text/ảnh; kiểm chiều cao khác nhau, bounded DOM, dòng phía trên nở giữ anchor, dòng hiện tại nở, dòng cuối nở khi bám đáy, cleanup. Chưa nghiệm thu thực tế Safari/iOS, tốc độ, cuộn quán tính, ảnh remote, interactive row focus, prepend/append chat hoặc hóa đơn lớn.
+- DYNAMIC-VIRTUAL-05: Đọc Adobe Virtualizer/ScrollAnchor, TanStack resizeItem và Astryx Stack. Ghi nguồn và giới hạn; không nhập dependency. Fixed-height test giữ nguyên.

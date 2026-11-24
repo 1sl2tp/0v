@@ -40,3 +40,6 @@ Collection owner initial data model and directory projection, lab. CI/native pen
 
 ## v13.48
 Virtualizer data/render boundary, independent 10000-row lab and browser proof; pending native, dynamic height, interactive selection, production integration.
+
+## v13.49
+Dynamic row proof and independent 1000-item lab; fixed v13.48 CI measured 11 rows from 10000. Pending native/dynamic CI and business migration.
