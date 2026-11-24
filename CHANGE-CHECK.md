@@ -1,2 +1,4 @@
 # CHANGE-CHECK — v13.40
 SURFACE-API, SURFACE-CONTEXT, KB-LOCK, FAMILY, SOURCE. Read AGENTS/RULES/COMPONENT-API; MUI Paper and Radix Card sources recorded. Five new paint variants and separate lab, not rewrite Main or protected glass. JS audit 22/22; four protected blocks unchanged. Browser CI pending. Native and visual approval, integration and Google Sheet pending. Rollback revert PR; no production data. Blob 1c050ff644bba1d1432ce604d1152024ebdc2b53.
+
+CI run 45435988270: legacy scenarios passed at all six widths; new Surface outlined edge failed because base selector had greater specificity than variant. Fix: match owner+variant specificity for all four overrides; keep accessibility override last. No child edits, no !important. Strengthen browser assertion/log for subtle/outlined/raised/selected. New blob 28076fbb33bfe12946caef0fe68a46d60dddc2a1; rerun required.

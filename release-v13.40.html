@@ -629,10 +629,10 @@ button[data-button-text-role=caption]{font-family:var(--font-ui);font-size:var(-
 /* Surface API: named paint only; Layout owns radius, dimensions and spacing. */
 :root{--surface-raised-shadow:0 2px 8px rgba(0,0,0,.10);--surface-subtle-face:var(--surface-hover)}
 [data-surface-owner=Surface][data-surface-variant]{--surface-face:var(--paper);--surface-outline:transparent;--surface-shadow:none;background-color:var(--surface-face);border:1px solid var(--surface-outline);box-shadow:var(--surface-shadow)}
-[data-surface-variant=subtle]{--surface-face:var(--surface-subtle-face)}
-[data-surface-variant=outlined]{--surface-outline:var(--line)}
-[data-surface-variant=raised]{--surface-shadow:var(--surface-raised-shadow)}
-[data-surface-variant=selected]{--surface-face:var(--surface-selected)}
+[data-surface-owner=Surface][data-surface-variant=subtle]{--surface-face:var(--surface-subtle-face)}
+[data-surface-owner=Surface][data-surface-variant=outlined]{--surface-outline:var(--line)}
+[data-surface-owner=Surface][data-surface-variant=raised]{--surface-shadow:var(--surface-raised-shadow)}
+[data-surface-owner=Surface][data-surface-variant=selected]{--surface-face:var(--surface-selected)}
 @media(prefers-contrast:more),(forced-colors:active){[data-surface-owner=Surface][data-surface-variant]{--surface-outline:currentColor;--surface-shadow:none}}
 
 </style>
