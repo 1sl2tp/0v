@@ -34,6 +34,7 @@ function auditDesign(html,rules){
  const retired=/--chat-base|--keyboard-inset|--chat-visible-|inset-chat|keyboard-motion|data-kb-mode=native/.test(html);
  const shellFunction=html.match(/function visibleShellRect\([\s\S]*?\n\}/)?.[0];
  const viewportFunction=html.match(/function applyViewport\(\)\{[\s\S]*?\n\}/)?.[0]||"";
+ const closeFunctions=html.slice(html.indexOf('function closingLayoutTarget('),html.indexOf('function supportsEarlyClose()'));
  let viewportCases=[],viewportError=null;
  try{
   const get=new Function(shellFunction+";return visibleShellRect")();
@@ -57,8 +58,8 @@ function auditDesign(html,rules){
  const fastPathNoLayout=!/getComputedStyle|getBoundingClientRect|scrollTop|scrollHeight|offsetHeight|clientHeight|nearBottom|classifyKeyboard|resizeDraft|setTimeout|watchViewport/.test(viewportFunction);
  let fastPathCases=[],fastPathQueued=0,fastPathError=null;
  try{
-  const run=new Function(shellFunction+'\n'+viewportFunction+`
- let appliedRect={},viewportFrame=0,innerHeight=800,innerWidth=390,writes=[],queued=0;
+  const run=new Function(shellFunction+'\n'+closeFunctions+'\n'+viewportFunction+`
+ let appliedRect={},rawRect={},earlyClose=null,viewportFrame=0,innerHeight=800,innerWidth=390,writes=[],queued=0; const performance={now:()=>0};
  const window={visualViewport:{height:800,width:390,offsetTop:0,offsetLeft:0}};
  const document={documentElement:{style:{setProperty:(k,v)=>writes.push([k,v])}}};
  const reconcileViewport=()=>{},requestAnimationFrame=()=>++queued;
@@ -70,8 +71,31 @@ function auditDesign(html,rules){
  return{cases,queued};`)();fastPathCases=run.cases;fastPathQueued=run.queued;
  }catch(e){fastPathError=e.message}
  const keyboardFastPath=fastPathNoLayout&&!fastPathError&&fastPathQueued===1&&fastPathCases.length===8&&fastPathCases.every(c=>c.pass);
- const checks={singleViewportOwner,keyboardFastPath,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
- return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
+ let earlyCloseCases=[],earlyCloseError=null;
+ try {
+  const {closingLayoutTarget:t,selectClosingRect:c}=new Function(closeFunctions+";return {closingLayoutTarget,selectClosingRect}")();
+  const raw={top:0,left:0,width:390,height:490},layout={width:390,height:800},target=t(raw,layout,800,true,false,1),p={target,until:600};
+  earlyCloseCases=[
+   ["close",target?.height===800],
+   ["other input",t(raw,layout,800,true,true,1)===null],
+   ["disabled",t(raw,layout,800,false,false,1)===null],
+   ["zoom",t(raw,layout,800,true,false,2)===null],
+   ["no keyboard",t({...raw,height:800},layout,800,true,false,1)===null],
+   ["no baseline",t(raw,layout,0,true,false,1)===null],
+   ["width changed",t(raw,{...layout,width:700},800,true,false,1)===null],
+   ["stale raw",c(raw,p,10,1).rect.height===800],
+   ["intermediate raw",c({...raw,height:650},p,200,1).rect.height===800],
+   ["raw catches",c({...raw,height:800},p,300,1).pending===null],
+   ["timeout",c(raw,p,600,1).rect.height===490],
+   ["refocus cancel",c(raw,null,30,1).rect.height===490],
+   ["rotate",c({...raw,width:700},p,50,1).pending===null],
+   ["zoom after",c(raw,p,50,2).pending===null],
+   ["toolbar difference",t(raw,{...layout,height:844},800,true,false,1)?.height===800]
+  ].map(([name,pass])=>({name,pass}));
+ }catch(e){earlyCloseError=e.message}
+ const keyboardEarlyClose=!earlyCloseError&&earlyCloseCases.length===15&&earlyCloseCases.every(c=>c.pass)&&viewportFunction.includes("selectClosingRect(raw,earlyClose")&&html.includes("cancelEarlyClose();InputController.register(e.target)")&&html.includes("e.target===draft&&!InputController.isEditable(e.relatedTarget)");
+ const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
+ return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
 }
 const fs=require('node:fs');const path=require('node:path');
 const result=auditDesign(fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),fs.readFileSync(path.join(__dirname,'RULES.md'),'utf8'));
