@@ -121,3 +121,5 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - QA-04: Nút mô phỏng typing chỉ tồn tại trên header khi có typingtest; nút mô phỏng danh bạ hidden ngay HTML, chỉ mở trong chế độ test. F5 mặc định không lộ công cụ thử.
 
 - GL-08: v12.9 thử upstream MIT lucaperullo/simple-liquid-glass 6.0.0 qua CDN khóa phiên bản, API theo docs/frameworks/vanilla.md. Chỉ tải khi glasslab=1, nền văn bản giả, không đưa capture vào hội thoại thật. Không chỉnh engine hoặc composer; GL-03 tiếp tục áp dụng cho giao diện chính. CDN, khúc xạ và Safari chưa nghiệm thu.
+
+- GL-09: v13.0 dùng Surface export nguyên bản gentpan/liquidglass (MIT, lib/components.js blob 47871d955f37324d654cef8ad3dacde59a8f91ff) và bộ optics LgButton nguyên bản cho nút icon header thực, giữ native button và hit target. Module hosted theo README, chưa khóa revision; lỗi tải giữ CSS cũ. Safari arbitrary DOM chỉ blur theo upstream. Không áp dụng vào composer; GL-03 giữ nguyên. Kiểm thử module, Pages, Safari còn pending.
