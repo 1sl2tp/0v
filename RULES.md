@@ -83,3 +83,6 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 ## 14. Rà soát tích hợp
 - QA-04: Kiểm tra owner CSS và thứ tự khởi tạo controller; icon thêm động phải đăng ký lại nút cha; ảnh nguồn phải decode trước khi xoay. Không xóa CSS fallback chưa có bằng chứng. Tách kiểm tra cú pháp khỏi runtime và thiết bị.
 - 2026-11-24: v11.8 loại hai khai báo icon trùng, bổ sung đăng ký SVG động và bảo vệ xoay ảnh thật; giữ nguyên KeyboardController.
+
+- QA-05: Rà soát cascade theo selector, phạm vi media và thứ tự; chỉ bỏ khai báo lặp khi có khai báo tương đương còn hiệu lực. Không gộp các override responsive hoặc bàn phím khi chưa kiểm thử computed style.
+- 2026-11-24: v11.9 dọn 4 nhóm CSS lặp ngoài bàn phím; chưa kiểm thử computed style trên thiết bị.
