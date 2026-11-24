@@ -37,3 +37,6 @@ Astryx 18 pinned source files. Implemented initial contracts for all remaining 1
 
 ## v13.47
 Collection owner initial data model and directory projection, lab. CI/native pending; virtualizer and business integration pending.
+
+## v13.48
+Virtualizer data/render boundary, independent 10000-row lab and browser proof; pending native, dynamic height, interactive selection, production integration.

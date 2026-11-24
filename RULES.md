@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.47)
+## 00. Chỉ mục rule đang có hiệu lực (v13.48)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01, COLLECTION-API-01–06 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01, COLLECTION-API-01–06, VIRTUAL-API-01–05 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -516,3 +516,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - COLLECTION-API-05: Đọc pinned Adobe SelectionManager/useSelectableCollection, Astryx Table và MUI X RowSelection/Radix ToggleGroup trước khi code. Học key, controlled state, focus độc lập, selectable rows; không copy React runtime. Source receipts trong references/COLLECTION-API-SOURCES.md.
 
 - COLLECTION-API-06: Tìm tiếng Việt không dấu là profile riêng của Collection, không thay Input.searchKey hay chuẩn hóa nội dung tin. Test sua/SỮA/dac/nuoc, đ→d, zero results; aria-pressed mọi node kể cả ẩn phải lấy từ model khi clear. Đọc Adobe useFilter và MUI X gridFilterUtils. Keyboard giữ nguyên.
+
+## 70. VIRTUALIZER — v13.48, bài toán 19
+- VIRTUAL-API-01: Virtualizer.range tính vùng nhìn + overscan giới hạn, rowHeight cố định 24–128px, mặc định 44; count tối đa 100.000, không dựng ngoài phạm vi. Layout và Typography sở hữu hình học/chữ; Collection sở hữu data/filter.
+- VIRTUAL-API-02: mount dùng viewport scroll độc lập, stage giữ chiều cao thật theo count, row theo key ổn định; reuse DOM phần giao nhau, aria-posinset/setsize đúng toàn tập, không tạo focusable row con; region có tabindex để cuộn bàn phím. Không áp vào hội thoại động hoặc bảng nghiệp vụ.
+- VIRTUAL-API-03: setItems giữ key dòng đầu + offset nếu còn, nếu không reset đầu; jump clamp; mọi ghi scroll lab đi qua ScrollController.writeLocal, không chạm chat write hay KB-LOCK. Scroll passive + rAF, ResizeObserver và dispose; dọn khi thay module.
+- VIRTUAL-API-04: ?virtuallab=1, 10.000 dòng, test số DOM tối đa theo chiều cao, chiều cao tổng, đầu/giữa/cuối, giữ node overlap, tìm không dấu, empty, resize và dispose. Chỉ đo count DOM/geometry, không tự khẳng định tốc độ thực tế. Native iOS/PWA, dynamic height, focused interactive rows và remote/large data PENDING.
+- VIRTUAL-API-05: Đã đọc Adobe Virtualizer, TanStack Virtual và Astryx Stack; học phạm vi, overscan, reuse và scroll viewport. Không import runtime; ghi source/blob/giới hạn references/VIRTUAL-API-SOURCES.md.
