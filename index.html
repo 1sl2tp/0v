@@ -8,10 +8,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CHAT CRM">
 <link rel="manifest" href="./manifest.webmanifest">
-<title>CHAT CRM — Bố cục v13.20</title>
+<title>CHAT CRM — Bố cục v13.21</title>
 <script>const layoutParams=new URLSearchParams(location.search);document.documentElement.dataset.liveglass=layoutParams.get('liveglass')==='1'?'1':'0';document.documentElement.dataset.floating=layoutParams.has('floating')?(layoutParams.get('floating')==='1'?'1':'0'):(matchMedia('(max-width:767px)').matches?'1':'0');</script>
 <style>
-:root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#e5e5e5;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
+:root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#e5e5e5;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:var(--type-body)}
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%;touch-action:manipulation;background:var(--paper);color:var(--ink)}
 button,input,textarea{font:inherit}button{border:0;background:transparent;color:inherit;cursor:pointer;min-height:44px}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--control-focus);outline-offset:2px}
@@ -37,7 +37,7 @@ input,textarea{font-size:var(--input-font-size,17px)}button[aria-pressed="true"]
 @media(min-width:768px) and (max-width:1099px){#app.with-crm{grid-template-columns:54px minmax(0,1fr) 290px}#app.with-crm .directory{display:none}}
 @media(max-width:767px){#app,#app.with-crm{display:block;height:var(--view-height,100dvh)}.rail{display:none}.directory,.conversation,.crm,#app.with-crm .crm{display:none;height:100%;width:100%;border:0}#app[data-screen="contacts"] .directory,#app[data-screen="chat"] .conversation,#app[data-screen="crm"] .crm{display:flex}.mobile-only{display:grid}.panel-head{height:calc(54px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}.contacts{padding-bottom:env(safe-area-inset-bottom)}.messages{padding:12px 15px;scrollbar-gutter:auto}.message{max-width:87%}}
 .module-note{margin-top:14px!important}.fields .field{align-items:baseline}.fields .field span{min-width:0;overflow-wrap:anywhere}.fields .field span:last-child{font-variant-numeric:tabular-nums}.modules button{min-height:44px;padding:8px 10px}.module-content{padding:12px}/* Shared UI tokens and component geometry */
-:root{--gap-xs:4px;--gap-sm:8px;--gap-md:12px;--gap-lg:16px;--touch:44px;--control-radius:12px;--avatar-size:40px;--text-main:15px;--text-sub:12px;--text-title:17px;--header-size:56px}
+:root{--gap-xs:4px;--gap-sm:8px;--gap-md:12px;--gap-lg:16px;--touch:44px;--control-radius:12px;--avatar-size:40px;--type-version:10px;--type-caption:12px;--type-detail:13px;--type-body:15px;--type-title:17px;--type-chat:17px;--type-input:17px;--line-caption:16px;--line-detail:18px;--line-body:20px;--line-title:22px;--line-chat:26px;--line-input:22px;--text-main:var(--type-body);--text-sub:var(--type-caption);--text-title:var(--type-title);--header-size:56px}
 .panel-head{height:var(--header-size);gap:var(--gap-sm);padding-inline:var(--gap-md)}
 .panel-head strong,.title-group b{font-size:var(--text-title);font-weight:600}
 .avatar{width:var(--avatar-size);height:var(--avatar-size);aspect-ratio:1;flex-shrink:0}
@@ -49,7 +49,7 @@ input,textarea{font-size:var(--input-font-size,17px)}button[aria-pressed="true"]
 .filters{gap:var(--gap-xs)}.filters button{min-height:36px}
 
 .identity b{font-size:var(--text-main)}.identity small,.title-group small{font-size:var(--text-sub)}
-.bubble{font-size:var(--text-main);line-height:1.5}
+.bubble{font-size:var(--type-chat)}
 .work-card th,.work-card td{padding:var(--gap-sm) var(--gap-md);vertical-align:middle}
 .work-card th{font-weight:600;background:var(--soft)}
 .fields .field{padding:var(--gap-md);gap:var(--gap-md)}
@@ -59,7 +59,9 @@ input,textarea{font-size:var(--input-font-size,17px)}button[aria-pressed="true"]
 /* Composer: stable parent geometry, independent input and actions */
 #app{--composer-frame-top:8px;--composer-frame-bottom:12px}
 .composer-frame{flex:0 0 auto;padding:var(--composer-frame-top) var(--composer-inset,8px) var(--composer-frame-bottom);margin:0}
-.composer{width:100%;max-width:760px;margin-inline:auto;display:grid;grid-template-columns:var(--touch) minmax(0,1fr) var(--touch);align-items:end;gap:var(--gap-xs);padding:var(--composer-edge);border-radius:var(--composer-radius);min-height:var(--composer-min-height)}
+.composer{width:100%;max-width:760px;margin-inline:auto;display:grid;grid-template-columns:var(--touch) minmax(0,1fr) var(--touch);grid-template-areas:"plus draft send";align-items:end;gap:var(--gap-xs);padding:var(--composer-edge);border-radius:var(--composer-radius);min-height:var(--composer-min-height)}
+.composer>#mediaBtn{grid-area:plus}.composer>textarea{grid-area:draft}.composer>.send{grid-area:send}
+.composer[data-mode=expanded]{grid-template-areas:"draft draft draft" "plus . send";grid-template-rows:auto var(--touch);border-radius:var(--composer-radius)}
 .composer .icon,.composer .send{width:44px;height:44px;min-height:44px;min-width:44px;margin:0;align-self:end;border-radius:50%}
 .composer .icon{background:transparent}
 .composer textarea{display:block;width:100%;height:var(--input-height);min-height:var(--input-height);max-height:var(--input-chat-effective-max,var(--input-chat-max));padding:var(--input-pad-y) var(--composer-text-inset);line-height:var(--input-line-height);box-sizing:border-box;resize:none;outline:none!important;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;overflow-wrap:break-word;white-space:pre-wrap}
@@ -96,8 +98,8 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 .panel-head,.search-zone,.filters,.contact,.dir-bottom,.module-content{padding-inline:var(--panel-inset)}
 .panel-head{gap:var(--gap-sm)}
 .title-group{display:grid;grid-template-rows:22px 16px;gap:2px}
-.title-group b{line-height:22px}.title-group small{line-height:16px}
-.title-subrow{display:flex;align-items:baseline;gap:6px;min-width:0;overflow:hidden}.title-subrow>small{flex:1 1 auto;min-width:0}.title-subrow>.chat-version{flex:0 0 auto;font-size:10px;line-height:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.title-group b{line-height:var(--line-title)}.title-group small{line-height:var(--line-caption)}
+.title-subrow{display:flex;align-items:baseline;gap:6px;min-width:0;overflow:hidden}.title-subrow>small{flex:1 1 auto;min-width:0}.title-subrow>.chat-version{flex:0 0 auto;font-size:var(--type-version);line-height:var(--line-caption);color:var(--muted);font-variant-numeric:tabular-nums}
 .contact{column-gap:var(--row-gap)}
 
 .messages{padding-inline:var(--panel-inset);gap:var(--gap-md)}
@@ -119,7 +121,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 #app>.conversation>.composer-frame{min-width:0}
 @media(max-width:767px){#app[data-screen="chat"]>.conversation{grid-template-rows:var(--panel-tracks)}}
 /* Shared control contract */
-:root{--text-detail:13px;--text-meta:11px;--icon-size:22px;--icon-stroke:1.7;--control-border:1px solid var(--line);--control-focus:#737373}
+:root{--text-detail:var(--type-detail);--text-meta:var(--type-caption);--icon-size:22px;--icon-stroke:1.7;--control-border:1px solid var(--line);--control-focus:#737373}
 .outline,.modules button{border:var(--control-border);border-radius:var(--control-radius);min-height:var(--touch)}
 
 
@@ -128,11 +130,11 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 .module-content h3{font-size:var(--text-title)}
 .module-content p,.fields .field{font-size:var(--text-detail)}
 /* Conversation content contract */
-:root{--bubble-radius:17px;--message-line:1.5;--meta-line:16px;--media-radius:8px}
+:root{--bubble-radius:17px;--message-line:var(--line-chat);--meta-line:var(--line-caption);--media-radius:8px}
 .message{min-width:0;overflow-wrap:anywhere}
 .bubble{line-height:var(--message-line);white-space:pre-wrap}
-.message .meta{line-height:var(--meta-line);padding-top:var(--gap-xs)}
-.mine .meta{padding-inline-end:var(--gap-md)}
+.message .meta{line-height:var(--meta-line);padding-top:2px}
+.mine .meta{padding-inline-end:0}
 .sample-actions{gap:var(--gap-xs);margin-top:var(--gap-xs)}
 .mine .sample-actions{justify-content:flex-end}
 .sample-actions button{min-width:var(--touch);min-height:var(--touch)}
@@ -252,22 +254,22 @@ dialog.local-preview>strong{display:block;line-height:22px;overflow-wrap:anywher
 .business-card>header>span:first-child,.business-card>.business-row>span:first-child,.business-card>footer>span:first-child{min-width:0;overflow-wrap:anywhere}
 /* Paired bill evidence, shared axes */
 /* Single owner: bill layout and recognition controls */
-.bill-pair,.bill-reconcile{--bill-inset:8px;--bill-gap:8px;--bill-radius:12px;--bill-label:11px;--bill-value:13px}
+.bill-pair,.bill-reconcile{--bill-inset:8px;--bill-gap:8px;--bill-radius:12px;--bill-label:var(--type-caption);--bill-value:var(--type-detail)}
 .bill-pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--bill-column-min)),1fr));gap:var(--bill-gap);width:100%;min-width:0;max-width:100%;align-items:start;margin:12px 0;--bill-column-min:180px}
 .bill-pair>section{display:grid;grid-template-rows:40px auto;gap:4px;min-width:0;align-content:start;align-items:start}
 .bill-pair>section>.module-note{height:40px;display:flex;align-items:center;padding:0}
-.bill-pair>section>.module-note,.bill-pair .business-card>.module-note,.bill-reconcile-body>.module-note{margin:0!important;font-size:12px;line-height:17px;font-weight:400;text-align:left;overflow-wrap:anywhere}
+.bill-pair>section>.module-note,.bill-pair .business-card>.module-note,.bill-reconcile-body>.module-note{margin:0!important;font-size:var(--type-caption);line-height:var(--line-caption);font-weight:400;text-align:left;overflow-wrap:anywhere}
 .bill-pair img,.bill-pair .business-card,.bill-reconcile .business-card{box-sizing:border-box;width:100%;min-width:0;max-width:100%;margin:0;border-radius:var(--bill-radius)}
 .bill-pair img{display:block;height:auto;max-height:320px;border:1px solid var(--line);object-fit:contain;align-self:start}
 .bill-stack,.bill-reconcile-body{display:grid;gap:var(--bill-gap);min-width:0;align-content:start}
 .bill-reconcile-body{padding:var(--bill-inset)}
-.bill-pair .business-card>header,.bill-reconcile .business-card>header{grid-template-columns:minmax(0,1fr) auto;padding:var(--bill-inset);gap:4px;min-height:36px;align-items:baseline;font-size:13px;line-height:18px}
+.bill-pair .business-card>header,.bill-reconcile .business-card>header{grid-template-columns:minmax(0,1fr) auto;padding:var(--bill-inset);gap:4px;min-height:36px;align-items:baseline;font-size:var(--type-detail);line-height:var(--line-detail)}
 .bill-pair .business-card>footer{padding:var(--bill-inset);gap:4px}
 .bill-pair .business-row{grid-template-columns:minmax(0,1fr);padding:4px var(--bill-inset);gap:1px;line-height:16px}
 .bill-reconcile .business-row{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);padding:6px var(--bill-inset);gap:8px;line-height:18px}
 .bill-pair .business-row>span,.bill-reconcile .business-row>span{min-width:0;overflow-wrap:anywhere}
-.bill-pair .business-row>span:first-child{font-size:var(--bill-label);line-height:15px;color:var(--muted,var(--muted))}
-.bill-pair .business-row>span:last-child{font-size:var(--bill-value);line-height:17px;text-align:left;font-variant-numeric:tabular-nums}
+.bill-pair .business-row>span:first-child{font-size:var(--bill-label);line-height:var(--line-caption);color:var(--muted)}
+.bill-pair .business-row>span:last-child{font-size:var(--bill-value);line-height:var(--line-detail);text-align:left;font-variant-numeric:tabular-nums}
 .bill-reconcile .business-row>span:last-child{text-align:right;font-variant-numeric:tabular-nums}
 .bill-pair .bill-missing,.bill-reconcile .bill-missing{color:var(--danger);font-weight:600}
 .bill-pair .business-card>.module-note{padding:var(--bill-inset);border-top:1px solid var(--line)}
@@ -275,35 +277,35 @@ dialog.local-preview>strong{display:block;line-height:22px;overflow-wrap:anywher
 .bill-pair .bill-actions,.bill-reconcile .bill-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;min-width:0;align-items:stretch;justify-items:stretch}
 .bill-pair .bill-actions{padding:var(--bill-inset)}
 .bill-reconcile .bill-actions{padding:0}
-.bill-pair .bill-actions>button,.bill-reconcile .bill-actions>button{box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;width:100%;min-width:0;min-height:44px;white-space:normal;overflow-wrap:anywhere;font-size:12px;font-weight:500;line-height:16px;padding:6px 8px;margin:0;border:1px solid var(--line);border-radius:8px}
+.bill-pair .bill-actions>button,.bill-reconcile .bill-actions>button{box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;width:100%;min-width:0;min-height:44px;white-space:normal;overflow-wrap:anywhere;font-size:var(--type-caption);font-weight:500;line-height:var(--line-caption);padding:6px 8px;margin:0;border:1px solid var(--line);border-radius:8px}
 .bill-pair .bill-actions>button:disabled,.bill-reconcile .bill-actions>button:disabled{opacity:.45}
 /* Compact optional evidence, without hiding core receipt fields */
 .bill-extra{min-width:0;border-top:1px solid var(--line)}
-.bill-extra>summary{box-sizing:border-box;min-height:44px;padding:8px;display:list-item;font-size:12px;line-height:18px;cursor:pointer;overflow-wrap:anywhere}
+.bill-extra>summary{box-sizing:border-box;min-height:44px;padding:8px;display:list-item;font-size:var(--type-caption);line-height:var(--line-detail);cursor:pointer;overflow-wrap:anywhere}
 .bill-extra>.business-row{display:grid;min-width:0;align-items:baseline;border-top:1px solid var(--line)}
 .bill-extra>.business-row>span{min-width:0;overflow-wrap:anywhere}
 .bill-pair .bill-extra>.business-row>span:last-child{text-align:left}
-.bill-pair>section>.module-note{font-size:11px;line-height:15px}
-.bill-pair .business-card>.module-note{font-size:12px;line-height:16px}
+.bill-pair>section>.module-note{font-size:var(--type-caption);line-height:var(--line-caption)}
+.bill-pair .business-card>.module-note{font-size:var(--type-caption);line-height:var(--line-caption)}
 /* Shared business table geometry */
 .work-card,.business-card{box-sizing:border-box;max-width:100%;min-width:0}
 .order-card table{width:100%;table-layout:fixed;border-collapse:collapse;font-variant-numeric:tabular-nums}
 .order-card col.order-stt{width:10%}.order-card col.order-name{width:29%}.order-card col.order-qty{width:10%}.order-card col.order-price{width:24%}.order-card col.order-total{width:27%}
-.order-card th,.order-card td{width:auto!important;padding:6px 3px;font-size:12px;line-height:17px;vertical-align:top;overflow-wrap:anywhere}
-.order-card th{font-size:11px;font-weight:600}
+.order-card th,.order-card td{width:auto!important;padding:6px 3px;font-size:var(--type-caption);line-height:var(--line-caption);vertical-align:top;overflow-wrap:anywhere}
+.order-card th{font-size:var(--type-caption);font-weight:600}
 .order-card :is(th,td):nth-child(1),.order-card :is(th,td):nth-child(3){text-align:center}
 .order-card :is(th,td):nth-child(2){text-align:left}
 .order-card :is(th,td):nth-child(4),.order-card :is(th,td):nth-child(5),.order-card tfoot td{text-align:right}
 .order-card tfoot td{font-weight:600;border-top:1px solid var(--line)}
 .business-card:not(.bill-reconcile)>footer{font-variant-numeric:tabular-nums}
 #moduleContent>.business-card>header,#moduleContent>.business-card>.business-row,#moduleContent>.business-card>footer{padding:8px;gap:8px;line-height:18px}
-#moduleContent>.business-card>header,#moduleContent>.business-card>footer{font-size:13px}
+#moduleContent>.business-card>header,#moduleContent>.business-card>footer{font-size:var(--type-detail)}
 /* Prevent native scroll anchoring from competing with the chat viewport controller. */
 .messages{overflow-anchor:none}
 #app,.composer-frame,.composer{transition:none!important;animation:none!important}
 /* Input geometry owner: Apple HIG Body 17/22; 44px web hit target; Framework7 iOS references.
  CSS px are logical web units, not physical pixels or native UIKit measurements. */
-:root{--input-font-size:17px;--input-line-height:22px;--input-height:44px;--input-pad-y:calc((var(--input-height) - var(--input-line-height)) / 2);--input-pad-x:12px;--input-chat-max:calc(var(--input-height) + 4 * var(--input-line-height));--input-multiline-min:calc(var(--input-height) + 3 * var(--input-line-height));--input-search-radius:calc(var(--input-height) / 2);--input-field-radius:12px;--composer-min-height:calc(var(--input-height) + 2 * var(--composer-edge) + 2px)}
+:root{--input-font-size:var(--type-input);--input-line-height:var(--line-input);--input-height:44px;--input-pad-y:calc((var(--input-height) - var(--input-line-height)) / 2);--input-pad-x:12px;--input-chat-max:calc(var(--input-height) + 4 * var(--input-line-height));--input-multiline-min:calc(var(--input-height) + 3 * var(--input-line-height));--input-search-radius:calc(var(--input-height) / 2);--input-field-radius:12px;--composer-min-height:calc(var(--input-height) + 2 * var(--composer-edge) + 2px)}
 .input-child{box-sizing:border-box;min-width:0;max-width:100%;font-family:inherit;font-size:var(--input-font-size);font-weight:400;line-height:var(--input-line-height);color:var(--ink)}
 .search-zone input{height:var(--input-height);min-height:var(--input-height);padding:calc(var(--input-pad-y) - 1px) var(--input-pad-x);border-radius:var(--input-search-radius)}
 .input-child[data-input-parent=standalone]{width:100%;min-height:var(--input-height);height:var(--input-height);border-radius:var(--input-field-radius);padding:calc(var(--input-pad-y) - 1px) var(--input-pad-x);color:inherit}
@@ -322,7 +324,7 @@ textarea.input-child[data-input-parent=standalone]{height:var(--input-multiline-
 html[data-kb-mode=native] #app,html[data-kb-mode=native] #app.with-crm{position:relative;top:auto;left:auto;width:100%;height:100dvh}html[data-kb-mode=native] body{overflow:auto}html[data-kb-mode=native] .composer-frame{transform:none!important}
 @media(max-width:767px){#app.inset-chat{top:0;height:var(--chat-base,100svh)}#app.inset-chat .conversation{position:relative}#app.inset-chat .composer-frame{position:absolute;bottom:var(--keyboard-inset,0px);left:0;right:0;z-index:5;transform:none!important}#app.inset-chat .chat-view{margin-bottom:calc(var(--composer-reserve,64px) + var(--keyboard-inset,0px))}}
 @media(max-width:767px){#app.inset-chat .composer-frame{overflow-anchor:none}#app.inset-chat .composer textarea{scroll-margin:0}}
-.shared-table :is(th,td)[data-align]{width:auto!important;padding:6px 3px;font-size:12px;line-height:17px;overflow-wrap:anywhere;vertical-align:top}.shared-table th[data-align]{font-size:11px}.shared-table [data-align=left]{text-align:left!important}.shared-table [data-align=center]{text-align:center!important}.shared-table [data-align=right]{text-align:right!important;font-variant-numeric:tabular-nums}.shared-table tfoot td{font-weight:600;border-top:1px solid var(--line)}
+.shared-table :is(th,td)[data-align]{width:auto!important;padding:6px 3px;font-size:var(--type-caption);line-height:var(--line-caption);overflow-wrap:anywhere;vertical-align:top}.shared-table th[data-align]{font-size:var(--type-caption)}.shared-table [data-align=left]{text-align:left!important}.shared-table [data-align=center]{text-align:center!important}.shared-table [data-align=right]{text-align:right!important;font-variant-numeric:tabular-nums}.shared-table tfoot td{font-weight:600;border-top:1px solid var(--line)}
 /* Button parent: shared tokens; region owns placement, child owns action. */
 button[data-button-parent]{box-sizing:border-box;touch-action:manipulation;font-family:inherit}
 button[data-button-kind=icon]{display:grid;place-items:center;width:var(--touch);min-width:var(--touch);min-height:var(--touch);padding:0;border-radius:var(--control-radius)}
@@ -427,7 +429,7 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
  --app-top-controls:52px;--app-top-reserve:calc(var(--app-top-controls) + var(--safe-visible-top));
  --composer-edge:1px;--composer-min-height:calc(var(--input-height) + 2 * var(--composer-edge) + 2px);
  --composer-radius:calc(var(--composer-min-height) / 2);
- --app-composer-width:82%;--composer-frame-top:4px;--app-message-gap:12px;--app-message-meta:12px;--app-message-line:26px;--app-message-bubble:#eaeaea;--app-action-face:32px;--app-jump-face:36px;--app-jump-gap:12px;--app-content-inset:16px;--app-avatar:32px;--app-header-inset:20px;--app-chat-ink:#0d0d0d;--app-chat-surface:#f8f8f8;
+ --app-composer-width:82%;--composer-frame-top:4px;--app-message-gap:12px;--app-message-bubble:#eaeaea;--app-action-face:32px;--app-jump-face:36px;--app-jump-gap:12px;--app-content-inset:16px;--app-avatar:32px;--app-header-inset:20px;--app-chat-ink:#0d0d0d;--app-chat-surface:#f8f8f8;
  --composer-reserve:calc(var(--composer-min-height) + var(--composer-frame-top) + var(--composer-frame-bottom));
  }
  html[data-floating="1"] #app>.conversation{grid-template-rows:minmax(0,1fr);background:var(--app-chat-surface);color:var(--app-chat-ink)}
@@ -442,9 +444,8 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
  }
  html[data-floating="1"] #app>.conversation>.panel-head>*{pointer-events:auto}
  html[data-floating="1"] #app>.conversation>.panel-head>.avatar{width:var(--app-avatar);height:var(--app-avatar);flex-basis:var(--app-avatar);font-size:11px}
- html[data-floating="1"] #app>.conversation>.panel-head>.title-group{grid-template-rows:20px 15px;gap:1px}
- html[data-floating="1"] #app>.conversation>.panel-head .title-group b{font-size:16px;line-height:20px}
- html[data-floating="1"] #app>.conversation>.panel-head .title-group small{font-size:12px;line-height:15px}
+ html[data-floating="1"] #app>.conversation>.panel-head>.title-group{grid-template-rows:var(--line-title) var(--line-caption);gap:1px}
+
  html[data-floating="1"] #app>.conversation>.panel-head>.icon{--paint-elevation:none}
  html[data-floating="1"] #app>.conversation .messages{
  padding-top:calc(var(--app-top-reserve) + 12px);
@@ -455,7 +456,7 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
  width:var(--app-composer-width);max-width:760px;
  min-height:var(--composer-min-height);border-radius:var(--composer-radius);
  }
- html[data-floating="1"] #app>.conversation>.composer-frame>.composer>textarea{padding-inline:3px;font-size:17px;line-height:22px}
+ html[data-floating="1"] #app>.conversation>.composer-frame>.composer>textarea{padding-inline:3px}
  html[data-floating="1"] #app>.conversation .composer>.send{position:relative;background:transparent;color:#fff;box-shadow:none;isolation:isolate}
  html[data-floating="1"] #app>.conversation .composer>.send::before{content:"";position:absolute;left:50%;top:50%;width:var(--app-action-face);height:var(--app-action-face);transform:translate(-50%,-50%);border-radius:50%;background:var(--send-bg);z-index:-1;pointer-events:none}
  html[data-floating="1"] #app>.conversation .composer>.send:disabled{color:var(--disabled-ink)}
@@ -464,11 +465,10 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
  html[data-floating="1"] #app>.conversation .composer>.send svg{width:20px;height:20px;stroke-width:2}
  html[data-floating="1"] #app>.conversation .composer>.icon svg{width:22px;height:22px;stroke-width:1.9}
  html[data-floating="1"] #app>.conversation .message{flex:0 0 auto;max-width:87%}
- html[data-floating="1"] #app>.conversation .message>.bubble{font-size:17px;line-height:var(--app-message-line)}
+
  html[data-floating="1"] #app>.conversation .message.mine>.bubble{background:var(--app-message-bubble);padding:8px 12px;border-radius:18px}
- html[data-floating="1"] #app>.conversation .message>.meta{font-size:var(--app-message-meta);line-height:16px;padding-top:2px;color:var(--muted)}
- html[data-floating="1"] #app>.conversation .message.mine>.meta{padding-inline-end:0}
- html[data-floating="1"] #app>.conversation .day{flex:0 0 auto;font-size:12px;line-height:16px;padding:4px 0;color:var(--muted)}
+
+ html[data-floating="1"] #app>.conversation .day{flex:0 0 auto;font-size:var(--type-caption);line-height:var(--line-caption);padding:4px 0;color:var(--muted)}
  html[data-floating="1"] #app>.conversation .message.sample-message{max-width:100%}
  html[data-floating="1"] #app>.conversation #jumpBottom{width:44px;height:44px;min-height:44px;border:0;background:transparent;box-shadow:none;bottom:calc(var(--composer-reserve) + var(--app-jump-gap) - 4px);isolation:isolate}
  html[data-floating="1"] #app>.conversation #jumpBottom::before{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--paper);border:1px solid var(--line);z-index:-1;pointer-events:none}
@@ -517,24 +517,22 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
  #app>.conversation>.composer-frame{padding-inline:var(--desktop-chat-inset)}
  html[data-floating="1"] #app>.conversation>.composer-frame{padding-inline:var(--desktop-chat-inset)}
  #app>.conversation>.composer-frame>.composer{max-width:var(--desktop-chat-max)}
- #app>.conversation .message>.bubble{font-size:17px;line-height:26px}
- #app>.conversation .message>.meta{font-size:12px;line-height:16px;padding-top:2px}
- #app>.conversation .message.mine>.meta{padding-inline-end:0}
+
  #app>.conversation .message.mine>.bubble{padding:8px 12px;border-radius:18px}
 }
 /* Short desktop windows: whole-line growth budget; no keyboard-state switch.
-   186px reserved for header (56), frame padding (20), inner shell (14), reading area (96). */
-@media(min-width:768px) and (max-height:317px){#app{--input-chat-max:110px}}
-@media(min-width:768px) and (max-height:295px){#app{--input-chat-max:88px}}
-@media(min-width:768px) and (max-height:273px){#app{--input-chat-max:66px}}
-@media(min-width:768px) and (max-height:251px){#app{--input-chat-max:44px}}
+   234px reserved for header (56), frame padding (20), inner shell (14), reading area (96), toolbar (48). */
+@media(min-width:768px) and (max-height:365px){#app{--input-chat-max:110px}}
+@media(min-width:768px) and (max-height:343px){#app{--input-chat-max:88px}}
+@media(min-width:768px) and (max-height:321px){#app{--input-chat-max:66px}}
+@media(min-width:768px) and (max-height:299px){#app{--input-chat-max:44px}}
 </style>
 </head>
 <body>
 <div id="app" data-layout="shell" data-screen="contacts">
-<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v13.20</span></nav>
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v13.21</span></nav>
 <aside class="directory" data-layout="panel" aria-label="Danh bạ">
- <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v13.20</span><button type="button" class="icon mobile-only" id="searchToggle" aria-label="Mở tìm kiếm" aria-controls="directorySearch" aria-expanded="false" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button><button type="button" class="icon" data-go="crm" aria-label="Công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v13.21</span><button type="button" class="icon mobile-only" id="searchToggle" aria-label="Mở tìm kiếm" aria-controls="directorySearch" aria-expanded="false" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button><button type="button" class="icon" data-go="crm" aria-label="Công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
  <div class="search-zone" data-input-parent="search" id="directorySearch"><input class="input-child" data-input-kind="search" id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
  <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Tất cả</button><button data-filter="KH" data-button-parent="true" data-button-kind="text" data-button-shape="auto">KH</button><button data-filter="NCC" data-button-parent="true" data-button-kind="text" data-button-shape="auto">NCC</button><button data-filter="NV" data-button-parent="true" data-button-kind="text" data-button-shape="auto">NV</button><button data-filter="Nhóm" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Nhóm</button></div>
  <div class="contacts" id="contacts">
@@ -546,16 +544,16 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
  <button type="button" class="demo-incoming" id="incomingDemo" hidden data-button-parent="true" data-button-kind="text" data-button-shape="auto">+ Mô phỏng đang gõ → tin đến</button><div class="dir-bottom"><button class="outline" type="button" id="addContact" data-button-parent="true" data-button-kind="outline" data-button-shape="auto">＋ Thêm danh bạ (bố cục)</button></div>
 </aside>
 <main class="conversation" data-layout="panel" aria-label="Hội thoại">
- <header class="panel-head"><button class="icon mobile-only" type="button" data-go="contacts" aria-label="Về danh bạ" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><span class="avatar" id="currentAvatar">KH</span><span class="title-group"><b id="currentName">Khách hàng mẫu</b><span class="title-subrow"><small id="currentRole">KH · Hội thoại mẫu</small><span class="label-version chat-version" aria-label="Phiên bản v13.20">v13.20</span></span></span><button class="icon" type="button" data-go="crm" aria-label="Mở công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <header class="panel-head"><button class="icon mobile-only" type="button" data-go="contacts" aria-label="Về danh bạ" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><span class="avatar" id="currentAvatar">KH</span><span class="title-group"><b id="currentName">Khách hàng mẫu</b><span class="title-subrow"><small id="currentRole">KH · Hội thoại mẫu</small><span class="label-version chat-version" aria-label="Phiên bản v13.21">v13.21</span></span></span><button class="icon" type="button" data-go="crm" aria-label="Mở công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
  <section class="chat-view" data-layout="region"><div class="messages" data-layout="scroll" id="messages" role="log">
  <div class="day">Hôm nay · Minh họa bố cục</div>
  <div class="message"><div class="bubble">Cho lấy sản phẩm A 2, sản phẩm B 3.</div><div class="meta">11:20</div></div>
  <div class="message mine"><div class="bubble">Đã tiếp nhận, mình sẽ kiểm tra hàng.</div><div class="meta">11:22 · Mẫu</div></div>
  <section class="work-card"><header><strong>Tổng hợp yêu cầu · Hôm nay</strong><small>Chưa duyệt</small></header><div class="table-wrap"><table><thead><tr><th>STT</th><th>Tên hàng</th><th>SL</th></tr></thead><tbody><tr><td>1</td><td>Sản phẩm A</td><td>2</td></tr><tr><td>2</td><td>Sản phẩm B</td><td>3</td></tr></tbody></table></div></section>
  </div><button type="button" id="jumpBottom" aria-label="Cuộn đến tin mới nhất" hidden data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></section>
- <div class="composer-frame" data-layout="region"><form class="composer" data-input-parent="chat" id="composer" data-glass="g1"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea class="input-child" data-input-kind="chat" id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu" data-button-parent="true" data-button-kind="primary" data-button-shape="round"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
+ <div class="composer-frame" data-layout="region"><form class="composer" data-input-parent="chat" id="composer" data-mode="single" data-glass="g1"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea class="input-child" data-input-kind="chat" id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu" data-button-parent="true" data-button-kind="primary" data-button-shape="round"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
 </main>
-<aside class="crm" data-layout="panel" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v13.20</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Tổng hợp</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Đơn hàng</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Công nợ</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Bill</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Báo giá</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+<aside class="crm" data-layout="panel" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v13.21</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Tổng hợp</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Đơn hàng</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Công nợ</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Bill</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Báo giá</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
 </div>
 <script>
 (function(){
@@ -787,11 +785,40 @@ const fields=make('div','fields');(samples[label]||[['Trạng thái','Minh họa
 const note=make('p','module-note',label==='Công nợ'?'Nợ đuổi: âm là còn nợ, dương là dư tiền. Không phân bổ theo đơn.':label==='Bill'?'Chỉ ghi thu sau khi đối soát hợp lệ.':'Bố cục tĩnh, không phát sinh nghiệp vụ thật.');panel.append(note);
 }
 let draftFrame=0;
-let measureSignature='';const draftMeasure=document.createElement('div');draftMeasure.className='draft-measure';document.body.append(draftMeasure);
+let measureSignature='';
+const draftMeasure=document.createElement('div');
+draftMeasure.className='draft-measure';
+document.body.append(draftMeasure);
+const draftForm=draft.closest('.composer');
+function composerMode(narrowHeight,min){return narrowHeight>min+1?'expanded':'single'}
 function resizeDraft(){
-const send=document.querySelector('.composer .send');send.disabled=!draft.value.trim();
-if(draftFrame)return;draftFrame=requestAnimationFrame(()=>{draftFrame=0;const width=draft.clientWidth;if(!width)return;const pinned=nearBottom();const cs=getComputedStyle(draft),keys=['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','padding','boxSizing','wordBreak','overflowWrap','whiteSpace','direction','tabSize'];const signature=[width,...keys.map(k=>cs[k])].join('|');if(measureSignature!==signature){measureSignature=signature;for(const k of keys)draftMeasure.style[k]=cs[k];draftMeasure.style.width=width+'px';}const min=parseFloat(cs.minHeight),max=parseFloat(cs.maxHeight);draftMeasure.textContent=draft.value+'\u200b';const natural=draftMeasure.scrollHeight,next=Math.max(min,Math.min(max,natural));if(draft.style.height!==next+'px'){draft.style.height=next+'px';if(appShellActive()){if(pinned&&!anchor)anchor={pinned:true,top:messages.scrollTop};updateViewport()}else ScrollController.geometry(pinned)}draft.style.overflowY=natural>max?'auto':'hidden'});
+ const send=draftForm.querySelector('.send');send.disabled=!draft.value.trim();
+ if(draftFrame)return;
+ draftFrame=requestAnimationFrame(()=>{
+  draftFrame=0;
+  if(!draftForm.clientWidth)return;
+  const pinned=nearBottom(),cs=getComputedStyle(draft),formStyle=getComputedStyle(draftForm);
+  const keys=['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','padding','boxSizing','wordBreak','overflowWrap','whiteSpace','direction','tabSize'];
+  const signature=keys.map(k=>cs[k]).join('|');
+  if(measureSignature!==signature){measureSignature=signature;for(const k of keys)draftMeasure.style[k]=cs[k]}
+  const min=parseFloat(cs.minHeight),max=Math.max(min,parseFloat(cs.maxHeight));
+  const inner=Math.max(1,draftForm.clientWidth-parseFloat(formStyle.paddingLeft)-parseFloat(formStyle.paddingRight));
+  const narrow=Math.max(1,inner-draftForm.querySelector('#mediaBtn').offsetWidth-send.offsetWidth-2*parseFloat(formStyle.columnGap));
+  draftMeasure.textContent=draft.value+'\u200b';
+  draftMeasure.style.width=narrow+'px';
+  const mode=composerMode(draftMeasure.scrollHeight,min);
+  if(mode==='expanded')draftMeasure.style.width=inner+'px';
+  const natural=draftMeasure.scrollHeight,next=Math.max(min,Math.min(max,natural));
+  const changed=draftForm.dataset.mode!==mode||draft.style.height!==next+'px';
+  if(changed){
+   draftForm.dataset.mode=mode;draft.style.height=next+'px';
+   if(appShellActive()){if(pinned&&!anchor)anchor={pinned:true,top:messages.scrollTop};updateViewport()}else ScrollController.geometry(pinned);
+  }
+  draft.style.overflowY=natural>max?'auto':'hidden';
+ });
 }
+let lastDraftFormWidth=0;
+new ResizeObserver(()=>{const width=draftForm.clientWidth;if(width&&width!==lastDraftFormWidth){lastDraftFormWidth=width;resizeDraft()}}).observe(draftForm);
 draft.addEventListener('input',resizeDraft);
 $('#composer').addEventListener('submit',e=>{e.preventDefault();const t=normalizeLines(draft.value.trim());if(!t)return;texts[active].push({text:t,mine:true,time:clock(),date:Date.now()});updateContact(active);draft.value='';drafts[active]='';const row=make('div','message mine');row.append(make('div','bubble',t),make('div','meta',texts[active].at(-1).time));appendDailyMessage(row,texts[active].at(-1));resizeDraft();draft.focus({preventScroll:true});const epoch=navigationEpoch,owner=active;requestAnimationFrame(()=>{if(epoch!==navigationEpoch||owner!==active||app.dataset.screen!=='chat')return;ScrollController.end('send');anchor={pinned:true,top:messages.scrollTop};syncJump()})});
 
@@ -859,7 +886,7 @@ function floatingViewportGeometry({height,top,width,focused,restingHeight,restin
  return {base,inset,open:inset>=80&&(focused||wasOpen),occluding:inset>1&&(wasOpen||(focused&&inset>=80)),bottom};
 }
 function chatInputLimit(height,header,min,line){
- const available=height-header-30-96;
+ const available=height-header-30-96-48; // reserve expanded toolbar (44 + 4) before fitting text
  return min+Math.max(0,Math.min(4,Math.floor((available-min)/line)))*line;
 }
 function cancelGeometryScroll(){if(viewportScrollFrame){cancelAnimationFrame(viewportScrollFrame);viewportScrollFrame=0}anchor=null}
@@ -911,7 +938,7 @@ function sample(now){raf=0;const v=window.visualViewport,top=v?.offsetTop||0,bot
 count++;const visibleBottom=screen==='chat'&&app.classList.contains('inset-chat')&&c.height?Math.max(c.bottom,m.bottom):r.bottom;const overflow=Math.max(0,top-r.top,visibleBottom-bottom,left-r.left,r.right-right);maxOverflow=Math.max(maxOverflow,overflow);
 if(screen==='chat'&&c.height){maxGap=Math.max(maxGap,Math.abs(bottom-c.bottom));maxOverlap=Math.max(maxOverlap,floatingComposer?Math.max(Math.abs(m.bottom-c.bottom),Math.max(0,c.height+12-parseFloat(getComputedStyle(messages).paddingBottom))):Math.max(0,m.bottom-c.top));const dh=draft.getBoundingClientRect().height;if(lastScreen===screen&&lastDraftHeight&&Math.abs(dh-lastDraftHeight)>1)draftChanges++;lastDraftHeight=dh}
 const key=[screen,r.top,r.height,c.top,c.height].map(x=>typeof x==='number'?Math.round(x):x).join('/');if(last&&key!==last)changes++;last=key;lastScreen=screen;
-output.textContent='v13.20 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nSai hợp đồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
+output.textContent='v13.21 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nSai hợp đồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
 if(now<until)raf=requestAnimationFrame(sample)}
 function schedule(){until=performance.now()+600;if(!raf)raf=requestAnimationFrame(sample)}
 reset.onclick=()=>{count=changes=draftChanges=maxOverflow=maxGap=maxOverlap=lastDraftHeight=0;last=lastScreen='';schedule()};
@@ -944,7 +971,7 @@ if(new URLSearchParams(location.search).get('perf')==='1'){
 const panel=make('div','perf-panel');const output=make('pre');const reset=make('button','','Đo lại');panel.append(output,reset);document.body.append(panel);
 let frames=0,slow=0,total=0,max=0,restores=0,resizes=0,last=0,until=0,raf=0,reportAt=0;
 const sizes=new WeakMap();const observer=new ResizeObserver(entries=>{for(const e of entries){const key=e.contentRect.width.toFixed(1)+'/'+e.contentRect.height.toFixed(1);if(sizes.has(e.target)&&sizes.get(e.target)!==key)resizes++;sizes.set(e.target,key)}});
-function report(){output.textContent='v13.20 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
+function report(){output.textContent='v13.21 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
 function tick(t){raf=0;if(last){const dt=t-last;frames++;total+=dt;max=Math.max(max,dt);if(dt>25)slow++}last=t;if(t-reportAt>500){reportAt=t;report()}if(t<until)raf=requestAnimationFrame(tick);else{last=0;report()}}
 messages.addEventListener('scroll',()=>{until=performance.now()+180;if(!raf){last=0;raf=requestAnimationFrame(tick)}},{passive:true});
 reset.onclick=()=>{frames=slow=total=max=restores=resizes=0;last=0;report()};
@@ -953,7 +980,7 @@ window.scrollPerf={recordRestore(){restores++},observe(){observer.disconnect();f
 if(new URLSearchParams(location.search).get('keyboardtest')==='1'){
 const panel=document.createElement('div');panel.className='perf-panel';const output=document.createElement('pre');panel.append(output);document.body.append(panel);
 let started=0,first=0,lastChange=0,changes=0,heightChanges=0,prev='',prevHeight=0,frame=0,until=0,maxOverflow=0;
-function sample(t){frame=0;const vv=window.visualViewport,bottom=(vv?.offsetTop||0)+(vv?.height||innerHeight),r=document.querySelector('.composer-frame').getBoundingClientRect();if(!r.height){output.textContent='v13.20 · Mở hội thoại để đo';if(t<until)frame=requestAnimationFrame(sample);return}const gap=bottom-r.bottom,key=[Math.round(bottom),Math.round(r.bottom),Math.round(r.height)].join('/');if(key!==prev){if(prev){changes++;if(Math.abs(r.height-prevHeight)>1)heightChanges++}prev=key;prevHeight=r.height;lastChange=t;if(!first&&started)first=t-started}maxOverflow=Math.max(maxOverflow,-gap);output.textContent='v13.20 · Đo bàn phím\nPhản hồi hình học: '+(first?Math.round(first)+' ms':'—')+'\nỔn định: '+(started&&lastChange>=started?Math.round(lastChange-started)+' ms':'—')+'\nĐáy frame lệch: '+gap.toFixed(1)+' px\nLề input: '+(bottom-document.querySelector('.composer').getBoundingClientRect().bottom).toFixed(1)+' / '+getComputedStyle(r.height?keyboardComposer:app).paddingBottom+'\nTràn tối đa: '+maxOverflow.toFixed(1)+' px\nĐổi hình học: '+changes+'\nĐổi cao vùng gõ: '+heightChanges;if(t<until)frame=requestAnimationFrame(sample)}
+function sample(t){frame=0;const vv=window.visualViewport,bottom=(vv?.offsetTop||0)+(vv?.height||innerHeight),r=document.querySelector('.composer-frame').getBoundingClientRect();if(!r.height){output.textContent='v13.21 · Mở hội thoại để đo';if(t<until)frame=requestAnimationFrame(sample);return}const gap=bottom-r.bottom,key=[Math.round(bottom),Math.round(r.bottom),Math.round(r.height)].join('/');if(key!==prev){if(prev){changes++;if(Math.abs(r.height-prevHeight)>1)heightChanges++}prev=key;prevHeight=r.height;lastChange=t;if(!first&&started)first=t-started}maxOverflow=Math.max(maxOverflow,-gap);output.textContent='v13.21 · Đo bàn phím\nPhản hồi hình học: '+(first?Math.round(first)+' ms':'—')+'\nỔn định: '+(started&&lastChange>=started?Math.round(lastChange-started)+' ms':'—')+'\nĐáy frame lệch: '+gap.toFixed(1)+' px\nLề input: '+(bottom-document.querySelector('.composer').getBoundingClientRect().bottom).toFixed(1)+' / '+getComputedStyle(r.height?keyboardComposer:app).paddingBottom+'\nTràn tối đa: '+maxOverflow.toFixed(1)+' px\nĐổi hình học: '+changes+'\nĐổi cao vùng gõ: '+heightChanges;if(t<until)frame=requestAnimationFrame(sample)}
 function wake(){until=performance.now()+500;if(!frame)frame=requestAnimationFrame(sample)}
 draft.addEventListener('pointerdown',()=>{started=performance.now();first=lastChange=changes=heightChanges=maxOverflow=0;const r=document.querySelector('.composer-frame').getBoundingClientRect(),vv=window.visualViewport;prev=[Math.round((vv?.offsetTop||0)+(vv?.height||innerHeight)),Math.round(r.bottom),Math.round(r.height)].join('/');prevHeight=r.height;wake()},{passive:true});draft.addEventListener('input',wake);draft.addEventListener('blur',wake);window.visualViewport?.addEventListener('resize',wake,{passive:true});window.visualViewport?.addEventListener('scroll',wake,{passive:true});wake();
 }
@@ -970,7 +997,7 @@ const shown=e=>e&&rect(e).width>0&&rect(e).height>0;
 function inside(name,parent,child){if(!shown(parent)||!shown(child))return;const p=rect(parent),c=rect(child);check(name,Math.max(0,p.left-c.left,c.right-p.right,p.top-c.top,c.bottom-p.bottom),0)}
 function overlap(name,a,b){if(!shown(a)||!shown(b))return;const x=rect(a),y=rect(b);const dx=Math.max(0,Math.min(x.right,y.right)-Math.max(x.left,y.left)),dy=Math.max(0,Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top));check(name,Math.min(dx,dy),0)}
 for(const panel of document.querySelectorAll('#app>.directory,#app>.conversation,#app>.crm')){if(!shown(panel))continue;inside('G06 Khung / vùng',app,panel);const children=[...panel.children].filter(shown);for(const child of children)inside('G07 Vùng / '+child.className,panel,child);for(let i=1;i<children.length;i++){const before=children[i-1],after=children[i];if(floatingComposer&&((before.matches('.chat-view')&&after.matches('.composer-frame'))||(appShellActive()&&before.matches('.panel-head')&&after.matches('.chat-view'))))continue;check('G08 Chồng vùng dọc',Math.max(0,rect(before).bottom-rect(after).top),0)}}
-if(shown(c)){for(const e of c.children)inside('G09 Vùng gõ / điều khiển',c,e);const parts=[...c.children].filter(shown);for(let i=1;i<parts.length;i++){overlap('G10 Chồng điều khiển',parts[i-1],parts[i]);check('G11 Gap vùng gõ',rect(parts[i]).left-rect(parts[i-1]).right,parseFloat(getComputedStyle(c).columnGap)||0)}}
+if(shown(c)){for(const e of c.children)inside('G09 Vùng gõ / điều khiển',c,e);const parts=[...c.children].filter(shown);for(let i=1;i<parts.length;i++){overlap('G10 Chồng điều khiển',parts[i-1],parts[i]);if(c.dataset.mode!=='expanded')check('G11 Gap vùng gõ',rect(parts[i]).left-rect(parts[i-1]).right,parseFloat(getComputedStyle(c).columnGap)||0)}}
 for(const row of document.querySelectorAll('.contact:not([hidden])')){if(!shown(row))continue;const av=row.querySelector('.avatar'),n=row.querySelector('.identity b'),p=row.querySelector('.identity small'),t=row.querySelector('.time');for(const e of [av,n,p,t])inside('G12 Danh bạ / thành phần',row,e);check('G13 Avatar vuông',rect(av).width,rect(av).height);check('G16 Tâm avatar / hàng',(rect(av).top+rect(av).bottom)/2,(rect(row).top+rect(row).bottom)/2);overlap('G14 Tên / thời gian',n,t);const u=row.querySelector('.unread-count');if(shown(u)){overlap('G15 Nội dung / chưa đọc',p,u);check('G17 Chân nội dung / số',baseline(p),baseline(u))}}
 const head=document.querySelector('.conversation>.panel-head');if(shown(head)){const controls=[...head.querySelectorAll(':scope > .icon,:scope > .typing-test,:scope > .avatar,:scope > .title-group')].filter(shown);const cy=e=>(rect(e).top+rect(e).bottom)/2;for(const e of controls){check('G18 Tâm tiêu đề',cy(e),cy(controls[0]));inside('G19 Tiêu đề / thành phần',head,e)}for(const e of controls.filter(e=>e.matches('button'))){check('G20 Nút tiêu đề rộng',rect(e).width,44);check('G21 Nút tiêu đề cao',rect(e).height,44)}}
 for(const table of document.querySelectorAll('.work-card table')){if(!shown(table))continue;const rows=[...table.rows];if(!rows.length)continue;const reference=[...rows[0].cells];for(const row of rows){const cells=[...row.cells];if(cells.length!==reference.length)continue;for(let i=0;i<cells.length;i++){check('G22 Mép trái cột '+(i+1),rect(cells[i]).left,rect(reference[i]).left);check('G23 Mép phải cột '+(i+1),rect(cells[i]).right,rect(reference[i]).right);check('G24 Đỉnh nội dung hàng',rect(cells[i]).top+parseFloat(getComputedStyle(cells[i]).paddingTop),rect(cells[0]).top+parseFloat(getComputedStyle(cells[0]).paddingTop))}inside('G25 Bảng / hàng',table,row)}}
@@ -987,7 +1014,7 @@ for(const pair of messages.querySelectorAll('.bill-pair')){if(!shown(pair))conti
 for(const group of messages.querySelectorAll('.bill-actions')){if(!shown(group))continue;for(const btn of group.querySelectorAll('button')){if(!shown(btn))continue;const s=getComputedStyle(btn);check('G66 Nút căn giữa',s.textAlign==='center'&&s.justifyContent==='center'&&s.alignItems==='center'?0:1,0);check('G67 Nút cùng chiều rộng',rect(btn).width,group.clientWidth-parseFloat(getComputedStyle(group).paddingLeft)-parseFloat(getComputedStyle(group).paddingRight));check('G68 Nút đủ vùng chạm',Math.min(44,rect(btn).height),44)}}
 for(const pair of messages.querySelectorAll('.bill-pair')){if(!shown(pair))continue;const [left,right]=pair.children;const stacked=rect(right).top>rect(left).top+1,style=getComputedStyle(pair);check('G69 Khoảng cách hai vùng',stacked?rect(right).top-rect(left).bottom:rect(right).left-rect(left).right,parseFloat(stacked?style.rowGap:style.columnGap)||0);for(const col of [left,right]){const label=col.firstElementChild,content=col.children[1];if(shown(label)&&shown(content)){check('G70 Lề trái tiêu đề/nội dung',rect(label).left,rect(content).left);check('G71 Khoảng cách tiêu đề/nội dung',rect(content).top-rect(label).bottom,parseFloat(getComputedStyle(col).rowGap)||0)}}}for(const group of messages.querySelectorAll('.bill-actions')){if(!shown(group))continue;const buttons=[...group.querySelectorAll('button')].filter(shown);for(let i=1;i<buttons.length;i++){check('G72 Trục trái nút',rect(buttons[i]).left,rect(buttons[0]).left);check('G73 Khoảng cách nút',rect(buttons[i]).top-rect(buttons[i-1]).bottom,4)}}
 if(appShellActive()&&shown(chat)&&shown(frame)&&shown(messages)){const h=app.querySelector('.conversation>.panel-head');check('G76 App: trục trên nội dung',rect(messages).top,rect(h).top);check('G77 App: reserve đầu',Math.max(0,rect(h).height+12-parseFloat(getComputedStyle(messages).paddingTop)),0);check('G78 App: rộng composer',rect(c).width,(frame.clientWidth-parseFloat(getComputedStyle(frame).paddingLeft)-parseFloat(getComputedStyle(frame).paddingRight))*.82);check('G79 App: tâm composer',(rect(c).left+rect(c).right)/2,(rect(frame).left+rect(frame).right)/2+(parseFloat(getComputedStyle(frame).paddingLeft)-parseFloat(getComputedStyle(frame).paddingRight))/2);const send=c.querySelector('.send'),plus=c.querySelector('.icon'),face=getComputedStyle(send,'::before');check('G80 App: mặt nút gửi',parseFloat(face.width),32);check('G81 App: vùng chạm gửi',Math.min(rect(send).width,rect(send).height),44);check('G82 App: trục đáy nút',rect(send).bottom,rect(plus).bottom);if(shown(jump))check('G83 App: vùng chạm xuống cuối',Math.min(rect(jump).width,rect(jump).height),44)}
-if(shown(c)){const cs=getComputedStyle(c),box=rect(c),border=Number.parseFloat(cs.borderLeftWidth),pad=Number.parseFloat(cs.paddingLeft),gap=Number.parseFloat(cs.columnGap),parts=[...c.children].filter(shown);check('G84 Lề trong input trái',rect(parts[0]).left-box.left,border+pad);check('G85 Lề trong input phải',box.right-rect(parts.at(-1)).right,parseFloat(cs.borderRightWidth)+parseFloat(cs.paddingRight));check('G86 Vùng chữ còn lại',rect(draft).width,Math.max(0,c.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-rect(parts[0]).width-rect(parts.at(-1)).width-2*gap));check('G87 Trục đáy chữ / nút',rect(draft).bottom,rect(parts.at(-1)).bottom);check('G88 Viền input',border,1)}
+if(shown(c)){const cs=getComputedStyle(c),box=rect(c),border=Number.parseFloat(cs.borderLeftWidth),pad=Number.parseFloat(cs.paddingLeft),gap=Number.parseFloat(cs.columnGap),parts=[...c.children].filter(shown);check('G84 Lề trong input trái',rect(parts[0]).left-box.left,border+pad);check('G85 Lề trong input phải',box.right-rect(parts.at(-1)).right,parseFloat(cs.borderRightWidth)+parseFloat(cs.paddingRight));const expanded=c.dataset.mode==='expanded',inner=c.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);check('G86 Vùng chữ còn lại',rect(draft).width,Math.max(0,inner-(expanded?0:rect(parts[0]).width+rect(parts.at(-1)).width+2*gap)));if(expanded){check('G87 Vùng chữ trên toolbar',rect(parts[0]).top-rect(draft).bottom,parseFloat(cs.rowGap));check('G103 Toolbar cùng trục đáy',rect(parts[0]).bottom,rect(parts.at(-1)).bottom);check('G104 Vùng chữ / lề trái',rect(draft).left,rect(parts[0]).left)}else check('G87 Trục đáy chữ / nút',rect(draft).bottom,rect(parts.at(-1)).bottom);check('G88 Viền input',border,1)}
 if(shown(head)){const sub=head.querySelector('.title-subrow'),ver=head.querySelector('.chat-version');inside('G89 Version / hàng phụ',sub,ver);overlap('G90 Vai trò / version',sub.querySelector('small'),ver)}
 for(const msg of messages.querySelectorAll('.message:not(.sample-message)')){if(!shown(msg))continue;const mr=rect(msg),sr=rect(messages),cs=getComputedStyle(messages);check('G91 Tin trong trục ngang',Math.max(0,sr.left+parseFloat(cs.paddingLeft)-mr.left,mr.right-(sr.right-parseFloat(cs.paddingRight))),0)}
 if(innerWidth>=768){
@@ -1004,9 +1031,9 @@ if(shown(c)&&shown(frame)){
  check('G99 Chân input / lề đáy',gap,pad);
  check('G100 Lề đáy đúng môi trường',pad,innerWidth<768?Math.max(8,parseFloat(getComputedStyle(app).getPropertyValue('--safe-visible-bottom'))||0):12);
  check('G101 Cao input trong giới hạn',Math.max(0,parseFloat(draftStyle.minHeight)-rect(draft).height,rect(draft).height-parseFloat(draftStyle.maxHeight)),0);
- check('G102 Cao khung theo chữ',rect(c).height,Math.max(rect(draft).height,rect(c.querySelector('.send')).height)+parseFloat(getComputedStyle(c).paddingTop)+parseFloat(getComputedStyle(c).paddingBottom)+parseFloat(getComputedStyle(c).borderTopWidth)+parseFloat(getComputedStyle(c).borderBottomWidth));
+ check('G102 Cao khung theo chữ',rect(c).height,(c.dataset.mode==='expanded'?rect(draft).height+rect(c.querySelector('.send')).height+parseFloat(getComputedStyle(c).rowGap):Math.max(rect(draft).height,rect(c.querySelector('.send')).height))+parseFloat(getComputedStyle(c).paddingTop)+parseFloat(getComputedStyle(c).paddingBottom)+parseFloat(getComputedStyle(c).borderTopWidth)+parseFloat(getComputedStyle(c).borderBottomWidth));
 }
-const bad=results.filter(r=>!Number.isFinite(r.delta)||r.delta>1);window.crmGeometry={version:'v13.20',screen:app.dataset.screen,viewport:{width:window.visualViewport?.width||innerWidth,height:window.visualViewport?.height||innerHeight},checks:results,issues:bad};report.textContent='Viewport '+Math.round(window.visualViewport?.width||innerWidth)+' × '+Math.round(window.visualViewport?.height||innerHeight)+' · '+app.dataset.screen+'\nHình học · '+(results.length-bad.length)+'/'+results.length+' đạt (≤1px)\n'+(bad.length?bad.sort((a,b)=>b.delta-a.delta).slice(0,10).map(r=>r.name+': '+r.delta.toFixed(1)+'px').join('\n'):'Không thấy lệch ở các mục đã đo');}
+const bad=results.filter(r=>!Number.isFinite(r.delta)||r.delta>1);window.crmGeometry={version:'v13.21',screen:app.dataset.screen,viewport:{width:window.visualViewport?.width||innerWidth,height:window.visualViewport?.height||innerHeight},checks:results,issues:bad};report.textContent='Viewport '+Math.round(window.visualViewport?.width||innerWidth)+' × '+Math.round(window.visualViewport?.height||innerHeight)+' · '+app.dataset.screen+'\nHình học · '+(results.length-bad.length)+'/'+results.length+' đạt (≤1px)\n'+(bad.length?bad.sort((a,b)=>b.delta-a.delta).slice(0,10).map(r=>r.name+': '+r.delta.toFixed(1)+'px').join('\n'):'Không thấy lệch ở các mục đã đo');}
 function draw(){frame=0;svg.replaceChildren();report.hidden=!enabled;if(!enabled)return;audit();
 const visible=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight};
 function bounds(e){const r=e.getBoundingClientRect();line(r.left,r.top,r.right,r.top,'#999');line(r.left,r.bottom,r.right,r.bottom,'#999');line(r.left,r.top,r.left,r.bottom,'#d14b42');line(r.right,r.top,r.right,r.bottom,'#d14b42')}
@@ -1021,14 +1048,14 @@ function schedule(){if(!frame)frame=requestAnimationFrame(draw)}toggle.onclick=(
 applyViewport();render();window.scrollPerf?.observe();
 if(new URLSearchParams(location.search).get('scenario')==='1'){
 const panel=document.createElement('section');panel.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;max-width:420px;max-height:42vh;overflow:auto;z-index:10001;background:white;color:#202124;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px/1.5 system-ui';
-const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='v13.20 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
+const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='v13.21 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
 const wait=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 run.onclick=async()=>{run.disabled=true;const results=[];const check=(name,ok)=>{results.push({name,ok});out.textContent=results.map(x=>(x.ok?'ĐẠT':'LỖI')+' · '+x.name).join('\n')};const original=active,originalScreen=app.dataset.screen,originalDraft=draft.value,originalSearch=searchInput.value,originalOpen=directory.dataset.searchOpen==='true';const ids=Object.keys(people);try{
 navigate('contacts');await wait();check('S01 Mở danh bạ',app.dataset.screen==='contacts');
 setSearchOpen(true);searchInput.value='zzzzqa-no-match';showPeople();check('S02 Tìm kiếm không có kết quả',[...contactList.querySelectorAll('.contact')].every(e=>e.hidden));
 setSearchOpen(false);check('S03 Đóng tìm kiếm',searchInput.value===''&&directory.dataset.searchOpen==='false');
 const first=contactList.querySelector('.contact:not([hidden])');if(!first)throw Error('Không có khách mẫu');first.click();await wait();check('S04 Mở đúng hội thoại',active===first.dataset.id&&$('#currentName').textContent===people[active].name);
-const testId=active,savedDraft=draft.value;try{draft.value='QA mẫu\nDòng hai\nDòng ba';draft.dispatchEvent(new Event('input',{bubbles:true}));resizeDraft();await wait();check('S05 Ô nhập nhiều dòng',draft.value.split('\n').length===3&&Math.abs(draft.getBoundingClientRect().height-Math.min(parseFloat(getComputedStyle(draft).maxHeight),parseFloat(getComputedStyle(draft).minHeight)+2*parseFloat(getComputedStyle(draft).lineHeight)))<=1);
+const testId=active,savedDraft=draft.value;try{draft.value='QA mẫu\nDòng hai\nDòng ba';draft.dispatchEvent(new Event('input',{bubbles:true}));resizeDraft();await wait();check('S05 Ô nhập nhiều dòng',draftForm.dataset.mode==='expanded'&&draft.value.split('\n').length===3&&Math.abs(draft.getBoundingClientRect().height-Math.min(parseFloat(getComputedStyle(draft).maxHeight),parseFloat(getComputedStyle(draft).minHeight)+2*parseFloat(getComputedStyle(draft).lineHeight)))<=1);
 const second=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id!==testId);if(second){second.click();await wait();check('S06 Chuyển khách',active===second.dataset.id);first.click();await wait();check('S07 Khôi phục bản nháp',draft.value==='QA mẫu\nDòng hai\nDòng ba')}
 messages.scrollTop=messages.scrollHeight;syncJump();await wait();check('S08 Cuộn cuối',nearBottom()&&jump.hidden);if(floatingComposer){const frame=keyboardComposer.getBoundingClientRect(),last=messages.lastElementChild?.getBoundingClientRect();check('S19 Floating: tin cuối không bị che',!!last&&last.bottom<=frame.top-11);check('S20 Floating: đáy cuộn đúng frame',Math.abs(messages.getBoundingClientRect().bottom-frame.bottom)<=1);check('S21 Floating: reserve đủ',parseFloat(getComputedStyle(messages).paddingBottom)>=frame.height+11);
 const typed=draft.value;messages.scrollTop=0;await wait();const oldTop=messages.scrollTop;
@@ -1052,15 +1079,15 @@ if(other){const count=messages.childElementCount;receiveDemo(other,'QA nhận ti
 }finally{for(const [id,s] of Object.entries(snapshot)){texts[id].length=s.length;incomingCounts[id]=s.unread;pendingLatest[id]=s.pending;updateContact(id);const row=contactList.querySelector('[data-id="'+id+'"]');row.querySelector('.identity small').textContent=s.preview;row.querySelector('.time').textContent=s.time}render();await wait();messages.scrollTop=oldTop;syncJump()}
 
 }finally{drafts[testId]=savedDraft;if(active===testId){draft.value=savedDraft;resizeDraft()}}
-}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='v13.20 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
+}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='v13.21 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
 };
 }
 
 /* QA hub: one entry point, isolated diagnostic modes to avoid competing overlays. */
 if(new URLSearchParams(location.search).get('verify')==='1'){
 const hub=document.createElement('details');hub.style.cssText='position:fixed;z-index:10002;right:8px;top:calc(env(safe-area-inset-top) + 8px);max-width:calc(100vw - 16px);width:280px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font:13px/1.5 system-ui;box-shadow:0 2px 12px #0002';
-const title=document.createElement('summary');title.textContent='QA · v13.20';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
-const modes=[['','Giao diện bình thường','Không bật bộ đo'],['scenario','Kịch bản tự chạy','Kiểm tra thao tác trên demo'],['qa','UI / UX','Kiểm tra trạng thái và kích thước'],['guides','Hình học tĩnh','G01–G102, đường kẻ và kết quả đo'],['dynamic','Hình học động','Viewport và vùng gõ'],['perf','Hiệu năng','Khung hình và cuộn'],['keyboardtest','Bàn phím','Thời gian và độ ổn định']];
+const title=document.createElement('summary');title.textContent='QA · v13.21';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
+const modes=[['','Giao diện bình thường','Không bật bộ đo'],['scenario','Kịch bản tự chạy','Kiểm tra thao tác trên demo'],['qa','UI / UX','Kiểm tra trạng thái và kích thước'],['guides','Hình học tĩnh','G01–G104, đường kẻ và kết quả đo'],['dynamic','Hình học động','Viewport và vùng gõ'],['perf','Hiệu năng','Khung hình và cuộn'],['keyboardtest','Bàn phím','Thời gian và độ ổn định']];
 const params=new URLSearchParams(location.search);const activeMode=modes.find(([k])=>k&&params.get(k)==='1')?.[0]||'';
 for(const [key,label,desc] of modes){const a=document.createElement('a');const url=new URL(location.href);for(const [k] of modes)if(k)url.searchParams.delete(k);url.searchParams.set('verify','1');if(key)url.searchParams.set(key,'1');a.href=url.href;a.style.cssText='display:block;padding:8px;border-radius:8px;min-height:44px;text-decoration:none;color:inherit;background:'+(key===activeMode?'var(--surface-selected)':'transparent');if(key===activeMode)a.setAttribute('aria-current','page');const b=document.createElement('strong');b.textContent=label;const small=document.createElement('small');small.style.cssText='display:block;color:var(--muted)';small.textContent=desc;a.append(b,small);hub.append(a)}
 const note=document.createElement('small');note.textContent='Đổi chế độ sẽ tải lại demo; dữ liệu mẫu chưa lưu sẽ mất. Kết quả chỉ có sau khi đo.';note.style.cssText='display:block;color:var(--muted);padding:8px 0';hub.append(note);document.body.append(hub);hub.open=!activeMode;
@@ -1079,15 +1106,16 @@ add('A04 Tiêu đề / không tràn',visible(head)?head.scrollWidth<=head.client
 add('A05 Vùng gõ / chứa điều khiển',visible(composer)?[...composer.children].filter(visible).every(e=>inside(composer,e)):null);
 add('A06 Nội dung / hợp đồng vùng gõ',visible(frame)&&visible(messages)?(floatingComposer?Math.abs(r(messages).bottom-r(frame).bottom)<=1&&parseFloat(getComputedStyle(messages).paddingBottom)>=r(frame).height+11:r(messages).bottom<=r(frame).top+1):null);
 add('A07 Ô nhập / giới hạn chiều cao',visible(draft)?r(draft).height>=parseFloat(getComputedStyle(draft).minHeight)-1&&r(draft).height<=parseFloat(getComputedStyle(draft).maxHeight)+1:null);
-for(const el of document.querySelectorAll('.input-child')){if(!visible(el))continue;const cs=getComputedStyle(el);add('A11 Input '+el.dataset.inputKind+' / font 17, line 22',Math.abs(parseFloat(cs.fontSize)-parseFloat(cs.getPropertyValue('--input-font-size')))<.1&&Math.abs(parseFloat(cs.lineHeight)-parseFloat(cs.getPropertyValue('--input-line-height')))<.1);add('A12 Input / chiều cao và rộng',r(el).height>=parseFloat(cs.minHeight)-1&&r(el).width<=r(el.parentElement).width+1);}
-if(appShellActive()&&visible(composer)&&visible(messages)&&visible(head)){add('A13 App / vùng cuộn xuyên dưới header',Math.abs(r(messages).top-r(head).top)<=1&&parseFloat(getComputedStyle(messages).paddingTop)>=r(head).height+11);add('A14 App / composer rộng 82%',Math.abs(r(composer).width-(frame.clientWidth-parseFloat(getComputedStyle(frame).paddingLeft)-parseFloat(getComputedStyle(frame).paddingRight))*.82)<=1);add('A15 App / composer căn giữa',Math.abs((r(composer).left+r(composer).right)/2-((r(frame).left+r(frame).right)/2+(parseFloat(getComputedStyle(frame).paddingLeft)-parseFloat(getComputedStyle(frame).paddingRight))/2))<=1);add('A16 App / 1 dòng 48px',r(draft).height>parseFloat(getComputedStyle(draft).minHeight)+1?null:Math.abs(r(composer).height-48)<=1);const send=composer.querySelector('.send'),plus=composer.querySelector('.icon');const face=getComputedStyle(send,'::before');add('A17 App / vùng chạm 44px',r(send).width>=43&&r(send).height>=43&&r(plus).width>=43&&r(plus).height>=43);add('A18 App / mặt nút gửi 32px',Math.abs(parseFloat(face.width)-32)<=1&&Math.abs(parseFloat(face.height)-32)<=1);add('A19 App / cùng trục đáy nút',Math.abs(r(send).bottom-r(plus).bottom)<=1);}
+for(const el of document.querySelectorAll('.input-child')){if(!visible(el))continue;const cs=getComputedStyle(el);add('A11 Input '+el.dataset.inputKind+' / font 17, line 22',Math.abs(parseFloat(cs.fontSize)-parseFloat(cs.getPropertyValue('--type-input')))<.1&&Math.abs(parseFloat(cs.lineHeight)-parseFloat(cs.getPropertyValue('--line-input')))<.1);add('A12 Input / chiều cao và rộng',r(el).height>=parseFloat(cs.minHeight)-1&&r(el).width<=r(el.parentElement).width+1);}
+if(appShellActive()&&visible(composer)&&visible(messages)&&visible(head)){add('A13 App / vùng cuộn xuyên dưới header',Math.abs(r(messages).top-r(head).top)<=1&&parseFloat(getComputedStyle(messages).paddingTop)>=r(head).height+11);add('A14 App / composer rộng 82%',Math.abs(r(composer).width-(frame.clientWidth-parseFloat(getComputedStyle(frame).paddingLeft)-parseFloat(getComputedStyle(frame).paddingRight))*.82)<=1);add('A15 App / composer căn giữa',Math.abs((r(composer).left+r(composer).right)/2-((r(frame).left+r(frame).right)/2+(parseFloat(getComputedStyle(frame).paddingLeft)-parseFloat(getComputedStyle(frame).paddingRight))/2))<=1);add('A16 App / 1 dòng 48px',composer.dataset.mode==='expanded'?null:Math.abs(r(composer).height-48)<=1);const send=composer.querySelector('.send'),plus=composer.querySelector('.icon');const face=getComputedStyle(send,'::before');add('A17 App / vùng chạm 44px',r(send).width>=43&&r(send).height>=43&&r(plus).width>=43&&r(plus).height>=43);add('A18 App / mặt nút gửi 32px',Math.abs(parseFloat(face.width)-32)<=1&&Math.abs(parseFloat(face.height)-32)<=1);add('A19 App / cùng trục đáy nút',Math.abs(r(send).bottom-r(plus).bottom)<=1);}
 const inputParents=[composer,...document.querySelectorAll('.search-zone[data-input-parent=search]>input.input-child,.input-child[data-input-parent=standalone]')];for(const el of inputParents.filter(visible)){const cs=getComputedStyle(el),after=getComputedStyle(el,'::after');add('A20 Input / viền đơn 1px',Math.abs(parseFloat(cs.borderTopWidth)-1)<.1&&(!el.matches('.composer')||(after.content==='none'||after.content==='normal')));add('A21 Input / không outline chồng',matchMedia('(forced-colors: active)').matches?null:cs.outlineStyle==='none'||parseFloat(cs.outlineWidth)===0);}
 const materialMobile=matchMedia('(max-width:767px) and (hover:none) and (pointer:coarse),(max-width:767px) and (display-mode:standalone)').matches&&floatingComposer;
 for(const el of inputParents.filter(visible)){const cs=getComputedStyle(el),profile=cs.getPropertyValue('--paint-profile').trim(),isChat=el.matches('.composer');add('A24 Material / đúng phạm vi',profile==='accessible-flat'||(materialMobile&&isChat?['glass-tint','glass-blur'].includes(profile):profile==='flat'));if(!materialMobile||!isChat)add('A25 Material / không blur ngoài vùng nổi',(cs.backdropFilter||cs.webkitBackdropFilter||'none')==='none')}
+if(visible(composer)){const expanded=composer.dataset.mode==='expanded',plus=composer.querySelector('#mediaBtn'),send=composer.querySelector('.send');add('A26 Composer / đúng hàng công cụ',expanded?r(draft).bottom<=r(plus).top+1&&Math.abs(r(plus).bottom-r(send).bottom)<=1:Math.abs(r(draft).bottom-r(send).bottom)<=1);add('A27 Composer / chữ theo token',Math.abs(parseFloat(getComputedStyle(draft).fontSize)-parseFloat(getComputedStyle(draft).getPropertyValue('--type-input')))<.1)}
 add('A08 Cuộn / nút về cuối',visible(messages)?jump.hidden===nearBottom():null);
 add('A09 Công việc / module được chọn',visible($('#modules'))?$('#modules').querySelectorAll('.active').length===1:null);
 add('A10 Popup / giới hạn màn hình',document.querySelector('dialog[open]')?(()=>{const d=r(document.querySelector('dialog[open]')),v=window.visualViewport,x=v?.offsetLeft||0,y=v?.offsetTop||0;return d.left>=x-1&&d.top>=y-1&&d.right<=x+(v?.width||innerWidth)+1&&d.bottom<=y+(v?.height||innerHeight)+1})():null);
-const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='v13.20 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
+const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='v13.21 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
 let timer;function schedule(){clearTimeout(timer);timer=setTimeout(test,250)}run.onclick=test;for(const event of ['click','input','focusin','focusout'])document.addEventListener(event,schedule);messages.addEventListener('scroll',schedule,{passive:true});window.visualViewport?.addEventListener('resize',schedule,{passive:true});window.addEventListener('resize',schedule);schedule();
 }
 for(const t of contactList.querySelectorAll('.time'))t.textContent=shortDay()+' '+t.textContent;
@@ -1138,7 +1166,7 @@ const chat=messages.getBoundingClientRect(),root=app.getBoundingClientRect();
 const gap=vTop+vHeight-box.bottom;
 if(box.height){minGap=Math.min(minGap,gap);maxGap=Math.max(maxGap,gap)}
 const n=x=>Math.round(x);
-const audit=auditGeometry();out.textContent=['v13.20 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Keyboard occluding: '+keyboardOccluding+' / motion: viewport only','Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
+const audit=auditGeometry();out.textContent=['v13.21 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Keyboard occluding: '+keyboardOccluding+' / motion: viewport only','Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
 }
 let frame=0;function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;measure()})}
 window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);window.addEventListener('resize',schedule);document.addEventListener('focusin',()=>{minGap=Infinity;maxGap=-Infinity;schedule()});document.addEventListener('focusout',schedule);new ResizeObserver(schedule).observe(app);new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
@@ -1155,7 +1183,7 @@ if(new URLSearchParams(location.search).has('kbmode')){
 const p=document.createElement('div');p.style.cssText='position:fixed;top:env(safe-area-inset-top);right:4px;z-index:9999;background:#fff;color:#222;border:1px solid #aaa;border-radius:8px;padding:4px;font:11px system-ui';for(const [mode,label] of [['current','A'],['native','B'],['light','C']]){const a=document.createElement('a');a.href='?v=109&kbmode='+mode;a.textContent=label;a.style.cssText='display:inline-block;padding:8px;color:inherit';if(document.documentElement.dataset.kbMode===mode)a.style.fontWeight='bold';p.append(a)}document.body.append(p)}
 </script><script>
 if(new URLSearchParams(location.search).has('glasscheck')){
-const p=document.createElement('section');p.style.cssText='position:fixed;inset:12px 12px auto;z-index:9999;background:white;color:#111;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px system-ui;max-height:60vh;overflow:auto';const title=document.createElement('strong');title.textContent='Glass check v13.20';p.append(title);for(const sel of ['.composer','.panel-head button.icon','.search-zone input','button[data-button-kind=outline]']){const el=document.querySelector(sel);if(!el)continue;const c=getComputedStyle(el),line=document.createElement('p');line.textContent=sel+' | profile '+c.getPropertyValue('--paint-profile').trim()+' | radius '+c.borderRadius+' | border '+c.borderTopWidth+' '+c.borderTopColor+' | outline '+c.outlineStyle+' | blur '+(c.backdropFilter||c.webkitBackdropFilter||'none')+' | rim '+getComputedStyle(el,'::after').content;p.append(line)}const b=document.createElement('button');b.textContent='Đóng';b.onclick=()=>p.remove();p.append(b);document.body.append(p)}
+const p=document.createElement('section');p.style.cssText='position:fixed;inset:12px 12px auto;z-index:9999;background:white;color:#111;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px system-ui;max-height:60vh;overflow:auto';const title=document.createElement('strong');title.textContent='Glass check v13.21';p.append(title);for(const sel of ['.composer','.panel-head button.icon','.search-zone input','button[data-button-kind=outline]']){const el=document.querySelector(sel);if(!el)continue;const c=getComputedStyle(el),line=document.createElement('p');line.textContent=sel+' | profile '+c.getPropertyValue('--paint-profile').trim()+' | radius '+c.borderRadius+' | border '+c.borderTopWidth+' '+c.borderTopColor+' | outline '+c.outlineStyle+' | blur '+(c.backdropFilter||c.webkitBackdropFilter||'none')+' | rim '+getComputedStyle(el,'::after').content;p.append(line)}const b=document.createElement('button');b.textContent='Đóng';b.onclick=()=>p.remove();p.append(b);document.body.append(p)}
 </script><script>
 if(new URLSearchParams(location.search).get('glasslab')==='1'){
 const d=document.createElement('dialog');d.style.cssText='width:min(94vw,420px);max-height:85vh;padding:12px;background:white;color:#111;border:1px solid #ddd;border-radius:20px;overflow:auto';d.innerHTML='<h3>Glass Lab · upstream 6.0.0</h3><p id="glStatus">Đang tải thư viện gốc…</p><div style="position:relative;height:230px;overflow:hidden"><div id="glBackdrop" style="position:absolute;inset:0;background:#f8f8f8;padding:8px;line-height:24px">Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa<br>Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa</div><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="22" style="position:absolute;top:30px;left:12px;width:44px;height:44px;display:grid;place-items:center">‹</liquid-glass><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="29" style="position:absolute;bottom:35px;left:12px;right:12px;height:58px;display:grid;place-items:center">＋　Nhập tin nhắn mẫu　↑</liquid-glass></div><p>Chỉ mẫu thử, không thay composer thật.</p><button type="button">Đóng</button>';document.body.append(d);d.showModal();d.querySelector('button').onclick=()=>d.close();d.addEventListener('close',()=>d.remove());const s=document.createElement('script');s.type='module';s.src='https://cdn.jsdelivr.net/npm/simple-liquid-glass@6.0.0/web-component';s.onload=()=>{if(customElements.get('liquid-glass'))d.querySelector('#glStatus').textContent='Đã tải Web Component; khúc xạ cần nghiệm thu.'};s.onerror=()=>d.querySelector('#glStatus').textContent='Không tải được bản 6.0.0 từ CDN.';document.head.append(s);
@@ -1185,7 +1213,7 @@ if(new URLSearchParams(location.search).get('edgecheck')==='1'){
  const box=document.createElement('aside');box.style.cssText='position:fixed;z-index:10020;left:max(8px,env(safe-area-inset-left));top:calc(env(safe-area-inset-top) + 60px);max-width:calc(100vw - 16px);background:#fff;color:#222;border:1px solid #aaa;border-radius:10px;padding:8px;font:12px/1.45 system-ui';
  const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;margin:0';const close=document.createElement('button');close.textContent='Ẩn số đo';box.append(out,close);document.body.append(box);
  let frame=0;const vv=window.visualViewport;
- function measure(){frame=0;const cs=getComputedStyle(probe),r=document.querySelector('#app').getBoundingClientRect(),n=x=>Math.round(x),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;out.textContent=['v13.20 · '+(standalone?'PWA standalone':'Safari / browser'),'Screen CSS: '+screen.width+' × '+screen.height,'Window: '+innerWidth+' × '+innerHeight,'VisualViewport: '+n(vv?.width||innerWidth)+' × '+n(vv?.height||innerHeight)+' / top '+n(vv?.offsetTop||0),'Safe area T/R/B/L: '+[cs.paddingTop,cs.paddingRight,cs.paddingBottom,cs.paddingLeft].join(' / '),'Safe used T/R/B/L: '+['top','right','bottom','left'].map(k=>document.querySelector('#app').style.getPropertyValue('--safe-visible-'+k)||'—').join(' / '),'App: top '+n(r.top)+' / bottom '+n(r.bottom)+' / height '+n(r.height),'Screen − innerHeight: '+n(screen.height-innerHeight)+'px (chỉ tham khảo; đo lúc đóng bàn phím)'].join('\n')}
+ function measure(){frame=0;const cs=getComputedStyle(probe),r=document.querySelector('#app').getBoundingClientRect(),n=x=>Math.round(x),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;out.textContent=['v13.21 · '+(standalone?'PWA standalone':'Safari / browser'),'Screen CSS: '+screen.width+' × '+screen.height,'Window: '+innerWidth+' × '+innerHeight,'VisualViewport: '+n(vv?.width||innerWidth)+' × '+n(vv?.height||innerHeight)+' / top '+n(vv?.offsetTop||0),'Safe area T/R/B/L: '+[cs.paddingTop,cs.paddingRight,cs.paddingBottom,cs.paddingLeft].join(' / '),'Safe used T/R/B/L: '+['top','right','bottom','left'].map(k=>document.querySelector('#app').style.getPropertyValue('--safe-visible-'+k)||'—').join(' / '),'App: top '+n(r.top)+' / bottom '+n(r.bottom)+' / height '+n(r.height),'Screen − innerHeight: '+n(screen.height-innerHeight)+'px (chỉ tham khảo; đo lúc đóng bàn phím)'].join('\n')}
  function schedule(){if(!frame)frame=requestAnimationFrame(measure)}
  window.addEventListener('resize',schedule);vv?.addEventListener('resize',schedule);vv?.addEventListener('scroll',schedule);const ro=new ResizeObserver(schedule);ro.observe(document.querySelector('#app'));
  close.onclick=()=>{window.removeEventListener('resize',schedule);vv?.removeEventListener('resize',schedule);vv?.removeEventListener('scroll',schedule);ro.disconnect();if(frame)cancelAnimationFrame(frame);box.remove();probe.remove()};
