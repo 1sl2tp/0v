@@ -938,7 +938,7 @@ function watchViewport(){
 function sampleViewportWatch(now){
  viewportWatchFrame=0;
  const rect=visibleShellRect(window.visualViewport,{height:innerHeight,width:innerWidth});
- if(Object.keys(rect).some(key=>rect[key]!==appliedRect[key]))updateViewport();
+ if(!viewportFrame&&Object.keys(rect).some(key=>rect[key]!==appliedRect[key]))applyViewport();
  if(now<viewportWatchUntil)viewportWatchFrame=requestAnimationFrame(sampleViewportWatch);
 }
 function onViewportSignal(){updateViewport();if(keyboardOccluding||InputController.isEditable(document.activeElement))watchViewport()}
@@ -1029,7 +1029,7 @@ if(new URLSearchParams(location.search).get('keyboardtest')==='1'){
   if(frame)cancelAnimationFrame(frame);frame=0;start=performance.now();until=start+1000;phase=name;rows=[];last=null;eventCount=maxStep=maxError=maxInputStep=0;firstRaw=firstFrame=null;output.textContent='v13.25 · Đang đo '+name;
   sample(start);
  }
- function signal(){if(!frame)begin('viewport');eventCount++;until=performance.now()+350}
+ function signal(){if(!frame)begin('viewport');eventCount++;until=Math.max(until,performance.now()+350)}
  draft.addEventListener('focus',()=>begin('mở'));draft.addEventListener('blur',()=>begin('đóng'));
  window.visualViewport?.addEventListener('resize',signal,{passive:true});window.visualViewport?.addEventListener('scroll',signal,{passive:true});
  copy.onclick=async()=>{try{await navigator.clipboard.writeText(report+'\n'+JSON.stringify(rows));copy.textContent='Đã sao chép'}catch{copy.textContent='Không sao chép được'}};
