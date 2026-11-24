@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.50)
+## 00. Chỉ mục rule đang có hiệu lực (v13.51)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01–03, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01–03, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05, HISTORY-API-01–04 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -535,3 +535,9 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - RELEASE-PROOF-02: Bổ sung pageshow/focus/visibility/resume/online foreground và retry khi tương tác kết thúc; scroll là hoạt động đọc, không reload khi đang cuộn. Chỉ cooldown 60s cho cùng phiên bản đích, không khóa phiên bản mới vì r của phiên bản trước. Cho phép query floating/liveglass và lab đã duyệt; snapshot/diagnostic khác vẫn không tự đổi. Popup close, add-contact demo không kết nối, module navigation, media tile và sample copy/share/save là thao tác xem; không dirty vĩnh viễn. Các action chưa xác định và sửa dữ liệu demo thực sự vẫn giữ conservative dirty; draft/dialog/editing không mất. releaseStatus có blockers; không tuyên bố chạy nền iOS. Chromium test readonly, pageshow + previous-version r, online + actual unsaved message; native pending. Không đổi keyboard.
 
 - RELEASE-PROOF-03: Nếu check phát hiện version mới trong cửa sổ idle 2s, callback finally sau khi nhả busy phải đặt lịch kiểm tra ở thời điểm idle đủ (kể cả blockers đã rỗng). Không phụ thuộc người dùng chạm tiếp hoặc interval 15s; không retry nhanh khi dirty/draft/dialog/editing/hidden. Test resume 10s và clean startup 8s; không nới timeout lỗi cũ.
+
+## 73. HISTORY-API — v13.51, bài toán 21
+- HISTORY-API-01: Cùng Virtualizer.mount, prepend(rows) thêm lịch sử trước; append(rows) thêm nội dung sau; ID duy nhất, setItems kiểm toàn bộ batch, không tự trùng hoặc thay nội dung. Giữ object/key cũ để reuse node và cache. setItems mặc định không follow, fixed mode mặc định giữ nguyên.
+- HISTORY-API-02: followOnAppend opt-in, chỉ append khi đã pinned theo tổng layout trước thay đổi mới follow cuối. Prepend và append khi đọc cũ giữ key/offset. jumpEnd ghi đúng đáy qua ScrollController.writeLocal. Không dùng animation hoặc timer bù cuộn.
+- HISTORY-API-03: Profile followOnAppend cho phép mọi batch đo lại và đổi width giữ đáy nếu trước batch đã pinned; nếu rời đáy thì giữ anchor. DYNAMIC-VIRTUAL-02 vẫn áp cho profile mặc định. Không thay KB-LOCK hay Main chat; native momentum và remote load pending.
+- HISTORY-API-04: Lab dynamiclab thêm 20 dòng lịch sử và 3 dòng mới, test reuse DOM, key/offset <=2px, append giữa danh sách, bám đáy, nội dung cuối nở muộn. Nguồn Adobe ScrollAnchor, TanStack setOptions followOnAppend/key/offset, Astryx Stack; không import runtime. E4 thiết bị thực và ảnh remote chưa đạt.

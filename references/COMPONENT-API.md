@@ -78,3 +78,6 @@ Dynamic Virtualizer correction: pre-measurement model extent owns pinned state, 
 One foreground scheduler, online/pageshow/resume/focus/visibility triggers, idle recheck, per-target retry, explicit read-only actions, dirty protection remains for actual edits. releaseStatus() includes blockers. Vite client.ts and Workbox.ts reviewed; no service-worker runtime introduced. Native PWA pending.
 
 ReleaseUpdater idle retry: after check completes and busy clears, deferred pending with only transient activity schedules exact idle deadline independently of additional interaction; durable blockers retain existing protection.
+
+## v13.51 history/tail
+Virtualizer.mount({followOnAppend:false by default}) exposes prepend(rows), append(rows), jumpEnd(); setItems(next,{followEnd:false}) retains existing replacement behavior. Append follows only if opt-in and previously pinned; prepend/away preserve key offset, stable references reuse DOM. Opt-in also follows measured/width changes when pinned. Independent dynamiclab with 20/3 batches, no main chat integration.

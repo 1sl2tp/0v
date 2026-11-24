@@ -9,3 +9,6 @@ Reopened Adobe Virtualizer pinned blob 3959c1cc7666f0384d31af2c770c6902662cdcb1 
 
 ### CI correction v13.49
 Re-read pinned Adobe ScrollAnchor `resolveAfterLayout` uses previousContentSize to determine wasNearAnchorEdge; TanStack resizeItem computes virtual distance before mutating size cache; Astryx Stack retains independent scroll viewport. Local dynamic stage clips overflow, reads old prefix extent before ResizeObserver cache mutation and writes the exact new model end only for pinned last-row changes. No upstream runtime copied; shrink and away-from-bottom browser assertions added; CI pending.
+
+## v13.51 history and tail
+Re-read Adobe ScrollAnchor blob 2ce251a1bb4ef2faa3259b3c15ad7b3f0d08a798 resolveScrollAdjustment; TanStack virtual-core index.ts blob 4bd3531db01d98838db8bea9cfd8b5c62568b4c7 setOptions captures previous key/offset and follows append only if previous end and tail changed; Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894 scrollable min-height. Local explicit prepend/append methods, same transaction and prefix extent; no trim/reorder detection, native iOS deferred correction, remote loader or upstream runtime. Tests pending. v13.50 CI confirms v13.49 dynamic anchor/edge proof.
