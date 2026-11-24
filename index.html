@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>CHAT CRM — Bố cục v1.2</title>
+<title>CHAT CRM — Bố cục v1.3</title>
 <style>
 :root{color-scheme:light;--ink:#202124;--muted:#73777d;--line:#e7e8eb;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
 *{box-sizing:border-box}
@@ -73,13 +73,14 @@ html,body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden}
 .messages{flex:1 1 0;min-height:0}
 .composer-frame{margin-top:0}
 }
+.messages>*{flex-shrink:0}.chat-view{position:relative}#jumpBottom{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:40px;height:40px;min-height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:white;box-shadow:0 2px 8px #0002;z-index:2}#jumpBottom svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.work-card{flex:0 0 auto}
 </style>
 </head>
 <body>
 <div id="app" data-screen="contacts">
-<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v1.2</span></nav>
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v1.3</span></nav>
 <aside class="directory" aria-label="Danh bạ">
- <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v1.2</span><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v1.3</span><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
  <div class="search-zone"><input id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
  <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả">Tất cả</button><button data-filter="KH">KH</button><button data-filter="NCC">NCC</button><button data-filter="NV">NV</button><button data-filter="Nhóm">Nhóm</button></div>
  <div class="contacts" id="contacts">
@@ -97,10 +98,10 @@ html,body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden}
  <div class="message"><div class="bubble">Cho lấy sản phẩm A 2, sản phẩm B 3.</div><div class="meta">11:20</div></div>
  <div class="message mine"><div class="bubble">Đã tiếp nhận, mình sẽ kiểm tra hàng.</div><div class="meta">11:22 · Mẫu</div></div>
  <section class="work-card"><header><strong>Tổng hợp yêu cầu · Hôm nay</strong><small>Chưa duyệt</small></header><div class="table-wrap"><table><thead><tr><th>STT</th><th>Tên hàng</th><th>SL</th></tr></thead><tbody><tr><td>1</td><td>Sản phẩm A</td><td>2</td></tr><tr><td>2</td><td>Sản phẩm B</td><td>3</td></tr></tbody></table></div></section>
- </div></section>
+ </div><button type="button" id="jumpBottom" aria-label="Cuộn đến tin mới nhất" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></section>
  <div class="composer-frame"><form class="composer" id="composer"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
 </main>
-<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v1.2</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v1.3</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
 </div>
 <script>
 (function(){
@@ -109,7 +110,7 @@ const app=document.getElementById('app'),draft=document.getElementById('draft'),
 const people={kh:{name:'Khách hàng mẫu',role:'KH',avatar:'KH',modules:['Tổng hợp','Đơn hàng','Công nợ','Bill','Báo giá','Liên kết Zalo']},ncc:{name:'Nhà cung cấp mẫu',role:'NCC',avatar:'NCC',modules:['Báo giá','Giá vốn','Nhập hàng','Liên kết Zalo']},nv:{name:'Nhân viên mẫu',role:'NV',avatar:'NV',modules:['Tiếp nhận','Kiểm hàng','Giao hàng','Công việc']},nhom:{name:'Nhóm khách hàng mẫu',role:'Nhóm',avatar:'NH',modules:['Tổng hợp','Thành viên','Đơn hàng','Liên kết Zalo']}};
 let active='kh',filter='Tất cả';const texts={kh:['Cho lấy sản phẩm A 2, sản phẩm B 3.','Đã tiếp nhận, mình sẽ kiểm tra hàng.'],ncc:['Mình gửi báo giá mới hôm nay.','Đã nhận thông tin báo giá.'],nv:['Mình đã kiểm hàng.','Đã nhận thông tin.'],nhom:['Cả nhóm cập nhật yêu cầu nhé.','Đã ghi nhận.']};
 const drafts={};const scrolls={};const $=s=>document.querySelector(s);
-function navigate(where){draft.blur();app.dataset.screen=where;app.classList.toggle('with-crm',where==='crm');if(where==='chat')requestAnimationFrame(()=>{messages.scrollTop=scrolls[active]??messages.scrollHeight})}
+function navigate(where){draft.blur();app.dataset.screen=where;app.classList.toggle('with-crm',where==='crm');if(where==='chat')requestAnimationFrame(()=>{messages.scrollTop=messages.scrollHeight;syncJump()})}
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));
 function showPeople(){contactList.querySelectorAll('.contact').forEach(b=>{const p=people[b.dataset.id];b.hidden=!(filter==='Tất cả'||p.role===filter)&&filter!=='Nhóm'||(filter==='Nhóm'&&p.role!=='Nhóm');if(b.hidden)return;b.hidden=!p.name.toLocaleLowerCase('vi').includes($('#search').value.trim().toLocaleLowerCase('vi'));b.classList.toggle('active',b.dataset.id===active)})}
 document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));showPeople()}));$('#search').addEventListener('input',showPeople);
@@ -146,12 +147,13 @@ if(draftFrame)return;
 draftFrame=requestAnimationFrame(()=>{draftFrame=0;const max=app.classList.contains('keyboard')?88:132;draft.style.height='44px';const next=Math.max(44,Math.min(max,draft.scrollHeight))+'px';draft.style.height=next;draft.style.overflowY=draft.scrollHeight>parseFloat(next)?'auto':'hidden';});
 }
 draft.addEventListener('input',()=>{const pinned=messages.scrollHeight-messages.clientHeight-messages.scrollTop<64;resizeDraft();if(pinned)requestAnimationFrame(()=>{messages.scrollTop=messages.scrollHeight})});
-$('#composer').addEventListener('submit',e=>{e.preventDefault();const t=draft.value.trim();if(!t)return;texts[active].push(t);draft.value='';render();messages.scrollTop=messages.scrollHeight;draft.focus({preventScroll:true})});
+$('#composer').addEventListener('submit',e=>{e.preventDefault();const t=draft.value.trim();if(!t)return;texts[active].push(t);draft.value='';render();messages.scrollTop=messages.scrollHeight;syncJump();draft.focus({preventScroll:true})});
 messages.addEventListener('scroll',()=>{scrolls[active]=messages.scrollTop},{passive:true});
 $('#mediaBtn').addEventListener('click',()=>{draft.placeholder='Ảnh: vị trí nút đã dựng (chưa gửi thật)';draft.focus({preventScroll:true})});
 $('#addContact').addEventListener('click',()=>{$('#search').focus();$('#search').placeholder='Thêm danh bạ sẽ triển khai sau — đang dựng bố cục'});
 let viewportFrame=0, baselineHeight=0, lastVh=0, lastWidth=0;
-function nearBottom(){return messages.scrollHeight-messages.clientHeight-messages.scrollTop<64}
+function nearBottom(){return messages.scrollHeight-messages.clientHeight-messages.scrollTop<48}
+const jump=document.getElementById('jumpBottom');function syncJump(){jump.hidden=nearBottom()||messages.clientHeight===0}jump.addEventListener('click',()=>{messages.scrollTop=messages.scrollHeight;syncJump()});messages.addEventListener('scroll',syncJump,{passive:true});new ResizeObserver(syncJump).observe(messages);
 function updateViewport(){
 if(viewportFrame)return;
 viewportFrame=requestAnimationFrame(()=>{
@@ -167,7 +169,7 @@ if(height!==lastVh){lastVh=height;document.documentElement.style.setProperty('--
  document.documentElement.style.setProperty('--viewport-top',Math.max(0,Math.round(vv?.offsetTop||0))+'px');
 app.classList.toggle('keyboard',keyboard);
 resizeDraft();
-requestAnimationFrame(()=>{if(app.dataset.screen==='chat')messages.scrollTop=pinned?messages.scrollHeight:oldTop});
+requestAnimationFrame(()=>{if(app.dataset.screen==='chat'){messages.scrollTop=pinned?messages.scrollHeight:oldTop;syncJump()}});
 });
 }
 window.visualViewport?.addEventListener('resize',updateViewport);
