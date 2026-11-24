@@ -114,3 +114,5 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - GL-04: v12.5 mở rộng viền kính CSS tĩnh sang nút header, input tìm kiếm, input độc lập và nút outline; không thay kích thước. Kiểm tra computed style bằng glasscheck; Pages và Safari thực tế vẫn cần xác nhận.
 
 - GL-05: v12.6 thay hai khối glass cũ bằng một owner; viền quang học inset .5px, bóng mềm, bề mặt radial gradient; selector header bao gồm nút lồng nhau. Không blur composer; không đổi kích thước. Chưa xác minh nguồn ngoài, render Safari hoặc Pages.
+
+- GL-06: v12.7 tách lớp viền phản sáng bằng mask .65px, tint bán trong, bóng mềm; tất cả button trong header cùng vật liệu, không blur composer. Tham khảo gentpan/liquidglass lib/components.js và Nordify README, không nhập engine khúc xạ. Kiểm tra pseudo-element không chặn thao tác; Safari thực tế còn pending.
