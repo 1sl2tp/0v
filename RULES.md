@@ -7,7 +7,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
 | Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06 | không bỏ qua RULE khi sửa nhỏ |
-| Button / Icon | BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
+| Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
