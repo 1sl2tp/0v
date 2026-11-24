@@ -105,3 +105,8 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 ## 17. Hình học quang học
 - OPT-01: Composer radius 29px, inset 6px, nút tròn 44px, viền 1px; tâm nút và đường cong cha đồng tâm ở chiều cao tối thiểu 58px. Lề ngoài 8px.
 - OPT-02: Textarea giữ line-height 22px, padding dọc 11px, ngang 6px; icon căn tâm, không dùng translate để chữa lệch. Không đổi KeyboardController; kiểm tra reserve và bàn phím sau đổi chiều cao.
+
+## 18. Glass cha
+- GL-01: Material CSS data-glass: G0 đặc cho nghiệp vụ/ảnh; G1 phản chiếu viền và gradient đặc cho composer; G2 kính mờ cho popup thường. Không gọi G2 là khúc xạ thật.
+- GL-02: Viền gradient dùng background-clip, bóng trong/ngoài token chung; không thêm lớp chặn thao tác hoặc đổi hình học.
+- GL-03: Không WebGL, SVG displacement hay blur composer; fallback nền đặc khi giảm trong suốt; giữ KeyboardController. Nghiệm thu Safari trước mở rộng sang header.
