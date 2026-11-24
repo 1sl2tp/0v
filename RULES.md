@@ -1,14 +1,14 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.1, commit 8866ef41ffd8e7eb4a97858efd4d23bcaa6bb52e; người dùng phản hồi nhanh, mượt trên Safari. Chưa có phép đo độc lập.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.22)
+## 00. Chỉ mục rule đang có hiệu lực (v13.23)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
-| Keyboard / viewport | KB-01–08, VP-SAFE-01, KB-RESTORE-01–02 | KB-APP-02/05 bridge 120/180ms; lề theo data-keyboard trong rule cũ |
+| Keyboard / viewport | KB-01–08, VP-SAFE-01, KB-RESTORE-01–02, KB-FAST-01–04 | KB-APP-02/05 bridge 120/180ms; lề theo data-keyboard trong rule cũ |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
 | Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung) | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
@@ -272,3 +272,9 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - CLEAN-03: Sau vòng đầu audit báo 31 nhóm lặp; vòng cuối còn 4 nhóm cùng phạm vi mobile (#app height, panel-head height/padding-top, contacts padding-bottom). Giữ lại để không sửa viewport/bàn phím khi chưa nghiệm thu. Root override trợ năng là chủ ý. Không tuyên bố hết xung đột toàn bộ.
 - CLEAN-04: Người dùng báo vẫn thấy v13.20 và input giật/rơi khi mở/thoát. Chưa thể quy lỗi cho v13.21/v13.22 nếu thiết bị còn v13.20. Kiểm tra Pages bằng web và mạng container không thành công, connector không cung cấp trạng thái triển khai Pages trực tiếp. Commit không tương đương release. Không tuyên bố sửa bàn phím trong v13.22. Giữ mốc v11.1 đã từng được người dùng phản hồi mượt; cần đối chiếu thiết bị.
 - E1: 6/6 script parse, kiểm tra tĩnh 4 điều kiện đạt khi rule index khớp; còn 4 nhóm cần rà, 0 mã rule trùng, 0 token chỉ xuất hiện một lần, 0 font-size px trực tiếp. E2/E3/E4/E5 chưa xác nhận. Chỉ demo 0v.
+
+## 37. KB-FAST — v13.23, xử lý giật/rơi khi thoát bàn phím
+- KB-FAST-01: Người dùng báo lỗi vẫn xảy ra. Đối chiếu v11.1 với v13.22: bản mới có đọc kích thước header, tính safe-area, giới hạn chiều cao textarea, cập nhật reserve và margin vùng cuộn. Đây là các nghi vấn chi phí layout, chưa có trace Safari chứng minh nguyên nhân. v11.1 không được phục hồi mù quáng vì khi blur đặt inset về 0 ngay.
+- KB-FAST-02: Mobile floating composer neo bottom:0 và translate3d theo -keyboard-inset thực đo; không animation, không nội suy, không timer. Scrollport vẫn có margin-bottom theo inset; không thay đổi floatingViewportGeometry hoặc ngưỡng phân loại. Transform là ngoại lệ được phép của KB-06 chỉ để phản ánh viewport thật, không tạo chuyển động giả. Giữ kiểu kính mặc định không blur động.
+- KB-FAST-03: Dùng kích thước header mobile 52px + safe.top, input 44/22px theo token hiện hành để giảm đọc layout; khi giới hạn chiều cao đổi chỉ gọi resizeDraft nếu naturalHeight chưa biết hoặc vượt giới hạn nhỏ hơn. ResizeObserver theo chiều rộng form tiếp tục đo wrap; bỏ listener resize trùng. Không thay chế độ hai tầng hoặc tỷ lệ hình học. Cần kiểm tra nếu đổi token sau này.
+- KB-FAST-04: keyboardtest thêm bước viewport tối đa và sai lệch bước bám frame để phân biệt viewport báo muộn với frame theo không kịp. 7/7 trường hợp mô phỏng mở/đóng (gồm offsetTop 10px), đáy frame = viewport bottom theo công thức; 6/6 script parse. Đây không phải kết quả đo FPS hay nghiệm thu iOS. Không thể bảo đảm WebKit cung cấp đủ các mẫu chuyển động. Chưa xác nhận Pages hoặc thiết bị, không tuyên bố đã hết giật. Chỉ demo 0v.
