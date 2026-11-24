@@ -1943,13 +1943,13 @@ const ReleaseUpdater=(()=>{
  const live=location.protocol==='https:'&&location.hostname==='1sl2tp.github.io'&&['/0v/','/0v/index.html'].includes(location.pathname);
  const permitted=new Set(['v','r','systemslab','medialab','avatarlab','surfacelab','geolab','typolab','popuplab','inputlab','apicheck']);
  const enabled=live&&[...new URLSearchParams(location.search).keys()].every(k=>permitted.has(k));
- let state='disabled',pending=null,busy=false,dirty=false,lastActivity=0,lastAttempt=0;
- const status=()=>({current,pending,state,dirty});
+ let state='disabled',pending=null,busy=false,dirty=false,lastActivity=Date.now(),lastAttempt=0,lastError=null;
+ const status=()=>({current,pending,state,dirty,lastError});
  function display(s){state=s;for(const el of document.querySelectorAll('#app [data-type-role=version]')){if(pending){el.dataset.updatePending=pending;el.title='Có '+pending+(s==='deferred'?' — giữ dữ liệu đang làm':' — đang kiểm tra phát hành')}else if(el.dataset.updatePending){delete el.dataset.updatePending;el.removeAttribute('title')}}}
  function safe(){return !dirty&&!document.hidden&&Date.now()-lastActivity>=2000&&!InputController.isEditable(document.activeElement)&&!document.querySelector('dialog[open]')&&!draft.value&&Object.values(drafts).every(v=>!v)&&!typingByContact.size}
  async function fresh(path){const url=new URL(path,location.href);url.searchParams.set('_release',String(Date.now()));const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),8000);try{const res=await fetch(url,{cache:'no-store',credentials:'same-origin',signal:ac.signal});if(!res.ok)throw Error('Not published');return await res.text()}finally{clearTimeout(timer)}}
  async function check(){
-  if(!enabled||busy||document.hidden)return;busy=true;
+  if(!enabled||busy||document.hidden)return;busy=true;lastError=null;
   try{
    const v=JSON.parse(await fresh('version.json'));
    if(!newer(v.version,current)||v.entry!=='index.html'||v.snapshot!=='release-'+v.version+'.html'||!/^[a-f0-9]{40}$/.test(v.gitBlobSha||'')){pending=null;display('current');return}
@@ -1961,7 +1961,7 @@ const ReleaseUpdater=(()=>{
    const now=Date.now(),oldRetry=Number(new URLSearchParams(location.search).get('r'))||0;
    if(now-Math.max(lastAttempt,oldRetry)<60000){display('waiting-cache');return}
    lastAttempt=now;const target=new URL(location.href);target.searchParams.set('v',pending.slice(1));target.searchParams.set('r',String(now));display('updating');location.replace(target.href);
-  }catch{display('retry')}finally{busy=false}
+  }catch(e){lastError=String(e?.message||e);display('retry')}finally{busy=false}
  }
  function start(){if(!enabled)return;state='checking';
   for(const type of ['pointerdown','keydown','touchstart'])document.addEventListener(type,()=>{lastActivity=Date.now()},{capture:true,passive:true});
