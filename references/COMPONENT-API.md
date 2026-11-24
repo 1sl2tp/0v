@@ -87,3 +87,6 @@ MessageStore.create() → apply(batch), get(id), ids(conversationId), latest(con
 
 ## v13.53 ConversationStore
 ConversationStore.create(messages) → apply(metadataBatch), get(id), project(id), ids(), subscribeRow(id,fn), subscribeList(fn), status(), dispose(). Global activityOrder and latestMessageId are authoritative metadata; row projection resolves message by ID and checks room, missing is explicit. Separate stable sorted IDs and row notifications; no duplicate message text. Independent ?conversationlab=1; no Main migration.
+
+## v13.54 Foundation
+TimeAPI (zone, instant, day, parts, local, range/dayRange/monthRange/weekRange/shift/businessDate); DecimalAPI (canonical/add/subtract/multiply/divide/round/sum/compare, exact bounded string/BigInt); MoneyAPI (line/total/unitCost/allocate/compact); FormatAPI (decimal/date/time/weekday/stamp/contact); ParseAPI (source-specific amount, billDate precision); CalendarAPI.create(entries,{version,source}) returns on(date), not a verified calendar; ScheduleAPI.plan returns cron/window/idempotency key only. Independent ?foundationlab=1. No database, live schedule, lunar calculation, production or Main migration.
