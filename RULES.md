@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.33)
+## 00. Chỉ mục rule đang có hiệu lực (v13.34)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -399,3 +399,12 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - GEO-API-06: Geometry.rect, inside, overlap, centerDelta, gap, squareError, equalInsets, columnCount dùng CSS px, chung hệ tọa độ; đo chứa, chồng, trục, gap, tỷ lệ, lề đối xứng. Tolerance 1 CSS px cho kiểm tra ổn định. Không gọi đọc layout trong đường keyboard fast path. Thay phép inside/overlap trong guides hiện hữu bằng API chung; không tuyên bố đo đủ tất cả.
 - GEO-API-07: ?geolab=1 có mẫu nút/icon/avatar/chữ trong hình vuông, bo, tròn; hàng/cột, lưới nhiều hàng/cột, gap ngang/dọc, nested adaptive. Có nút đo lab thực tế; số đo là tại viewport hiện hành, không thay nghiệm thu ma trận. Áp dụng Layout cho Typography lab và Popup lab, giữ geometry production demo chính chưa đo.
 - GEO-API-08: Audit logic thuần + DOM stub; kiểm tra browser thực ở 320/375/390/430/768/desktop, zoom, font fallback, vùng hẹp, bàn phím, F5 và trục quang học trước nghiệm thu. Không thay v13.27 baseline; không nhập dependency. Pages/thiết bị PENDING.
+
+## 53. API-APPLY — v13.34, kiểm tra áp dụng cha–con
+- API-APPLY-01: Tách trạng thái API đã tồn tại, đã sử dụng ở giao diện chính, đã đo browser, đã nghiệm thu. Không lấy lab hoặc unit test thay độ phủ runtime.
+- API-APPLY-02: Mỗi vòng ghi danh mục thành phần đã chuyển và chưa chuyển; HTML tĩnh khai báo role trước paint, phần động gọi Typography.bind/create; Input sở hữu editable, Button/Icon sở hữu nút/glyph, Popup sở hữu dialog.
+- API-APPLY-03: Role Typography đã khai báo phải thắng mặc định font component, dùng token cha; không dùng !important mới. Giữ caption 12/16 của bảng theo hợp đồng hiện hành. Ảnh chứng từ không bị định dạng lại.
+- API-APPLY-04: Kiểm tra coverage theo vùng, F5, computed style, đổi thử token cha và kiểm tra con; không đánh dấu PASS nếu chưa đo browser.
+- API-APPLY-05: Layout chỉ bind nhóm đơn giản tương thích; shell, composer, contact grid đặc thù, bảng/media/bill thích ứng giữ owner hiện tại cho đến khi có profile phù hợp và kiểm thử. Geometry chỉ đọc.
+- API-APPLY-06: Trước bài toán mới phải xử lý phần áp dụng còn thiếu hoặc ghi rõ lý do và PENDING theo RULE-GATE-03. Không tự tạo API mới để che thiếu sót.
+- API-APPLY-07: Giữ nguyên bốn vùng baseline Keyboard v13.27 và không đổi dữ liệu nghiệp vụ. Không hợp nhất bản thử nếu kiểm tra hồi quy có lỗi; nghiệm thu thiết bị và phát hành là cổng riêng.
