@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.37)
+## 00. Chỉ mục rule đang có hiệu lực (v13.38)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -432,3 +432,11 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - PARENT-RUNTIME-03: Contact row 70px, title stack dùng line token, avatar dùng profile initials tạm; Button text theo body/detail/caption; Icon tĩnh dùng glyph registry khi bind. Không đổi dữ liệu, keyboard v13.27, Surface hay các CSS viewport bảo vệ.
 - PARENT-RUNTIME-04: CI thử token chat 18→21→18, kiểm tra profile danh bạ/chat/nút chữ, font popup/input và quét family từng contact. Các slot layout/paint đặc thù, Media/Card/Table/Scroll và Avatar vẫn có bài học tạm, không coi đã chuyển toàn bộ CSS.
 - PARENT-RUNTIME-05: Giữ một file HTML, tập trung thông số tại token và API cha. Ghi rõ profile còn thiếu; tiếp tục loại bỏ CSS cũ theo owner sau khi có bằng chứng. CI và Pages độc lập; thiết bị native còn PENDING.
+
+## 57. OWNER-UNIFY — v13.38, hợp đồng cha thực thi toàn file
+- OWNER-UNIFY-01: Các slot đã chuyển dùng data-ui-slot trước paint và từ factory/API, CSS theo slot; class chỉ là móc hành vi/trạng thái. Registry xác định owner theo slot và family; không tạo CSS component rời mới.
+- OWNER-UNIFY-02: OwnerRuntime liên kết tên cha với object thực thi. KeyboardController là facade của InputController/applyViewport/reconcileViewport, không thay vòng đời. Avatar.bind phối hợp Layout/Typography; còn PROVISIONAL. Surface.bind dùng data-glass hiện có; giữ nguyên paint baseline.
+- OWNER-UNIFY-03: Audit phân biệt MISSING-PARENT, WRONG-PARENT, MISSING-SLOT, MISSING-SURFACE, MISSING-PROFILE và PROVISIONAL. Không coi nhãn tạm là đạt; kiểm tra cả DOM ẩn và dialog.
+- OWNER-UNIFY-04: Không tăng font hoặc đổi layout thông số v13.37; chuyển selector theo slot giữ specificity, giữ nguyên bốn đoạn KB-LOCK. Composer/input sizing, protected Surface block, state selectors, QA và các phần đặc thù chưa chuyển giữ owner có lý do và bài học.
+- OWNER-UNIFY-05: CI kiểm tra owner thật và slot, thử row gap cha và typography token, không thay dữ liệu. Kiểm tra Chromium không thay nghiệm thu native.
+- OWNER-UNIFY-06: Tập trung toàn bộ thay đổi trong một release, một commit nếu có thể; CI xanh rồi hợp nhất, Pages riêng. Nguồn Radix Flex GEO-S03 blob 0d046a4a8decbbc062c93315beca01651078f427 đọc lại trực tiếp; chỉ học cách tách slot/layout props, không nhập dependency.

@@ -13,3 +13,6 @@
 | STUDY-SURFACE | Surface CSS hiện hữu | paint, trạng thái tương tác, glass, radius ownership | PENDING |
 
 Mỗi bài học cần source GitHub trực tiếp, hợp đồng owner, test cha–con và đo browser. Không tự coi nhãn là đạt.
+
+## v13.38
+Avatar now has provisional API bind; study remains. Surface.bind uses existing CSS, not new paint engine. Layout slot selectors migrated outside protected ranges; specialized geometry/state, composer/keyboard and protected surface remain unchanged. Do not remove PROVISIONAL without proof.
