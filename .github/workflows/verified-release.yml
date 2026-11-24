@@ -1,0 +1,90 @@
+name: Publish verified 0v release
+on:
+  workflow_run:
+    workflows: ['API application check']
+    types: [completed]
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
+  actions: read
+concurrency:
+  group: 0v-verified-release
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == '1sl2tp/0v' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify exact trusted PR, merge and request Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import os,json,urllib.request,urllib.parse,base64,re,sys,time
+          repo='1sl2tp/0v'
+          owner='1sl2tp'
+          def api(path,method='GET',data=None):
+              req=urllib.request.Request('https://api.github.com/repos/'+repo+path,method=method,data=None if data is None else json.dumps(data).encode(),headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json','User-Agent':'0v-release-gate'})
+              with urllib.request.urlopen(req,timeout=30) as response:
+                  return json.load(response)
+          def skip(reason):
+              print('No auto-publish:',reason)
+              sys.exit(1)
+          def contents(path,ref):
+              return api('/contents/'+urllib.parse.quote(path,safe='/')+'?ref='+urllib.parse.quote(ref,safe=''))
+          def version(ref):
+              return json.loads(base64.b64decode(contents('version.json',ref)['content']))
+          def numbers(v):
+              if not isinstance(v,str) or not re.fullmatch(r'v\d{1,6}\.\d{1,6}',v): raise ValueError('Invalid release version')
+              return tuple(map(int,v[1:].split('.')))
+          run=json.load(open(os.environ['GITHUB_EVENT_PATH']))['workflow_run']
+          if run.get('workflow_id')!=429232143 or run.get('head_repository',{}).get('full_name')!=repo: skip('wrong workflow or repository')
+          head=run.get('head_sha','')
+          refs=run.get('pull_requests') or []
+          if len(refs)!=1: skip('CI did not identify exactly one PR')
+          checked=refs[0]
+          pr=api('/pulls/'+str(checked['number']))
+          if pr.get('state')!='open' or pr.get('draft') or pr.get('user',{}).get('login')!=owner: skip('not an open owner-authored release PR')
+          if pr['base']['ref']!='main' or pr['base']['repo']['full_name']!=repo or pr['head']['repo']['full_name']!=repo or not re.fullmatch(r'review/v\d+\.\d+-[a-z0-9-]+',pr['head']['ref']): skip('unexpected branch or fork')
+          if pr['head']['sha']!=head or checked.get('head',{}).get('sha')!=head: skip('head changed since CI')
+          main=api('/git/ref/heads/main')['object']['sha']
+          if checked.get('base',{}).get('sha')!=main: skip('main changed since CI; rebase/retest')
+          current=version(main)
+          candidate=version(head)
+          v=candidate.get('version')
+          if numbers(v)<=numbers(current.get('version')): skip('version is not increasing')
+          if not pr['head']['ref'].startswith('review/'+v+'-') or not pr['title'].startswith(v+' '): skip('version does not match review branch and title')
+          if candidate.get('entry')!='index.html' or candidate.get('snapshot')!='release-'+v+'.html': skip('bad release paths')
+          index=contents('index.html',head); snapshot=contents(candidate['snapshot'],head)
+          if index['sha']!=snapshot['sha'] or index['sha']!=candidate.get('gitBlobSha'): skip('snapshot/blob mismatch')
+          allowed={'index.html','version.json','RULES.md','AGENTS.md','CHANGE-CHECK.md','audit-design.cjs','audit-api-browser.cjs',candidate['snapshot']}
+          if pr.get('changed_files',0)>100: skip('too many changed files')
+          files=api('/pulls/'+str(pr['number'])+'/files?per_page=100')
+          if len(files)!=pr.get('changed_files') or any(x['filename'] not in allowed and not re.fullmatch(r'references/[A-Za-z0-9_-]+\.md',x['filename']) for x in files): skip('outside release file scope; manual review')
+          if api('/compare/'+main+'...'+head).get('merge_base_commit',{}).get('sha')!=main: skip('head is not based on current main')
+          if api('/git/ref/heads/main')['object']['sha']!=main: skip('main moved during validation')
+          merged=api('/pulls/'+str(pr['number'])+'/merge','PUT',{'sha':head,'merge_method':'merge'})
+          if not merged.get('merged'): raise RuntimeError('Merge rejected')
+          print('Merged verified release',v,merged.get('sha'))
+          # GITHUB_TOKEN merge alone does not trigger branch-based Pages.
+          build=api('/pages/builds','POST',{})
+          print('Pages build requested:',build.get('status'))
+          # Verify public content rather than treating queued deployment as success.
+          for attempt in range(36):
+              try:
+                  stamp=str(int(time.time()))
+                  origin='https://1sl2tp.github.io/0v/'
+                  def public(path):
+                      req=urllib.request.Request(origin+path+'?_release='+stamp,headers={'Cache-Control':'no-cache','User-Agent':'0v-release-gate'})
+                      with urllib.request.urlopen(req,timeout=10) as response: return response.read()
+                  manifest=json.loads(public('version.json'))
+                  html=public('index.html').decode('utf-8')
+                  title=re.search(r'<title>[^<]*\b(v\d+\.\d+)</title>',html)
+                  if manifest.get('version')==v and manifest.get('gitBlobSha')==candidate['gitBlobSha'] and title and title.group(1)==v:
+                      print('Published and verified',v);sys.exit(0)
+              except Exception as e: print('Public check pending:',type(e).__name__)
+              time.sleep(8)
+          raise RuntimeError('Merged, but public Pages version not yet verified')
+          PY

@@ -666,6 +666,7 @@ button[data-button-text-role=caption]{font-family:var(--font-ui);font-size:var(-
 [data-table-density=balanced]{--table-cell-pad-y:6px}
 [data-table-density=spacious]{--table-cell-pad-y:var(--gap-md)}
 [data-scroll-lab]{max-height:160px;overflow:auto;overflow-anchor:none;overscroll-behavior:contain}
+[data-scroll-lab]> *{flex-shrink:0}
 [data-responsive-profile=cards]{grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))}
 button[aria-pressed=true]{outline:2px solid currentColor;outline-offset:-2px}
 [data-theme-profile]{background:var(--lesson-bg,#fff);color:var(--lesson-fg,#171717);color-scheme:light}
@@ -1452,7 +1453,7 @@ MediaController.layout(grid,items);
 
 $('#addContact').addEventListener('click',()=>Popup.open({type:'form',title:'Thêm danh bạ',description:'Chức năng chưa kết nối dữ liệu.'}));
 const ScrollController={
- snapshot(el){return {top:el.scrollTop,pinned:el.scrollHeight-el.clientHeight-el.scrollTop<=48}},
+ snapshot(el){return {top:el.scrollTop,pinned:el.scrollHeight-el.clientHeight-el.scrollTop<=2}},
  restore(el,state){el.scrollTop=state.pinned?el.scrollHeight:state.top;return el.scrollTop},
  append(el,children){const state=this.snapshot(el);el.append(...children);this.restore(el,state);return state},
  write(top,reason){if(!messages.clientHeight)return;geometryScrollUntil=performance.now()+100;messages.scrollTop=top;syncJump()},
@@ -1933,6 +1934,48 @@ window.visualViewport?.addEventListener('resize',schedule);window.visualViewport
 ['gesturestart','gesturechange','gestureend'].forEach(n=>document.addEventListener(n,e=>e.preventDefault(),{passive:false}));
 
 let lastTap=0,lastTarget=null;document.addEventListener('touchend',e=>{const now=Date.now();if(e.changedTouches.length===1&&e.target===lastTarget&&now-lastTap<280&&!e.target.closest('input,textarea,button,select,[contenteditable],[data-input-parent],.messages,.directory-list,#moduleContent,dialog'))e.preventDefault();lastTap=now;lastTarget=e.target},{passive:false});
+
+/* ReleaseUpdater — independent release lifecycle, no viewport writes. */
+const ReleaseUpdater=(()=>{
+ const current=document.title.match(/\bv\d+\.\d+$/)?.[0]||'';
+ const parts=v=>/^v\d{1,6}\.\d{1,6}$/.test(v||'')?v.slice(1).split('.').map(Number):null;
+ function newer(v,old){const a=parts(v),b=parts(old);return !!a&&!!b&&(a[0]>b[0]||a[0]===b[0]&&a[1]>b[1])}
+ const live=location.protocol==='https:'&&location.hostname==='1sl2tp.github.io'&&['/0v/','/0v/index.html'].includes(location.pathname);
+ const permitted=new Set(['v','r','systemslab','medialab','avatarlab','surfacelab','geolab','typolab','popuplab','inputlab','apicheck']);
+ const enabled=live&&[...new URLSearchParams(location.search).keys()].every(k=>permitted.has(k));
+ let state='disabled',pending=null,busy=false,dirty=false,lastActivity=0,lastAttempt=0;
+ const status=()=>({current,pending,state,dirty});
+ function display(s){state=s;for(const el of document.querySelectorAll('#app [data-type-role=version]')){if(pending){el.dataset.updatePending=pending;el.title='Có '+pending+(s==='deferred'?' — giữ dữ liệu đang làm':' — đang kiểm tra phát hành')}else if(el.dataset.updatePending){delete el.dataset.updatePending;el.removeAttribute('title')}}}
+ function safe(){return !dirty&&!document.hidden&&Date.now()-lastActivity>=2000&&!InputController.isEditable(document.activeElement)&&!document.querySelector('dialog[open]')&&!draft.value&&Object.values(drafts).every(v=>!v)&&!typingByContact.size}
+ async function fresh(path){const url=new URL(path,location.href);url.searchParams.set('_release',String(Date.now()));const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),8000);try{const res=await fetch(url,{cache:'no-store',credentials:'same-origin',signal:ac.signal});if(!res.ok)throw Error('Not published');return await res.text()}finally{clearTimeout(timer)}}
+ async function check(){
+  if(!enabled||busy||document.hidden)return;busy=true;
+  try{
+   const v=JSON.parse(await fresh('version.json'));
+   if(!newer(v.version,current)||v.entry!=='index.html'||v.snapshot!=='release-'+v.version+'.html'||!/^[a-f0-9]{40}$/.test(v.gitBlobSha||'')){pending=null;display('current');return}
+   pending=v.version;if(!safe()){display('deferred');return}
+   const html=await fresh('index.html'),published=new DOMParser().parseFromString(html,'text/html').title.match(/\bv\d+\.\d+$/)?.[0];
+   if(published!==pending){display('waiting-pages');return}
+   if(!safe()){display('deferred');return}
+   // If navigation still gets stale cached HTML, allow bounded retries rather than a permanent lock.
+   const now=Date.now(),oldRetry=Number(new URLSearchParams(location.search).get('r'))||0;
+   if(now-Math.max(lastAttempt,oldRetry)<60000){display('waiting-cache');return}
+   lastAttempt=now;const target=new URL(location.href);target.searchParams.set('v',pending.slice(1));target.searchParams.set('r',String(now));display('updating');location.replace(target.href);
+  }catch{display('retry')}finally{busy=false}
+ }
+ function start(){if(!enabled)return;state='checking';
+  for(const type of ['pointerdown','keydown','touchstart'])document.addEventListener(type,()=>{lastActivity=Date.now()},{capture:true,passive:true});
+  // Search and empty drafts are reversible. Other edited sample data is conservatively protected.
+  for(const type of ['input','change','submit'])document.addEventListener(type,e=>{lastActivity=Date.now();if(e.target!==draft&&e.target.id!=='search')dirty=true},true);
+  document.addEventListener('click',e=>{const action=e.target.closest?.('button,a,[role=button]');if(action&&!action.matches('[data-go],.contact,[data-filter],#searchToggle,#jumpBottom'))dirty=true},true);
+  window.addEventListener('focus',check);window.addEventListener('pageshow',check);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+  setTimeout(check,3000);setInterval(check,15000);
+ }
+ return Object.freeze({start,status,newer});
+})();
+window.releaseStatus=()=>ReleaseUpdater.status();
+ReleaseUpdater.start();
+
 })();
 </script>
 <pre id="geometryDebug" hidden></pre><script>
