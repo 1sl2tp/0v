@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>CHAT CRM — Bố cục v7.9</title>
+<title>CHAT CRM — Bố cục v8.0</title>
 <style>
 :root{color-scheme:light;--ink:#202124;--muted:#73777d;--line:#e7e8eb;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
 *{box-sizing:border-box}
@@ -208,7 +208,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 .module-content p{line-height:20px}
 .fields{margin-top:12px;overflow:hidden}
 .fields .field{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px;padding:10px 12px;align-items:baseline;min-height:40px;line-height:20px}
-.fields .field span{min-width:0;overflow-wrap:anywhere}
+
 .crm-footer{padding:8px var(--panel-inset);line-height:16px}
 @media(max-width:767px){.crm>.panel-head>button:last-child{display:none}}
 /* Modal geometry uses the same visible viewport as the app. */
@@ -232,15 +232,15 @@ dialog.local-preview>strong{display:block;line-height:22px;overflow-wrap:anywher
 /* Nested regions must shrink within their assigned grid tracks. */
 #app>.directory,#app>.conversation,#app>.crm,.chat-view,.composer-frame{min-width:0;min-height:0}
 .panel-head>strong,.title-group,.work-card,.fields{min-width:0;max-width:100%}
-.message{min-width:0;overflow-wrap:anywhere}
+
 @media(max-width:360px){.conversation>.panel-head{gap:2px;padding-inline:2px}.composer-frame{padding-inline:4px}}
 </style>
 </head>
 <body>
 <div id="app" data-layout="shell" data-screen="contacts">
-<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v7.9</span></nav>
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v8.0</span></nav>
 <aside class="directory" data-layout="panel" aria-label="Danh bạ">
- <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v7.9</span><button type="button" class="icon mobile-only" id="searchToggle" aria-label="Mở tìm kiếm" aria-controls="directorySearch" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v8.0</span><button type="button" class="icon mobile-only" id="searchToggle" aria-label="Mở tìm kiếm" aria-controls="directorySearch" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
  <div class="search-zone" id="directorySearch"><input id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
  <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả">Tất cả</button><button data-filter="KH">KH</button><button data-filter="NCC">NCC</button><button data-filter="NV">NV</button><button data-filter="Nhóm">Nhóm</button></div>
  <div class="contacts" id="contacts">
@@ -261,7 +261,7 @@ dialog.local-preview>strong{display:block;line-height:22px;overflow-wrap:anywher
  </div><button type="button" id="jumpBottom" aria-label="Cuộn đến tin mới nhất" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></section>
  <div class="composer-frame" data-layout="region"><form class="composer" id="composer"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
 </main>
-<aside class="crm" data-layout="panel" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v7.9</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+<aside class="crm" data-layout="panel" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v8.0</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
 </div>
 <script>
 (function(){
@@ -401,7 +401,7 @@ function sample(now){raf=0;const v=window.visualViewport,top=v?.offsetTop||0,bot
 count++;const overflow=Math.max(0,top-r.top,r.bottom-bottom,left-r.left,r.right-right);maxOverflow=Math.max(maxOverflow,overflow);
 if(screen==='chat'&&c.height){maxGap=Math.max(maxGap,Math.abs(bottom-c.bottom));maxOverlap=Math.max(maxOverlap,Math.max(0,m.bottom-c.top));const dh=draft.getBoundingClientRect().height;if(lastScreen===screen&&lastDraftHeight&&Math.abs(dh-lastDraftHeight)>1)draftChanges++;lastDraftHeight=dh}
 const key=[screen,r.top,r.height,c.top,c.height].map(x=>typeof x==='number'?Math.round(x):x).join('/');if(last&&key!==last)changes++;last=key;lastScreen=screen;
-output.textContent='V7.9 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nChồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
+output.textContent='V8.0 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nChồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
 if(now<until)raf=requestAnimationFrame(sample)}
 function schedule(){until=performance.now()+600;if(!raf)raf=requestAnimationFrame(sample)}
 reset.onclick=()=>{count=changes=draftChanges=maxOverflow=maxGap=maxOverlap=lastDraftHeight=0;last=lastScreen='';schedule()};
@@ -438,7 +438,7 @@ const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg
 function line(x1,y1,x2,y2,color){const l=document.createElementNS(ns,'line');for(const [k,v] of Object.entries({x1,y1,x2,y2,stroke:color,'stroke-width':0.8,'stroke-dasharray':'3 3'}))l.setAttribute(k,v);svg.append(l)}
 function baseline(el){const marker=document.createElement('span');marker.style.cssText='display:inline-block;width:0;height:0;vertical-align:baseline;padding:0;margin:0';el.append(marker);const y=marker.getBoundingClientRect().top;marker.remove();return y}
 const report=make('pre');report.style.cssText='position:fixed;left:8px;bottom:12px;z-index:10000;background:white;color:#222;border:1px solid #aaa;border-radius:8px;padding:8px;font:11px/1.5 monospace;max-width:65vw;pointer-events:none;margin:0';document.body.append(report);
-function audit(){const results=[];const check=(name,a,b)=>{const delta=Math.abs(a-b);results.push({name,delta})};const rect=e=>e.getBoundingClientRect();
+function audit(){const results=[];const check=(name,a,b)=>{const raw=Math.abs(a-b),delta=Number.isFinite(raw)?raw:Infinity;results.push({name,delta})};const rect=e=>e.getBoundingClientRect();
 for(const row of document.querySelectorAll('.contact:not([hidden])')){if(!rect(row).height)continue;const n=row.querySelector('.identity b'),p=row.querySelector('.identity small'),t=row.querySelector('.time');check('Chân tên / giờ',baseline(n),baseline(t));check('Mép tên / nội dung',rect(n).left,rect(p).left);check('Mép nội dung / T3',rect(p).right,rect(t).left)}
 const c=document.querySelector('.composer');if(rect(c).height){const buttons=c.querySelectorAll('button');if(buttons.length===2)check('Đáy nút thêm / gửi',rect(buttons[0]).bottom,rect(buttons[1]).bottom)}
 for(const tr of document.querySelectorAll('.work-card tr')){if(!rect(tr).height)continue;const cells=[...tr.cells];if(cells.length===3&&cells.every(e=>e.textContent.length<24&&rect(e).height<45))check('Chân số STT / SL',baseline(cells[0]),baseline(cells[2]))}
@@ -457,7 +457,7 @@ const panels=[...app.querySelectorAll(':scope > .rail,:scope > .directory,:scope
 for(let i=0;i<panels.length;i++)for(let j=i+1;j<panels.length;j++)overlap('G43 Không chồng vùng chính',panels[i],panels[j]);
 for(const e of app.querySelectorAll('.panel-head,.chat-view,.composer-frame,.messages,.contacts,.module-content'))if(shown(e)){check('G44 Không tràn ngang / '+e.className,Math.max(0,e.scrollWidth-e.clientWidth),0)}
 for(const head of app.querySelectorAll('.panel-head'))if(shown(head)){const parts=[...head.children].filter(shown);for(let i=0;i<parts.length;i++){inside('G45 Header / con',head,parts[i]);for(let j=i+1;j<parts.length;j++)overlap('G46 Header không chồng',parts[i],parts[j])}}
-const chat=app.querySelector('.chat-view'),frame=app.querySelector('.composer-frame');if(shown(chat)&&shown(frame)){overlap('G47 Nội dung / vùng gõ',chat,frame);check('G48 Khoảng hở nội dung / vùng gõ',rect(frame).top,rect(chat).bottom)}
+const chat=app.querySelector('.chat-view'),frame=app.querySelector('.composer-frame');if(shown(chat)&&shown(frame)&&shown(messages)){overlap('G47 Nội dung / vùng gõ',messages,frame);check('G48 Khoảng hở nội dung / vùng gõ',rect(frame).top,rect(messages).bottom)}
 const bad=results.filter(r=>!Number.isFinite(r.delta)||r.delta>1);report.textContent='Viewport '+Math.round(window.visualViewport?.width||innerWidth)+' × '+Math.round(window.visualViewport?.height||innerHeight)+' · '+app.dataset.screen+'\nHình học · '+(results.length-bad.length)+'/'+results.length+' đạt (≤1px)\n'+(bad.length?bad.sort((a,b)=>b.delta-a.delta).slice(0,10).map(r=>r.name+': '+r.delta.toFixed(1)+'px').join('\n'):'Không thấy lệch ở các mục đã đo');}
 function draw(){frame=0;svg.replaceChildren();report.hidden=!enabled;if(!enabled)return;audit();
 const visible=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight};
@@ -473,7 +473,7 @@ function schedule(){if(!frame)frame=requestAnimationFrame(draw)}toggle.onclick=(
 applyViewport();render();window.scrollPerf?.observe();
 if(new URLSearchParams(location.search).get('scenario')==='1'){
 const panel=document.createElement('section');panel.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;max-width:420px;max-height:42vh;overflow:auto;z-index:10001;background:white;color:#202124;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px/1.5 system-ui';
-const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='V7.9 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
+const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='V8.0 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
 const wait=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 run.onclick=async()=>{run.disabled=true;const results=[];const check=(name,ok)=>{results.push({name,ok});out.textContent=results.map(x=>(x.ok?'ĐẠT':'LỖI')+' · '+x.name).join('\n')};const original=active,originalScreen=app.dataset.screen,originalDraft=draft.value,originalSearch=searchInput.value,originalOpen=directory.dataset.searchOpen==='true';const ids=Object.keys(people);try{
 navigate('contacts');await wait();check('S01 Mở danh bạ',app.dataset.screen==='contacts');
@@ -497,14 +497,14 @@ if(other){const count=messages.childElementCount;receiveDemo(other,'QA nhận ti
 }finally{for(const [id,s] of Object.entries(snapshot)){texts[id].length=s.length;incomingCounts[id]=s.unread;pendingLatest[id]=s.pending;updateContact(id);const row=contactList.querySelector('[data-id="'+id+'"]');row.querySelector('.identity small').textContent=s.preview;row.querySelector('.time').textContent=s.time}render();await wait();messages.scrollTop=oldTop;syncJump()}
 
 }finally{drafts[testId]=savedDraft;if(active===testId){draft.value=savedDraft;resizeDraft()}}
-}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='V7.9 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
+}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='V8.0 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
 };
 }
 
 /* QA hub: one entry point, isolated diagnostic modes to avoid competing overlays. */
 if(new URLSearchParams(location.search).get('verify')==='1'){
 const hub=document.createElement('details');hub.style.cssText='position:fixed;z-index:10002;right:8px;top:calc(env(safe-area-inset-top) + 8px);max-width:calc(100vw - 16px);width:280px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font:13px/1.5 system-ui;box-shadow:0 2px 12px #0002';
-const title=document.createElement('summary');title.textContent='QA · v7.9';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
+const title=document.createElement('summary');title.textContent='QA · v8.0';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
 const modes=[['','Giao diện bình thường','Không bật bộ đo'],['scenario','Kịch bản tự chạy','Kiểm tra thao tác trên demo'],['qa','UI / UX','10 kiểm tra trạng thái'],['guides','Hình học tĩnh','48 quy tắc và đường kẻ'],['dynamic','Hình học động','Viewport và vùng gõ'],['perf','Hiệu năng','Khung hình và cuộn'],['keyboardtest','Bàn phím','Thời gian và độ ổn định']];
 const params=new URLSearchParams(location.search);const activeMode=modes.find(([k])=>k&&params.get(k)==='1')?.[0]||'';
 for(const [key,label,desc] of modes){const a=document.createElement('a');const url=new URL(location.href);for(const [k] of modes)if(k)url.searchParams.delete(k);url.searchParams.set('verify','1');if(key)url.searchParams.set(key,'1');a.href=url.href;a.style.cssText='display:block;padding:8px;border-radius:8px;min-height:44px;text-decoration:none;color:inherit;background:'+(key===activeMode?'var(--surface-selected)':'transparent');if(key===activeMode)a.setAttribute('aria-current','page');const b=document.createElement('strong');b.textContent=label;const small=document.createElement('small');small.style.cssText='display:block;color:var(--muted)';small.textContent=desc;a.append(b,small);hub.append(a)}
@@ -513,8 +513,8 @@ const note=document.createElement('small');note.textContent='Đổi chế độ 
 
 if(new URLSearchParams(location.search).get('qa')==='1'){
 const panel=document.createElement('section');panel.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;max-width:420px;max-height:45vh;overflow:auto;z-index:10001;background:#fff;color:#202124;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px/1.5 system-ui;box-shadow:0 2px 12px #0002';
-const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;margin:4px 0';const run=document.createElement('button');run.textContent='Kiểm tra lại';const close=document.createElement('button');close.textContent='Ẩn';close.onclick=()=>panel.remove();panel.append(out,run,close);document.body.append(panel);
-function test(){const results=[];const add=(name,ok)=>results.push({name,status:ok===null?'CHƯA ĐO':ok?'ĐẠT':'LỖI'});const visible=e=>!!e&&e.getBoundingClientRect().width>0&&e.getBoundingClientRect().height>0;const r=e=>e.getBoundingClientRect();const inside=(a,b)=>{const x=r(a),y=r(b);return y.left>=x.left-1&&y.right<=x.right+1&&y.top>=x.top-1&&y.bottom<=x.bottom+1};const screen=app.dataset.screen,head=app.querySelector('.conversation>.panel-head'),composer=app.querySelector('.composer'),frame=app.querySelector('.composer-frame');
+const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;margin:4px 0';const run=document.createElement('button');run.textContent='Kiểm tra lại';const close=document.createElement('button');close.textContent='Ẩn';close.onclick=()=>{panel.hidden=true;};panel.append(out,run,close);document.body.append(panel);
+function test(){if(panel.hidden)return;const results=[];const add=(name,ok)=>results.push({name,status:ok===null?'CHƯA ĐO':ok?'ĐẠT':'LỖI'});const visible=e=>!!e&&e.getBoundingClientRect().width>0&&e.getBoundingClientRect().height>0;const r=e=>e.getBoundingClientRect();const inside=(a,b)=>{const x=r(a),y=r(b);return y.left>=x.left-1&&y.right<=x.right+1&&y.top>=x.top-1&&y.bottom<=x.bottom+1};const screen=app.dataset.screen,head=app.querySelector('.conversation>.panel-head'),composer=app.querySelector('.composer'),frame=app.querySelector('.composer-frame');
 add('A01 Khung / vùng chính',[...app.children].filter(visible).every(e=>inside(app,e)));
 add('A02 Danh bạ / đúng khách chọn',contactList.querySelectorAll('.contact.active').length===1&&contactList.querySelector('.contact.active')?.dataset.id===active);
 add('A03 Hội thoại / đúng tên',$('#currentName').textContent===people[active].name);
@@ -525,7 +525,7 @@ add('A07 Ô nhập / giới hạn chiều cao',visible(draft)?r(draft).height>=4
 add('A08 Cuộn / nút về cuối',visible(messages)?jump.hidden===nearBottom():null);
 add('A09 Công việc / module được chọn',visible($('#modules'))?$('#modules').querySelectorAll('.active').length===1:null);
 add('A10 Popup / giới hạn màn hình',document.querySelector('dialog[open]')?(()=>{const d=r(document.querySelector('dialog[open]')),v=window.visualViewport,x=v?.offsetLeft||0,y=v?.offsetTop||0;return d.left>=x-1&&d.top>=y-1&&d.right<=x+(v?.width||innerWidth)+1&&d.bottom<=y+(v?.height||innerHeight)+1})():null);
-const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='V7.9 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
+const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='V8.0 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
 let timer;function schedule(){clearTimeout(timer);timer=setTimeout(test,250)}run.onclick=test;for(const event of ['click','input','focusin','focusout'])document.addEventListener(event,schedule);messages.addEventListener('scroll',schedule,{passive:true});window.visualViewport?.addEventListener('resize',schedule,{passive:true});window.addEventListener('resize',schedule);schedule();
 }
 for(const t of contactList.querySelectorAll('.time'))t.textContent=shortDay()+' '+t.textContent;
@@ -576,7 +576,7 @@ const chat=messages.getBoundingClientRect(),root=app.getBoundingClientRect();
 const gap=vTop+vHeight-box.bottom;
 if(box.height){minGap=Math.min(minGap,gap);maxGap=Math.max(maxGap,gap)}
 const n=x=>Math.round(x);
-const audit=auditGeometry();out.textContent=['v7.9 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
+const audit=auditGeometry();out.textContent=['v8.0 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
 }
 let frame=0;function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;measure()})}
 window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);window.addEventListener('resize',schedule);document.addEventListener('focusin',()=>{minGap=Infinity;maxGap=-Infinity;schedule()});document.addEventListener('focusout',schedule);new ResizeObserver(schedule).observe(app);new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
