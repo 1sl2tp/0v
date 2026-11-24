@@ -28,3 +28,24 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - QA-01: E0 tái hiện; E1 patch/test; E2 CI; E3 Pages; E4 thiết bị; E5 chấp nhận. Ghi rõ chưa kiểm tra.
 - QA-02: Không sửa lan sang repo chat/taphoaxyz khi nhiệm vụ thuộc 0v.
 - 2026-11-24: Khởi tạo nguồn rule 0v, ghi nhận v11.1 và quy tắc mới từ quá trình sửa bàn phím. Các rule lịch sử ở nguồn khác chưa được nhập toàn bộ; khi nhập phải đối chiếu, ghi nguồn và tránh xung đột.
+
+## 05. Hệ thống vùng và token
+- UI-05: Shell → panel (danh bạ, hội thoại, công việc) → region → scroll/control → nội dung. Mỗi vùng khai báo owner; vùng con không tự đặt kích thước màn hình.
+- UI-06: Token chuẩn hiện có: gap 4/8/12/16px, avatar 40px, icon 22px, nét icon 1.7px, touch 44px. Ngoại lệ phải ghi rõ.
+- UI-07: Typography theo vai trò: meta 11, phụ 12, chi tiết 13, nội dung 15, input 16, tiêu đề 17px. Không dùng cỡ chữ tùy ý để chữa tràn.
+- UI-08: Header, hàng danh bạ, vùng gõ, popup và bảng phải kiểm tra trục ngang/dọc, lề quang học, baseline, không chồng lấn tại 320/375/390/430/768px và desktop.
+- UI-09: Vùng cuộn có min-height:0, min-width:0; chỉ vùng được giao quyền cuộn mới overflow. Không dùng cuộn toàn trang để chữa lỗi bàn phím.
+- UI-10: Popup là con của lớp overlay, giới hạn theo viewport; không tự sửa shell. Nút chính/phụ phân cấp theo hành động, icon có nhãn truy cập.
+## 06. Bảng nghiệp vụ
+- TB-01: Một bảng cha dùng cấu hình cột; cột con có key, nhãn, kiểu dữ liệu, độ rộng và căn lề. Không nhân bản bảng chỉ vì khác số cột.
+- TB-02: STT và SL căn giữa; tên trái; đơn giá/thành tiền phải, chữ số tabular. Header và body cùng trục.
+- TB-03: Tổng tiền tính từ dữ liệu dòng; footer dùng colspan đúng; không tràn ngang hoặc cắt số. Kiểm tra tên dài và số lớn.
+- TB-04: Tổng hợp hàng theo ngày và khách/nhóm, chỉ tên + SL xác định được; không tự suy diễn. Không gộp khác đơn vị.
+## 07. Hội thoại và dữ liệu
+- CH-01: Tin đến chỉ cập nhật vùng liên quan, danh bạ preview/time/unread; không render lại toàn app, không mất draft/caret.
+- CH-02: Đang đọc tin cũ giữ vị trí; mở hội thoại về cuối theo chính sách điều hướng; nút xuống cuối chỉ hiện khi cần.
+- CH-03: Media giữ tỷ lệ, không xoay sai, không vượt vùng cha; kiểm tra 1–4 ảnh và ảnh ngang/dọc.
+- CH-04: Phân biệt đang mở đúng hội thoại, hội thoại khác, danh bạ và nền/khóa khi thiết kế thông báo; không báo trùng.
+## 08. Nghiệm thu rule
+- QA-03: Mỗi nhóm UI/TB/CH có kiểm tra hình học và hành vi; kết quả chưa chạy ghi PENDING. Các rule trên là chuẩn triển khai, không khẳng định toàn bộ code hiện tại đã đạt.
+- 2026-11-24: Bổ sung UI-05–10, TB-01–04, CH-01–04, QA-03. Giữ nguyên KB v11.1.
