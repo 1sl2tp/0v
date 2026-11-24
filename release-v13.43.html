@@ -653,6 +653,8 @@ button[data-button-text-role=caption]{font-family:var(--font-ui);font-size:var(-
 [data-media-viewer-stage]{width:min(72vw,640px);height:min(52dvh,440px);overflow:auto;overscroll-behavior:contain;display:block;min-width:0;background:var(--soft)}
 [data-media-viewer-stage]>img{display:block;max-width:none;max-height:none;object-fit:contain;margin:0 auto}
 [data-media-parent=true]{gap:var(--media-grid-gap,4px)}
+[data-media-parent=true][data-single=true] [data-ui-slot~="media-tile"] img{object-fit:contain}
+[data-media-parent=true][data-single=false] [data-ui-slot~="media-tile"] img{object-fit:cover}
 
 </style>
 </head>
@@ -726,12 +728,12 @@ image({src,width,height,alt='',lazy=true}){const img=make('img');img.alt=alt;img
   const full=this.image({src:source.currentSrc||source.src,width:source.naturalWidth||source.width,height:source.naturalHeight||source.height,alt:source.alt,lazy:false});stage.append(full);
   let angle=0,zoom=1,disposed=false,observer;
   const label=Typography.create({role:'caption',text:'100%'});
-  function paint(){if(disposed)return;const w=full.width,h=full.height,fit=controller.fit(w,h,stage.clientWidth,stage.clientHeight);if(!fit)return;full.style.width=(w*fit*zoom)+'px';full.style.height=(h*fit*zoom)+'px';stage.dataset.mediaZoom=String(zoom);label.textContent=Math.round(zoom*100)+'%'}
+  function paint(){if(disposed)return;const w=Number(full.getAttribute('width')),h=Number(full.getAttribute('height')),fit=controller.fit(w,h,stage.clientWidth,stage.clientHeight);if(!fit)return;full.style.width=(w*fit*zoom)+'px';full.style.height=(h*fit*zoom)+'px';stage.dataset.mediaZoom=String(zoom);label.textContent=Math.round(zoom*100)+'%'}
   const controls=Layout.create({kind:'row',gap:'xs',wrap:true,children:[
    Button.create({text:'−',label:'Thu nhỏ',onClick:()=>{zoom=Math.max(1,zoom-.5);paint()}}),
    Button.create({text:'+',label:'Phóng to',onClick:()=>{zoom=Math.min(4,zoom+.5);paint()}}),
    Button.create({text:'Vừa khung',onClick:()=>{zoom=1;paint()}}),
-   Button.create({text:'Xoay 90°',onClick:()=>{const next=(angle+90)%360;try{if(controller.rotate(source,full,next)){angle=next;zoom=1;paint()}}catch{label.textContent='Không thể xoay ảnh'}}}),label]});
+   Button.create({text:'Xoay 90°',onClick:()=>{const next=(angle+90)%360;try{if(!source.complete||!source.naturalWidth)return;if(controller.rotate(source,full,next)){angle=next;zoom=1;paint()}}catch{label.textContent='Không thể xoay ảnh'}}}),label]});
   const dialog=Popup.open({type:'media',title:'Xem ảnh',content:[stage,controls],onDispose:()=>{disposed=true;observer?.disconnect()}});
   if(!dialog)return null;observer=new ResizeObserver(paint);observer.observe(stage);full.addEventListener('load',paint);paint();return dialog
  },
