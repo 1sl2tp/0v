@@ -1,5 +1,5 @@
 # COMPONENT API — danh mục cha/con và hợp đồng sử dụng
-Phạm vi 0v v13.40; RULES.md là nguồn quy tắc chính. Không phải package dùng chung đã phát hành. Mỗi owner chỉ chịu trách nhiệm một nhóm hành vi; sửa một chỗ, các con dùng chung được hưởng. Không thay đổi baseline keyboard v13.27.
+Phạm vi 0v v13.41; RULES.md là nguồn quy tắc chính. Không phải package dùng chung đã phát hành. Mỗi owner chỉ chịu trách nhiệm một nhóm hành vi; sửa một chỗ, các con dùng chung được hưởng. Không thay đổi baseline keyboard v13.27.
 
 | Owner | API hiện có / cách dùng | Trách nhiệm | Không được sở hữu | Trạng thái |
 |---|---|---|---|---|
@@ -44,3 +44,6 @@ Main.mount builds all three panels and rail via Layout.slot, Typography.create, 
 
 ## v13.40 Surface API (independent lab)
 Surface.create({variant,layout,children}), Surface.apply(el,variant), Surface.bind(el,glass). Variants plain/subtle/outlined/raised/selected, no mixing glass. Layout owns radius/geometry, Typography owns text. Main unchanged; lab demonstrates parent tokens. See SURFACE-API rules and source notes.
+
+## v13.41 Release lifecycle
+ReleaseUpdater.start/status/newer: same-origin manifest + entry title; clean idle reload with cache-busting version URL; dirty/input/dialog states defer. Independent of UI/keyboard. Verified release workflow restricts trusted PR, exact SHA, increasing version and snapshot, then merge/build/public check. Bootstrap and actual next auto-publish must be verified separately.

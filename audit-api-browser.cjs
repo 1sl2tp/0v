@@ -51,5 +51,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  console.log('Surface computed styles',JSON.stringify(styles));assert.equal(styles.length,5);assert(styles.every(s=>s.border==='1px'&&s.width===styles[0].width&&s.height===styles[0].height&&s.radius===styles[0].radius));assert.notEqual(styles[1].bg,styles[0].bg,'subtle background');assert.notEqual(styles[2].edge,styles[0].edge,'outlined edge');assert.notEqual(styles[3].shadow,'none','raised shadow');assert.notEqual(styles[4].bg,styles[0].bg,'selected background');
  const colors=await surf.locator('[data-surface-variant=subtle]').evaluate(el=>{const root=document.documentElement,s=root.style,old=s.getPropertyValue('--surface-subtle-face'),priority=s.getPropertyPriority('--surface-subtle-face'),get=()=>getComputedStyle(el).backgroundColor;const before=get();let during;try{s.setProperty('--surface-subtle-face','rgb(1, 2, 3)');during=get()}finally{old?s.setProperty('--surface-subtle-face',old,priority):s.removeProperty('--surface-subtle-face')}return {before,during,after:get()}});
  assert.equal(colors.during,'rgb(1, 2, 3)');assert.equal(colors.after,colors.before);console.log('Surface API 5 variants, equal geometry, parent token propagation passed');await surf.close();
+ // Release updater: mock same-origin Pages without touching real production.
+ const html=require('fs').readFileSync('index.html','utf8'),old='v13.41',next='v13.42',newHtml=html.replaceAll(old,next);
+ async function releasePage(dirty){
+  const p=await browser.newPage({viewport:{width:390,height:844}}),origin='https://1sl2tp.github.io/0v/';
+  await p.route(origin+'**',route=>{const u=new URL(route.request().url());if(u.pathname.endsWith('/version.json'))return route.fulfill({json:{version:next,entry:'index.html',snapshot:'release-'+next+'.html',gitBlobSha:'a'.repeat(40)}});if(u.pathname.endsWith('/index.html')||u.searchParams.get('v')==='13.42')return route.fulfill({contentType:'text/html',body:newHtml});return route.fulfill({contentType:'text/html',body:html})});
+  await p.goto(origin);
+  if(dirty){await p.locator('.contact[data-id=nv]').evaluate(el=>el.click());await p.locator('#draft').fill('Dữ liệu chưa lưu');await p.waitForFunction(()=>window.releaseStatus?.().state==='deferred');assert.equal(await p.locator('#draft').inputValue(),'Dữ liệu chưa lưu');assert(!p.url().includes('v=13.42'));}
+  else{await p.waitForURL('**/?v=13.42',{timeout:20000});assert((await p.title()).endsWith(next));}
+  await p.close();
+ }
+ await Promise.all([releasePage(false),releasePage(true)]);console.log('ReleaseUpdater: clean reload + dirty preservation passed');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});
