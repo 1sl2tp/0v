@@ -73,3 +73,9 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - MED-02: Grid cha gap 4px, không chồng lấn; hai ảnh dọc chia đều, ba ảnh có ảnh dọc đầu dùng bố cục portrait-lead; không thay đổi kích thước shell.
 - MED-03: Xoay ảnh xem trước bằng canvas từ ảnh gốc, đổi chiều rộng/cao theo góc; không sửa file gốc; giải phóng URL khi đóng.
 - MED-04: Giữ 120 tổ hợp mẫu để kiểm tra hình học; decode bất đồng bộ; không tải ảnh thật lên mạng; kiểm tra ảnh lớn, ảnh lỗi và Safari/PWA trước nghiệm thu.
+
+## 13. Card cha
+- CARD-01: CardController sở hữu khung, header, row, footer; TableController sở hữu bảng bên trong; dữ liệu nghiệp vụ không sở hữu CSS.
+- CARD-02: Card không vượt cha, min-width:0, radius 12px, border token; header/body/footer cùng trục; số căn phải, tên trường trái, không ép nút căn phải.
+- CARD-03: Bill đối chiếu hai cột giữ layout chuyên biệt hiện có; ghi chú và thao tác không đổi trạng thái giao dịch thật; không thay quy tắc OCR/đối soát khi refactor UI.
+- CARD-04: Kiểm tra card đơn, cặp bill, tên dài, số lớn, bảng tổng tiền và thao tác; giữ nguyên bàn phím; ghi PENDING nếu chưa nghiệm thu thiết bị.
