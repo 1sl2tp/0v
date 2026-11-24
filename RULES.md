@@ -1,14 +1,14 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.1, commit 8866ef41ffd8e7eb4a97858efd4d23bcaa6bb52e; người dùng phản hồi nhanh, mượt trên Safari. Chưa có phép đo độc lập.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.24)
+## 00. Chỉ mục rule đang có hiệu lực (v13.25)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
-| Keyboard / viewport | VIEW-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; không dùng lại |
+| Keyboard / viewport | VIEW-01–06, VP-SAMPLE-01–04, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
 | Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung) | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
@@ -286,3 +286,9 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - VIEW-04: Xóa khỏi index.html các cơ chế --chat-base, --chat-visible-*, --keyboard-inset, inset-chat, keyboard-motion, translate riêng, native override cũ. kbmode=light chỉ giảm dữ liệu mẫu để đối chiếu; v11.1 nguyên bản giữ ở file baseline. Rule lịch sử mô tả các cơ chế bị xóa không còn hiệu lực. Desktop breakpoint hiện vẫn 768px; mobile landscape rộng >=768px chưa có nghiệm thu riêng.
 - VIEW-05: G105–G108 bắt buộc: root.bottom=visualViewport.bottom; frame.bottom=root.bottom; frame.transform=none; root.top=visualViewport.top (sai số <=1 CSS px khi ổn định). audit-design.cjs phải chặn cơ chế cũ và kiểm tra hàm nguồn rect qua kịch bản mở/đóng, focus thay đổi, offsetTop/Left, fallback. Nếu thất bại không coi bản sửa đạt. Kiểm thử thiết bị lặp mở/đóng 10 lần, 1 dòng/nhiều dòng, đang đọc tin cũ, Safari/PWA; không rơi, không nhảy, không mất caret. Không chứng nhận mượt chỉ từ phép đo tĩnh.
 - VIEW-06: v13.24 thay kiến trúc v13.23 (chưa nghiệm thu). 6/6 classic scripts parse; 9/9 phép tính rect mô phỏng ban đầu đạt, Composer mode/resizeDraft và Surface Parent giữ nguyên. Chưa có trace WebKit hoặc native keyboard thật; visualViewport có thể báo muộn/nhảy ở một số trình duyệt, hợp đồng không thể tự tạo dữ liệu chuyển động mà trình duyệt không cung cấp. Chưa xác nhận Pages. Chỉ demo 0v, không sửa production.
+
+## 39. VP-SAMPLE — v13.25, phân biệt viewport báo muộn và ứng dụng xử lý muộn
+- VP-SAMPLE-01: Người dùng xác nhận v13.24 vẫn rơi khi thoát bàn phím. WebKit Bug 265578 (https://bugs.webkit.org/show_bug.cgi?id=265578) ghi nhận visualViewport có thể chỉ cập nhật cuối animation khi toolbar Safari mở, báo cáo cũng nêu thanh địa chỉ dưới. Không khẳng định đây là nguyên nhân của thiết bị người dùng nếu chưa đo.
+- VP-SAMPLE-02: Giữ nguyên VIEW-01–06, applyViewport, composer, surface. watchViewport lấy mẫu rect thật theo rAF trong cửa sổ 800ms sau focus/blur hoặc tín hiệu viewport liên quan bàn phím. Nếu rect không đổi, không ghi geometry; nếu đổi, applyViewport là writer duy nhất (có thể thực thi trong rAF hiện tại nếu chưa có callback đã xếp). Không dự đoán tọa độ, không nội suy, không animation, không bù inset. Nếu WebKit chỉ cung cấp một bước lớn thì việc lấy mẫu không thể khôi phục các tọa độ trung gian không tồn tại.
+- VP-SAMPLE-03: keyboardtest=1 đo riêng mở/đóng, số sự kiện, bước raw lớn nhất, bước input lớn nhất, sai bám frame, thời gian đổi đầu, dữ liệu trace có thể sao chép. Không cập nhật chữ report liên tục trong lúc keyboard chuyển động. keyboard-probe-v13.25.html là trang độc lập tối giản, một shell và textarea, dùng để phân biệt vấn đề trên trình duyệt với chi phí của chat. Không coi probe là bản ứng dụng.
+- VP-SAMPLE-04: Nghiệm thu cùng thiết bị với Safari thanh địa chỉ dưới/trên và PWA, mỗi cấu hình 10 lần. Nếu raw có bước lớn và frame bám đúng thì xem xét giới hạn nền tảng; nếu raw mượt và frame lệch lớn thì xử lý pipeline/layout. Không đưa lại cơ chế cũ chỉ vì báo lỗi rơi. Chưa có trace thiết bị, chưa xác nhận Pages, không tuyên bố hết giật. Chỉ demo 0v.
