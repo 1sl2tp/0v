@@ -95,3 +95,6 @@ TimeAPI (zone, instant, day, parts, local, range/dayRange/monthRange/weekRange/s
 TimeAPI.current(instant?,clockSource='device') supplies one immutable Vietnam date snapshot and current-day/week/month/7-day windows. RuntimeContextAPI.derive/read/watch separates selected conversation vs actually visible regions, focus, visibility, device timezone, display mode and online hint; no location or lock inference, no remote presence. contextlab dynamic read-only status; window.runtimeContext() diagnostic, main date formatting delegates to existing Time/Format API. No read receipts, actual Push or server clock adapter.
 
 RuntimeContextAPI.deviceZone normalizes verified Asia/Saigon alias to Asia/Ho_Chi_Minh; deviceZoneRaw preserves Intl result. Other zones unchanged; not a location inference.
+
+## v13.56 SyncController
+SyncController.create({messages,conversations,transport,stream,initialCursor=0,pageLimit=100,maxPages=20}) → wake(), setOnline(bool), subscribe(fn), status(), dispose(). Transport.pull({stream,after,limit,signal}) returns {stream,after,events:[{cursor,type,record}],nextCursor,more}. Numeric contiguous authorized stream is proposed contract; realtime wake only. Cursor advances after each applied event; errors preserve prefix, no durable persistence or cross-store atomic page. Mock ?synclab=1 only. No live network, backend, Push or Main migration.
