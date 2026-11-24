@@ -110,3 +110,5 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - GL-01: Material CSS data-glass: G0 đặc cho nghiệp vụ/ảnh; G1 phản chiếu viền và gradient đặc cho composer; G2 kính mờ cho popup thường. Không gọi G2 là khúc xạ thật.
 - GL-02: Viền gradient dùng background-clip, bóng trong/ngoài token chung; không thêm lớp chặn thao tác hoặc đổi hình học.
 - GL-03: Không WebGL, SVG displacement hay blur composer; fallback nền đặc khi giảm trong suốt; giữ KeyboardController. Nghiệm thu Safari trước mở rộng sang header.
+
+- GL-04: v12.5 mở rộng viền kính CSS tĩnh sang nút header, input tìm kiếm, input độc lập và nút outline; không thay kích thước. Kiểm tra computed style bằng glasscheck; Pages và Safari thực tế vẫn cần xác nhận.
