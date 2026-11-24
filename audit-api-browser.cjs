@@ -130,5 +130,19 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  }
  for(const mode of ['clean','dirty','stale','lab'])await checkRelease(mode);
  console.log('ReleaseUpdater clean, dirty, stale entry and lab navigation passed');
+
+ const collection=await browser.newPage({viewport:{width:390,height:844}});await collection.goto(url+'?collectionlab=1');await collection.locator('.contact[data-id=nv]').evaluate(e=>e.click());await collection.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());
+ const rows=collection.locator('[data-collection-key]'),visible=collection.locator('[data-collection-key]:not([hidden])'),status=collection.locator('[data-collection-status]');
+ assert.equal(await rows.count(),8);assert.equal(await visible.count(),8);
+ assert(await collection.locator('[data-collection-key=a3]').isDisabled());
+ await collection.locator('[data-collection-key=a1]').evaluate(e=>e.click());assert.equal(await status.getAttribute('data-selected-count'),'1');
+ await collection.locator('[data-collection-filter="Bánh"]').evaluate(e=>e.click());assert.equal(await visible.count(),3);
+ await collection.getByRole('button',{name:'Chọn tất cả kết quả',exact:true}).evaluate(e=>e.click());assert.equal(await status.getAttribute('data-selected-count'),'4');assert.equal(await status.getAttribute('data-visible-selected'),'3');
+ await collection.getByRole('button',{name:'Sắp xếp tên',exact:true}).evaluate(e=>e.click());assert.deepEqual(await visible.evaluateAll(es=>es.map(e=>e.dataset.collectionKey)),['b3','b2','b1']);
+ await collection.getByRole('button',{name:'Bỏ chọn kết quả',exact:true}).evaluate(e=>e.click());assert.equal(await status.getAttribute('data-selected-count'),'1');
+ await collection.locator('[data-collection-filter=all]').evaluate(e=>e.click());assert.equal(await visible.count(),8);assert.equal(await collection.locator('[data-collection-key=a1]').getAttribute('aria-pressed'),'true');
+ const search=collection.getByRole('searchbox',{name:'Tìm hàng mẫu'});await search.fill('sua');assert.equal(await visible.count(),3);assert.deepEqual((await visible.evaluateAll(es=>es.map(e=>e.dataset.collectionKey))).sort(),['a1','a2','a3']);await search.fill('SỮA');assert.equal(await visible.count(),3);await search.fill('dac');assert.equal(await visible.count(),1);assert.equal(await visible.first().getAttribute('data-collection-key'),'a3');await search.fill('nuoc');assert.equal(await visible.count(),2);await search.fill('zzzz');assert.equal(await visible.count(),0);assert(await collection.getByRole('button',{name:'Chọn tất cả kết quả',exact:true}).isDisabled());assert.equal(await status.getAttribute('data-selected-count'),'1');await search.fill('');
+ await collection.getByRole('button',{name:'Chọn tất cả kết quả',exact:true}).evaluate(e=>e.click());assert.equal(await status.getAttribute('data-selected-count'),'7');assert.equal(await collection.locator('[data-collection-key=a3]').getAttribute('aria-pressed'),'false');
+ await collection.locator('[data-collection-filter="Bánh"]').evaluate(e=>e.click());await collection.getByRole('button',{name:'Bỏ chọn tất cả',exact:true}).evaluate(e=>e.click());assert.equal(await status.getAttribute('data-selected-count'),'0');assert((await rows.evaluateAll(es=>es.map(e=>e.getAttribute('aria-pressed')))).every(s=>s==='false'));console.log('Collection: 8 rows, stable ID, disabled, filtered selection, hidden selection, sort and empty results passed');await collection.close();
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

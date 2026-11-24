@@ -34,3 +34,6 @@ Media gestures source study and implementation; simulated pointer CI pending at 
 
 ## v13.45
 Astryx 18 pinned source files. Implemented initial contracts for all remaining 10–17, lab and browser tests. Not native or production approval; media codec/EXIF/large file, global theme, table scroll/virtualization, Main migration remain PENDING.
+
+## v13.47
+Collection owner initial data model and directory projection, lab. CI/native pending; virtualizer and business integration pending.

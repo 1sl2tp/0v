@@ -10,3 +10,6 @@
 | Định dạng số | NumberParser.ts | locale-aware parse, partial number | Rà vi-VN, không tự diễn giải nội dung bill |
 | Popup/scroll | usePreventScroll.ts | scroll lock đếm vòng đời, scrollbar gutter, iOS visual viewport | Chỉ tham khảo, KB-LOCK giữ nguyên |
 Các đường dẫn @react-aria/*/src cũ không còn hợp lệ ở ref hiện tại; source đã chuyển packages/react-aria/src và packages/react-stately/src. Xem manifest cho đường dẫn/sha đầy đủ. Đề xuất bước kế tiếp Selection/Collection độc lập với nhiều dữ liệu, NumberField commit và Virtualizer; không tự nhận đã tích hợp Adobe.
+
+## v13.47
+Collection initial contract implemented, see COLLECTION-API-SOURCES. Virtualizer and NumberField further study pending.
