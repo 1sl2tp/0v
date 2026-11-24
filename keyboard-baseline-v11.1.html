@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>CHAT CRM — Bố cục v11.1</title>
+<style>
+:root{color-scheme:light;--ink:#202124;--muted:#73777d;--line:#e7e8eb;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%;touch-action:manipulation;background:var(--paper);color:var(--ink)}
+button,input,textarea{font:inherit}button{border:0;background:transparent;color:inherit;cursor:pointer;min-height:44px}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #475569;outline-offset:2px}
+input,textarea{font-size:var(--text-input,16px)!important}button[aria-pressed="true"]{background:#ebedef}
+[hidden]{display:none!important}
+#app{width:100%;height:100dvh;display:grid;grid-template-columns:54px 290px minmax(0,1fr) 330px;min-height:0;overflow:hidden}
+.rail,.directory,.conversation,.crm{min-width:0;min-height:0;display:flex;flex-direction:column;border-right:1px solid var(--line);background:var(--paper)}
+.rail{padding:8px 5px;gap:5px;align-items:stretch}.rail button{border-radius:var(--control-radius);font-size:21px}.rail .version{font-size:10px;color:var(--muted);text-align:center;margin-top:auto}
+.panel-head{flex:none;height:60px;display:flex;align-items:center;gap:10px;padding:7px 13px;border-bottom:1px solid var(--line)}
+.panel-head strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}.label-version{font-size:var(--text-meta);color:var(--muted);white-space:nowrap}
+.avatar{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:#ebedf0;color:#444;font-size:var(--text-sub);font-weight:650}
+.icon{font-size:22px;display:grid;place-items:center}
+.search-zone{flex:none;padding:12px 12px 8px}.search-zone input{width:100%;border:0;outline:0;background:var(--soft);padding:0 var(--gap-md)}
+.filters{display:flex;gap:6px;padding:0 12px 9px;overflow-x:auto;scrollbar-width:none}.filters button{min-height:33px;padding:0 12px;white-space:nowrap;border-radius:20px;background:var(--soft);font-size:var(--text-detail)}.filters button.active{background:#25272b;color:var(--paper)}
+.contacts{overflow-y:auto;flex:1;min-height:0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.contact{width:100%;text-align:left}.contact.active{background:transparent}.identity b,.identity small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.identity b{font-weight:600}.identity small{font-size:var(--text-sub);color:var(--muted);margin-top:3px}.contact .time{font-size:var(--text-meta);color:var(--muted);align-self:flex-start;margin-top:4px}
+.dir-bottom{border-top:1px solid var(--line);padding:9px 12px;flex:none}.outline{padding:0 var(--gap-md)}.dir-bottom .outline{width:100%}
+.conversation .panel-head .title-group{flex:1;min-width:0}.title-group b,.title-group small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.title-group small{color:var(--muted)}.chat-view{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}.messages{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;flex:1;min-height:0;padding:16px max(14px,3%);display:flex;flex-direction:column;gap:14px;scrollbar-gutter:stable}.day{text-align:center;color:var(--muted);font-size:var(--text-sub);padding:5px}.message{max-width:82%;align-self:flex-start}.message.mine{align-self:flex-end}.bubble{overflow-wrap:anywhere}.mine .bubble{background:var(--surface-selected);border-radius:var(--bubble-radius)}.message .meta{color:var(--muted)}.mine .meta{text-align:right}
+.work-card{width:100%;align-self:stretch;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--paper);margin:5px 0}.work-card header{height:auto;padding:10px 13px;background:var(--surface-header);display:flex;align-items:center;justify-content:space-between;gap:8px;border:0}.work-card header strong{font-size:var(--text-detail)}.work-card header small{font-size:var(--text-meta);color:var(--muted)}.table-wrap{overflow-x:auto}.work-card table{width:100%;border-collapse:collapse;font-size:var(--text-detail);min-width:260px}.work-card th,.work-card td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left}.work-card th:first-child,.work-card td:first-child{width:42px;text-align:center}.work-card th:nth-child(3),.work-card td:nth-child(3){text-align:center;width:55px}
+.composer-frame{background:var(--paper)}.composer textarea{flex:1;min-width:0;resize:none;border:0;outline:none;padding:10px 2px;min-height:42px;max-height:120px;background:transparent;line-height:22px;overflow:auto}.composer .send{background:var(--send-bg);color:var(--paper);width:42px;min-width:42px;min-height:42px;border-radius:50%;font-size:20px}.composer .send:disabled{opacity:.4}
+.crm .modules{flex:none;padding:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;border-bottom:1px solid var(--line)}.modules button{text-align:left;font-size:var(--text-detail)}.modules button.active{background:var(--module-selected);border-color:var(--module-border)}.module-content{flex:1;overflow:auto;min-height:0;padding:16px}.module-content h3{margin:0 0 7px}.module-content p{margin:0;color:var(--muted);font-size:var(--text-detail);line-height:1.65}.fields{margin-top:13px;border:1px solid var(--line);border-radius:var(--control-radius)}.fields .field{display:flex;justify-content:space-between;gap:15px;padding:11px 12px;border-bottom:1px solid var(--line);font-size:var(--text-detail)}.fields .field:last-child{border-bottom:0}.fields .field span:last-child{font-weight:550;text-align:right}.crm-footer{padding:11px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:var(--text-meta)}
+.mobile-only{display:none}
+@media(max-width:1199px){#app{grid-template-columns:54px 250px minmax(0,1fr)}.crm{display:none}#app.with-crm{grid-template-columns:54px 235px minmax(0,1fr) 290px}#app.with-crm .crm{display:flex}}
+@media(min-width:768px) and (max-width:999px){#app.with-crm{grid-template-columns:54px minmax(0,1fr) 290px}#app.with-crm .directory{display:none}}
+@media(max-width:767px){#app,#app.with-crm{display:block;height:var(--view-height,100dvh)}.rail{display:none}.directory,.conversation,.crm,#app.with-crm .crm{display:none;height:100%;width:100%;border:0}#app[data-screen="contacts"] .directory,#app[data-screen="chat"] .conversation,#app[data-screen="crm"] .crm{display:flex}.mobile-only{display:grid}.panel-head{height:calc(54px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}.contacts{padding-bottom:env(safe-area-inset-bottom)}.messages{padding:12px 15px;scrollbar-gutter:auto}.message{max-width:87%}}
+.module-note{margin-top:14px!important}.fields .field{align-items:baseline}.fields .field span{min-width:0;overflow-wrap:anywhere}.fields .field span:last-child{font-variant-numeric:tabular-nums}.modules button{min-height:44px;padding:8px 10px}.module-content{padding:12px}/* Shared UI tokens and component geometry */
+:root{--gap-xs:4px;--gap-sm:8px;--gap-md:12px;--gap-lg:16px;--touch:44px;--control-radius:12px;--avatar-size:40px;--text-main:15px;--text-sub:12px;--text-title:17px;--header-size:56px}
+.panel-head{height:var(--header-size);gap:var(--gap-sm);padding-inline:var(--gap-md)}
+.panel-head strong,.title-group b{font-size:var(--text-title);font-weight:600}
+.avatar{width:var(--avatar-size);height:var(--avatar-size);aspect-ratio:1;flex-shrink:0}
+.icon{width:var(--touch);min-width:var(--touch);min-height:var(--touch);border-radius:var(--control-radius);padding:0;line-height:1}
+.icon svg,.rail svg,.send svg{width:22px;height:22px;display:block;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.rail button,.send{display:grid;place-items:center}
+.search-zone{padding:var(--gap-sm) var(--gap-md)}
+.search-zone input{height:var(--touch);border-radius:var(--control-radius)}
+.filters{gap:var(--gap-xs)}.filters button{min-height:36px}
+
+.identity b{font-size:var(--text-main)}.identity small,.title-group small{font-size:var(--text-sub)}
+.bubble{font-size:var(--text-main);line-height:1.5}
+.work-card th,.work-card td{padding:var(--gap-sm) var(--gap-md);vertical-align:middle}
+.work-card th{font-weight:600;background:var(--soft)}
+.fields .field{padding:var(--gap-md);gap:var(--gap-md)}
+.fields .field span:first-child{flex:1;color:var(--muted)}.fields .field span:last-child{flex:1.2}
+.composer textarea{line-height:22px}
+@media(max-width:767px){.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}}
+/* Composer: stable parent geometry, independent input and actions */
+.composer-frame{flex:0 0 auto}
+.composer{width:100%;max-width:760px;margin-inline:auto;display:grid;grid-template-columns:var(--touch) minmax(0,1fr) var(--touch);align-items:end;gap:var(--gap-xs);padding:var(--gap-xs);border-radius:28px;min-height:54px;border:1px solid var(--input-border);box-shadow:none}
+.composer .icon,.composer .send{width:44px;height:44px;min-height:44px;min-width:44px;margin:0;align-self:end;border-radius:50%}
+.composer .icon{background:transparent}
+.composer textarea{display:block;width:100%;height:44px;min-height:44px;max-height:132px;padding:11px 4px;line-height:22px;box-sizing:border-box;resize:none;outline:none!important;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.composer textarea::-webkit-scrollbar{display:none}
+.composer .send:disabled{background:var(--disabled-bg);color:var(--disabled-ink);opacity:1;cursor:default}
+.composer:focus-within{border-color:var(--input-focus)}
+
+.messages{overflow-anchor:none}.composer-frame{overflow-anchor:none}.composer textarea{touch-action:pan-y}
+
+.messages>*{flex-shrink:0}.chat-view{position:relative}#jumpBottom{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:40px;height:40px;min-height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:var(--paper);box-shadow:0 2px 8px #0002;z-index:2}#jumpBottom svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.work-card{flex:0 0 auto}
+.unread-count{background:var(--action-ink);color:var(--paper);border-radius:var(--control-radius);padding:2px 6px;font-size:var(--text-meta);align-self:center}.contact .time{white-space:nowrap}#jumpBottom[data-count]:after{content:attr(data-count);position:absolute;top:-6px;right:-6px;background:var(--action-ink);color:var(--paper);border-radius:var(--control-radius);padding:2px 5px;font-size:10px}.demo-incoming{font-size:var(--text-sub);color:var(--muted);padding:0 12px;min-height:36px}/* Single mobile layout contract: visible rectangle = header + scrollport + composer. */
+@media(max-width:767px){
+html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
+#app,#app.with-crm{position:fixed;inset:auto;top:var(--view-top,0px);left:var(--view-left,0px);width:var(--view-width,100%);height:var(--view-height,100dvh);overflow:hidden;transition:none}
+#app[data-screen="chat"] .conversation{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100%;min-height:0}
+.conversation>.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+.chat-view{min-height:0;overflow:hidden}.messages{min-height:0;overflow-y:auto}
+.composer-frame{padding:8px var(--composer-inset,8px) max(8px,env(safe-area-inset-bottom));margin:0}
+.composer textarea{max-height:132px}
+}
+#geometryDebug{position:fixed;top:var(--view-top,0px);right:4px;z-index:1000;max-width:95vw;background:#222e;color:var(--paper);padding:6px 9px;border-radius:var(--media-radius);font:11px/1.4 monospace;white-space:pre;pointer-events:none}/* Directory row geometry: fixed avatar, flexible identity, right-aligned status. */
+.contact{display:grid;grid-template-columns:var(--avatar-size) minmax(0,1fr) var(--contact-status-width);column-gap:var(--row-gap);align-items:center;height:var(--contact-height);padding:10px var(--panel-inset)}
+.contact[hidden]{display:none!important}
+.contact .avatar{width:40px;height:40px;margin:0}
+
+.contact .identity b,.contact .identity small{margin:0;line-height:inherit}
+.contact .identity b{line-height:20px}.contact .identity small{line-height:16px}
+.contact-status{font-variant-numeric:tabular-nums}
+.contact .time{margin:0;align-self:center;line-height:20px}
+.contact .unread-count{margin:0;min-width:18px;box-sizing:border-box;line-height:16px;padding:0 5px;text-align:center}
+@media(max-width:767px){.composer-frame{padding:8px var(--composer-inset,8px)}} @media(max-width:767px) and (display-mode:standalone){.composer-frame{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
+/* Shared panel rhythm and optical alignment */
+:root{--panel-inset:12px;--row-gap:12px;--line-gap:4px;--composer-inset:8px}
+.panel-head,.search-zone,.filters,.contact,.dir-bottom,.module-content{padding-inline:var(--panel-inset)}
+.panel-head{gap:var(--gap-sm)}
+.title-group{display:grid;grid-template-rows:22px 16px;gap:2px}
+.title-group b{line-height:22px}.title-group small{line-height:16px}
+.contact{column-gap:var(--row-gap)}
+
+.messages{padding-inline:var(--panel-inset);gap:var(--gap-md)}
+.day{padding:4px 0;line-height:16px}
+.message .meta{padding-top:4px;line-height:16px;font-variant-numeric:tabular-nums}
+.mine .bubble{padding:var(--gap-sm) var(--gap-md)}
+
+
+.filters{padding-bottom:8px}
+.dir-bottom{padding-block:8px}
+@media(max-width:767px){.conversation .panel-head{padding-left:4px;padding-right:8px;gap:8px}.directory .panel-head,.crm .panel-head{padding-right:8px}.contacts{padding-bottom:0}}
+.sample-content{white-space:pre-wrap}.sample-content>strong,.sample-content>u,.sample-content>em,.sample-content>span,.sample-content>s{display:block}.muted-sample{color:var(--muted)}.sample-content ul,.sample-content ol{margin:8px 0;padding-left:22px}.sample-actions{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.sample-actions button{font-size:var(--text-meta);color:var(--muted);padding:0 6px;min-height:44px}.sample-media{display:grid;gap:4px;margin:8px 0;grid-template-columns:repeat(2,minmax(0,1fr));width:min(280px,70vw)}.sample-media.count-1{grid-template-columns:1fr}.sample-media.count-3 .media-tile:first-child{grid-column:span 2}.media-tile{aspect-ratio:4/3;background:var(--soft);border:1px solid var(--line);border-radius:var(--media-radius);color:var(--muted)}.sample-dialog{border:1px solid var(--line);border-radius:14px;padding:24px}.sample-message{max-width:100%}.media-caption{font-size:var(--text-sub);color:var(--muted);margin-top:12px;white-space:normal}.mixed-media{width:min(100%,320px);gap:4px;grid-auto-flow:row}.mixed-media .media-tile{padding:0;min-width:0;min-height:0;overflow:hidden;aspect-ratio:1;display:block}.mixed-media .media-tile img{display:block;width:100%;height:100%;object-fit:cover}.mixed-media[data-single="true"] .media-tile{aspect-ratio:var(--ratio);max-height:360px;width:fit-content;max-width:100%}.mixed-media[data-single="true"] .media-tile img{width:auto;max-width:100%;height:auto;max-height:360px;object-fit:contain}.mixed-media.count-3 .media-tile:first-child{aspect-ratio:2/1}.media-viewer{max-width:94vw;max-height:90dvh;padding:8px;overflow:auto}.media-viewer img{display:block;max-width:100%;max-height:72dvh;object-fit:contain;margin:auto}.media-viewer button{display:block;margin:auto}.media-combination{max-width:100%;min-height:44px;border:1px solid var(--line);border-radius:var(--control-radius);background:var(--paper);padding:8px;font:inherit}.mixed-media img,.media-viewer img{image-orientation:from-image}.mixed-media.portrait-pair .media-tile{aspect-ratio:9/16}.mixed-media.portrait-lead{grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));aspect-ratio:1}.mixed-media.portrait-lead .media-tile:first-child{grid-column:1;grid-row:span 2;aspect-ratio:auto;height:100%}.mixed-media.portrait-lead .media-tile:not(:first-child){aspect-ratio:auto;height:100%}.media-viewer img.quarter-turn{max-width:min(65dvh,80vw);max-height:65vw;margin:40px auto}.media-viewer img{transform-origin:center}.local-preview{width:min(94vw,520px);max-height:90dvh;overflow:auto;padding:12px}.local-preview .mixed-media{width:100%;max-width:none;aspect-ratio:auto;grid-template-rows:auto}.local-tile{min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;overflow:hidden;background:var(--soft);border-radius:var(--media-radius);padding:4px}.local-tile img{width:100%;height:140px;object-fit:contain;image-orientation:from-image}.local-tile small{font-size:var(--text-meta);color:var(--muted)}.local-tile button{font-size:var(--text-sub)}.local-preview .count-1 img{height:auto;max-height:50dvh}.local-preview .count-3 .local-tile:first-child{grid-column:span 2}.local-preview .portrait-lead .local-tile:first-child{grid-column:1;grid-row:span 2}.media-gallery{width:min(320px,75vw)}.media-gallery .media-caption{margin-top:0}.media-gallery .sample-media{margin-bottom:0}.sample-actions{gap:0}.sample-actions .sample-action-icon{width:44px;height:44px;padding:0;display:grid;place-items:center;border-radius:50%}.sample-action-icon svg{display:block;flex:none}@media(max-width:767px){.conversation,.chat-view,.messages,.crm,.module-content{touch-action:pan-y;overscroll-behavior-x:none}.sample-media,.media-tile{touch-action:manipulation}}.typing-test{width:44px;min-width:44px;display:grid;place-items:center;color:var(--muted)}.typing-dots{display:inline-block;letter-spacing:2px;margin-left:4px;animation:typing-pulse 1s ease-in-out infinite}.is-typing{color:var(--ink)!important}@keyframes typing-pulse{50%{opacity:.3}}@media(prefers-reduced-motion:reduce){.typing-dots{animation:none}}.contact .identity b,.contact .identity small{display:block;min-width:0;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.contact-status .time{white-space:nowrap;font-variant-numeric:tabular-nums;font-size:var(--text-meta)}.day{font-variant-numeric:tabular-nums}.media-gallery .mixed-media[data-single="true"] .media-tile{width:100%;max-width:100%;height:auto;max-height:none;aspect-ratio:var(--ratio)}.media-gallery .mixed-media[data-single="true"] .media-tile img{width:100%;height:100%;max-height:none;object-fit:contain}.media-gallery .mixed-media[data-single="true"][data-pattern="D"]{width:min(100%,202px)}.media-gallery .mixed-media[data-single="true"][data-pattern="V"]{width:min(100%,280px)}.media-gallery .media-tile{transition:none;animation:none}.media-gallery .media-tile img{transition:none;animation:none}.media-gallery .mixed-media{min-width:0}.messages{scroll-behavior:auto;scroll-snap-type:none}.media-gallery .media-tile{box-shadow:none}.media-gallery img{pointer-events:none}.perf-panel{position:fixed;z-index:9999;right:8px;top:calc(env(safe-area-inset-top) + 64px);background:#202124e8;color:var(--paper);border-radius:var(--media-radius);padding:8px;font-size:var(--text-meta);pointer-events:none}.perf-panel pre{margin:0;font:11px/1.5 monospace}.perf-panel button{pointer-events:auto;color:var(--paper);min-height:32px;width:100%;font-size:var(--text-sub)}.draft-measure{position:fixed;left:-10000px;top:0;visibility:hidden;white-space:pre-wrap;overflow-wrap:break-word;pointer-events:none;height:auto;min-height:0;max-height:none;border:0}@media(max-width:767px){#app[data-keyboard="true"] .composer-frame{padding-bottom:6px} @media(display-mode:standalone){#app[data-keyboard="true"] .composer-frame{padding-bottom:0}}}/* Layout contract: shell > panel > region > control. Only the middle track scrolls. */
+#app{--panel-tracks:auto minmax(0,1fr) auto}
+#app>.rail,#app>.directory,#app>.conversation,#app>.crm{min-width:0;min-height:0}
+#app>.conversation{grid-template-rows:var(--panel-tracks)}
+@media(min-width:768px){#app>.conversation{display:grid}}
+#app>.conversation>.chat-view{min-width:0;min-height:0;overflow:hidden}
+.chat-view>.messages,.directory>.contacts,.crm>.module-content{min-width:0;min-height:0;overscroll-behavior:contain}
+#app>.conversation>.composer-frame{min-width:0}
+@media(max-width:767px){#app[data-screen="chat"]>.conversation{grid-template-rows:var(--panel-tracks)}}
+/* Shared control contract */
+:root{--text-detail:13px;--text-meta:11px;--icon-size:22px;--icon-stroke:1.7;--control-border:1px solid var(--line);--control-focus:#777}
+.outline,.modules button{border:var(--control-border);border-radius:var(--control-radius);min-height:var(--touch)}
+.icon svg{width:var(--icon-size);height:var(--icon-size);stroke-width:var(--icon-stroke)}
+
+.search-zone input:focus-visible,.outline:focus-visible,.modules button:focus-visible{outline:2px solid var(--control-focus);outline-offset:-2px}
+.message .meta,.contact .time,.crm-footer{font-size:var(--text-meta);font-variant-numeric:tabular-nums}
+.module-content h3{font-size:var(--text-title)}
+.module-content p,.fields .field{font-size:var(--text-detail)}
+/* Conversation content contract */
+:root{--bubble-radius:17px;--message-line:1.5;--meta-line:16px;--media-radius:8px}
+.message{min-width:0;overflow-wrap:anywhere}
+.bubble{line-height:var(--message-line);white-space:pre-wrap}
+.message .meta{line-height:var(--meta-line);padding-top:var(--gap-xs)}
+.mine .meta{padding-inline-end:var(--gap-md)}
+.sample-actions{gap:var(--gap-xs);margin-top:var(--gap-xs)}
+.mine .sample-actions{justify-content:flex-end}
+.sample-actions button{min-width:var(--touch);min-height:var(--touch)}
+.media-tile{border-radius:var(--media-radius)}
+.work-card{min-width:0;max-width:100%;border-radius:var(--control-radius)}
+.work-card table{font-size:var(--text-detail);font-variant-numeric:tabular-nums}
+.work-card td:nth-child(2){overflow-wrap:anywhere}
+.work-card tbody tr:last-child td{border-bottom:0}
+/* Directory row contract */
+:root{--contact-height:66px;--contact-status-width: max-content;--contact-name-line:20px;--contact-preview-line:16px}
+
+.contact .avatar{width:var(--avatar-size);height:var(--avatar-size)}
+.contact .identity b,.contact .identity small{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.contact .time{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.contact-status>*{min-width:0;max-width:100%}
+/* Directory search: mobile disclosure, desktop persistent */
+@media(max-width:767px){
+.directory:not([data-search-open="true"])>.search-zone{display:none}
+.directory>.panel-head{gap:var(--gap-xs)}
+.directory>.panel-head>strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.directory>.filters{overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.directory>.filters>button{flex-shrink:0}
+}
+/* Directory: independent name/time and preview/unread tracks */
+.contact{grid-template-rows:var(--contact-name-line) var(--contact-preview-line);row-gap:var(--line-gap);align-content:center}
+.contact .avatar{grid-column:1;grid-row:1/3}
+.contact .identity,.contact-status{display:contents}
+.contact .identity b{grid-column:2;grid-row:1;align-self:baseline}
+.contact .time{grid-column:3;grid-row:1;justify-self:start;align-self:baseline;line-height:var(--contact-name-line)}
+.contact .identity small{grid-column:2;grid-row:2;width:calc(100% + var(--row-gap));max-width:none;margin:0;align-self:baseline}
+
+.contact .unread-count{grid-column:3;grid-row:2;justify-self:end;align-self:baseline;line-height:16px;padding-block:0;z-index:1;max-width:36px;overflow:hidden}
+#geometryGuides{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+#geometryToggle{position:fixed;right:8px;bottom:12px;z-index:10000;background:var(--paper);border:1px solid #aaa;border-radius:var(--media-radius);padding:0 10px;font-size:var(--text-sub)}
+/* Selection surface is a child of the row, not the row itself. */
+.contact{position:relative;isolation:isolate;background:transparent;-webkit-tap-highlight-color:transparent}
+.contact::before{content:"";position:absolute;inset:4px 4px;border-radius:var(--control-radius);z-index:-1;pointer-events:none;background:transparent}
+.contact.active::before{background:var(--surface-selected)}
+@media(hover:hover) and (pointer:fine){.contact:active::before{background:var(--surface-pressed)}}
+.contact:focus-visible{outline:none}
+.contact:focus-visible::before{outline:2px solid var(--control-focus);outline-offset:-2px}
+/* Mobile navigation must not carry native tap feedback across panels. */
+@media(max-width:767px){
+#app button,#app [data-go]{-webkit-tap-highlight-color:transparent}
+#app .contact:active::before{background:transparent}
+#app[data-screen="contacts"] .contact.active::before{background:var(--surface-selected)}
+#app:not([data-screen="contacts"]) .directory{display:none!important;pointer-events:none}
+#app .conversation,#app .directory{animation:none;transition:none}
+}
+/* Symmetric directory geometry: equal inner inset around selected surface. */
+
+.contact .time{width:auto;text-align:right;justify-self:end;font-variant-numeric:tabular-nums}
+
+.directory>.filters{padding-block-start:8px;padding-block-end:8px}
+/* Header and composer share a fixed control geometry. */
+.conversation>.panel-head{align-items:center;gap:var(--gap-sm)}
+.conversation>.panel-head>.icon,.conversation>.panel-head>.typing-test{flex:0 0 var(--touch);width:var(--touch);height:var(--touch);min-width:var(--touch);padding:0;display:grid;place-items:center;border-radius:50%;color:var(--ink)}
+.conversation>.panel-head>.avatar{flex:0 0 var(--avatar-size);width:var(--avatar-size);height:var(--avatar-size)}
+.conversation>.panel-head>.title-group{flex:1 1 0;min-width:0;align-self:center}
+.conversation>.panel-head>.typing-test svg{width:var(--icon-size);height:var(--icon-size)}
+.composer>button{width:var(--touch);height:var(--touch);min-width:var(--touch);padding:0;display:grid;place-items:center;align-self:end}
+@media(min-width:768px){.conversation>.panel-head>.mobile-only{display:none}}
+@media(max-width:767px){.conversation>.panel-head{padding-inline:4px;gap:4px}}
+/* Table geometry: fixed numeric tracks, flexible product name, first-line alignment. */
+.work-card table{table-layout:fixed;min-width:0;width:100%;line-height:18px}
+.work-card th,.work-card td{box-sizing:border-box;padding:8px 10px;vertical-align:top;line-height:18px}
+.work-card th:first-child,.work-card td:first-child{width:48px;text-align:center}
+.work-card th:nth-child(3),.work-card td:nth-child(3){width:48px;text-align:center}
+.work-card th:nth-child(2),.work-card td:nth-child(2){text-align:left;overflow-wrap:anywhere}
+.work-card th+th,.work-card td+td{border-inline-start:1px solid var(--line)}
+.work-card header{padding:10px 12px;align-items:baseline}
+.work-card header strong{min-width:0;overflow-wrap:anywhere;line-height:18px}
+.work-card header small{flex-shrink:0;line-height:18px}
+.work-card [data-align="money"]{text-align:right;font-variant-numeric:tabular-nums}
+/* CRM: shared panel inset and consistent two-column field tracks. */
+.crm>.modules{padding:8px var(--panel-inset);gap:8px;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(44px,auto)}
+.crm>.modules>button{min-width:0;line-height:18px;padding:8px 12px;overflow-wrap:anywhere;text-align:left}
+.crm>.module-content{padding:12px var(--panel-inset)}
+.module-content h3{line-height:24px;margin:0 0 4px}
+.module-content p{line-height:20px}
+.fields{margin-top:12px;overflow:hidden}
+.fields .field{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px;padding:10px 12px;align-items:baseline;min-height:40px;line-height:20px}
+
+.crm-footer{padding:8px var(--panel-inset);line-height:16px}
+@media(max-width:767px){.crm>.panel-head>button:last-child{display:none}}
+/* Modal geometry uses the same visible viewport as the app. */
+dialog.sample-dialog{position:fixed;inset:auto;left:calc(var(--view-left,0px) + var(--view-width,100vw)/2);top:calc(var(--view-top,0px) + var(--view-height,100dvh)/2);transform:translate(-50%,-50%);margin:0;box-sizing:border-box;width:max-content;max-width:calc(var(--view-width,100vw) - 24px);max-height:calc(var(--view-height,100dvh) - 24px);padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink);overflow:auto;overscroll-behavior:contain}
+dialog.sample-dialog::backdrop{background:rgba(0,0,0,.35)}
+dialog.sample-dialog>button{min-height:44px;min-width:44px;padding:8px 12px;border-radius:var(--control-radius);margin:4px auto 0}
+dialog.sample-dialog .sample-media{max-width:100%;margin:8px 0}
+dialog.media-viewer>img{max-width:100%;max-height:calc(var(--view-height,100dvh) - 140px);object-fit:contain}
+dialog.local-preview>strong{display:block;line-height:22px;overflow-wrap:anywhere}
+/* Media geometry: stable tile boxes, shared gap, no stretched images. */
+.media-gallery{max-width:100%;width:min(320px,100%);min-width:0}
+.media-gallery .mixed-media{width:100%;gap:4px;margin:0;min-width:0;align-items:stretch}
+.media-gallery .media-tile{width:100%;min-width:0;min-height:0;padding:0;border:0;border-radius:var(--media-radius);overflow:hidden;background:var(--soft)}
+.media-gallery .media-tile img{display:block;width:100%;height:100%;object-fit:cover}
+.media-gallery .mixed-media[data-single="true"] .media-tile img{object-fit:contain}
+.media-gallery .portrait-lead .media-tile:first-child{grid-column:1;grid-row:1/3}
+.media-gallery .portrait-lead .media-tile:not(:first-child){grid-column:2}
+.media-viewer>img{transform:none!important;margin:0 auto!important;max-width:100%;object-fit:contain}
+
+:root{--surface-selected:#f1f1f2;--surface-pressed:#e8e8ea;--action-ink:#252525;--send-bg:#27282b;--disabled-bg:#e9e9eb;--disabled-ink:#929298;--input-border:#dedfe2;--input-focus:#bfc1c5;--module-selected:#f3f3f4;--module-border:#bfc2c7;--surface-header:#fafafa}
+/* Nested regions must shrink within their assigned grid tracks. */
+#app>.directory,#app>.conversation,#app>.crm,.chat-view,.composer-frame{min-width:0;min-height:0}
+.panel-head>strong,.title-group,.work-card,.fields{min-width:0;max-width:100%}
+
+@media(max-width:360px){.conversation>.panel-head{gap:2px;padding-inline:2px}.composer-frame{padding-inline:4px}}
+
+/* Shared business card axes */
+.business-card{width:100%;min-width:0;margin:12px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.business-card>header,.business-card>.business-row,.business-card>footer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);align-items:baseline;gap:12px;padding:10px 12px;min-width:0}
+.business-card>header{background:var(--surface-header);font-weight:600}
+.business-card>.business-row{border-top:1px solid var(--line);font-size:var(--text-detail);line-height:20px}
+.business-card>footer{border-top:1px solid var(--line);font-weight:600}
+.business-card>header>span:last-child,.business-card>.business-row>span:last-child,.business-card>footer>span:last-child{text-align:right;min-width:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.business-card>header>span:first-child,.business-card>.business-row>span:first-child,.business-card>footer>span:first-child{min-width:0;overflow-wrap:anywhere}
+/* Paired bill evidence, shared axes */
+/* Single owner: bill layout and recognition controls */
+.bill-pair,.bill-reconcile{--bill-inset:8px;--bill-gap:8px;--bill-radius:12px;--bill-label:11px;--bill-value:13px}
+.bill-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--bill-gap);width:100%;min-width:0;max-width:100%;align-items:start;margin:12px 0}
+.bill-pair>section{display:grid;grid-template-rows:40px auto;gap:4px;min-width:0;align-content:start;align-items:start}
+.bill-pair>section>.module-note{height:40px;display:flex;align-items:center;padding:0}
+.bill-pair>section>.module-note,.bill-pair .business-card>.module-note,.bill-reconcile-body>.module-note{margin:0!important;font-size:12px;line-height:17px;font-weight:400;text-align:left;overflow-wrap:anywhere}
+.bill-pair img,.bill-pair .business-card,.bill-reconcile .business-card{box-sizing:border-box;width:100%;min-width:0;max-width:100%;margin:0;border-radius:var(--bill-radius)}
+.bill-pair img{display:block;height:auto;border:1px solid var(--line);object-fit:contain;align-self:start}
+.bill-stack,.bill-reconcile-body{display:grid;gap:var(--bill-gap);min-width:0;align-content:start}
+.bill-reconcile-body{padding:var(--bill-inset)}
+.bill-pair .business-card>header,.bill-reconcile .business-card>header{grid-template-columns:minmax(0,1fr) auto;padding:var(--bill-inset);gap:4px;min-height:36px;align-items:baseline;font-size:13px;line-height:18px}
+.bill-pair .business-card>footer{padding:var(--bill-inset);gap:4px}
+.bill-pair .business-row{grid-template-columns:minmax(0,1fr);padding:4px var(--bill-inset);gap:1px;line-height:16px}
+.bill-reconcile .business-row{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);padding:6px var(--bill-inset);gap:8px;line-height:18px}
+.bill-pair .business-row>span,.bill-reconcile .business-row>span{min-width:0;overflow-wrap:anywhere}
+.bill-pair .business-row>span:first-child{font-size:var(--bill-label);line-height:15px;color:var(--muted,#666)}
+.bill-pair .business-row>span:last-child{font-size:var(--bill-value);line-height:17px;text-align:left;font-variant-numeric:tabular-nums}
+.bill-reconcile .business-row>span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.bill-pair .bill-missing,.bill-reconcile .bill-missing{color:#b42318;font-weight:600}
+.bill-pair .business-card>.module-note{padding:var(--bill-inset);border-top:1px solid var(--line)}
+.bill-reconcile-body>.module-note{padding:0}
+.bill-pair .bill-actions,.bill-reconcile .bill-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;min-width:0;align-items:stretch;justify-items:stretch}
+.bill-pair .bill-actions{padding:var(--bill-inset)}
+.bill-reconcile .bill-actions{padding:0}
+.bill-pair .bill-actions>button,.bill-reconcile .bill-actions>button{box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;width:100%;min-width:0;min-height:44px;white-space:normal;overflow-wrap:anywhere;font-size:12px;font-weight:500;line-height:16px;padding:6px 8px;margin:0;border:1px solid var(--line);border-radius:8px}
+.bill-pair .bill-actions>button:disabled,.bill-reconcile .bill-actions>button:disabled{opacity:.45}
+/* Compact optional evidence, without hiding core receipt fields */
+.bill-extra{min-width:0;border-top:1px solid var(--line)}
+.bill-extra>summary{box-sizing:border-box;min-height:44px;padding:8px;display:list-item;font-size:12px;line-height:18px;cursor:pointer;overflow-wrap:anywhere}
+.bill-extra>.business-row{display:grid;min-width:0;align-items:baseline;border-top:1px solid var(--line)}
+.bill-extra>.business-row>span{min-width:0;overflow-wrap:anywhere}
+.bill-pair .bill-extra>.business-row>span:last-child{text-align:left}
+.bill-pair>section>.module-note{font-size:11px;line-height:15px}
+.bill-pair .business-card>.module-note{font-size:12px;line-height:16px}
+/* Shared business table geometry */
+.work-card,.business-card{box-sizing:border-box;max-width:100%;min-width:0}
+.order-card table{width:100%;table-layout:fixed;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.order-card col.order-stt{width:10%}.order-card col.order-name{width:29%}.order-card col.order-qty{width:10%}.order-card col.order-price{width:24%}.order-card col.order-total{width:27%}
+.order-card th,.order-card td{width:auto!important;padding:6px 3px;font-size:12px;line-height:17px;vertical-align:top;overflow-wrap:anywhere}
+.order-card th{font-size:11px;font-weight:600}
+.order-card :is(th,td):nth-child(1),.order-card :is(th,td):nth-child(3){text-align:center}
+.order-card :is(th,td):nth-child(2){text-align:left}
+.order-card :is(th,td):nth-child(4),.order-card :is(th,td):nth-child(5),.order-card tfoot td{text-align:right}
+.order-card tfoot td{font-weight:600;border-top:1px solid var(--line)}
+.business-card:not(.bill-reconcile)>footer{font-variant-numeric:tabular-nums}
+#moduleContent>.business-card>header,#moduleContent>.business-card>.business-row,#moduleContent>.business-card>footer{padding:8px;gap:8px;line-height:18px}
+#moduleContent>.business-card>header,#moduleContent>.business-card>footer{font-size:13px}
+/* Prevent native scroll anchoring from competing with the chat viewport controller. */
+.messages{overflow-anchor:none}
+#app,.composer-frame,.composer{transition:none!important;animation:none!important}
+/* Input parent contract: shared typography, geometry and focus; child owns only content. */
+.input-child{box-sizing:border-box;min-width:0;max-width:100%;font-family:inherit;font-size:16px!important;line-height:1.4}
+.input-child[data-input-parent=standalone]{width:100%;border:1px solid var(--input-border,var(--line));border-radius:12px;padding:10px;min-height:44px;background:transparent;color:inherit}
+.input-child[data-input-parent=standalone]:focus{outline:1px solid var(--input-focus,#aaa);outline-offset:0}
+.input-child[data-input-kind=number]{text-align:right;font-variant-numeric:tabular-nums}
+[data-input-parent=chat],[data-input-parent=search]{min-width:0;max-width:100%}
+/* Isolate heavy receipt layouts from keyboard viewport changes. */
+.bill-pair,.bill-reconcile,.work-card{contain:layout paint}
+/* Keyboard motion: compositor-only composer movement, commit layout after viewport settles. */
+@media(max-width:767px){#app.keyboard-motion .composer-frame{position:relative;z-index:5;will-change:transform}#app.keyboard-motion .chat-view{overflow:hidden}}
+html[data-kb-mode=native] #app,html[data-kb-mode=native] #app.with-crm{position:relative;top:auto;left:auto;width:100%;height:100dvh}html[data-kb-mode=native] body{overflow:auto}html[data-kb-mode=native] .composer-frame{transform:none!important}
+@media(max-width:767px){#app.inset-chat{top:0;height:var(--chat-base,100svh)}#app.inset-chat .conversation{position:relative}#app.inset-chat .composer-frame{position:absolute;bottom:var(--keyboard-inset,0px);left:0;right:0;z-index:5;transform:none!important}#app.inset-chat .chat-view{margin-bottom:calc(var(--composer-reserve,64px) + var(--keyboard-inset,0px))}}
+@media(max-width:767px){#app.inset-chat .composer-frame{overflow-anchor:none}#app.inset-chat .composer textarea{scroll-margin:0}}
+</style>
+</head>
+<body>
+<div id="app" data-layout="shell" data-screen="contacts">
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v11.1</span></nav>
+<aside class="directory" data-layout="panel" aria-label="Danh bạ">
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v11.1</span><button type="button" class="icon mobile-only" id="searchToggle" aria-label="Mở tìm kiếm" aria-controls="directorySearch" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <div class="search-zone" id="directorySearch"><input id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
+ <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả">Tất cả</button><button data-filter="KH">KH</button><button data-filter="NCC">NCC</button><button data-filter="NV">NV</button><button data-filter="Nhóm">Nhóm</button></div>
+ <div class="contacts" id="contacts">
+ <button class="contact active" data-id="kh"><span class="avatar">KH</span><span class="identity"><b>Khách hàng mẫu</b><small>KH · Cho lấy 2 thùng sữa tươi, 3 hộp bánh quy, 5 thùng nước ngọt và giao toàn bộ hàng vào chiều nay nhé.</small></span><span class="contact-status"><span class="time">11:25</span></span></button>
+ <button class="contact" data-id="ncc"><span class="avatar">NCC</span><span class="identity"><b>Nhà cung cấp mẫu</b><small>NCC · Báo giá mới</small></span><span class="contact-status"><span class="time">10:08</span></span></button>
+ <button class="contact" data-id="nv"><span class="avatar">NV</span><span class="identity"><b>Nhân viên mẫu</b><small>NV · Kiểm hàng</small></span><span class="contact-status"><span class="time">09:30</span></span></button>
+ <button class="contact" data-id="nhom"><span class="avatar">NH</span><span class="identity"><b>Nhóm khách hàng mẫu</b><small>Nhóm KH · Thảo luận chung</small></span><span class="contact-status"><span class="time">08:45</span></span></button>
+ </div>
+ <button type="button" class="demo-incoming" id="incomingDemo">+ Mô phỏng đang gõ → tin đến</button><div class="dir-bottom"><button class="outline" type="button" id="addContact">＋ Thêm danh bạ (bố cục)</button></div>
+</aside>
+<main class="conversation" data-layout="panel" aria-label="Hội thoại">
+ <header class="panel-head"><button class="icon mobile-only" type="button" data-go="contacts" aria-label="Về danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><span class="avatar" id="currentAvatar">KH</span><span class="title-group"><b id="currentName">Khách hàng mẫu</b><small id="currentRole">KH · Hội thoại mẫu</small></span><button class="icon" type="button" data-go="crm" aria-label="Mở công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <section class="chat-view" data-layout="region"><div class="messages" data-layout="scroll" id="messages" role="log">
+ <div class="day">Hôm nay · Minh họa bố cục</div>
+ <div class="message"><div class="bubble">Cho lấy sản phẩm A 2, sản phẩm B 3.</div><div class="meta">11:20</div></div>
+ <div class="message mine"><div class="bubble">Đã tiếp nhận, mình sẽ kiểm tra hàng.</div><div class="meta">11:22 · Mẫu</div></div>
+ <section class="work-card"><header><strong>Tổng hợp yêu cầu · Hôm nay</strong><small>Chưa duyệt</small></header><div class="table-wrap"><table><thead><tr><th>STT</th><th>Tên hàng</th><th>SL</th></tr></thead><tbody><tr><td>1</td><td>Sản phẩm A</td><td>2</td></tr><tr><td>2</td><td>Sản phẩm B</td><td>3</td></tr></tbody></table></div></section>
+ </div><button type="button" id="jumpBottom" aria-label="Cuộn đến tin mới nhất" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></section>
+ <div class="composer-frame" data-layout="region"><form class="composer" id="composer"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
+</main>
+<aside class="crm" data-layout="panel" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v11.1</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+</div>
+<script>
+(function(){
+'use strict';
+const app=document.getElementById('app'),draft=document.getElementById('draft'),messages=document.getElementById('messages'),contactList=document.getElementById('contacts');
+const people={kh:{name:'Khách hàng mẫu',role:'KH',avatar:'KH',modules:['Tổng hợp','Đơn hàng','Công nợ','Bill','Báo giá','Liên kết Zalo']},ncc:{name:'Nhà cung cấp mẫu',role:'NCC',avatar:'NCC',modules:['Báo giá','Giá vốn','Nhập hàng','Liên kết Zalo']},nv:{name:'Nhân viên mẫu',role:'NV',avatar:'NV',modules:['Tiếp nhận','Kiểm hàng','Giao hàng','Công việc']},nhom:{name:'Nhóm khách hàng mẫu',role:'Nhóm',avatar:'NH',modules:['Tổng hợp','Thành viên','Đơn hàng','Liên kết Zalo']}};
+let active='kh',filter='Tất cả';const texts={kh:['Cho lấy sản phẩm A 2, sản phẩm B 3.','Đã tiếp nhận, mình sẽ kiểm tra hàng.'],ncc:['Mình gửi báo giá mới hôm nay.','Đã nhận thông tin báo giá.'],nv:['Mình đã kiểm hàng.','Đã nhận thông tin.'],nhom:['Cả nhóm cập nhật yêu cầu nhé.','Đã ghi nhận.']};
+/* Demo CRM data: stable module IDs, numeric amounts, separate contact ownership. */
+const moduleIds={'Tổng hợp':'summary','Đơn hàng':'orders','Công nợ':'balance','Bill':'payments','Báo giá':'quotes','Liên kết Zalo':'channel','Giá vốn':'cost','Nhập hàng':'receipts','Thành viên':'members','Tiếp nhận':'intake','Kiểm hàng':'picking','Giao hàng':'delivery','Công việc':'tasks'};
+const selectedModule={};
+const crmData={kh:{orders:[{id:'DEMO-001',status:'draft',items:[{name:'Sản phẩm A',qty:2,price:100000},{name:'Sản phẩm B',qty:3,price:50000}]}],ledger:[{kind:'opening',amount:-500000},{kind:'delivery',amount:-350000},{kind:'receipt',amount:200000}],payments:[{id:'DEMO-BILL-001',transactionCode:'DEMO000123',amount:200000,account:'2901181999999',date:'2026-11-24',time:'10:30',memo:'Thanh toán mẫu',status:'pending'}]}};
+const money=n=>new Intl.NumberFormat('vi-VN').format(n).replace(/^-/,'−');
+const incomingCounts={},pendingLatest={};const drafts={};const scrolls={};const $=s=>document.querySelector(s);
+function saveView(){if(!navigationPending&&messages.clientHeight)scrolls[active]={top:messages.scrollTop,pinned:nearBottom()};drafts[active]=draft.value}
+let backSwipe=null;
+app.addEventListener('touchstart',e=>{backSwipe=null;if(innerWidth>=768||app.dataset.screen==='contacts'||e.touches.length!==1||document.querySelector('dialog[open]'))return;const t=e.touches[0];if(e.target.closest('input,textarea,button,select,img,.sample-media,.media-gallery,.composer-frame,[contenteditable]')||(!window.getSelection()?.isCollapsed))return;backSwipe={x:t.clientX,y:t.clientY,screen:app.dataset.screen,locked:false,edge:t.clientX<=24,start:performance.now()}}, {passive:true});
+app.addEventListener('touchmove',e=>{if(!backSwipe)return;if(e.touches.length!==1){backSwipe=null;return}const t=e.touches[0],dx=t.clientX-backSwipe.x,dy=t.clientY-backSwipe.y;if(!backSwipe.locked&&((Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx))||dx< -12)){backSwipe=null;return}if(dx>10&&dx>Math.abs(dy)*1.25)backSwipe.locked=true;}, {passive:true});
+app.addEventListener('touchend',e=>{const s=backSwipe;backSwipe=null;if(!s||!s.locked||s.screen!==app.dataset.screen)return;const t=e.changedTouches[0];if(t&&t.clientX-s.x>=Math.min(64,innerWidth*.17)&&Math.abs(t.clientY-s.y)<(t.clientX-s.x)*.75)navigate(s.screen==='crm'?'chat':'contacts')},{passive:true});
+app.addEventListener('touchcancel',()=>{backSwipe=null},{passive:true});
+let navigationEpoch=0, navigationPending=false;
+function navigate(where, switching=false){clearTimeout(viewportSettle);previousRect='';keyboardComposer.style.transform='';app.classList.remove('keyboard-motion');updateViewport();const epoch=++navigationEpoch;if(!switching)saveView();navigationPending=where==='chat';const saved=scrolls[active];InputController.blur();anchor=null;preFocusAnchor=null;app.dataset.screen=where;app.classList.toggle('with-crm',where==='crm');if(where==='chat')requestAnimationFrame(()=>{if(epoch!==navigationEpoch||app.dataset.screen!=='chat')return;const s=saved;messages.scrollTop=!s||s.pinned?messages.scrollHeight:s.top;navigationPending=false;resizeDraft();syncJump()})}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));
+function showPeople(){contactList.querySelectorAll('.contact').forEach(b=>{const p=people[b.dataset.id];b.hidden=!(filter==='Tất cả'||p.role===filter)&&filter!=='Nhóm'||(filter==='Nhóm'&&p.role!=='Nhóm');if(b.hidden)return;b.hidden=!p.name.toLocaleLowerCase('vi').includes($('#search').value.trim().toLocaleLowerCase('vi'));b.classList.toggle('active',b.dataset.id===active)})}
+document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));showPeople()}));$('#search').addEventListener('input',showPeople);
+const directory=document.querySelector('.directory'),searchToggle=$('#searchToggle'),searchInput=$('#search');
+function setSearchOpen(open,focus=false){directory.dataset.searchOpen=String(open);searchToggle.setAttribute('aria-expanded',String(open));searchToggle.setAttribute('aria-label',open?'Đóng tìm kiếm':'Mở tìm kiếm');if(open&&focus)searchInput.focus({preventScroll:true});if(!open){searchInput.blur();searchInput.value='';showPeople()}}
+searchToggle.addEventListener('click',()=>setSearchOpen(directory.dataset.searchOpen!=='true',true));
+searchInput.addEventListener('keydown',e=>{if(e.key==='Escape'){setSearchOpen(false);searchToggle.focus({preventScroll:true})}});
+
+contactList.addEventListener('click',e=>{const b=e.target.closest('.contact');if(!b)return;b.blur();saveView();active=b.dataset.id;incomingCounts[active]=0;pendingLatest[active]=0;updateContact(active);draft.value=drafts[active]||'';navigate('chat',true);render();window.scrollPerf?.observe()});
+draft.addEventListener('input',e=>{if(e.isComposing)return;normalizeDraft()});draft.addEventListener('compositionend',()=>{normalizeDraft();resizeDraft()});function normalizeDraft(){const old=draft.value,next=normalizeLines(old);if(old===next)return;const a=draft.selectionStart,b=draft.selectionEnd;draft.value=next;draft.setSelectionRange(a,b)}
+function normalizeLines(value){return String(value).split('\n').map(line=>line.replace(/^(\s*(?:[-•*]\s+|\d+[.)]\s+)?)(\p{L})(.*)$/u,(whole,prefix,first,rest)=>{const word=first+rest;if(/^(?:https?:\/\/|www\.|[\w.+-]+@|[\p{L}]*\d)/iu.test(word))return whole;return prefix+first.toLocaleUpperCase('vi-VN')+rest})).join('\n')}
+function make(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=(cls||'').split(' ').includes('bubble')?normalizeLines(txt):txt;return e}
+const typingByContact=new Map();
+function render(){const p=people[active];$('#currentName').textContent=p.name;syncTyping();$('#currentAvatar').textContent=p.avatar;showPeople();renderDailyThread();
+const modules=$('#modules');modules.replaceChildren();const chosen=p.modules.find(m=>moduleIds[m]===selectedModule[active])||p.modules[0];p.modules.forEach(m=>{const b=make('button',m===chosen?'active':'',m);b.type='button';b.dataset.module=moduleIds[m];b.addEventListener('click',()=>{selectedModule[active]=moduleIds[m];modules.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));showModule(m)});modules.append(b)});showModule(chosen);resizeDraft()}
+var goodsNames=['Sản phẩm A','Sản phẩm B','Sữa tươi','Bánh quy','Nước ngọt','454','1kg','Kopico sữa','Cosy bơ 600','Nuvi to'];
+function dateKey(date){const p=vnParts(date);return p.year+'-'+p.month+'-'+p.day}
+function messageDay(t){return dateKey(typeof t==='object'&&t.date?new Date(t.date):new Date())}
+function mergeGoods(rows){const map=new Map();for(const row of rows){const key=JSON.stringify([row.name.normalize('NFC').toLocaleLowerCase('vi'),row.unit.toLocaleLowerCase('vi')]);if(map.has(key))map.get(key).qty+=row.qty;else map.set(key,{...row})}return [...map.values()]}
+function dailyCard(day){if(!['KH','Nhóm'].includes(people[active].role))return null;const source=texts[active].filter((t,i)=>messageDay(t)===day&&(typeof t==='string'?i%2===0:!t.mine)).map(t=>typeof t==='string'?t:t.originalText||t.text).join('\n');const rows=mergeGoods(extractGoods(source,goodsNames).rows);if(!rows.length)return null;const card=make('section','work-card');card.dataset.goodsDay=day;const head=make('header');head.append(make('strong','','Tổng hợp yêu cầu · '+day.split('-').reverse().join('/')),make('small','','Chưa duyệt'));card.append(head);const table=make('table'),tr=make('tr');for(const s of ['STT','Tên hàng','SL'])tr.append(make('th','',s));table.append(tr);rows.forEach((item,i)=>{const row=make('tr');row.append(make('td','',String(i+1)),make('td','',item.name),make('td','',String(item.qty)));table.append(row)});card.append(table);return card}
+function renderDailyThread(){messages.replaceChildren();const groups=new Map();texts[active].forEach((t,i)=>{const day=messageDay(t);if(!groups.has(day))groups.set(day,[]);groups.get(day).push([t,i])});if(!groups.size)groups.set(dateKey(new Date()),[]);for(const [day,items] of [...groups].sort((a,b)=>a[0].localeCompare(b[0]))){const label=make('div','day',day.split('-').reverse().join('/'));label.dataset.messageDay=day;messages.append(label);for(const [t,i] of items){const mine=typeof t==='string'?i%2:t.mine;const row=make('div','message'+(mine?' mine':''));row.dataset.messageDay=day;row.append(make('div','bubble',typeof t==='string'?t:t.text),make('div','meta',typeof t==='string'?(mine?'11:22 · Mẫu':'11:20'):t.time));messages.append(row)}if(active==='kh'&&day===dateKey(new Date())){renderContentSamples();messages.append(billPairDemo(),billVariantsDemo(),transactionJournalDemo(),sentAccountDetailDemo(),billReconcileDemo(),balanceNoticeDemo(),extraBillLayoutsDemo());compactBillDetails(messages)}const card=dailyCard(day);if(card)messages.append(card)}}
+function appendDailyMessage(row,t){const day=messageDay(t);row.dataset.messageDay=day;const old=messages.querySelector('[data-goods-day="'+day+'"]');if(old)old.remove();if(!messages.querySelector('.day[data-message-day="'+day+'"]')){const label=make('div','day',day.split('-').reverse().join('/'));label.dataset.messageDay=day;messages.append(label)}messages.append(row);const card=dailyCard(day);if(card)messages.append(card)}
+function billPairDemo(){
+const pair=make('div','bill-pair');const left=make('section'),right=make('section');left.append(make('p','module-note','Khách gửi · Bill mẫu'));right.append(make('p','module-note','Kết quả đọc bill'));
+const svg='<svg xmlns="http://www.w3.org/2000/svg" width="320" height="510" viewBox="0 0 320 510"><rect width="320" height="510" fill="#f7f8f7"/><circle cx="160" cy="44" r="20" fill="#28784b"/><path d="M150 44l7 7 14-16" fill="none" stroke="white" stroke-width="3"/><g font-family="Arial" fill="#222"><text x="160" y="88" text-anchor="middle" font-size="15">Chuyển khoản thành công</text><text x="160" y="126" text-anchor="middle" font-size="30" font-weight="bold">454.000 đ</text><text x="20" y="175" font-size="13">Ngày</text><text x="20" y="197" font-size="17">24/11/2026</text><text x="20" y="235" font-size="13">TK nhận</text><text x="20" y="257" font-size="17">2901181999999</text><text x="20" y="295" font-size="13">Tên người nhận</text><text x="20" y="317" font-size="17">BUI XUAN TUNG</text><text x="20" y="355" font-size="13">Nội dung</text><text x="20" y="377" font-size="17">Thanh toán hàng</text><text x="20" y="415" font-size="13">Mã giao dịch</text><text x="20" y="437" font-size="17">DEMO000123</text><text x="160" y="485" text-anchor="middle" font-size="12">BILL MẪU</text></g></svg>';
+const img=make('img');img.decoding='async';img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);img.alt='Bill mẫu 454.000, không có giờ';img.width=320;img.height=510;left.append(img);
+const card=businessCard('454.000',[['Ngày','24/11/2026'],['Giờ','Thiếu giờ'],['TK nhận','2901181999999'],['Tên TK','BUI XUAN TUNG'],['Nội dung','Thanh toán hàng'],['Mã giao dịch','DEMO000123']]);card.querySelectorAll('.business-row')[1].lastElementChild.classList.add('bill-missing');const status=make('p','module-note','Chờ đối soát · Thiếu giờ');const actions=make('div','bill-actions');const auto=make('button','','Ghi thu ngay');auto.disabled=true;const manual=make('button','','Thu thủ công');const duplicate=make('button','','Báo trùng (mẫu)');manual.onclick=()=>{status.textContent='Đã thu thủ công – đã soát bill (demo)';manual.disabled=true;duplicate.disabled=true};duplicate.onclick=()=>{status.textContent='Bill trùng (demo) · Không ghi thu';status.classList.add('bill-missing');manual.disabled=true;duplicate.disabled=true};actions.append(status,auto,manual,duplicate);card.append(actions);right.append(card);pair.append(left,right);return pair;
+}
+/* Synthetic receipt variants, not OCR or bank verification. */
+function billVariantsDemo(){
+const wrap=make('section');wrap.append(make('h3','','Mẫu bill theo dạng nhận dạng thực tế'));
+const fields=['Số tiền','STK nhận','Tên TK nhận','Ngày','Giờ','Nội dung','Mã giao dịch','Mã tra soát','NH chuyển','NH nhận'];
+const cases=[
+['Techcombank','screen','Đã ghi thu (mẫu)','FTDEMO001','10:30',null],
+['MoMo','wallet','Chờ thông báo ngân hàng','000123456789','10:27',null],
+['MB','screen','Đã ghi thu (mẫu)',null,'11:15',null],
+['VPBank','paper','Chờ xác minh','NAPAS_DEMO001',null,'000123'],
+['VPBank','detail','Đã thu thủ công (mẫu)','DEMO002',null,null],
+['BIDV','debit','Cần kiểm tra chiều giao dịch','DEMO003','19:56',null],
+['Vietcombank','paper','Chờ đối soát','000987654','08:15',null],
+['Agribank','credit','Chờ đối soát','NAPAS_DEMO004',null,'000456'],
+['VietinBank','detail','Bill trùng (mẫu)','DEMO004','12:15',null],
+['Bảng Excel','other','Không phải bill',null,null,null]
+];
+for(const [bank,kind,status,ref,time,trace] of cases){
+const pair=make('div','bill-pair');pair.style.marginBlock='12px';const left=make('section'),right=make('section');left.append(make('p','module-note','Ảnh tái dựng · '+bank));right.append(make('p','module-note','Kết quả nhận dạng'));
+const values=['350.000','2901181999999','BUI XUAN TUNG','24/11/2026',time,'Thanh toán mẫu',ref,trace,bank,'Agribank'];
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const paper=kind==='paper',notice=['debit','credit'].includes(kind),detail=kind==='detail',other=kind==='other';
+let y=paper?68:notice?105:130;
+const order=detail?[3,4,6,0,1,2,5,7,9]:notice?[3,4,0,5,1,7,6,2,9]:paper?[3,4,1,2,0,5,6,7,9]:[0,1,2,9,5,3,4,6,7];
+const lines=order.map(i=>{if(values[i]===null)return '';const val=i===0&&notice?(kind==='debit'?'-':'+')+values[i]:values[i];const out='<text x="16" y="'+y+'" font-size="11" fill="#666">'+esc(fields[i])+'</text><text x="16" y="'+(y+18)+'" font-size="15">'+esc(val)+'</text>';y+=paper?38:44;return out}).join('');
+const height=other?230:y+35;const bg=paper?'#fffdf5':kind==='wallet'?'#fff2f8':'#f7f8f7';const title=other?'Danh sách hàng':notice?'Biến động số dư':detail?'Chi tiết giao dịch':paper?'Biên lai chuyển tiền':'Chuyển khoản thành công';
+const body=other?'<path d="M12 70H288V190H12Z M12 100H288 M12 130H288 M12 160H288 M50 70V190 M230 70V190" fill="none" stroke="#aaa"/><text x="65" y="90" font-size="12">Tên hàng</text><text x="240" y="90" font-size="12">SL</text><text x="65" y="120" font-size="12">Sản phẩm A</text><text x="240" y="120" font-size="12">3</text>':lines;
+const svg='<svg xmlns="http://www.w3.org/2000/svg" width="300" height="'+height+'"><rect width="300" height="'+height+'" fill="'+bg+'"/><g font-family="Arial" fill="#222"><text x="150" y="24" text-anchor="middle" font-size="16" font-weight="bold">'+esc(bank)+'</text><text x="150" y="45" text-anchor="middle" font-size="13">'+esc(title)+'</text>'+(!paper&&!notice&&!detail&&!other?'<circle cx="150" cy="82" r="18" fill="#28784b"/><path d="M141 82l6 6 12-14" stroke="white" stroke-width="3" fill="none"/>':'')+body+'<text x="150" y="'+(height-10)+'" text-anchor="middle" font-size="10">DỮ LIỆU GIẢ · DEMO</text></g></svg>';
+const img=make('img');img.decoding='async';img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);img.alt=bank+' '+title+' (ảnh tái dựng)';img.width=300;img.height=height;left.append(img);
+const card=businessCard('Nhận dạng',other?[['Loại ảnh','Không phải bill']]:fields.map((label,i)=>[label,values[i]??'Thiếu thông tin']));if(!other)card.querySelectorAll('.business-row').forEach((row,i)=>{if(values[i]===null)row.lastElementChild.classList.add('bill-missing')});card.append(make('p','module-note',status));if(!other){const actions=make('div','bill-actions');const done=status.includes('Đã')||status.includes('trùng');const auto=make('button','','Ghi thu ngay');auto.disabled=true;const manual=make('button','','Thu thủ công');manual.disabled=done||kind==='debit';manual.onclick=()=>{card.append(make('p','module-note','Đã thu thủ công (demo)'));manual.disabled=true};actions.append(auto,manual);card.append(actions)}right.append(card);pair.append(left,right);wrap.append(pair)}return wrap}
+function transactionJournalDemo(){
+const pair=make('div','bill-pair');const left=make('section'),right=make('section');left.append(make('p','module-note','Ảnh nhật ký giao dịch'));right.append(make('p','module-note','Nhận dạng từng giao dịch'));
+const entries=[{amount:350000,time:'10:30',ref:'DEMO001',direction:'out',status:'Chờ đối soát'},{amount:120000,time:null,ref:null,direction:'out',status:'Thiếu giờ · Chờ xác minh'},{amount:500000,time:'09:15',ref:'DEMO003',direction:'in',status:'Cần xác định tài khoản nhận'}];
+const svg='<svg xmlns="http://www.w3.org/2000/svg" width="320" height="460"><rect width="320" height="460" fill="#f7f8f7"/><g font-family="Arial" fill="#222"><text x="160" y="30" text-anchor="middle" font-size="18">Lịch sử giao dịch</text><text x="16" y="65" font-size="12">Số dư khả dụng</text><text x="16" y="88" font-size="20">8.450.000 đ</text><text x="16" y="120" font-size="14">24/11/2026</text>'+entries.map((e,i)=>{const y=145+i*92;return '<path d="M16 '+y+'H304" stroke="#ddd"/><text x="16" y="'+(y+23)+'" font-size="13">'+(e.direction==='out'?'Chuyển tiền':'Nhận tiền')+'</text><text x="304" y="'+(y+23)+'" text-anchor="end" font-size="17">'+(e.direction==='out'?'-':'+')+money(e.amount)+'</text><text x="16" y="'+(y+45)+'" font-size="12">'+(e.time||'')+'</text><text x="16" y="'+(y+65)+'" font-size="12">'+(e.ref||'')+'</text>'}).join('')+'<text x="160" y="445" text-anchor="middle" font-size="11">DỮ LIỆU GIẢ · DEMO</text></g></svg>';
+const img=make('img');img.decoding='async';img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);img.alt='Nhật ký mẫu có ba giao dịch và số dư';img.width=320;img.height=460;left.append(img);
+const stack=make('div','bill-stack');entries.forEach((e,i)=>{const rows=[['Số tiền',money(e.amount)],['Chiều giao dịch',e.direction==='out'?'Tiền đi':'Tiền đến'],['Ngày','24/11/2026'],['Giờ',e.time],['STK nhận',null],['Tên TK nhận',null],['Nội dung',null],['Mã giao dịch',e.ref]];const card=businessCard('Giao dịch '+(i+1),rows.map(([k,v])=>[k,v??'Thiếu thông tin']));card.querySelectorAll('.business-row').forEach((r,j)=>{if(rows[j][1]===null)r.lastElementChild.classList.add('bill-missing')});card.append(make('p','module-note',e.status));const actions=make('div','bill-actions');const auto=make('button','','Ghi thu ngay');auto.disabled=true;const manual=make('button','','Thu thủ công');manual.disabled=true;actions.append(auto,manual);card.append(actions);stack.append(card)});right.append(stack);pair.append(left,right);return pair}
+function sentAccountDetailDemo(){
+const pair=make('div','bill-pair');const left=make('section'),right=make('section');left.append(make('p','module-note','Chi tiết giao dịch · Mẫu'));right.append(make('p','module-note','Đọc từng trường'));
+const expected='2901181999999',read='290118199999';const svg='<svg xmlns="http://www.w3.org/2000/svg" width="320" height="370"><rect width="320" height="370" fill="#f7f8f7"/><g font-family="Arial" fill="#222"><text x="160" y="32" text-anchor="middle" font-size="17">Chi tiết giao dịch</text><text x="160" y="80" text-anchor="middle" font-size="28">−2.250.000 đ</text><text x="16" y="125" font-size="12">Gửi vào STK</text><text x="16" y="148" font-size="19">'+expected+'</text><text x="16" y="185" font-size="12">Tên người nhận</text><text x="16" y="208" font-size="17">BUI XUAN TUNG</text><text x="16" y="245" font-size="12">Thời gian</text><text x="16" y="268" font-size="17">15:16</text><text x="16" y="305" font-size="12">Nội dung</text><text x="16" y="326" font-size="15">Thanh toán mẫu</text><text x="160" y="355" text-anchor="middle" font-size="11">DỮ LIỆU GIẢ</text></g></svg>';const img=make('img');img.decoding='async';img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);img.width=320;img.height=370;img.alt='Chi tiết một giao dịch gửi vào STK';left.append(img);
+const card=businessCard('Nhận dạng',[['Số tiền','2.250.000'],['Chiều tiền','Tiền đi từ người chuyển'],['STK nhận (OCR)',read],['Tên TK nhận','BUI XUAN TUNG'],['Ngày','Thiếu thông tin'],['Giờ','15:16'],['Nội dung','Thanh toán mẫu'],['Mã giao dịch','Thiếu thông tin']]);const rows=card.querySelectorAll('.business-row');[2,4,7].forEach(i=>rows[i].lastElementChild.classList.add('bill-missing'));const note=make('p','module-note','STK cần đọc lại: OCR '+read.length+' số, tài khoản mẫu cấu hình '+expected.length+' số. Không tự thêm số 9.');card.append(note);const actions=make('div','bill-actions');const auto=make('button','','Ghi thu ngay');auto.disabled=true;const manual=make('button','','Thu thủ công');manual.disabled=true;const review=make('button','','Đọc lại vùng STK (demo)');review.onclick=()=>{note.textContent='Kết quả đọc lại mẫu: '+expected+' · Chờ đối soát ngân hàng';rows[2].lastElementChild.textContent=expected;rows[2].lastElementChild.classList.remove('bill-missing');review.disabled=true};actions.append(review,auto,manual);card.append(actions);right.append(card);pair.append(left,right);return pair}
+function billReconcileDemo(){
+const wrap=make('section','business-card bill-reconcile');const head=make('header');head.append(make('span','','Đối soát bill'),make('span','','Demo'));wrap.append(head);
+const configured='2901181999999';const original=Object.freeze({account:'290118199999',name:'BUI XUAN TUNG',amount:2250000,time:'15:16',date:null});let reread=null,bank=null,posted=false;
+const body=make('div','bill-reconcile-body');wrap.append(body);
+function draw(){body.replaceChildren();const effective=reread||original;const match=!!bank&&effective.account===configured&&bank.account===configured&&bank.amount===effective.amount&&bank.name===effective.name&&bank.time===effective.time;const rows=[['STK OCR lần đầu',original.account],['STK đọc lại',reread?.account||'Chưa đọc lại'],['STK cấu hình',configured],['Tên TK nhận',effective.name],['Số tiền',money(effective.amount)],['Ngày trên ảnh','Thiếu thông tin'],['Giờ trên ảnh',effective.time],['Ngân hàng xác nhận',bank?money(bank.amount)+' · '+bank.time:'Chưa có'],['Ngày ngân hàng',bank?.date||'Chưa có']];const card=businessCard('Ba nguồn dữ liệu',rows);card.querySelectorAll('.business-row')[0].lastElementChild.classList.add('bill-missing');card.querySelectorAll('.business-row')[5].lastElementChild.classList.add('bill-missing');body.append(card);const status=make('p','module-note',posted?'Đã ghi thu (demo) · Ảnh thiếu ngày':match?'Khớp giao dịch mẫu · Cần xác minh ngày trên ảnh':effective.account!==configured?'STK cần đọc lại':'Chờ đối soát ngân hàng');body.append(status);
+const actions=make('div','bill-actions');const review=make('button','outline','Đọc lại STK (mẫu)');review.disabled=!!reread||posted;review.onclick=()=>{reread={...original,account:configured};draw()};const receive=make('button','outline','Mô phỏng ngân hàng xác nhận');receive.disabled=!!bank||posted;receive.onclick=()=>{bank={account:configured,name:'BUI XUAN TUNG',amount:2250000,time:'15:16',date:'24/11/2026'};draw()};const collect=make('button','outline','Xác minh ngày và thu thủ công (mẫu)');collect.disabled=!match||posted;collect.onclick=()=>{if(!match||posted)return;posted=true;draw()};actions.append(review,receive,collect);body.append(actions)}draw();return wrap}
+function parseBalanceNotice(raw){const fields={};for(const part of raw.split('|')){const m=part.trim().match(/^(GD|SD|DEN|ND):\s*([\s\S]*)$/i);if(m)fields[m[1].toUpperCase()]=m[2].trim()}const gd=fields.GD||'',amt=gd.match(/^([+-]?)([\d,.]+)\s*VND/i),date=gd.match(/\b(\d{2}\/\d{2}\/\d{2,4})\b/),time=gd.match(/\b(\d{2}:\d{2})\b/),dest=(fields.DEN||'').match(/^([\s\S]+?)\s*-\s*(\d+)$/);return {amount:amt?Number(amt[2].replace(/[,.]/g,'')):null,direction:amt?.[1]==='-'?'Tiền đi từ người chuyển':amt?.[1]==='+'?'Tiền đến':'Chưa xác định',date:date?date[1]:null,time:time?time[1]:null,name:dest?dest[1].replace(/\s+/g,' '):null,account:dest?dest[2]:null,memo:fields.ND?.replace(/\s+/g,' ')||null,balance:fields.SD||null}}
+function balanceNoticeDemo(){const pair=make('div','bill-pair'),left=make('section'),right=make('section');left.append(make('p','module-note','Thông báo biến động số dư'));right.append(make('p','module-note','Kết quả tách trường'));const raw='TK 09xxx000|GD: -2,250,000VND 24/11/26 15:16|SD: 1,048,779VND|DEN: Bui\nXuan Tung -\n2901181999999|ND: NGUYEN VAN B chuyen tien';const image=make('div','business-card');const head=make('header');head.append(make('span','','Nội dung thông báo'));image.append(head);const content=make('div','','Thông báo biến động số dư\n'+raw);content.style.cssText='padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;font-size:13px';image.append(content);left.append(image);const p=parseBalanceNotice(raw);const card=businessCard('Nhận dạng',[['Số tiền',money(p.amount)],['Chiều giao dịch',p.direction],['Ngày',p.date],['Giờ',p.time],['Tên TK nhận',p.name],['STK nhận',p.account],['Nội dung',p.memo],['Số dư (không ghi thu)',p.balance]]);card.append(make('p','module-note','Chờ đối soát Agribank · Dữ liệu mẫu'));right.append(card);pair.append(left,right);return pair}
+function extraBillLayoutsDemo(){
+const wrap=make('section');wrap.append(make('h3','','Các cấu trúc ảnh bổ sung'));
+const cases=[
+{title:'Chụp màn hình điện thoại bằng máy khác',kind:'phone',rows:[['350.000','10:30','2901181999999']]},
+{title:'Sao kê dạng bảng',kind:'table',rows:[['350.000','10:30','2901181999999'],['120.000','11:15','2901181999999']]},
+{title:'Hai bill ghép trong một ảnh',kind:'collage',rows:[['350.000','10:30','2901181999999'],['120.000','11:15','2901181999999']]},
+{title:'Ảnh mờ / mất góc',kind:'blur',rows:[['350.000',null,null]]},
+{title:'Bill có vùng QR',kind:'qr',rows:[['350.000','10:30','2901181999999']]}];
+for(const c of cases){const pair=make('div','bill-pair'),left=make('section'),right=make('section');left.append(make('p','module-note',c.title));right.append(make('p','module-note','Kết quả nhận dạng'));const height=c.kind==='phone'?420:c.kind==='qr'?390:320;let body='';
+if(c.kind==='phone')body+='<rect width="320" height="420" fill="#aaa"/><rect x="24" y="35" width="272" height="365" rx="24" fill="#222"/><rect x="34" y="49" width="252" height="337" rx="16" fill="#fff"/>';
+else body+='<rect width="320" height="'+height+'" fill="#fafafa"/>';
+if(c.kind==='table'){body+='<text x="16" y="40" font-size="18">Sao kê giao dịch</text><path d="M12 65H308V190H12Z M12 100H308 M12 145H308 M75 65V190 M185 65V190" stroke="#aaa" fill="none"/><text x="20" y="87" font-size="12">Giờ</text><text x="85" y="87" font-size="12">Số tiền</text><text x="195" y="87" font-size="12">STK nhận</text>';c.rows.forEach((r,i)=>{const y=126+i*45;body+='<text x="20" y="'+y+'" font-size="12">'+r[1]+'</text><text x="85" y="'+y+'" font-size="14">'+r[0]+'</text><text x="190" y="'+y+'" font-size="12">'+r[2]+'</text>'})}
+else {c.rows.forEach((r,i)=>{const y=c.kind==='phone'?100:35+i*140;body+='<g '+(c.kind==='blur'?'filter="url(#blur)"':'')+'><text x="42" y="'+y+'" font-size="15">Chuyển khoản thành công</text><text x="42" y="'+(y+30)+'" font-size="23">'+r[0]+'</text><text x="42" y="'+(y+54)+'" font-size="13">BUI XUAN TUNG</text><text x="42" y="'+(y+76)+'" font-size="14">'+(r[2]||'29011819…')+'</text><text x="42" y="'+(y+98)+'" font-size="13">'+(r[1]||'…')+'</text></g>';if(c.kind==='collage')body+='<path d="M16 '+(y+116)+'H304" stroke="#aaa"/>'});if(c.kind==='qr')body+='<rect x="110" y="160" width="100" height="100" fill="none" stroke="#999" stroke-dasharray="4 3"/><text x="160" y="205" text-anchor="middle" font-size="13">Vùng QR</text><text x="160" y="225" text-anchor="middle" font-size="10">Không phải mã thật</text>'}
+const svg='<svg xmlns="http://www.w3.org/2000/svg" width="320" height="'+height+'"><defs><filter id="blur"><feGaussianBlur stdDeviation="2.5"/></filter></defs><g font-family="Arial" fill="#222">'+body+'<text x="160" y="'+(height-10)+'" text-anchor="middle" font-size="10">DỮ LIỆU MẪU</text></g></svg>';const img=make('img');img.decoding='async';img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);img.width=320;img.height=height;img.alt=c.title;left.append(img);
+const stack=make('div','bill-stack');c.rows.forEach((r,i)=>{const fields=[['Số tiền',r[0]],['Tên TK nhận',c.kind==='blur'?null:'BUI XUAN TUNG'],['STK nhận',r[2]],['Ngày',null],['Giờ',r[1]],['Nội dung',null],['Mã giao dịch',null]];if(c.kind==='qr')fields.push(['QR','Chưa giải mã']);const card=businessCard('Giao dịch '+(i+1),fields.map(([k,v])=>[k,v??'Thiếu thông tin']));card.querySelectorAll('.business-row').forEach((row,j)=>{if(fields[j][1]===null)row.lastElementChild.classList.add('bill-missing')});card.append(make('p','module-note',c.kind==='blur'?'Ảnh mờ · Không tự thu':c.kind==='qr'?'QR chưa xác minh · Chờ đối soát':'Chờ đối soát từng giao dịch'));const actions=make('div','bill-actions');const auto=make('button','','Ghi thu ngay');auto.disabled=true;const review=make('button','','Kiểm tra vùng ảnh');review.onclick=()=>{review.textContent='Cần xác minh ảnh gốc';review.disabled=true};actions.append(review,auto);card.append(actions);stack.append(card)});right.append(stack);pair.append(left,right);wrap.append(pair)}return wrap}
+function compactBillDetails(root){
+for(const card of root.querySelectorAll('.bill-pair .business-card')){if(card.dataset.compactBill)continue;const rows=[...card.querySelectorAll(':scope > .business-row')];const optional=rows.filter(r=>/^(Mã giao dịch|Mã tra soát|NH chuyển|NH nhận|Số dư \(không ghi thu\)|QR)$/.test(r.firstElementChild.textContent));if(!optional.length)continue;card.dataset.compactBill='1';const details=make('details','bill-extra');const summary=make('summary','','Thông tin bổ sung ('+optional.length+')');details.append(summary);const first=optional[0];first.before(details);for(const row of optional)details.append(row);}}
+function renderContentSamples(){if(new URLSearchParams(location.search).get('kbmode')==='light')return;
+const samples=[
+['Một dòng','Cho lấy 2 thùng sữa.'],
+['Hai dòng','Sữa tươi 2 thùng\nBánh quy 3 hộp'],
+['Ba dòng','Sữa tươi 2 thùng\nBánh quy 3 hộp\nGiao chiều nay'],
+['Bốn dòng','Sữa tươi 2 thùng\nBánh quy 3 hộp\nNước ngọt 5 thùng\nGiao chiều nay'],
+['Định dạng',''],
+['Danh sách',''],
+['Media','']
+];
+for(const [label,value] of samples){
+const row=make('div','message sample-message'),bubble=make('div','bubble sample-content',value);
+if(label==='Định dạng'){bubble.append(make('strong','','Nội dung in đậm'),make('u','','Nội dung gạch chân'),make('em','','Nội dung in nghiêng'),make('span','muted-sample','Nội dung phụ màu mờ'),make('s','','Nội dung gạch ngang'))}
+if(label==='Danh sách'){for(const tag of ['ul','ol']){const list=make(tag);for(const t of ['Sữa tươi · 2 thùng','Bánh quy · 3 hộp','Nước ngọt · 5 thùng'])list.append(make('li','',t));bubble.append(list)}}
+if(label==='Media'){
+const ratios={N:[640,360],D:[360,640],V:[480,480]};
+const combinations=n=>n===0?['']:combinations(n-1).flatMap(s=>['N','D','V'].map(t=>s+t));
+const all=Array.from({length:4},(_,i)=>combinations(i+1)).flat();
+for(const types of all){const mediaRow=make('div','message sample-message');const gallery=make('div','bubble sample-content media-gallery');
+const caption=make('div','media-caption',types.length+' ảnh · '+[...types].map(t=>({N:'ngang',D:'dọc',V:'vuông'})[t]).join(' / '));gallery.append(caption);
+const grid=make('div','sample-media mixed-media count-'+Math.min(types.length,4));grid.dataset.single=types.length===1?'true':'false';grid.dataset.pattern=types; if(types.length===2&&types==='DD')grid.classList.add('portrait-pair');if(types.length===3&&types[0]==='D')grid.classList.add('portrait-lead');
+[...types].forEach((t,i)=>{const [w,h]=ratios[t];const tile=make('button','media-tile');tile.type='button';tile.style.setProperty('--ratio',w+'/'+h);const img=make('img');img.decoding='async';img.alt='Ảnh mẫu '+i+' '+t;img.width=w;img.height=h;img.loading='lazy';img.decoding='async';img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><rect width="100%" height="100%" fill="#e5e7eb"/><circle cx="'+w*.72+'" cy="'+h*.25+'" r="'+Math.min(w,h)*.09+'" fill="#a3a3a3"/><path d="M0 '+h+' L'+w*.35+' '+h*.4+' L'+w*.6+' '+h*.7+' L'+w*.8+' '+h*.5+' L'+w+' '+h+'Z" fill="#9ca3af"/><text x="50%" y="90%" text-anchor="middle" font-size="24" fill="#222">'+w+' × '+h+'</text></svg>');tile.append(img);tile.onclick=()=>{const d=document.createElement('dialog');d.className='sample-dialog media-viewer';const full=img.cloneNode();const close=make('button','','Đóng');close.onclick=()=>d.close();let angle=0;const rotate=make('button','','Xoay 90°');rotate.onclick=()=>{angle=(angle+90)%360;const canvas=document.createElement('canvas'),quarter=angle%180!==0,w=img.naturalWidth||img.width,ht=img.naturalHeight||img.height;canvas.width=quarter?ht:w;canvas.height=quarter?w:ht;const ctx=canvas.getContext('2d');ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(angle*Math.PI/180);ctx.drawImage(img,-w/2,-ht/2,w,ht);full.src=canvas.toDataURL();full.width=canvas.width;full.height=canvas.height};d.append(full,rotate,close);document.body.append(d);d.addEventListener('close',()=>d.remove());d.showModal()};grid.append(tile)});gallery.append(grid);mediaRow.append(gallery,make('div','meta','11:30'));messages.append(mediaRow);
+}continue;
+}
+const meta=make('div','meta','11:30 · '+label);
+const actions=make('div','sample-actions');
+for(const action of ['Sao chép','Chia sẻ','Lưu','Chuyển tiếp']){const b=make('button','sample-action-icon');b.type='button';b.title=action;b.setAttribute('aria-label',action);const paths={'Sao chép':'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>','Chia sẻ':'<path d="M12 15V3m-4 4 4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>','Lưu':'<path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"/>','Chuyển tiếp':'<path d="m14 5 7 7-7 7v-5H9c-3 0-5 1-6 4 0-7 3-10 11-10z"/>'};b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+paths[action]+'</svg>';b.onclick=async()=>{const content=bubble.innerText;try{if(action==='Sao chép'){await navigator.clipboard.writeText(content);b.title='Đã sao chép';b.setAttribute('aria-label','Đã sao chép');b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m5 12 4 4L19 6"/></svg>'}else if(action==='Chia sẻ'&&navigator.share){await navigator.share({text:content})}else if(action==='Lưu'){const blob=new Blob([content],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='noi-dung-mau.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}else{b.title='Chưa kết nối';b.setAttribute('aria-label','Chưa kết nối')}}catch(e){if(e.name!=='AbortError')b.title='Không khả dụng';b.setAttribute('aria-label','Không khả dụng')}};actions.append(b)}
+row.append(bubble,meta,actions);messages.append(row);
+}}
+/* Conservative demo extraction: exact known names, explicit positive integer quantities. */
+function extractGoods(source,names){
+const rows=[],review=[];const known=[...names].sort((a,b)=>b.length-a.length);
+for(const raw of String(source).split(/\n|[,;]/)){const line=raw.trim().replace(/^(?:cho lấy|lấy|cho em lấy)\s+/iu,'').replace(/[.!]$/,'').trim();if(!line)continue;
+const name=known.find(n=>line.toLocaleLowerCase('vi').startsWith(n.toLocaleLowerCase('vi')+' '));
+if(name){const tail=line.slice(name.length).trim();const m=tail.match(/^(?:sl\s*[:=]?\s*)?([1-9]\d{0,5})(?:\s*(thùng|th|t|hộp|chai|gói|cái|lốc|kg))?$/iu);if(m){rows.push({name:line.slice(0,name.length),qty:Number(m[1]),unit:m[2]||'',source:raw.trim()});continue}}
+review.push(raw.trim())}
+return {rows,review};
+}
+function renderGoods(panel){
+const names=['Sản phẩm A','Sản phẩm B','Sữa tươi','Bánh quy','Nước ngọt','454','1kg','Kopico sữa','Cosy bơ 600','Nuvi to'];
+const input=make('textarea');input.setAttribute('aria-label','Nội dung lấy hàng');input.style.cssText='width:100%;min-height:96px;padding:10px;border:1px solid var(--line);border-radius:12px;resize:vertical';input.value=texts[active].filter(t=>typeof t==='object'&&!t.mine).map(t=>t.originalText||t.text).join('\n')||String(texts[active][0]||'');
+const button=make('button','outline','Tổng hợp nội dung');button.type='button';const result=make('div');panel.append(input,button,result);
+function draw(){const extracted=extractGoods(input.value,names),rows=mergeGoods(extracted.rows),review=extracted.review;result.replaceChildren();const table=make('div','work-card');const t=make('table');const head=make('tr');for(const label of ['STT','Tên','SL'])head.append(make('th','',label));t.append(head);rows.forEach((item,i)=>{const tr=make('tr');tr.append(make('td','',String(i+1)),make('td','',item.name),make('td','',String(item.qty)));t.append(tr)});table.append(t);result.append(table);if(!rows.length)result.append(make('p','','Chưa có dòng đủ điều kiện'));if(review.length){result.append(make('h3','','Cần kiểm tra / ghi chú'));for(const line of review)result.append(make('p','',line))}result.append(make('p','module-note','Chỉ nhận diện tên trong danh mục mẫu. Không tạo đơn, không suy diễn.'))}
+button.onclick=draw;draw();
+}
+function businessCard(title,rows,total){const card=make('section','business-card');const head=make('header');head.append(make('span','',title),make('span','','Mẫu'));card.append(head);for(const [a,b] of rows){const r=make('div','business-row');r.append(make('span','',a),make('span','',b));card.append(r)}if(total){const foot=make('footer');foot.append(make('span','',total[0]),make('span','',total[1]));card.append(foot)}return card}
+function orderTable(order){const card=make('section','work-card order-card');const head=make('header');head.append(make('strong','','Đơn hàng'),make('small','','Đơn tạm'));card.append(head);const table=make('table');const cols=make('colgroup');for(const k of ['stt','name','qty','price','total']){const col=make('col');col.className='order-'+k;cols.append(col)}table.append(cols);const thead=make('thead'),tr=make('tr');for(const label of ['STT','Tên hàng','SL','Đơn giá','Thành tiền']){const th=make('th','',label);th.scope='col';tr.append(th)}thead.append(tr);table.append(thead);const tbody=make('tbody');order.items.forEach((item,i)=>{const row=make('tr');for(const v of [i+1,item.name,item.qty,money(item.price),money(item.qty*item.price)])row.append(make('td','',String(v)));tbody.append(row)});table.append(tbody);const foot=make('tfoot'),total=make('tr'),label=make('td','','Tổng tiền');label.colSpan=4;total.append(label,make('td','',money(order.items.reduce((s,i)=>s+i.qty*i.price,0))));foot.append(total);table.append(foot);card.append(table);return card}
+function showModule(label){
+const panel=$('#moduleContent');panel.replaceChildren(make('h3','',label),make('p','',''+people[active].name+' · Dữ liệu minh họa'));
+if(label==='Tổng hợp'&&(people[active].role==='KH'||people[active].role==='Nhóm')){renderGoods(panel);return}
+const samples={
+'Tổng hợp':[['Sản phẩm A','2'],['Sản phẩm B','3'],['Trạng thái','Chưa tiếp nhận']],
+'Đơn hàng':[['Đơn tạm','2 mặt hàng'],['Sản phẩm A','2 × 100.000 = 200.000'],['Sản phẩm B','3 × 50.000 = 150.000'],['Tổng tiền','350.000 đ'],['Trạng thái','Chưa giao']],
+'Công nợ':[['Số dư đầu','−500.000 đ'],['Giao hàng','−350.000 đ'],['Thu tiền','+200.000 đ'],['Số dư hiện tại','−650.000 đ']],
+'Bill':[['Số tiền','200.000 đ'],['TK nhận','2901181999999'],['Ngày giờ','24/11 · 10:30'],['Nội dung','Thanh toán mẫu'],['Đối soát','Chờ xác minh']],
+'Báo giá':[['Lịch gửi','08:00 · VN'],['Phạm vi','7 ngày gần nhất'],['Sản phẩm A','100.000 → 105.000'],['Điều kiện','Chỉ gửi khi đổi giá']],
+'Liên kết Zalo':[['Loại liên kết',people[active].role==='Nhóm'?'Nhóm':'Cá nhân'],['ID kênh','Chưa khai báo'],['Trạng thái','Chưa kết nối']],
+'Giá vốn':[['Sản phẩm A','80.000 → 82.000'],['Trạng thái','Chờ duyệt']],
+'Nhập hàng':[['Phiếu mẫu','PN-001'],['Sản phẩm A','10'],['Trạng thái','Chưa nhập']],
+'Thành viên':[['Thành viên mẫu A','KH'],['Thành viên mẫu B','KH']],
+'Tiếp nhận':[['Yêu cầu mẫu','Chờ tiếp nhận']],
+'Kiểm hàng':[['Sản phẩm A','2 / 2'],['Sản phẩm B','0 / 3']],
+'Giao hàng':[['Đơn mẫu','Chờ giao']],
+'Công việc':[['Kiểm hàng','Chưa hoàn thành']]
+};
+const data=crmData[active];if(data){const order=data.orders[0],bill=data.payments[0];samples['Đơn hàng']=[['Đơn tạm',order.items.length+' mặt hàng'],...order.items.map(i=>[i.name,i.qty+' × '+money(i.price)+' = '+money(i.qty*i.price)]),['Tổng tiền',money(order.items.reduce((s,i)=>s+i.qty*i.price,0))+' đ'],['Trạng thái','Chưa giao']];samples['Công nợ']=[...data.ledger.map(i=>[({opening:'Số dư đầu',delivery:'Giao hàng',receipt:'Thu tiền'})[i.kind],(i.amount>0?'+':'')+money(i.amount)+' đ']),['Số dư hiện tại',money(data.ledger.reduce((s,i)=>s+i.amount,0))+' đ']];samples['Bill']=[['Số tiền',money(bill.amount)+' đ'],['TK nhận',bill.account],['Ngày giờ',bill.date.split('-').reverse().join('/')+' · '+bill.time],['Nội dung',bill.memo],['Mã giao dịch',bill.transactionCode||'Không có'],['Đối soát','Chờ xác minh']]}
+if(label==='Bill'){panel.append(businessCard('Nhận dạng bill',samples['Bill']),businessCard('Thu tiền',[['Nguồn','Bill mẫu'],['Đối soát','Chờ xác minh'],['Trạng thái','Chưa ghi thu']],['Số tiền','200.000']));return}
+if(label==='Công nợ'){panel.append(businessCard('Ghi nợ',[['Nguồn','Đơn hàng mẫu'],['Trạng thái','Minh họa']],['Số tiền','350.000']),businessCard('Sổ công nợ',samples[label].slice(0,-1),samples[label].at(-1)));return}
+if(label==='Đơn hàng'&&data){panel.append(orderTable(data.orders[0]));return}
+if(label==='Đơn hàng'){panel.append(businessCard('Đơn hàng',samples[label].filter(r=>r[0]!=='Tổng tiền'),samples[label].find(r=>r[0]==='Tổng tiền')));return}
+const fields=make('div','fields');(samples[label]||[['Trạng thái','Minh họa']]).forEach(([a,b])=>{const r=make('div','field');r.append(make('span','',a),make('span','',b));fields.append(r)});panel.append(fields);
+const note=make('p','module-note',label==='Công nợ'?'Nợ đuổi: âm là còn nợ, dương là dư tiền. Không phân bổ theo đơn.':label==='Bill'?'Chỉ ghi thu sau khi đối soát hợp lệ.':'Bố cục tĩnh, không phát sinh nghiệp vụ thật.');panel.append(note);
+}
+let draftFrame=0;
+let measureWidth=0;const draftMeasure=document.createElement('div');draftMeasure.className='draft-measure';document.body.append(draftMeasure);
+function resizeDraft(){
+const send=document.querySelector('.composer .send');send.disabled=!draft.value.trim();
+if(draftFrame)return;draftFrame=requestAnimationFrame(()=>{draftFrame=0;const width=draft.clientWidth;if(!width)return;const pinned=nearBottom();if(measureWidth!==width){measureWidth=width;const cs=getComputedStyle(draft);for(const k of ['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','padding','boxSizing'])draftMeasure.style[k]=cs[k];draftMeasure.style.width=width+'px';}draftMeasure.textContent=draft.value+'\u200b';const next=Math.max(44,Math.min(132,draftMeasure.scrollHeight));if(draft.style.height!==next+'px'){draft.style.height=next+'px';if(pinned&&!navigationPending&&!touchingMessages&&performance.now()>scrollingUntil)messages.scrollTop=messages.scrollHeight}draft.style.overflowY=draftMeasure.scrollHeight>132?'auto':'hidden'});
+}
+draft.addEventListener('input',resizeDraft);
+$('#composer').addEventListener('submit',e=>{e.preventDefault();const t=normalizeLines(draft.value.trim());if(!t)return;texts[active].push({text:t,mine:true,time:clock(),date:Date.now()});updateContact(active);draft.value='';drafts[active]='';const row=make('div','message mine');row.append(make('div','bubble',t),make('div','meta',texts[active].at(-1).time));appendDailyMessage(row,texts[active].at(-1));resizeDraft();draft.focus({preventScroll:true});const epoch=navigationEpoch,owner=active;requestAnimationFrame(()=>{if(epoch!==navigationEpoch||owner!==active||app.dataset.screen!=='chat')return;messages.scrollTop=messages.scrollHeight;anchor={pinned:true,top:messages.scrollTop};syncJump()})});
+
+const photoInput=make('input');photoInput.type='file';photoInput.accept='image/*';photoInput.multiple=true;photoInput.hidden=true;document.body.append(photoInput);
+$('#mediaBtn').addEventListener('click',()=>photoInput.click());
+photoInput.addEventListener('change',async()=>{
+const files=Array.from(photoInput.files).slice(0,4);photoInput.value='';if(!files.length)return;
+const owner=active;const d=make('dialog','sample-dialog local-preview');const grid=make('div','sample-media mixed-media count-'+files.length);grid.dataset.single=String(files.length===1);const urls=[];const items=[];
+const close=make('button','','Đóng');close.onclick=()=>d.close();d.append(make('strong','','Kiểm tra ảnh thật · '+files.length+' ảnh'),grid,close);document.body.append(d);d.addEventListener('close',()=>{urls.forEach(u=>URL.revokeObjectURL(u));d.remove()});d.showModal();
+for(const file of files){if(!d.open)break;const url=URL.createObjectURL(file);urls.push(url);const tile=make('div','local-tile');const img=make('img');img.decoding='async';img.alt=file.name;img.src=url;try{await img.decode()}catch{tile.textContent='Không đọc được ảnh';grid.append(tile);continue}if(!d.open)break;const w=img.naturalWidth,h=img.naturalHeight;items.push(w/h);tile.style.setProperty('--ratio',w+'/'+h);const info=make('small','',w+' × '+h);const rotate=make('button','','Xoay 90°');let angle=0;rotate.onclick=()=>{angle=(angle+90)%360;img.style.transform='rotate('+angle+'deg)';img.style.objectFit='contain';img.style.width=angle%180?'70%':'100%';info.textContent=(angle%180?h+' × '+w:w+' × '+h)+' · '+angle+'°'};tile.append(img,info,rotate);grid.append(tile)}
+if(files.length===2&&items.length===2&&items.every(r=>r<.85))grid.classList.add('portrait-pair');if(files.length===3&&items[0]<.85)grid.classList.add('portrait-lead');
+});
+
+$('#addContact').addEventListener('click',()=>{setSearchOpen(true,true);$('#search').placeholder='Thêm danh bạ sẽ triển khai sau — đang dựng bố cục'});
+function nearBottom(){return messages.scrollHeight-messages.clientHeight-messages.scrollTop<48}
+const jump=document.getElementById('jumpBottom');function syncJump(){const height=messages.clientHeight,top=messages.scrollTop,bottom=height>0&&messages.scrollHeight-height-top<48;if(bottom&&!navigationPending)pendingLatest[active]=0;const n=pendingLatest[active]||0,hidden=bottom||height===0;if(jump.hidden!==hidden)jump.hidden=hidden;if(n){if(jump.dataset.count!==String(n))jump.dataset.count=String(n)}else if(jump.hasAttribute('data-count'))delete jump.dataset.count}jump.addEventListener('click',()=>{messages.scrollTop=messages.scrollHeight;syncJump()});let jumpFrame=0;function scheduleJump(){if(!jumpFrame)jumpFrame=requestAnimationFrame(()=>{jumpFrame=0;if(!navigationPending&&messages.clientHeight)scrolls[active]={top:messages.scrollTop,pinned:nearBottom()};syncJump()})}messages.addEventListener('scroll',()=>{if(performance.now()>geometryScrollUntil)scrollingUntil=performance.now()+180;scheduleJump()},{passive:true});new ResizeObserver(scheduleJump).observe(messages);
+
+// KeyboardController: one viewport owner, one layout/scroll transaction per frame.
+let viewportFrame=0,previousRect='',anchor=null,scrollingUntil=0,geometryScrollUntil=0;
+let restingHeight=0,keyboardOpen=false,touchingMessages=false;
+let appliedRect={},viewportScrollFrame=0,viewportSettle=0;
+const keyboardComposer=document.querySelector('.composer-frame');
+let composerHeight=0;
+new ResizeObserver(entries=>{composerHeight=Math.ceil(entries[0].borderBoxSize?.[0]?.blockSize||keyboardComposer.offsetHeight);if(composerHeight)app.style.setProperty('--composer-reserve',composerHeight+'px');updateViewport()}).observe(keyboardComposer);
+function applyViewport(){
+viewportFrame=0;
+const vv=window.visualViewport,height=Math.round(vv?.height||innerHeight),width=Math.round(vv?.width||innerWidth),top=Math.round(vv?.offsetTop||0),focused=InputController.isEditable(document.activeElement);
+const mobile=width<768,chat=mobile&&app.dataset.screen==='chat';
+if(!restingHeight||(!focused&&!keyboardOpen))restingHeight=height;
+const occlusion=Math.max(0,restingHeight-height),open=focused&&occlusion>=80;
+keyboardOpen=open;
+const rect={top,left:Math.round(vv?.offsetLeft||0),height,width};
+if(chat){
+app.classList.add('inset-chat');
+const base=restingHeight;
+const bottom=Math.min(base,top+height);
+const inset=focused?Math.max(0,base-bottom):0;
+const key=[base,width,inset,composerHeight,open].join('/');
+if(key===previousRect)return;previousRect=key;
+if(app.dataset.keyboard!==String(open))app.dataset.keyboard=String(open);
+app.style.setProperty('--chat-base',base+'px');
+app.style.setProperty('--keyboard-inset',inset+'px');
+const pinned=anchor?.pinned??nearBottom();
+if(pinned&&!touchingMessages&&!navigationPending){if(viewportScrollFrame)cancelAnimationFrame(viewportScrollFrame);const epoch=navigationEpoch;viewportScrollFrame=requestAnimationFrame(()=>{viewportScrollFrame=0;if(epoch===navigationEpoch&&!touchingMessages&&app.dataset.screen==='chat'){geometryScrollUntil=performance.now()+100;messages.scrollTop=messages.scrollHeight;syncJump()}})}
+if(!focused)anchor=null;
+}else{
+app.classList.remove('inset-chat');app.dataset.keyboard=String(open);
+for(const [name,value] of Object.entries(rect))if(appliedRect[name]!==value)document.documentElement.style.setProperty('--view-'+name,value+'px');
+appliedRect=rect;
+}
+}
+function updateViewport(){if(!viewportFrame)viewportFrame=requestAnimationFrame(applyViewport)}
+messages.addEventListener('touchstart',()=>{touchingMessages=true},{passive:true});
+messages.addEventListener('touchmove',()=>{anchor=null},{passive:true});
+for(const event of ['touchend','touchcancel'])messages.addEventListener(event,()=>{touchingMessages=false},{passive:true});
+/* Opt-in dynamic geometry sampler; read-only, no scroll or focus writes. */
+if(new URLSearchParams(location.search).get('dynamic')==='1'){
+const report=document.createElement('pre');report.className='perf-panel';report.style.cssText='top:auto;bottom:8px;left:8px;right:auto;max-width:90vw;white-space:pre-wrap;pointer-events:auto';document.body.append(report);
+let raf=0,until=0,count=0,maxOverflow=0,maxGap=0,maxOverlap=0,changes=0,last='',lastScreen='',lastDraftHeight=0,draftChanges=0;
+const reset=document.createElement('button');reset.type='button';reset.textContent='Đặt lại số đo';const output=document.createElement('span');report.append(output,reset);
+function sample(now){raf=0;const v=window.visualViewport,top=v?.offsetTop||0,bottom=top+(v?.height||innerHeight),left=v?.offsetLeft||0,right=left+(v?.width||innerWidth),r=app.getBoundingClientRect(),c=document.querySelector('.composer-frame').getBoundingClientRect(),m=messages.getBoundingClientRect(),screen=app.dataset.screen;
+count++;const overflow=Math.max(0,top-r.top,r.bottom-bottom,left-r.left,r.right-right);maxOverflow=Math.max(maxOverflow,overflow);
+if(screen==='chat'&&c.height){maxGap=Math.max(maxGap,Math.abs(bottom-c.bottom));maxOverlap=Math.max(maxOverlap,Math.max(0,m.bottom-c.top));const dh=draft.getBoundingClientRect().height;if(lastScreen===screen&&lastDraftHeight&&Math.abs(dh-lastDraftHeight)>1)draftChanges++;lastDraftHeight=dh}
+const key=[screen,r.top,r.height,c.top,c.height].map(x=>typeof x==='number'?Math.round(x):x).join('/');if(last&&key!==last)changes++;last=key;lastScreen=screen;
+output.textContent='V9.4 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nChồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
+if(now<until)raf=requestAnimationFrame(sample)}
+function schedule(){until=performance.now()+600;if(!raf)raf=requestAnimationFrame(sample)}
+reset.onclick=()=>{count=changes=draftChanges=maxOverflow=maxGap=maxOverlap=lastDraftHeight=0;last=lastScreen='';schedule()};
+for(const event of ['pointerdown','input','focusin','focusout','click'])document.addEventListener(event,schedule,{passive:true});messages.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule,{passive:true});window.visualViewport?.addEventListener('resize',schedule,{passive:true});window.visualViewport?.addEventListener('scroll',schedule,{passive:true});new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
+}
+
+let preFocusAnchor=null;
+const kbMode=new URLSearchParams(location.search).get('kbmode')||'current';document.documentElement.dataset.kbMode=kbMode;
+const InputController={
+selector:'textarea,input:not([type=hidden]):not([type=file]):not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=range]):not([type=color]),[contenteditable=true]',
+isEditable(el){return !!el?.matches?.(this.selector)&&!el.disabled&&!el.readOnly},
+snapshot(){return {pinned:nearBottom(),top:messages.scrollTop}},
+blur(){const el=document.activeElement;if(this.isEditable(el))el.blur()},
+kind(el){return el===draft?'chat':el.type==='search'?'search':el.type==='number'||el.inputMode==='numeric'?'number':el.tagName==='TEXTAREA'?'multiline':'text'},
+register(el){if(!this.isEditable(el))return;el.dataset.inputKind=this.kind(el);el.classList.add('input-child');if(el===draft)el.closest('.composer').dataset.inputParent='chat';else if(el.id==='search')el.closest('.search-zone').dataset.inputParent='search';else el.dataset.inputParent='standalone'}
+};
+document.querySelectorAll(InputController.selector).forEach(el=>InputController.register(el));
+let outsideTap=null;
+document.addEventListener('pointerdown',e=>{outsideTap=null;const el=e.target.closest(InputController.selector);if(InputController.isEditable(el)){InputController.register(el);if(document.activeElement!==el){preFocusAnchor=InputController.snapshot();if(el===draft&&e.pointerType==='touch'&&e.cancelable){e.preventDefault();el.focus({preventScroll:true})}}return}if(InputController.isEditable(document.activeElement)&&!e.target.closest('[data-input-parent],button,a,summary,select,dialog')){if(!e.target.closest('.messages,.directory-list,#moduleContent')){anchor=InputController.snapshot();InputController.blur();updateViewport()}else outsideTap={id:e.pointerId,x:e.clientX,y:e.clientY,owner:document.activeElement}}},{capture:true,passive:false});
+document.addEventListener('focusin',e=>{if(InputController.isEditable(e.target)){InputController.register(e.target);anchor=preFocusAnchor||InputController.snapshot();preFocusAnchor=null}updateViewport()});
+document.addEventListener('focusout',e=>{if(InputController.isEditable(e.target))anchor=InputController.snapshot();updateViewport()});
+document.addEventListener('pointermove',e=>{if(outsideTap&&Math.hypot(e.clientX-outsideTap.x,e.clientY-outsideTap.y)>8)outsideTap=null},{passive:true});
+document.addEventListener('pointercancel',()=>{outsideTap=null;preFocusAnchor=null},{passive:true});
+document.addEventListener('pointerup',e=>{if(outsideTap?.id===e.pointerId&&document.activeElement===outsideTap.owner){InputController.blur();updateViewport()}outsideTap=null;preFocusAnchor=null},{passive:true});
+window.addEventListener('resize',updateViewport,{passive:true});
+window.visualViewport?.addEventListener('resize',updateViewport,{passive:true});
+window.visualViewport?.addEventListener('scroll',updateViewport,{passive:true});
+window.addEventListener('resize',()=>{updateViewport();resizeDraft()},{passive:true});
+if(new URLSearchParams(location.search).get('perf')==='1'){
+const panel=make('div','perf-panel');const output=make('pre');const reset=make('button','','Đo lại');panel.append(output,reset);document.body.append(panel);
+let frames=0,slow=0,total=0,max=0,restores=0,resizes=0,last=0,until=0,raf=0,reportAt=0;
+const sizes=new WeakMap();const observer=new ResizeObserver(entries=>{for(const e of entries){const key=e.contentRect.width.toFixed(1)+'/'+e.contentRect.height.toFixed(1);if(sizes.has(e.target)&&sizes.get(e.target)!==key)resizes++;sizes.set(e.target,key)}});
+function report(){output.textContent='V7.0 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
+function tick(t){raf=0;if(last){const dt=t-last;frames++;total+=dt;max=Math.max(max,dt);if(dt>25)slow++}last=t;if(t-reportAt>500){reportAt=t;report()}if(t<until)raf=requestAnimationFrame(tick);else{last=0;report()}}
+messages.addEventListener('scroll',()=>{until=performance.now()+180;if(!raf){last=0;raf=requestAnimationFrame(tick)}},{passive:true});
+reset.onclick=()=>{frames=slow=total=max=restores=resizes=0;last=0;report()};
+window.scrollPerf={recordRestore(){restores++},observe(){observer.disconnect();for(const e of messages.querySelectorAll('.media-tile'))observer.observe(e)}};report();
+}
+if(new URLSearchParams(location.search).get('keyboardtest')==='1'){
+const panel=document.createElement('div');panel.className='perf-panel';const output=document.createElement('pre');panel.append(output);document.body.append(panel);
+let started=0,first=0,lastChange=0,changes=0,heightChanges=0,prev='',prevHeight=0,frame=0,until=0,maxOverflow=0;
+function sample(t){frame=0;const vv=window.visualViewport,bottom=(vv?.offsetTop||0)+(vv?.height||innerHeight),r=document.querySelector('.composer-frame').getBoundingClientRect();if(!r.height){output.textContent='V7.0 · Mở hội thoại để đo';if(t<until)frame=requestAnimationFrame(sample);return}const gap=bottom-r.bottom,key=[Math.round(bottom),Math.round(r.bottom),Math.round(r.height)].join('/');if(key!==prev){if(prev){changes++;if(Math.abs(r.height-prevHeight)>1)heightChanges++}prev=key;prevHeight=r.height;lastChange=t;if(!first&&started)first=t-started}maxOverflow=Math.max(maxOverflow,-gap);output.textContent='V7.0 · Đo bàn phím\nPhản hồi hình học: '+(first?Math.round(first)+' ms':'—')+'\nỔn định: '+(started&&lastChange>=started?Math.round(lastChange-started)+' ms':'—')+'\nĐáy lệch: '+gap.toFixed(1)+' px\nTràn tối đa: '+maxOverflow.toFixed(1)+' px\nĐổi hình học: '+changes+'\nĐổi cao vùng gõ: '+heightChanges;if(t<until)frame=requestAnimationFrame(sample)}
+function wake(){until=performance.now()+500;if(!frame)frame=requestAnimationFrame(sample)}
+draft.addEventListener('pointerdown',()=>{started=performance.now();first=lastChange=changes=heightChanges=maxOverflow=0;const r=document.querySelector('.composer-frame').getBoundingClientRect(),vv=window.visualViewport;prev=[Math.round((vv?.offsetTop||0)+(vv?.height||innerHeight)),Math.round(r.bottom),Math.round(r.height)].join('/');prevHeight=r.height;wake()},{passive:true});draft.addEventListener('input',wake);draft.addEventListener('blur',wake);window.visualViewport?.addEventListener('resize',wake,{passive:true});window.visualViewport?.addEventListener('scroll',wake,{passive:true});wake();
+}
+if(new URLSearchParams(location.search).get('guides')==='1'){
+const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.id='geometryGuides';document.body.append(svg);const toggle=make('button','','Ẩn đường kẻ');toggle.id='geometryToggle';document.body.append(toggle);let enabled=true,frame=0;
+function line(x1,y1,x2,y2,color){const l=document.createElementNS(ns,'line');for(const [k,v] of Object.entries({x1,y1,x2,y2,stroke:color,'stroke-width':0.8,'stroke-dasharray':'3 3'}))l.setAttribute(k,v);svg.append(l)}
+function baseline(el){const marker=document.createElement('span');marker.style.cssText='display:inline-block;width:0;height:0;vertical-align:baseline;padding:0;margin:0';el.append(marker);const y=marker.getBoundingClientRect().top;marker.remove();return y}
+const report=make('pre');report.style.cssText='position:fixed;left:8px;bottom:12px;z-index:10000;background:white;color:#222;border:1px solid #aaa;border-radius:8px;padding:8px;font:11px/1.5 monospace;max-width:65vw;pointer-events:none;margin:0';document.body.append(report);
+function audit(){const results=[];const check=(name,a,b)=>{const raw=Math.abs(a-b),delta=Number.isFinite(raw)?raw:Infinity;results.push({name,delta})};const rect=e=>e.getBoundingClientRect();
+for(const row of document.querySelectorAll('.contact:not([hidden])')){if(!rect(row).height)continue;const n=row.querySelector('.identity b'),p=row.querySelector('.identity small'),t=row.querySelector('.time');check('Chân tên / giờ',baseline(n),baseline(t));check('Mép tên / nội dung',rect(n).left,rect(p).left);check('Mép nội dung / T3',rect(p).right,rect(t).left)}
+const c=document.querySelector('.composer');if(rect(c).height){const buttons=c.querySelectorAll('button');if(buttons.length===2)check('Đáy nút thêm / gửi',rect(buttons[0]).bottom,rect(buttons[1]).bottom)}
+for(const tr of document.querySelectorAll('.work-card tr')){if(!rect(tr).height)continue;const cells=[...tr.cells];if(cells.length===3&&cells.every(e=>e.textContent.length<24&&rect(e).height<45))check('Chân số STT / SL',baseline(cells[0]),baseline(cells[2]))}
+const shown=e=>e&&rect(e).width>0&&rect(e).height>0;
+function inside(name,parent,child){if(!shown(parent)||!shown(child))return;const p=rect(parent),c=rect(child);check(name,Math.max(0,p.left-c.left,c.right-p.right,p.top-c.top,c.bottom-p.bottom),0)}
+function overlap(name,a,b){if(!shown(a)||!shown(b))return;const x=rect(a),y=rect(b);check(name,Math.max(0,Math.min(x.right,y.right)-Math.max(x.left,y.left))*Math.max(0,Math.min(1,Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top))),0)}
+for(const panel of document.querySelectorAll('#app>.directory,#app>.conversation,#app>.crm')){if(!shown(panel))continue;inside('G06 Khung / vùng',app,panel);const children=[...panel.children].filter(shown);for(const child of children)inside('G07 Vùng / '+child.className,panel,child);for(let i=1;i<children.length;i++)check('G08 Chồng vùng dọc',Math.max(0,rect(children[i-1]).bottom-rect(children[i]).top),0)}
+if(shown(c)){for(const e of c.children)inside('G09 Vùng gõ / điều khiển',c,e);const parts=[...c.children].filter(shown);for(let i=1;i<parts.length;i++){overlap('G10 Chồng điều khiển',parts[i-1],parts[i]);check('G11 Gap vùng gõ',rect(parts[i]).left-rect(parts[i-1]).right,parseFloat(getComputedStyle(c).columnGap)||0)}}
+for(const row of document.querySelectorAll('.contact:not([hidden])')){if(!shown(row))continue;const av=row.querySelector('.avatar'),n=row.querySelector('.identity b'),p=row.querySelector('.identity small'),t=row.querySelector('.time');for(const e of [av,n,p,t])inside('G12 Danh bạ / thành phần',row,e);check('G13 Avatar vuông',rect(av).width,rect(av).height);check('G16 Tâm avatar / hàng',(rect(av).top+rect(av).bottom)/2,(rect(row).top+rect(row).bottom)/2);overlap('G14 Tên / thời gian',n,t);const u=row.querySelector('.unread-count');if(shown(u)){overlap('G15 Nội dung / chưa đọc',p,u);check('G17 Chân nội dung / số',baseline(p),baseline(u))}}
+const head=document.querySelector('.conversation>.panel-head');if(shown(head)){const controls=[...head.querySelectorAll(':scope > .icon,:scope > .typing-test,:scope > .avatar,:scope > .title-group')].filter(shown);const cy=e=>(rect(e).top+rect(e).bottom)/2;for(const e of controls){check('G18 Tâm tiêu đề',cy(e),cy(controls[0]));inside('G19 Tiêu đề / thành phần',head,e)}for(const e of controls.filter(e=>e.matches('button'))){check('G20 Nút tiêu đề rộng',rect(e).width,44);check('G21 Nút tiêu đề cao',rect(e).height,44)}}
+for(const table of document.querySelectorAll('.work-card table')){if(!shown(table))continue;const rows=[...table.rows];if(!rows.length)continue;const reference=[...rows[0].cells];for(const row of rows){const cells=[...row.cells];if(cells.length!==reference.length)continue;for(let i=0;i<cells.length;i++){check('G22 Mép trái cột '+(i+1),rect(cells[i]).left,rect(reference[i]).left);check('G23 Mép phải cột '+(i+1),rect(cells[i]).right,rect(reference[i]).right);check('G24 Đỉnh nội dung hàng',rect(cells[i]).top+parseFloat(getComputedStyle(cells[i]).paddingTop),rect(cells[0]).top+parseFloat(getComputedStyle(cells[0]).paddingTop))}inside('G25 Bảng / hàng',table,row)}}
+const crm=document.querySelector('.crm');if(shown(crm)){const modules=crm.querySelector('.modules'),body=crm.querySelector('.module-content'),fields=crm.querySelector('.fields');const buttons=[...modules.querySelectorAll('button')].filter(shown);for(const b of buttons){inside('G26 Module / nút',modules,b);check('G27 Chiều rộng nút',rect(b).width,rect(buttons[0]).width)}for(let i=1;i<buttons.length;i+=2){check('G28 Tâm hàng module',rect(buttons[i]).top,rect(buttons[i-1]).top);check('G29 Gap module',rect(buttons[i]).left-rect(buttons[i-1]).right,8)}if(shown(fields)){inside('G30 Nội dung / bảng trường',body,fields);const rows=[...fields.querySelectorAll('.field')];for(const r of rows){const a=r.firstElementChild,b=r.lastElementChild;inside('G31 Trường / nhãn',r,a);inside('G31 Trường / giá trị',r,b);check('G32 Trục nhãn',rect(a).left,rect(rows[0].firstElementChild).left);check('G33 Trục giá trị',rect(b).right,rect(rows[0].lastElementChild).right)}}}
+for(const d of document.querySelectorAll('dialog[open]')){const r=rect(d),v=window.visualViewport,x=v?.offsetLeft||0,y=v?.offsetTop||0,w=v?.width||innerWidth,ht=v?.height||innerHeight;check('G34 Popup / viewport ngang',Math.max(0,x+12-r.left,r.right-(x+w-12)),0);check('G35 Popup / viewport dọc',Math.max(0,y+12-r.top,r.bottom-(y+ht-12)),0);check('G36 Tâm popup ngang',(r.left+r.right)/2,x+w/2);check('G37 Tâm popup dọc',(r.top+r.bottom)/2,y+ht/2);for(const b of d.querySelectorAll('button'))if(shown(b))check('G38 Vùng chạm popup',Math.max(0,44-rect(b).height,44-rect(b).width),0)}
+for(const grid of document.querySelectorAll('.media-gallery .mixed-media')){if(!shown(grid))continue;const gr=rect(grid),scroll=rect(messages);if(gr.bottom<scroll.top||gr.top>scroll.bottom)continue;const tiles=[...grid.children];for(const tile of tiles){inside('G39 Nhóm ảnh / ô',grid,tile);const im=tile.querySelector('img');if(shown(im))inside('G40 Ô / ảnh',tile,im)}for(let i=0;i<tiles.length;i++)for(let j=i+1;j<tiles.length;j++)overlap('G41 Không chồng ảnh',tiles[i],tiles[j]);if(tiles.length===1){const im=tiles[0].querySelector('img'),r=rect(tiles[0]);if(im.width&&im.height&&r.width)check('G42 Tỷ lệ ảnh đơn',r.height,r.width*Number(im.getAttribute('height'))/Number(im.getAttribute('width')))}}
+const panels=[...app.querySelectorAll(':scope > .rail,:scope > .directory,:scope > .conversation,:scope > .crm')].filter(shown);
+for(let i=0;i<panels.length;i++)for(let j=i+1;j<panels.length;j++)overlap('G43 Không chồng vùng chính',panels[i],panels[j]);
+for(const e of app.querySelectorAll('.panel-head,.chat-view,.composer-frame,.messages,.contacts,.module-content'))if(shown(e)){check('G44 Không tràn ngang / '+e.className,Math.max(0,e.scrollWidth-e.clientWidth),0)}
+for(const head of app.querySelectorAll('.panel-head'))if(shown(head)){const parts=[...head.children].filter(shown);for(let i=0;i<parts.length;i++){inside('G45 Header / con',head,parts[i]);for(let j=i+1;j<parts.length;j++)overlap('G46 Header không chồng',parts[i],parts[j])}}
+const chat=app.querySelector('.chat-view'),frame=app.querySelector('.composer-frame');if(shown(chat)&&shown(frame)&&shown(messages)){overlap('G47 Nội dung / vùng gõ',messages,frame);check('G48 Khoảng hở nội dung / vùng gõ',rect(frame).top,rect(messages).bottom)}
+for(const pair of messages.querySelectorAll('.bill-pair')){if(!shown(pair))continue;const [left,right]=pair.children;if(!shown(left)||!shown(right))continue;check('G49 Bill chiều rộng hai vùng',rect(left).width,rect(right).width);check('G50 Bill trục trên',rect(left).top,rect(right).top);const img=left.querySelector('img'),card=right.querySelector('.business-card');if(shown(img)&&shown(card)){check('G51 Bill ảnh / kết quả trục trên',rect(img).top,rect(card).top);inside('G52 Bill ảnh trong vùng',left,img);inside('G53 Bill kết quả trong vùng',right,card);overlap('G54 Bill hai vùng không chồng',left,right);for(const row of card.querySelectorAll('.business-row')){for(const child of row.children)inside('G55 Bill trường trong dòng',row,child)}for(const btn of card.querySelectorAll('.bill-actions button'))inside('G56 Bill nút trong vùng',card,btn)}}
+for(const pair of messages.querySelectorAll('.bill-pair')){if(!shown(pair))continue;const right=pair.children[1];for(const card of right.querySelectorAll('.business-card')){if(!shown(card))continue;check('G57 Bill thẻ cùng chiều rộng cột',rect(card).width,rect(right).width);inside('G58 Bill thẻ trong cột',right,card);for(const row of card.querySelectorAll('.business-row'))for(const child of row.children)inside('G59 Bill trường không tràn',row,child);for(const btn of card.querySelectorAll('button'))inside('G60 Bill nút không tràn',card,btn)}}for(const wrap of messages.querySelectorAll('.bill-reconcile')){if(!shown(wrap))continue;const body=wrap.querySelector('.bill-reconcile-body'),card=body.querySelector('.business-card'),actions=body.querySelector('.bill-actions');inside('G61 Đối soát vùng nội dung',wrap,body);check('G62 Đối soát trục trái thẻ/nút',rect(card).left,rect(actions).left);check('G63 Đối soát trục phải thẻ/nút',rect(card).right,rect(actions).right);for(const row of card.querySelectorAll('.business-row'))for(const child of row.children)inside('G64 Đối soát trường không tràn',row,child);for(const btn of actions.querySelectorAll('button'))inside('G65 Đối soát nút không tràn',actions,btn)}
+for(const group of messages.querySelectorAll('.bill-actions')){if(!shown(group))continue;for(const btn of group.querySelectorAll('button')){if(!shown(btn))continue;const s=getComputedStyle(btn);check('G66 Nút căn giữa',s.textAlign==='center'&&s.justifyContent==='center'&&s.alignItems==='center'?0:1,0);check('G67 Nút cùng chiều rộng',rect(btn).width,group.clientWidth-parseFloat(getComputedStyle(group).paddingLeft)-parseFloat(getComputedStyle(group).paddingRight));check('G68 Nút đủ vùng chạm',Math.min(44,rect(btn).height),44)}}
+for(const pair of messages.querySelectorAll('.bill-pair')){if(!shown(pair))continue;const [left,right]=pair.children;check('G69 Khoảng cách hai cột',rect(right).left-rect(left).right,8);for(const col of [left,right]){const label=col.firstElementChild,content=col.children[1];if(shown(label)&&shown(content)){check('G70 Lề trái tiêu đề/nội dung',rect(label).left,rect(content).left);check('G71 Khoảng cách tiêu đề/nội dung',rect(content).top-rect(label).bottom,4)}}}for(const group of messages.querySelectorAll('.bill-actions')){if(!shown(group))continue;const buttons=[...group.querySelectorAll('button')].filter(shown);for(let i=1;i<buttons.length;i++){check('G72 Trục trái nút',rect(buttons[i]).left,rect(buttons[0]).left);check('G73 Khoảng cách nút',rect(buttons[i]).top-rect(buttons[i-1]).bottom,4)}}
+const bad=results.filter(r=>!Number.isFinite(r.delta)||r.delta>1);report.textContent='Viewport '+Math.round(window.visualViewport?.width||innerWidth)+' × '+Math.round(window.visualViewport?.height||innerHeight)+' · '+app.dataset.screen+'\nHình học · '+(results.length-bad.length)+'/'+results.length+' đạt (≤1px)\n'+(bad.length?bad.sort((a,b)=>b.delta-a.delta).slice(0,10).map(r=>r.name+': '+r.delta.toFixed(1)+'px').join('\n'):'Không thấy lệch ở các mục đã đo');}
+function draw(){frame=0;svg.replaceChildren();report.hidden=!enabled;if(!enabled)return;audit();
+const visible=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight};
+function bounds(e){const r=e.getBoundingClientRect();line(r.left,r.top,r.right,r.top,'#999');line(r.left,r.bottom,r.right,r.bottom,'#999');line(r.left,r.top,r.left,r.bottom,'#d14b42');line(r.right,r.top,r.right,r.bottom,'#d14b42')}
+for(const panel of document.querySelectorAll('.conversation,.crm')){if(!visible(panel))continue;const pr=panel.getBoundingClientRect();for(const e of panel.querySelectorAll('.panel-head,.chat-view,.composer-frame,.composer,.modules,.module-content,.fields'))if(visible(e))bounds(e);
+const scroll=panel.querySelector('.messages,.module-content');if(!scroll)continue;const sr=scroll.getBoundingClientRect();const clipTop=Math.max(sr.top,0),clipBottom=Math.min(sr.bottom,innerHeight);
+for(const e of scroll.querySelectorAll('.bubble,.meta,.work-card th,.work-card td,.field>span')){const r=e.getBoundingClientRect();if(!r.width||r.top<clipTop||r.bottom>clipBottom)continue;line(r.left,r.top,r.left,r.bottom,'#d14b42');line(r.right,r.top,r.right,r.bottom,'#d14b42');if(e.childElementCount===0){const y=baseline(e);if(y>=clipTop&&y<=clipBottom)line(Math.max(sr.left,pr.left),y,Math.min(sr.right,pr.right),'#2875c7')}}
+}
+for(const e of document.querySelectorAll('.composer textarea,.composer .icon,.composer .send'))if(visible(e))bounds(e);
+const dir=document.querySelector('.directory'),dr=dir.getBoundingClientRect();if(!dr.width)return;const rows=[...dir.querySelectorAll('.contact:not([hidden])')].filter(r=>{const b=r.getBoundingClientRect();return b.height&&b.bottom>dr.top&&b.top<dr.bottom});if(!rows.length)return;const first=rows[0],a=first.querySelector('.avatar').getBoundingClientRect(),n=first.querySelector('.identity b').getBoundingClientRect(),t=first.querySelector('.time').getBoundingClientRect(),p=first.querySelector('.identity small').getBoundingClientRect();for(const x of [a.left,a.right,n.left,t.left,p.right,dr.right-12])line(x,Math.max(dr.top,first.getBoundingClientRect().top),x,Math.min(dr.bottom,rows.at(-1).getBoundingClientRect().bottom),'#d14b42');for(const r of rows){const b=r.getBoundingClientRect();for(const el of r.querySelectorAll('.identity b,.identity small,.time,.unread-count')){const y=baseline(el);if(y>=dr.top&&y<=dr.bottom)line(n.left,y,dr.right-12,y,'#2875c7')}line(dr.left,b.bottom,dr.right,b.bottom,'#999')}}
+function schedule(){if(!frame)frame=requestAnimationFrame(draw)}toggle.onclick=()=>{enabled=!enabled;toggle.textContent=enabled?'Ẩn đường kẻ':'Hiện đường kẻ';schedule()};window.addEventListener('resize',schedule);document.addEventListener('scroll',schedule,true);document.addEventListener('click',schedule);const guideObserver=new ResizeObserver(schedule);for(const e of document.querySelectorAll('.directory,.conversation,.crm,.messages,.composer-frame,.module-content'))guideObserver.observe(e);window.visualViewport?.addEventListener('resize',schedule,{passive:true});document.addEventListener('input',schedule);schedule();
+}
+applyViewport();render();window.scrollPerf?.observe();
+if(new URLSearchParams(location.search).get('scenario')==='1'){
+const panel=document.createElement('section');panel.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;max-width:420px;max-height:42vh;overflow:auto;z-index:10001;background:white;color:#202124;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px/1.5 system-ui';
+const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='V9.4 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
+const wait=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+run.onclick=async()=>{run.disabled=true;const results=[];const check=(name,ok)=>{results.push({name,ok});out.textContent=results.map(x=>(x.ok?'ĐẠT':'LỖI')+' · '+x.name).join('\n')};const original=active,originalScreen=app.dataset.screen,originalDraft=draft.value,originalSearch=searchInput.value,originalOpen=directory.dataset.searchOpen==='true';const ids=Object.keys(people);try{
+navigate('contacts');await wait();check('S01 Mở danh bạ',app.dataset.screen==='contacts');
+setSearchOpen(true);searchInput.value='zzzzqa-no-match';showPeople();check('S02 Tìm kiếm không có kết quả',[...contactList.querySelectorAll('.contact')].every(e=>e.hidden));
+setSearchOpen(false);check('S03 Đóng tìm kiếm',searchInput.value===''&&directory.dataset.searchOpen==='false');
+const first=contactList.querySelector('.contact:not([hidden])');if(!first)throw Error('Không có khách mẫu');first.click();await wait();check('S04 Mở đúng hội thoại',active===first.dataset.id&&$('#currentName').textContent===people[active].name);
+const testId=active,savedDraft=draft.value;try{draft.value='QA mẫu\nDòng hai\nDòng ba';draft.dispatchEvent(new Event('input',{bubbles:true}));resizeDraft();await wait();check('S05 Ô nhập nhiều dòng',draft.value.split('\n').length===3&&draft.getBoundingClientRect().height<=133);
+const second=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id!==testId);if(second){second.click();await wait();check('S06 Chuyển khách',active===second.dataset.id);first.click();await wait();check('S07 Khôi phục bản nháp',draft.value==='QA mẫu\nDòng hai\nDòng ba')}
+messages.scrollTop=messages.scrollHeight;syncJump();await wait();check('S08 Cuộn cuối',nearBottom()&&jump.hidden);
+navigate('crm');await wait();check('S09 Mở công việc',app.dataset.screen==='crm');navigate('chat');await wait();check('S10 Quay lại hội thoại',app.dataset.screen==='chat'&&active===testId);
+const other=ids.find(id=>id!==testId),snapshot=Object.fromEntries([testId,other].filter(Boolean).map(id=>[id,{length:texts[id].length,unread:incomingCounts[id],pending:pendingLatest[id],preview:contactList.querySelector('[data-id="'+id+'"] .identity small').textContent,time:contactList.querySelector('[data-id="'+id+'"] .time').textContent}]));
+const oldTop=messages.scrollTop;try{
+messages.scrollTop=0;await wait();const top=messages.scrollTop,typed=draft.value,children=messages.childElementCount;
+receiveDemo(testId,'QA nhận tin đang mở');await wait();
+check('S11 Tin đến đúng hội thoại',messages.childElementCount===children+1&&[...messages.querySelectorAll('.message')].at(-1)?.textContent.includes('QA nhận tin đang mở'));
+check('S12 Không tự cuộn',Math.abs(messages.scrollTop-top)<=1);
+check('S13 Giữ bản nháp',draft.value===typed);
+check('S14 Danh bạ cập nhật tin mới',contactList.querySelector('[data-id="'+testId+'"] .identity small').textContent.includes('QA nhận tin đang mở'));
+check('S15 Không tăng chưa đọc hội thoại mở',(incomingCounts[testId]||0)===(snapshot[testId].unread||0));
+if(other){const count=messages.childElementCount;receiveDemo(other,'QA nhận tin khách khác');await wait();check('S16 Khách khác tăng chưa đọc',(incomingCounts[other]||0)===(snapshot[other].unread||0)+1);check('S17 Không chèn nhầm hội thoại',messages.childElementCount===count);check('S18 Khách khác cập nhật danh bạ',contactList.querySelector('[data-id="'+other+'"] .identity small').textContent.includes('QA nhận tin khách khác'))}
+}finally{for(const [id,s] of Object.entries(snapshot)){texts[id].length=s.length;incomingCounts[id]=s.unread;pendingLatest[id]=s.pending;updateContact(id);const row=contactList.querySelector('[data-id="'+id+'"]');row.querySelector('.identity small').textContent=s.preview;row.querySelector('.time').textContent=s.time}render();await wait();messages.scrollTop=oldTop;syncJump()}
+
+}finally{drafts[testId]=savedDraft;if(active===testId){draft.value=savedDraft;resizeDraft()}}
+}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='V9.4 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
+};
+}
+
+/* QA hub: one entry point, isolated diagnostic modes to avoid competing overlays. */
+if(new URLSearchParams(location.search).get('verify')==='1'){
+const hub=document.createElement('details');hub.style.cssText='position:fixed;z-index:10002;right:8px;top:calc(env(safe-area-inset-top) + 8px);max-width:calc(100vw - 16px);width:280px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font:13px/1.5 system-ui;box-shadow:0 2px 12px #0002';
+const title=document.createElement('summary');title.textContent='QA · v11.1';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
+const modes=[['','Giao diện bình thường','Không bật bộ đo'],['scenario','Kịch bản tự chạy','Kiểm tra thao tác trên demo'],['qa','UI / UX','10 kiểm tra trạng thái'],['guides','Hình học tĩnh','48 quy tắc và đường kẻ'],['dynamic','Hình học động','Viewport và vùng gõ'],['perf','Hiệu năng','Khung hình và cuộn'],['keyboardtest','Bàn phím','Thời gian và độ ổn định']];
+const params=new URLSearchParams(location.search);const activeMode=modes.find(([k])=>k&&params.get(k)==='1')?.[0]||'';
+for(const [key,label,desc] of modes){const a=document.createElement('a');const url=new URL(location.href);for(const [k] of modes)if(k)url.searchParams.delete(k);url.searchParams.set('verify','1');if(key)url.searchParams.set(key,'1');a.href=url.href;a.style.cssText='display:block;padding:8px;border-radius:8px;min-height:44px;text-decoration:none;color:inherit;background:'+(key===activeMode?'var(--surface-selected)':'transparent');if(key===activeMode)a.setAttribute('aria-current','page');const b=document.createElement('strong');b.textContent=label;const small=document.createElement('small');small.style.cssText='display:block;color:var(--muted)';small.textContent=desc;a.append(b,small);hub.append(a)}
+const note=document.createElement('small');note.textContent='Đổi chế độ sẽ tải lại demo; dữ liệu mẫu chưa lưu sẽ mất. Kết quả chỉ có sau khi đo.';note.style.cssText='display:block;color:var(--muted);padding:8px 0';hub.append(note);document.body.append(hub);hub.open=!activeMode;
+}
+
+if(new URLSearchParams(location.search).get('qa')==='1'){
+const panel=document.createElement('section');panel.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;max-width:420px;max-height:45vh;overflow:auto;z-index:10001;background:#fff;color:#202124;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px/1.5 system-ui;box-shadow:0 2px 12px #0002';
+const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;margin:4px 0';const run=document.createElement('button');run.textContent='Kiểm tra lại';const close=document.createElement('button');close.textContent='Ẩn';close.onclick=()=>{panel.hidden=true;};panel.append(out,run,close);document.body.append(panel);
+function test(){if(panel.hidden)return;const results=[];const add=(name,ok)=>results.push({name,status:ok===null?'CHƯA ĐO':ok?'ĐẠT':'LỖI'});const visible=e=>!!e&&e.getBoundingClientRect().width>0&&e.getBoundingClientRect().height>0;const r=e=>e.getBoundingClientRect();const inside=(a,b)=>{const x=r(a),y=r(b);return y.left>=x.left-1&&y.right<=x.right+1&&y.top>=x.top-1&&y.bottom<=x.bottom+1};const screen=app.dataset.screen,head=app.querySelector('.conversation>.panel-head'),composer=app.querySelector('.composer'),frame=app.querySelector('.composer-frame');
+add('A01 Khung / vùng chính',[...app.children].filter(visible).every(e=>inside(app,e)));
+add('A02 Danh bạ / đúng khách chọn',contactList.querySelectorAll('.contact.active').length===1&&contactList.querySelector('.contact.active')?.dataset.id===active);
+add('A03 Hội thoại / đúng tên',$('#currentName').textContent===people[active].name);
+add('A04 Tiêu đề / không tràn',visible(head)?head.scrollWidth<=head.clientWidth+1:null);
+add('A05 Vùng gõ / chứa điều khiển',visible(composer)?[...composer.children].filter(visible).every(e=>inside(composer,e)):null);
+add('A06 Nội dung / không chồng vùng gõ',visible(frame)&&visible(messages)?r(messages).bottom<=r(frame).top+1:null);
+add('A07 Ô nhập / giới hạn chiều cao',visible(draft)?r(draft).height>=43&&r(draft).height<=133:null);
+add('A08 Cuộn / nút về cuối',visible(messages)?jump.hidden===nearBottom():null);
+add('A09 Công việc / module được chọn',visible($('#modules'))?$('#modules').querySelectorAll('.active').length===1:null);
+add('A10 Popup / giới hạn màn hình',document.querySelector('dialog[open]')?(()=>{const d=r(document.querySelector('dialog[open]')),v=window.visualViewport,x=v?.offsetLeft||0,y=v?.offsetTop||0;return d.left>=x-1&&d.top>=y-1&&d.right<=x+(v?.width||innerWidth)+1&&d.bottom<=y+(v?.height||innerHeight)+1})():null);
+const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='V9.4 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
+let timer;function schedule(){clearTimeout(timer);timer=setTimeout(test,250)}run.onclick=test;for(const event of ['click','input','focusin','focusout'])document.addEventListener(event,schedule);messages.addEventListener('scroll',schedule,{passive:true});window.visualViewport?.addEventListener('resize',schedule,{passive:true});window.addEventListener('resize',schedule);schedule();
+}
+for(const t of contactList.querySelectorAll('.time'))t.textContent=shortDay()+' '+t.textContent;
+function vnParts(date=new Date()){return Object.fromEntries(new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',weekday:'long',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date).map(p=>[p.type,p.value]))}
+function dayLabel(date=new Date()){const p=vnParts(date);return normalizeLines(p.weekday)+' · '+p.day+'/'+p.month+'/'+p.year}
+function shortDay(date=new Date()){const p=vnParts(date);return p.weekday.toLowerCase().includes('chủ')?'CN':'T'+(p.weekday.match(/\d+/)?.[0]||({'thứ hai':2,'thứ ba':3,'thứ tư':4,'thứ năm':5,'thứ sáu':6,'thứ bảy':7}[p.weekday.toLowerCase()]||''))}
+function clock(){return new Date().toLocaleTimeString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',hour:'2-digit',minute:'2-digit'})}
+function updateContact(id){const row=contactList.querySelector('[data-id="'+id+'"]');if(!row)return;const t=texts[id].at(-1);if(t&&typeof t==='object'){const preview=row.querySelector('.identity small');const latest=people[id].role+' · '+normalizeLines(t.text);if(typingByContact.has(id)){preview.dataset.previous=latest}else{preview.textContent=latest}row.querySelector('.time').textContent=shortDay(t.date?new Date(t.date):new Date())+' '+t.time}let badge=row.querySelector('.unread-count');if(badge)badge.remove();if(incomingCounts[id])row.querySelector('.contact-status').append(make('span','unread-count',String(incomingCounts[id])));syncTyping()}
+function receiveDemo(id,text){if(!people[id])return;const t={text:normalizeLines(text),originalText:text,mine:false,time:clock(),date:Date.now()};texts[id].push(t);const visible=id===active&&messages.clientHeight>0&&getComputedStyle(document.querySelector('.chat-view')).display!=='none';if(visible){const top=messages.scrollTop;const row=make('div','message');row.append(make('div','bubble',t.text),make('div','meta',t.time));appendDailyMessage(row,t);messages.scrollTop=top;pendingLatest[id]=(pendingLatest[id]||0)+1;syncJump()}else incomingCounts[id]=(incomingCounts[id]||0)+1;updateContact(id)}
+
+function syncTyping(){for(const row of contactList.querySelectorAll('.contact')){const id=row.dataset.id,preview=row.querySelector('.identity small');if(!preview)continue;if(typingByContact.has(id)){if(!preview.classList.contains('is-typing'))preview.dataset.previous=preview.textContent;preview.replaceChildren(document.createTextNode('Đang nhập'),make('span','typing-dots','•••'));preview.classList.add('is-typing')}else if(preview.classList.contains('is-typing')){preview.textContent=preview.dataset.previous||'';preview.classList.remove('is-typing');delete preview.dataset.previous}}const role=$('#currentRole');if(typingByContact.has(active)){role.replaceChildren(document.createTextNode('Đang nhập'),make('span','typing-dots','•••'));role.classList.add('is-typing')}else{role.textContent=people[active].role+' · Hội thoại mẫu';role.classList.remove('is-typing')}}
+function demoTyping(id){if(!people[id])return;clearTimeout(typingByContact.get(id));typingByContact.set(id,setTimeout(()=>{typingByContact.delete(id);syncTyping();receiveDemo(id,'Tin mới mẫu · '+clock())},3500));syncTyping()}
+document.getElementById('incomingDemo').addEventListener('click',()=>demoTyping(active));
+const typingButton=make('button','typing-test','');typingButton.type='button';typingButton.title='Mô phỏng bên A đang nhập';typingButton.setAttribute('aria-label',typingButton.title);typingButton.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>';typingButton.onclick=()=>demoTyping(active);document.querySelector('.conversation .panel-head').append(typingButton);
+
+window.receiveDemo=receiveDemo;
+
+// Read-only geometry audit. Measurements are CSS pixels.
+function auditGeometry(){
+const visible=e=>e&&e.getClientRects().length&&e.getBoundingClientRect().height>0;
+const rect=e=>e.getBoundingClientRect(), issues=[], checks=[];
+const check=(code,label,ok,detail)=>{checks.push({code,label,ok,detail});if(!ok)issues.push({code,label,detail})};
+const tolerance=2;
+for(const panel of document.querySelectorAll('.directory,.conversation,.crm')){
+if(!visible(panel))continue;
+const p=rect(panel);
+for(const child of panel.children){if(!visible(child))continue;const r=rect(child);check('E1',child.className||child.tagName,r.left>=p.left-tolerance&&r.right<=p.right+tolerance&&r.top>=p.top-tolerance&&r.bottom<=p.bottom+tolerance,'Vùng con trong vùng cha')}
+}
+const parts=[...document.querySelectorAll('.conversation > .panel-head,.conversation > .chat-view,.conversation > .composer-frame')].filter(visible);
+for(let i=1;i<parts.length;i++)check('E2','Vùng chat '+i,rect(parts[i-1]).bottom<=rect(parts[i]).top+tolerance,'Không chồng lấn');
+const rows=[...document.querySelectorAll('.contact')].filter(visible);
+for(const row of rows){const a=rect(row.querySelector('.avatar')),b=rect(row.querySelector('.identity b')),c=rect(row.querySelector('.time'));check('E3',row.dataset.id,Math.abs(b.left-a.right-12)<=tolerance&&Math.abs(c.left-b.right-12)<=tolerance,'Gap ngang 12px')}
+if(rows.length){const x=rect(rows[0].querySelector('.time')).right;for(const row of rows)check('E4',row.dataset.id,Math.abs(rect(row.querySelector('.time')).right-x)<=tolerance,'Thẳng trục thời gian')}
+const composer=document.querySelector('.composer-frame');
+if(visible(composer)&&innerWidth<768){const vv=window.visualViewport;const gap=(vv?.offsetTop||0)+(vv?.height||innerHeight)-rect(composer).bottom;check('E5','Đáy vùng gõ',Math.abs(gap)<=tolerance,'Sai lệch '+gap.toFixed(1)+'px')}
+return {checks,issues};
+}
+window.auditGeometry=auditGeometry;
+// Opt-in geometry diagnostics; no data transmission.
+if(new URLSearchParams(location.search).get('debug')==='1'){
+document.addEventListener('DOMContentLoaded',()=>{
+const out=document.getElementById('geometryDebug');out.hidden=false;
+let minGap=Infinity,maxGap=-Infinity;
+function measure(){
+const vv=window.visualViewport, vTop=vv?.offsetTop||0,vHeight=vv?.height||innerHeight;
+const box=document.querySelector('.composer-frame').getBoundingClientRect();
+const chat=messages.getBoundingClientRect(),root=app.getBoundingClientRect();
+const gap=vTop+vHeight-box.bottom;
+if(box.height){minGap=Math.min(minGap,gap);maxGap=Math.max(maxGap,gap)}
+const n=x=>Math.round(x);
+const audit=auditGeometry();out.textContent=['v11.1 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
+}
+let frame=0;function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;measure()})}
+window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);window.addEventListener('resize',schedule);document.addEventListener('focusin',()=>{minGap=Infinity;maxGap=-Infinity;schedule()});document.addEventListener('focusout',schedule);new ResizeObserver(schedule).observe(app);new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
+});
+}
+// Chống zoom toàn trang; vùng xem ảnh riêng sẽ được thiết kế độc lập.
+['gesturestart','gesturechange','gestureend'].forEach(n=>document.addEventListener(n,e=>e.preventDefault(),{passive:false}));
+
+let lastTap=0,lastTarget=null;document.addEventListener('touchend',e=>{const now=Date.now();if(e.changedTouches.length===1&&e.target===lastTarget&&now-lastTap<280&&!e.target.closest('input,textarea,button,select'))e.preventDefault();lastTap=now;lastTarget=e.target},{passive:false});
+})();
+</script>
+<pre id="geometryDebug" hidden></pre><script>
+if(new URLSearchParams(location.search).has('kbmode')){
+const p=document.createElement('div');p.style.cssText='position:fixed;top:env(safe-area-inset-top);right:4px;z-index:9999;background:#fff;color:#222;border:1px solid #aaa;border-radius:8px;padding:4px;font:11px system-ui';for(const [mode,label] of [['current','A'],['native','B'],['light','C']]){const a=document.createElement('a');a.href='?v=109&kbmode='+mode;a.textContent=label;a.style.cssText='display:inline-block;padding:8px;color:inherit';if(document.documentElement.dataset.kbMode===mode)a.style.fontWeight='bold';p.append(a)}document.body.append(p)}
+</script></body></html>
