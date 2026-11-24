@@ -16,3 +16,6 @@ Mỗi bài học cần source GitHub trực tiếp, hợp đồng owner, test ch
 
 ## v13.38
 Avatar now has provisional API bind; study remains. Surface.bind uses existing CSS, not new paint engine. Layout slot selectors migrated outside protected ranges; specialized geometry/state, composer/keyboard and protected surface remain unchanged. Do not remove PROVISIONAL without proof.
+
+## v13.39
+Main tree is built through parent factories instead of hand-written UI tags. Existing provisional specialized layout, Scroll, Media, Card, Table and Surface study still required; source migration is not a native-device or visual approval.
