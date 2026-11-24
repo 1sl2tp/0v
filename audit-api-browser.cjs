@@ -9,7 +9,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
   const page=await browser.newPage({viewport:{width,height:900}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url+'?apicheck=1');
-  await page.waitForFunction(()=>window.apiProof);
+  await page.waitForFunction(()=>window.apiProof);assert.equal(await page.locator('#app').getAttribute('data-main-source'),'api');assert.equal(await page.locator('.contact').count(),4);
   const inspect=selector=>page.locator(selector).first().evaluate(el=>window.apiProof.describe(el));
   const fonts=async list=>{for(const [sel,size,line,weight] of list){const x=await inspect(sel);assert.equal(x.computed.size,size,sel);assert.equal(x.computed.line,line,sel);assert.equal(x.computed.weight,weight,sel);assert.equal(x.fontOK,true,sel)}};
   const read=()=>page.evaluate(()=>window.apiProof.report());

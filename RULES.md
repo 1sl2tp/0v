@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.38)
+## 00. Chỉ mục rule đang có hiệu lực (v13.39)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -440,3 +440,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - OWNER-UNIFY-04: Không tăng font hoặc đổi layout thông số v13.37; chuyển selector theo slot giữ specificity, giữ nguyên bốn đoạn KB-LOCK. Composer/input sizing, protected Surface block, state selectors, QA và các phần đặc thù chưa chuyển giữ owner có lý do và bài học.
 - OWNER-UNIFY-05: CI kiểm tra owner thật và slot, thử row gap cha và typography token, không thay dữ liệu. Kiểm tra Chromium không thay nghiệm thu native.
 - OWNER-UNIFY-06: Tập trung toàn bộ thay đổi trong một release, một commit nếu có thể; CI xanh rồi hợp nhất, Pages riêng. Nguồn Radix Flex GEO-S03 blob 0d046a4a8decbbc062c93315beca01651078f427 đọc lại trực tiếp; chỉ học cách tách slot/layout props, không nhập dependency.
+
+## 58. MAIN-BUILD — v13.39, xây dựng lại view từ API cha
+- MAIN-BUILD-01: Thay toàn bộ HTML tĩnh #app cũ bằng Main.mount; body chỉ chứa script, không giữ cây HTML cũ rồi retrofit. API cha khởi tạo trước Main, event/keyboard bind sau khi mount. Giữ single HTML file.
+- MAIN-BUILD-02: Main chỉ tổ hợp Layout.slot, Typography.create, Button.create, Input.create, Avatar.create, Surface.bind và truyền dữ liệu; Contact.create và Message.create dùng các cha này. Không gọi document.createElement trong Main.mount. Danh bạ tạo từ people, hội thoại/table/module dùng dữ liệu và factory hiện có, không lặp placeholder tĩnh.
+- MAIN-BUILD-03: Layout.slot là profile chuyên biệt tạo native node với hợp đồng family/slot trước khi append; không gán generic grid bừa. View chỉ là adapter kết hợp cha, không tự định nghĩa thông số. Avatar/Scroll/Layout chuyên biệt vẫn PROVISIONAL theo bài học; các controller Media/Card/Table chưa viết lại hết.
+- MAIN-BUILD-04: Không đổi typography v13.37, paint baseline hay bốn vùng keyboard v13.27. Các ID/class hành vi giữ nguyên. Nội dung demo không gửi thật. Nguồn Radix Flex GEO-S03 blob 0d046a4a8decbbc062c93315beca01651078f427 đọc lại; học composition, không import dependency.
+- MAIN-BUILD-05: CI kiểm tra body không còn cây tĩnh, constructor Main/Contact/Message, DOM source=api, family, token, điều hướng/focus; kiểm thử Chromium không thay thế native. CSS legacy đặc thù, QA và các API tạm chưa coi là hoàn thành.
