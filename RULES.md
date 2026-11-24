@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.42)
+## 00. Chỉ mục rule đang có hiệu lực (v13.43)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -463,3 +463,11 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - LIST-PROOF-01: Test danh sách phải kiểm tra mọi item theo id, không chỉ first/nth(0). Kiểm tra role/font/weight, size, gap, token propagation và phục hồi trên từng item, bao gồm các biến thể dữ liệu mẫu.
 - LIST-PROOF-02: Kiểm tra đổi filter và chuyển từng hội thoại, so sánh dữ liệu riêng (không yêu cầu chữ giống nhau) và hợp đồng chung. Khi cần, chọn tất cả lại để kiểm tra đủ item. Kiểm tra F5 và không đổi dữ liệu thật.
 - LIST-PROOF-03: Báo kết quả theo từng id; phân biệt sample data và thuộc tính thiết kế. Chưa có bằng chứng với danh sách động dài/virtualization hay native thì ghi PENDING.
+
+## 62. MEDIA — v13.43, bài toán 10 (ảnh)
+- SOURCE-GATE-01: Mỗi bài toán đọc source thật ít nhất hai thư viện trưởng thành phù hợp trước khi sửa, lưu file, blob SHA, nguyên lý và khác biệt trong references. Không chỉ ghi tên repo. Nếu nguồn không mở được, ghi giới hạn và dùng nguồn thay thế.
+- SOURCE-GATE-02: Đối chiếu API hiện hữu trước khi chọn giải pháp; học nguyên lý, không tự nhận bản sao chính thức. Nếu chưa đủ nguồn, ghi NEEDS-STUDY.
+- SOURCE-GATE-03: Test mọi item, không chỉ mẫu đầu; ghi giới hạn browser/native và bài còn thiếu.
+- MEDIA-API-01: MediaController.gallery/image/tile/openImage bổ sung vào cha hiện hữu, gallery 1–4 ảnh, intrinsic width/height, ảnh đơn contain giữ tỷ lệ, nhiều ảnh thumb cover; Popup quản vòng đời, Layout nhóm nút, Button hành vi, Typography chữ. Main sample gallery gọi cha; local preview vẫn dùng grid/layout/rotate cũ.
+- MEDIA-API-02: Viewer fit theo kích thước ảnh và vùng xem, zoom 1–4 lần fit bằng nút, cuộn riêng; không zoom trang/keyboard; rotate dùng ảnh gốc và giữ thumbnail không đổi. ResizeObserver chỉ trong popup, cleanup khi đóng. Chưa hỗ trợ pinch/pan chuyên biệt hoặc video.
+- MEDIA-API-03: ?medialab=1 trong Công việc; thử mọi tile 1–4, ngang/dọc/vuông, viewer zoom/reset/rotate. Nguồn MUI ImageList/ImageListItem và PhotoSwipe ZoomLevel, xem MEDIA-API-SOURCES. Không import dependency; Safari/PWA, EXIF, video, file lớn và chia sẻ PENDING.

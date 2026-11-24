@@ -1,7 +1,7 @@
 {
-  "version": "v13.42",
+  "version": "v13.43",
   "entry": "index.html",
-  "snapshot": "release-v13.42.html",
+  "snapshot": "release-v13.43.html",
   "keyboardProbe": "keyboard-probe-v13.25.html",
-  "gitBlobSha": "9c86431163eec59d347e7a6ca82fca040d782d88"
+  "gitBlobSha": "100fbf387dfc775d0bced29589b925156cd0e01b"
 }
