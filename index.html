@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>CHAT CRM — Bố cục v0.7</title>
+<title>CHAT CRM — Bố cục v0.8</title>
 <style>
 :root{color-scheme:light;--ink:#202124;--muted:#73777d;--line:#e7e8eb;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
 *{box-sizing:border-box}
@@ -31,13 +31,13 @@ input,textarea{font-size:16px!important}button[aria-pressed="true"]{background:#
 @media(max-width:1199px){#app{grid-template-columns:54px 250px minmax(0,1fr)}.crm{display:none}#app.with-crm{grid-template-columns:54px 235px minmax(0,1fr) 290px}#app.with-crm .crm{display:flex}}
 @media(min-width:768px) and (max-width:999px){#app.with-crm{grid-template-columns:54px minmax(0,1fr) 290px}#app.with-crm .directory{display:none}}
 @media(max-width:767px){#app,#app.with-crm{display:block;height:var(--app-height,100dvh)}.rail{display:none}.directory,.conversation,.crm,#app.with-crm .crm{display:none;height:100%;width:100%;border:0}#app[data-screen="contacts"] .directory,#app[data-screen="chat"] .conversation,#app[data-screen="crm"] .crm{display:flex}.mobile-only{display:grid}.panel-head{height:calc(54px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}.contacts{padding-bottom:env(safe-area-inset-bottom)}.messages{padding:12px 15px;scrollbar-gutter:auto}.message{max-width:87%}.composer-frame{padding:6px 10px max(9px,env(safe-area-inset-bottom))}.keyboard .panel-head{height:49px;padding-top:0}.keyboard .composer-frame{padding-bottom:5px}.keyboard .composer textarea{max-height:88px}}
-</style>
+.module-note{margin-top:14px!important}.fields .field{align-items:baseline}.fields .field span{min-width:0;overflow-wrap:anywhere}.fields .field span:last-child{font-variant-numeric:tabular-nums}.modules button{min-height:44px;padding:8px 10px}.module-content{padding:12px}.module-content h3{font-size:17px}</style>
 </head>
 <body>
 <div id="app" data-screen="contacts">
-<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ">☷</button><button type="button" data-go="chat" aria-label="Hội thoại">▣</button><button type="button" data-go="crm" aria-label="Công việc">▤</button><span class="version">v0.7</span></nav>
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ">☷</button><button type="button" data-go="chat" aria-label="Hội thoại">▣</button><button type="button" data-go="crm" aria-label="Công việc">▤</button><span class="version">v0.8</span></nav>
 <aside class="directory" aria-label="Danh bạ">
- <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v0.7</span><button type="button" class="icon" data-go="crm" aria-label="Công việc">▤</button></header>
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v0.8</span><button type="button" class="icon" data-go="crm" aria-label="Công việc">▤</button></header>
  <div class="search-zone"><input id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
  <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả">Tất cả</button><button data-filter="KH">KH</button><button data-filter="NCC">NCC</button><button data-filter="NV">NV</button><button data-filter="Nhóm">Nhóm</button></div>
  <div class="contacts" id="contacts">
@@ -58,7 +58,7 @@ input,textarea{font-size:16px!important}button[aria-pressed="true"]{background:#
  </div></section>
  <div class="composer-frame"><form class="composer" id="composer"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu">＋</button><textarea id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" aria-label="Thêm tin nhắn mẫu">↑</button></form></div>
 </main>
-<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại">‹</button><strong>Công việc</strong><span class="label-version">v0.7</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc">×</button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại">‹</button><strong>Công việc</strong><span class="label-version">v0.8</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc">×</button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
 </div>
 <script>
 (function(){
@@ -77,7 +77,26 @@ function render(){const p=people[active];$('#currentName').textContent=p.name;$(
 texts[active].forEach((t,i)=>{const row=make('div','message'+(i%2?' mine':''));row.append(make('div','bubble',t),make('div','meta',i%2?'11:22 · Mẫu':'11:20'));messages.append(row)});
 if(active==='kh'||active==='nhom'){const card=make('section','work-card');const head=make('header');head.append(make('strong','', 'Tổng hợp yêu cầu · Hôm nay'),make('small','','Chưa duyệt'));card.append(head);const wrap=make('div','table-wrap'),tbl=document.createElement('table');tbl.innerHTML='<thead><tr><th>STT</th><th>Tên hàng</th><th>SL</th></tr></thead><tbody><tr><td>1</td><td>Sản phẩm A</td><td>2</td></tr><tr><td>2</td><td>Sản phẩm B</td><td>3</td></tr></tbody>';wrap.append(tbl);card.append(wrap);messages.append(card)}
 const modules=$('#modules');modules.replaceChildren();p.modules.forEach((m,i)=>{const b=make('button',i===0?'active':'',m);b.type='button';b.addEventListener('click',()=>{modules.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));showModule(m)});modules.append(b)});showModule(p.modules[0]);resizeDraft()}
-function showModule(label){const panel=$('#moduleContent');panel.replaceChildren(make('h3','',label),make('p','','Vùng bố cục '+label.toLowerCase()+' của '+people[active].name+'. Chưa kết nối nghiệp vụ.'));const fields=make('div','fields');[['Đối tượng',people[active].name],['Trạng thái','Minh họa'],['Nguồn','HTML tĩnh v0.7']].forEach(([a,b])=>{const r=make('div','field');r.append(make('span','',a),make('span','',b));fields.append(r)});panel.append(fields)}
+function showModule(label){
+const panel=$('#moduleContent');panel.replaceChildren(make('h3','',label),make('p','',''+people[active].name+' · Dữ liệu minh họa'));
+const samples={
+'Tổng hợp':[['Sản phẩm A','2'],['Sản phẩm B','3'],['Trạng thái','Chưa tiếp nhận']],
+'Đơn hàng':[['Đơn tạm','2 mặt hàng'],['Sản phẩm A','2 × 100.000 = 200.000'],['Sản phẩm B','3 × 50.000 = 150.000'],['Tổng tiền','350.000 đ'],['Trạng thái','Chưa giao']],
+'Công nợ':[['Số dư đầu','−500.000 đ'],['Giao hàng','−350.000 đ'],['Thu tiền','+200.000 đ'],['Số dư hiện tại','−650.000 đ']],
+'Bill':[['Số tiền','200.000 đ'],['TK nhận','•••• 1234'],['Ngày giờ','24/11 · 10:30'],['Nội dung','Thanh toán mẫu'],['Đối soát','Chờ xác minh']],
+'Báo giá':[['Lịch gửi','08:00 · VN'],['Phạm vi','7 ngày gần nhất'],['Sản phẩm A','100.000 → 105.000'],['Điều kiện','Chỉ gửi khi đổi giá']],
+'Liên kết Zalo':[['Loại liên kết',people[active].role==='Nhóm'?'Nhóm':'Cá nhân'],['ID kênh','Chưa khai báo'],['Trạng thái','Chưa kết nối']],
+'Giá vốn':[['Sản phẩm A','80.000 → 82.000'],['Trạng thái','Chờ duyệt']],
+'Nhập hàng':[['Phiếu mẫu','PN-001'],['Sản phẩm A','10'],['Trạng thái','Chưa nhập']],
+'Thành viên':[['Thành viên mẫu A','KH'],['Thành viên mẫu B','KH']],
+'Tiếp nhận':[['Yêu cầu mẫu','Chờ tiếp nhận']],
+'Kiểm hàng':[['Sản phẩm A','2 / 2'],['Sản phẩm B','0 / 3']],
+'Giao hàng':[['Đơn mẫu','Chờ giao']],
+'Công việc':[['Kiểm hàng','Chưa hoàn thành']]
+};
+const fields=make('div','fields');(samples[label]||[['Trạng thái','Minh họa']]).forEach(([a,b])=>{const r=make('div','field');r.append(make('span','',a),make('span','',b));fields.append(r)});panel.append(fields);
+const note=make('p','module-note',label==='Công nợ'?'Nợ đuổi: âm là còn nợ, dương là dư tiền. Không phân bổ theo đơn.':label==='Bill'?'Chỉ ghi thu sau khi đối soát hợp lệ.':'Bố cục tĩnh, không phát sinh nghiệp vụ thật.');panel.append(note);
+}
 function resizeDraft(){draft.style.height='42px';draft.style.height=Math.min(draft.scrollHeight,app.classList.contains('keyboard')?88:120)+'px'}draft.addEventListener('input',resizeDraft);
 $('#composer').addEventListener('submit',e=>{e.preventDefault();const t=draft.value.trim();if(!t)return;texts[active].push(t);draft.value='';render();messages.scrollTop=messages.scrollHeight;draft.focus({preventScroll:true})});
 messages.addEventListener('scroll',()=>{scrolls[active]=messages.scrollTop},{passive:true});
