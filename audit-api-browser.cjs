@@ -128,7 +128,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
     await p.waitForFunction(()=>window.releaseStatus?.().state==='waiting-pages');
     assert.notEqual(new URL(p.url()).searchParams.get('v'),futureQuery);entryReady=true;await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.waitForURL(u=>u.searchParams.get('v')===futureQuery,{timeout:25000});assert((await p.title()).endsWith(future));
    }else{
-    await p.waitForURL(u=>u.searchParams.get('v')===futureQuery,{timeout:25000});assert((await p.title()).endsWith(future));if(mode==='lab')assert(new URL(p.url()).searchParams.get('systemslab')==='1');
+    await p.waitForURL(u=>u.searchParams.get('v')===futureQuery,{timeout:mode==='clean'?8000:25000});assert((await p.title()).endsWith(future));if(mode==='lab')assert(new URL(p.url()).searchParams.get('systemslab')==='1');
    }
    console.log('ReleaseUpdater case passed',mode,p.url());
   }catch(e){console.error('ReleaseUpdater failure',mode,p.url(),await p.evaluate(()=>({status:window.releaseStatus?.(),hidden:document.hidden,active:document.activeElement?.id,draft:document.querySelector('#draft')?.value})).catch(()=>null));throw e}

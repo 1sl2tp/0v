@@ -76,3 +76,5 @@ Dynamic Virtualizer correction: pre-measurement model extent owns pinned state, 
 
 ## v13.50 ReleaseUpdater lifecycle correction
 One foreground scheduler, online/pageshow/resume/focus/visibility triggers, idle recheck, per-target retry, explicit read-only actions, dirty protection remains for actual edits. releaseStatus() includes blockers. Vite client.ts and Workbox.ts reviewed; no service-worker runtime introduced. Native PWA pending.
+
+ReleaseUpdater idle retry: after check completes and busy clears, deferred pending with only transient activity schedules exact idle deadline independently of additional interaction; durable blockers retain existing protection.

@@ -2124,7 +2124,12 @@ const ReleaseUpdater=(()=>{
    const now=Date.now(),query=new URLSearchParams(location.search),oldRetry=query.get('v')===pending.slice(1)?Number(query.get('r'))||0:0;
    const retryAt=Math.max(lastTarget===pending?lastAttempt:0,oldRetry);if(retryAt<=now&&now-retryAt<60000){display('waiting-cache');return}
    lastAttempt=now;lastTarget=pending;const target=new URL(location.href);target.searchParams.set('v',pending.slice(1));target.searchParams.set('r',String(now));display('updating');location.replace(target.href);
-  }catch(e){lastError=String(e?.message||e);display('retry')}finally{busy=false}
+  }catch(e){lastError=String(e?.message||e);display('retry')}finally{
+   busy=false;
+   // A foreground check may discover a release while the initial idle window is still active.
+   // Recheck at its deadline even if the user does nothing (or a scheduled check was consumed while busy).
+   if(state==='deferred'&&pending&&!dirty&&!document.hidden&&blockers().every(reason=>reason==='active'))schedule(Math.max(100,2050-(Date.now()-lastActivity)));
+  }
  }
  function start(){if(!enabled)return;state='checking';
   for(const type of ['pointerdown','keydown','touchstart','scroll'])document.addEventListener(type,activity,{capture:true,passive:true});
