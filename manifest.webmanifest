@@ -1,0 +1,11 @@
+{
+  "id": "./",
+  "name": "CHAT CRM Demo",
+  "short_name": "CHAT CRM",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8f8f8",
+  "theme_color": "#f8f8f8"
+}
