@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CHAT CRM">
 <link rel="manifest" href="./manifest.webmanifest">
-<title>CHAT CRM — Bố cục v13.14</title>
+<title>CHAT CRM — Bố cục v13.15</title>
 <script>const layoutParams=new URLSearchParams(location.search);document.documentElement.dataset.liveglass=layoutParams.get('liveglass')==='1'?'1':'0';document.documentElement.dataset.floating=layoutParams.has('floating')?(layoutParams.get('floating')==='1'?'1':'0'):(matchMedia('(max-width:767px)').matches?'1':'0');</script>
 <style>
 :root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#e5e5e5;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
@@ -24,7 +24,7 @@ input,textarea{font-size:var(--input-font-size,17px)}button[aria-pressed="true"]
 .panel-head strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}.label-version{font-size:var(--text-meta);color:var(--muted);white-space:nowrap}
 .avatar{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--avatar-bg);color:var(--avatar-ink);font-size:var(--text-sub);font-weight:650}
 .icon{font-size:22px;display:grid;place-items:center}
-.search-zone{flex:none;padding:12px 12px 8px}.search-zone input{width:100%;border:0;outline:0;background:var(--soft);padding:0 var(--gap-md)}
+.search-zone{flex:none;padding:12px 12px 8px}.search-zone input{width:100%}
 .filters{display:flex;gap:6px;padding:0 12px 9px;overflow-x:auto;scrollbar-width:none}.filters button{min-height:33px;padding:0 12px;white-space:nowrap;border-radius:20px;background:var(--soft);font-size:var(--text-detail)}.filters button.active{background:var(--send-bg);color:var(--paper)}
 .contacts{overflow-y:auto;flex:1;min-height:0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.contact{width:100%;text-align:left}.contact.active{background:transparent}.identity b,.identity small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.identity b{font-weight:600}.identity small{font-size:var(--text-sub);color:var(--muted);margin-top:3px}.contact .time{font-size:var(--text-meta);color:var(--muted);align-self:flex-start;margin-top:4px}
 .dir-bottom{border-top:1px solid var(--line);padding:9px 12px;flex:none}.outline{padding:0 var(--gap-md)}.dir-bottom .outline{width:100%}
@@ -58,7 +58,7 @@ input,textarea{font-size:var(--input-font-size,17px)}button[aria-pressed="true"]
 @media(max-width:767px){.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}}
 /* Composer: stable parent geometry, independent input and actions */
 .composer-frame{flex:0 0 auto}
-.composer{width:100%;max-width:760px;margin-inline:auto;display:grid;grid-template-columns:var(--touch) minmax(0,1fr) var(--touch);align-items:end;gap:var(--gap-xs);padding:var(--composer-edge);border-radius:var(--composer-radius);min-height:var(--composer-min-height);border:1px solid var(--edge-glass);background:var(--paper);box-shadow:var(--shadow-composer),var(--shadow-inset)}
+.composer{width:100%;max-width:760px;margin-inline:auto;display:grid;grid-template-columns:var(--touch) minmax(0,1fr) var(--touch);align-items:end;gap:var(--gap-xs);padding:var(--composer-edge);border-radius:var(--composer-radius);min-height:var(--composer-min-height)}
 .composer .icon,.composer .send{width:44px;height:44px;min-height:44px;min-width:44px;margin:0;align-self:end;border-radius:50%}
 .composer .icon{background:transparent}
 .composer textarea{display:block;width:100%;height:var(--input-height);min-height:var(--input-height);max-height:var(--input-chat-effective-max,var(--input-chat-max));padding:var(--input-pad-y) var(--composer-text-inset);line-height:var(--input-line-height);box-sizing:border-box;resize:none;outline:none!important;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;overflow-wrap:break-word;white-space:pre-wrap}
@@ -303,8 +303,8 @@ dialog.local-preview>strong{display:block;line-height:22px;overflow-wrap:anywher
  CSS px are logical web units, not physical pixels or native UIKit measurements. */
 :root{--input-font-size:17px;--input-line-height:22px;--input-height:44px;--input-pad-y:calc((var(--input-height) - var(--input-line-height)) / 2);--input-pad-x:12px;--input-chat-max:calc(var(--input-height) + 4 * var(--input-line-height));--input-multiline-min:calc(var(--input-height) + 3 * var(--input-line-height));--input-search-radius:calc(var(--input-height) / 2);--input-field-radius:12px;--composer-min-height:calc(var(--input-height) + 2 * var(--composer-edge) + 2px)}
 .input-child{box-sizing:border-box;min-width:0;max-width:100%;font-family:inherit;font-size:var(--input-font-size);font-weight:400;line-height:var(--input-line-height);color:var(--ink)}
-.search-zone input{height:var(--input-height);min-height:var(--input-height);padding:var(--input-pad-y) var(--input-pad-x);border-radius:var(--input-search-radius)}
-.input-child[data-input-parent=standalone]{width:100%;min-height:var(--input-height);height:var(--input-height);border:1px solid var(--input-border,var(--line));border-radius:var(--input-field-radius);padding:calc(var(--input-pad-y) - 1px) var(--input-pad-x);background:transparent;color:inherit}
+.search-zone input{height:var(--input-height);min-height:var(--input-height);padding:calc(var(--input-pad-y) - 1px) var(--input-pad-x);border-radius:var(--input-search-radius)}
+.input-child[data-input-parent=standalone]{width:100%;min-height:var(--input-height);height:var(--input-height);border-radius:var(--input-field-radius);padding:calc(var(--input-pad-y) - 1px) var(--input-pad-x);color:inherit}
 textarea.input-child[data-input-parent=standalone]{height:var(--input-multiline-min);min-height:var(--input-multiline-min);resize:vertical;max-height:50dvh;overflow:auto}
 
 .input-child:is([data-input-kind=number],[data-input-kind=quantity],[data-input-kind=money]){text-align:right;font-variant-numeric:tabular-nums}
@@ -345,26 +345,47 @@ button[data-button-kind=primary]:not(:disabled):hover{background-color:var(--act
 }
 button[data-button-kind=icon]:not(:disabled):active,button[data-button-kind=outline]:not(:disabled):active{background-color:var(--surface-pressed)}
 button[data-button-kind=primary]:not(:disabled):active{background-color:var(--action-pressed)}
-/* Surface parent: paint only, preserve control dimensions and keyboard geometry. */
-button[data-button-kind=outline]{border-color:var(--edge-glass);box-shadow:var(--shadow-inset)}
-.composer .send:not(:disabled){box-shadow:0 1px 3px rgba(0,0,0,.10)}
-dialog[data-popup-parent]{border-color:var(--edge-glass);box-shadow:var(--shadow-composer)}
-@supports ((-webkit-backdrop-filter:blur(12px)) or (backdrop-filter:blur(12px))){
-dialog[data-popup-parent]:not(.media-viewer):not(.local-preview){background:var(--surface-glass);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+/* Surface Parent — one paint owner. Geometry is defined by component CSS.
+   Material, Edge and Elevation are independent tokens; no masked rims or inset rings.
+   Header/outline/dialog use the same single stroke; editable controls share one focus edge. */
+:root{
+ --surface-static:linear-gradient(165deg,rgba(255,255,255,.94),rgba(250,250,250,.76) 55%,rgba(255,255,255,.91));
+ --surface-edge:rgba(0,0,0,.16);--surface-edge-focus:#737373;
+ --surface-elevation:0 2px 8px rgba(0,0,0,.035);
+ --surface-input-tint:rgba(255,255,255,.94);
 }
+:is(.panel-head button,button[data-button-kind=outline],dialog[data-popup-parent],.composer[data-input-parent=chat],.search-zone input,.input-child[data-input-parent=standalone]){
+ --paint-material:var(--surface-static);--paint-edge:var(--surface-edge);
+ --paint-elevation:var(--surface-elevation);--paint-filter:none;
+ background:var(--paint-material) padding-box;border:1px solid var(--paint-edge);
+ box-shadow:var(--paint-elevation);-webkit-backdrop-filter:var(--paint-filter);backdrop-filter:var(--paint-filter);
+}
+.panel-head button{border-radius:50%}
+.composer[data-input-parent=chat],.search-zone input,.input-child[data-input-parent=standalone]{outline:none}
+.composer[data-input-parent=chat]:focus-within,.search-zone input:focus,.input-child[data-input-parent=standalone]:focus{--paint-edge:var(--surface-edge-focus);outline:none}
+.composer[data-input-parent=chat]>textarea.input-child{border:0;box-shadow:none;outline:none!important;background:transparent}
 .composer>[data-button-parent]{border-radius:50%}
 .composer>[data-button-parent] svg[data-icon-parent]{margin:auto}
-/* Glass paint owner: separate tint, two directional highlights, soft ambient shadow.
-Inspired by gentpan/liquidglass surface layers and nordify/css-liquid-glass opposing rim illumination. CSS fallback, not refraction. */
-:root{--glass-face:linear-gradient(165deg,rgba(255,255,255,.94),rgba(250,250,250,.76) 55%,rgba(255,255,255,.91));--glass-depth:inset 0 1px 2px rgba(255,255,255,.98),inset 0 -3px 7px rgba(0,0,0,.025),0 4px 14px rgba(0,0,0,.045);--glass-rim:linear-gradient(135deg,rgba(0,0,0,.23),rgba(255,255,255,.98) 34%,rgba(0,0,0,.09) 58%,rgba(0,0,0,.22) 82%,rgba(255,255,255,.98))}
-.panel-head button,.search-zone input,.input-child[data-input-parent=standalone],button[data-button-kind=outline],.composer[data-glass=g1],dialog[data-glass=g2]{background:var(--glass-face) padding-box;border-color:transparent;box-shadow:var(--glass-depth)}
-.panel-head button,.composer[data-glass=g1],button[data-button-kind=outline]{position:relative}
-.panel-head button{border-radius:50%}
-.panel-head button::after,button[data-button-kind=outline]::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:.75px;background:var(--glass-rim);pointer-events:none;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude}
-
-@supports ((-webkit-backdrop-filter:blur(12px)) or (backdrop-filter:blur(12px))){.panel-head button,dialog[data-glass=g2]{-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}}
-@media(prefers-reduced-transparency:reduce){.panel-head button,.composer[data-glass=g1],dialog[data-glass=g2]{background:var(--paper);-webkit-backdrop-filter:none;backdrop-filter:none}}
-.panel-head button:active:not(:disabled),button[data-button-kind=outline]:active:not(:disabled){background:var(--surface-pressed)}
+.composer .send:not(:disabled){box-shadow:0 1px 3px rgba(0,0,0,.10)}
+html[data-floating="1"] .composer[data-input-parent=chat]{--paint-material:var(--surface-input-tint)}
+@supports ((-webkit-backdrop-filter:blur(14px)) or (backdrop-filter:blur(14px))){
+ html[data-floating="1"][data-liveglass="1"] .composer[data-input-parent=chat]{--paint-material:rgba(255,255,255,.70);--paint-filter:blur(14px)}
+ html[data-floating="1"][data-liveglass="1"] .composer[data-input-parent=chat]:focus-within{--paint-material:rgba(255,255,255,.80)}
+ html[data-liveglass="1"] :is(.panel-head button,dialog[data-popup-parent]:not(.media-viewer):not(.local-preview)){--paint-filter:blur(12px)}
+}
+@media(hover:hover) and (pointer:fine){
+ :is(.panel-head button,button[data-button-kind=outline]):not(:disabled):hover{--paint-material:var(--surface-hover)}
+}
+:is(.panel-head button,button[data-button-kind=outline]):not(:disabled):active{--paint-material:var(--surface-pressed)}
+@media(prefers-contrast:more),(prefers-reduced-transparency:reduce){
+ :root{--surface-elevation:none}
+ :is(.panel-head button,button[data-button-kind=outline],dialog[data-popup-parent],.composer[data-input-parent=chat],.search-zone input,.input-child[data-input-parent=standalone]){--paint-material:var(--paper)!important;--paint-filter:none!important}
+}
+@media(prefers-contrast:more){:root{--surface-edge:#595959;--surface-edge-focus:#171717}}
+@media(forced-colors:active){
+ :root{--surface-edge:CanvasText;--surface-edge-focus:Highlight;--surface-elevation:none}
+ :is(.composer[data-input-parent=chat]:focus-within,.search-zone input:focus,.input-child[data-input-parent=standalone]:focus){outline:1px solid Highlight;outline-offset:-1px}
+}
 /* FL owner: content + one functional layer. Apple WWDC25 219/356.
    Web approximation, opt-in; no native lensing or glass-on-glass. */
 html[data-floating="1"] #app{--composer-reserve:var(--composer-min-height)}
@@ -377,12 +398,6 @@ html[data-floating="1"] #app>.conversation>.composer-frame>.composer{position:re
 html[data-floating="1"] #app>.conversation>.chat-view{margin-bottom:0}
 html[data-floating="1"] #app>.conversation .messages{padding-bottom:calc(var(--composer-reserve,74px) + 12px);scroll-padding-bottom:calc(var(--composer-reserve,74px) + 12px)}
 html[data-floating="1"] #jumpBottom{bottom:calc(var(--composer-reserve,74px) + 8px)}
-html[data-floating="1"] .composer[data-glass=g1]{background:var(--paper)}
-@supports ((-webkit-backdrop-filter:blur(14px)) or (backdrop-filter:blur(14px))){
-html[data-floating="1"] .composer[data-glass=g1]{background:rgba(255,255,255,.70);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
-html[data-floating="1"] .composer[data-glass=g1]:focus-within{background:rgba(255,255,255,.80)}
-}
-
 html[data-floating="1"] .composer[data-glass=g1]>.icon:active:not(:disabled){background-color:var(--surface-pressed)}
 html[data-floating="1"] .composer[data-glass=g1]>.send:active:not(:disabled){background-color:var(--action-pressed)}
 @media(max-width:767px){
@@ -390,7 +405,6 @@ html[data-floating="1"] #app.inset-chat>.conversation>.composer-frame{bottom:var
 html[data-floating="1"] #app.inset-chat>.conversation>.chat-view{margin-bottom:var(--keyboard-inset,0px)}
 }
 @media(prefers-reduced-transparency:reduce),(prefers-contrast:more){
-html[data-floating="1"] .composer[data-glass=g1],html[data-floating="1"] .composer[data-glass=g1]:focus-within{background:var(--paper);-webkit-backdrop-filter:none;backdrop-filter:none}
 html[data-floating="1"] #app>.conversation>.composer-frame::before{background:linear-gradient(transparent,var(--paper))}
 }
 /* APP shell proportions — screenshot-derived mobile profile, not Apple's native sizes.
@@ -419,7 +433,7 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
  html[data-floating="1"] #app>.conversation>.panel-head>.title-group{grid-template-rows:20px 15px;gap:1px}
  html[data-floating="1"] #app>.conversation>.panel-head .title-group b{font-size:16px;line-height:20px}
  html[data-floating="1"] #app>.conversation>.panel-head .title-group small{font-size:12px;line-height:15px}
- html[data-floating="1"] #app>.conversation>.panel-head>.icon{box-shadow:none}
+ html[data-floating="1"] #app>.conversation>.panel-head>.icon{--paint-elevation:none}
  html[data-floating="1"] #app>.conversation .messages{
  padding-top:calc(var(--app-top-reserve) + 12px);
  scroll-padding-top:calc(var(--app-top-reserve) + 12px);padding-inline:max(var(--app-content-inset),var(--safe-visible-left)) max(var(--app-content-inset),var(--safe-visible-right));
@@ -457,28 +471,6 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
 @media(max-width:767px) and (prefers-reduced-transparency:reduce),(max-width:767px) and (prefers-contrast:more){
  html[data-floating="1"] #app>.conversation>.panel-head::before{background:linear-gradient(to bottom,var(--paper) 0%,var(--paper) 75%,transparent)}
 }
-/* INPUT BORDER OWNER: one physical 1px stroke; focus changes color only.
-   Glass tint/backdrop is separate from the border. No masked rim or inset ring on input parents. */
-:root{--input-edge-idle:rgba(0,0,0,.16);--input-edge-focus:#737373;--input-edge-shadow:0 2px 8px rgba(0,0,0,.035)}
-.composer[data-input-parent=chat][data-glass=g1],.search-zone[data-input-parent=search]>input.input-child,.input-child[data-input-parent=standalone]{
- border:1px solid var(--input-edge-idle);outline:none;box-shadow:var(--input-edge-shadow);
-}
-.composer[data-input-parent=chat][data-glass=g1]:focus-within,.search-zone[data-input-parent=search]>input.input-child:focus,.input-child[data-input-parent=standalone]:focus{
- border-color:var(--input-edge-focus);outline:none;box-shadow:var(--input-edge-shadow);
-}
-.composer[data-input-parent=chat][data-glass=g1]::after{content:none}
-.composer[data-input-parent=chat]>textarea.input-child{border:0;box-shadow:none;outline:none!important}
-.search-zone[data-input-parent=search]>input.input-child{padding-block:calc(var(--input-pad-y) - 1px)}
-@media(prefers-contrast:more){
- :root{--input-edge-idle:#595959;--input-edge-focus:#171717;--input-edge-shadow:none}
-}
-@media(prefers-reduced-transparency:reduce){
- :root{--input-edge-shadow:none}
-}
-@media(forced-colors:active){
- .composer[data-input-parent=chat][data-glass=g1],.search-zone[data-input-parent=search]>input.input-child,.input-child[data-input-parent=standalone]{border-color:CanvasText;box-shadow:none}
- .composer[data-input-parent=chat][data-glass=g1]:focus-within,.search-zone[data-input-parent=search]>input.input-child:focus,.input-child[data-input-parent=standalone]:focus{border-color:Highlight;outline:1px solid Highlight;outline-offset:-1px}
-}
 /* Match the page canvas to the app surface; never enlarge beyond WebKit's viewport.
    Existing safe-area and keyboard geometry owners remain unchanged. */
 @media(max-width:767px){
@@ -493,22 +485,13 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
  #app>.crm>.module-content{padding-bottom:max(12px,var(--safe-visible-bottom));padding-left:max(var(--panel-inset,12px),var(--safe-visible-left));padding-right:max(var(--panel-inset,12px),var(--safe-visible-right))}
  html[data-floating="1"] #app>.conversation>.composer-frame{padding-left:var(--safe-visible-left);padding-right:var(--safe-visible-right)}
 }
-/* KB-06 restoration: glass paint is opt-in while device keyboard is being validated.
- No JS animation, no CSS motion, no per-frame backdrop blur in default chat. */
-html[data-floating="1"][data-liveglass="0"] #app>.conversation>.composer-frame>.composer[data-glass=g1],
-html[data-floating="1"][data-liveglass="0"] #app>.conversation>.composer-frame>.composer[data-glass=g1]:focus-within{
- background:rgba(255,255,255,.94);-webkit-backdrop-filter:none;backdrop-filter:none;
-}
-@media(prefers-reduced-transparency:reduce),(prefers-contrast:more){
- html[data-floating="1"][data-liveglass="0"] #app>.conversation>.composer-frame>.composer[data-glass=g1]{background:var(--paper)}
-}
 </style>
 </head>
 <body>
 <div id="app" data-layout="shell" data-screen="contacts">
-<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v13.14</span></nav>
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc" data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v13.15</span></nav>
 <aside class="directory" data-layout="panel" aria-label="Danh bạ">
- <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v13.14</span><button type="button" class="icon mobile-only" id="searchToggle" aria-label="Mở tìm kiếm" aria-controls="directorySearch" aria-expanded="false" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button><button type="button" class="icon" data-go="crm" aria-label="Công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v13.15</span><button type="button" class="icon mobile-only" id="searchToggle" aria-label="Mở tìm kiếm" aria-controls="directorySearch" aria-expanded="false" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button><button type="button" class="icon" data-go="crm" aria-label="Công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
  <div class="search-zone" data-input-parent="search" id="directorySearch"><input class="input-child" data-input-kind="search" id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
  <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Tất cả</button><button data-filter="KH" data-button-parent="true" data-button-kind="text" data-button-shape="auto">KH</button><button data-filter="NCC" data-button-parent="true" data-button-kind="text" data-button-shape="auto">NCC</button><button data-filter="NV" data-button-parent="true" data-button-kind="text" data-button-shape="auto">NV</button><button data-filter="Nhóm" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Nhóm</button></div>
  <div class="contacts" id="contacts">
@@ -527,9 +510,9 @@ html[data-floating="1"][data-liveglass="0"] #app>.conversation>.composer-frame>.
  <div class="message mine"><div class="bubble">Đã tiếp nhận, mình sẽ kiểm tra hàng.</div><div class="meta">11:22 · Mẫu</div></div>
  <section class="work-card"><header><strong>Tổng hợp yêu cầu · Hôm nay</strong><small>Chưa duyệt</small></header><div class="table-wrap"><table><thead><tr><th>STT</th><th>Tên hàng</th><th>SL</th></tr></thead><tbody><tr><td>1</td><td>Sản phẩm A</td><td>2</td></tr><tr><td>2</td><td>Sản phẩm B</td><td>3</td></tr></tbody></table></div></section>
  </div><button type="button" id="jumpBottom" aria-label="Cuộn đến tin mới nhất" hidden data-button-parent="true" data-button-kind="text" data-button-shape="auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></section>
- <div class="composer-frame" data-layout="region"><form class="composer" data-input-parent="chat" id="composer" data-glass="g1"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea class="input-child" data-input-kind="chat" id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu" data-button-parent="true" data-button-kind="primary" data-button-shape="round"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
+ <div class="composer-frame" data-layout="region"><form class="composer" data-input-parent="chat" id="composer" data-glass="g1"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea class="input-child" data-input-kind="chat" id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu" data-button-parent="true" data-button-kind="primary" data-button-shape="round"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
 </main>
-<aside class="crm" data-layout="panel" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v13.14</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Tổng hợp</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Đơn hàng</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Công nợ</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Bill</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Báo giá</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+<aside class="crm" data-layout="panel" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v13.15</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc" data-glass="g1" data-button-parent="true" data-button-kind="icon" data-button-shape="square"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Tổng hợp</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Đơn hàng</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Công nợ</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Bill</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Báo giá</button><button type="button" data-button-parent="true" data-button-kind="text" data-button-shape="auto">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
 </div>
 <script>
 (function(){
@@ -885,7 +868,7 @@ function sample(now){raf=0;const v=window.visualViewport,top=v?.offsetTop||0,bot
 count++;const visibleBottom=screen==='chat'&&app.classList.contains('inset-chat')&&c.height?Math.max(c.bottom,m.bottom):r.bottom;const overflow=Math.max(0,top-r.top,visibleBottom-bottom,left-r.left,r.right-right);maxOverflow=Math.max(maxOverflow,overflow);
 if(screen==='chat'&&c.height){maxGap=Math.max(maxGap,Math.abs(bottom-c.bottom));maxOverlap=Math.max(maxOverlap,floatingComposer?Math.max(Math.abs(m.bottom-c.bottom),Math.max(0,c.height+12-parseFloat(getComputedStyle(messages).paddingBottom))):Math.max(0,m.bottom-c.top));const dh=draft.getBoundingClientRect().height;if(lastScreen===screen&&lastDraftHeight&&Math.abs(dh-lastDraftHeight)>1)draftChanges++;lastDraftHeight=dh}
 const key=[screen,r.top,r.height,c.top,c.height].map(x=>typeof x==='number'?Math.round(x):x).join('/');if(last&&key!==last)changes++;last=key;lastScreen=screen;
-output.textContent='v13.14 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nSai hợp đồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
+output.textContent='v13.15 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nSai hợp đồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
 if(now<until)raf=requestAnimationFrame(sample)}
 function schedule(){until=performance.now()+600;if(!raf)raf=requestAnimationFrame(sample)}
 reset.onclick=()=>{count=changes=draftChanges=maxOverflow=maxGap=maxOverlap=lastDraftHeight=0;last=lastScreen='';schedule()};
@@ -918,7 +901,7 @@ if(new URLSearchParams(location.search).get('perf')==='1'){
 const panel=make('div','perf-panel');const output=make('pre');const reset=make('button','','Đo lại');panel.append(output,reset);document.body.append(panel);
 let frames=0,slow=0,total=0,max=0,restores=0,resizes=0,last=0,until=0,raf=0,reportAt=0;
 const sizes=new WeakMap();const observer=new ResizeObserver(entries=>{for(const e of entries){const key=e.contentRect.width.toFixed(1)+'/'+e.contentRect.height.toFixed(1);if(sizes.has(e.target)&&sizes.get(e.target)!==key)resizes++;sizes.set(e.target,key)}});
-function report(){output.textContent='v13.14 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
+function report(){output.textContent='v13.15 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
 function tick(t){raf=0;if(last){const dt=t-last;frames++;total+=dt;max=Math.max(max,dt);if(dt>25)slow++}last=t;if(t-reportAt>500){reportAt=t;report()}if(t<until)raf=requestAnimationFrame(tick);else{last=0;report()}}
 messages.addEventListener('scroll',()=>{until=performance.now()+180;if(!raf){last=0;raf=requestAnimationFrame(tick)}},{passive:true});
 reset.onclick=()=>{frames=slow=total=max=restores=resizes=0;last=0;report()};
@@ -927,7 +910,7 @@ window.scrollPerf={recordRestore(){restores++},observe(){observer.disconnect();f
 if(new URLSearchParams(location.search).get('keyboardtest')==='1'){
 const panel=document.createElement('div');panel.className='perf-panel';const output=document.createElement('pre');panel.append(output);document.body.append(panel);
 let started=0,first=0,lastChange=0,changes=0,heightChanges=0,prev='',prevHeight=0,frame=0,until=0,maxOverflow=0;
-function sample(t){frame=0;const vv=window.visualViewport,bottom=(vv?.offsetTop||0)+(vv?.height||innerHeight),r=document.querySelector('.composer-frame').getBoundingClientRect();if(!r.height){output.textContent='v13.14 · Mở hội thoại để đo';if(t<until)frame=requestAnimationFrame(sample);return}const gap=bottom-r.bottom,key=[Math.round(bottom),Math.round(r.bottom),Math.round(r.height)].join('/');if(key!==prev){if(prev){changes++;if(Math.abs(r.height-prevHeight)>1)heightChanges++}prev=key;prevHeight=r.height;lastChange=t;if(!first&&started)first=t-started}maxOverflow=Math.max(maxOverflow,-gap);output.textContent='v13.14 · Đo bàn phím\nPhản hồi hình học: '+(first?Math.round(first)+' ms':'—')+'\nỔn định: '+(started&&lastChange>=started?Math.round(lastChange-started)+' ms':'—')+'\nĐáy lệch: '+gap.toFixed(1)+' px\nTràn tối đa: '+maxOverflow.toFixed(1)+' px\nĐổi hình học: '+changes+'\nĐổi cao vùng gõ: '+heightChanges;if(t<until)frame=requestAnimationFrame(sample)}
+function sample(t){frame=0;const vv=window.visualViewport,bottom=(vv?.offsetTop||0)+(vv?.height||innerHeight),r=document.querySelector('.composer-frame').getBoundingClientRect();if(!r.height){output.textContent='v13.15 · Mở hội thoại để đo';if(t<until)frame=requestAnimationFrame(sample);return}const gap=bottom-r.bottom,key=[Math.round(bottom),Math.round(r.bottom),Math.round(r.height)].join('/');if(key!==prev){if(prev){changes++;if(Math.abs(r.height-prevHeight)>1)heightChanges++}prev=key;prevHeight=r.height;lastChange=t;if(!first&&started)first=t-started}maxOverflow=Math.max(maxOverflow,-gap);output.textContent='v13.15 · Đo bàn phím\nPhản hồi hình học: '+(first?Math.round(first)+' ms':'—')+'\nỔn định: '+(started&&lastChange>=started?Math.round(lastChange-started)+' ms':'—')+'\nĐáy lệch: '+gap.toFixed(1)+' px\nTràn tối đa: '+maxOverflow.toFixed(1)+' px\nĐổi hình học: '+changes+'\nĐổi cao vùng gõ: '+heightChanges;if(t<until)frame=requestAnimationFrame(sample)}
 function wake(){until=performance.now()+500;if(!frame)frame=requestAnimationFrame(sample)}
 draft.addEventListener('pointerdown',()=>{started=performance.now();first=lastChange=changes=heightChanges=maxOverflow=0;const r=document.querySelector('.composer-frame').getBoundingClientRect(),vv=window.visualViewport;prev=[Math.round((vv?.offsetTop||0)+(vv?.height||innerHeight)),Math.round(r.bottom),Math.round(r.height)].join('/');prevHeight=r.height;wake()},{passive:true});draft.addEventListener('input',wake);draft.addEventListener('blur',wake);window.visualViewport?.addEventListener('resize',wake,{passive:true});window.visualViewport?.addEventListener('scroll',wake,{passive:true});wake();
 }
@@ -976,7 +959,7 @@ function schedule(){if(!frame)frame=requestAnimationFrame(draw)}toggle.onclick=(
 applyViewport();render();window.scrollPerf?.observe();
 if(new URLSearchParams(location.search).get('scenario')==='1'){
 const panel=document.createElement('section');panel.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;max-width:420px;max-height:42vh;overflow:auto;z-index:10001;background:white;color:#202124;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px/1.5 system-ui';
-const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='v13.14 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
+const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='v13.15 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
 const wait=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 run.onclick=async()=>{run.disabled=true;const results=[];const check=(name,ok)=>{results.push({name,ok});out.textContent=results.map(x=>(x.ok?'ĐẠT':'LỖI')+' · '+x.name).join('\n')};const original=active,originalScreen=app.dataset.screen,originalDraft=draft.value,originalSearch=searchInput.value,originalOpen=directory.dataset.searchOpen==='true';const ids=Object.keys(people);try{
 navigate('contacts');await wait();check('S01 Mở danh bạ',app.dataset.screen==='contacts');
@@ -1007,14 +990,14 @@ if(other){const count=messages.childElementCount;receiveDemo(other,'QA nhận ti
 }finally{for(const [id,s] of Object.entries(snapshot)){texts[id].length=s.length;incomingCounts[id]=s.unread;pendingLatest[id]=s.pending;updateContact(id);const row=contactList.querySelector('[data-id="'+id+'"]');row.querySelector('.identity small').textContent=s.preview;row.querySelector('.time').textContent=s.time}render();await wait();messages.scrollTop=oldTop;syncJump()}
 
 }finally{drafts[testId]=savedDraft;if(active===testId){draft.value=savedDraft;resizeDraft()}}
-}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='v13.14 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
+}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='v13.15 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
 };
 }
 
 /* QA hub: one entry point, isolated diagnostic modes to avoid competing overlays. */
 if(new URLSearchParams(location.search).get('verify')==='1'){
 const hub=document.createElement('details');hub.style.cssText='position:fixed;z-index:10002;right:8px;top:calc(env(safe-area-inset-top) + 8px);max-width:calc(100vw - 16px);width:280px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font:13px/1.5 system-ui;box-shadow:0 2px 12px #0002';
-const title=document.createElement('summary');title.textContent='QA · v13.14';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
+const title=document.createElement('summary');title.textContent='QA · v13.15';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
 const modes=[['','Giao diện bình thường','Không bật bộ đo'],['scenario','Kịch bản tự chạy','Kiểm tra thao tác trên demo'],['qa','UI / UX','10 kiểm tra trạng thái'],['guides','Hình học tĩnh','48 quy tắc và đường kẻ'],['dynamic','Hình học động','Viewport và vùng gõ'],['perf','Hiệu năng','Khung hình và cuộn'],['keyboardtest','Bàn phím','Thời gian và độ ổn định']];
 const params=new URLSearchParams(location.search);const activeMode=modes.find(([k])=>k&&params.get(k)==='1')?.[0]||'';
 for(const [key,label,desc] of modes){const a=document.createElement('a');const url=new URL(location.href);for(const [k] of modes)if(k)url.searchParams.delete(k);url.searchParams.set('verify','1');if(key)url.searchParams.set(key,'1');a.href=url.href;a.style.cssText='display:block;padding:8px;border-radius:8px;min-height:44px;text-decoration:none;color:inherit;background:'+(key===activeMode?'var(--surface-selected)':'transparent');if(key===activeMode)a.setAttribute('aria-current','page');const b=document.createElement('strong');b.textContent=label;const small=document.createElement('small');small.style.cssText='display:block;color:var(--muted)';small.textContent=desc;a.append(b,small);hub.append(a)}
@@ -1034,11 +1017,11 @@ add('A06 Nội dung / hợp đồng vùng gõ',visible(frame)&&visible(messages)
 add('A07 Ô nhập / giới hạn chiều cao',visible(draft)?r(draft).height>=parseFloat(getComputedStyle(draft).minHeight)-1&&r(draft).height<=parseFloat(getComputedStyle(draft).maxHeight)+1:null);
 for(const el of document.querySelectorAll('.input-child')){if(!visible(el))continue;const cs=getComputedStyle(el);add('A11 Input '+el.dataset.inputKind+' / font 17, line 22',Math.abs(parseFloat(cs.fontSize)-parseFloat(cs.getPropertyValue('--input-font-size')))<.1&&Math.abs(parseFloat(cs.lineHeight)-parseFloat(cs.getPropertyValue('--input-line-height')))<.1);add('A12 Input / chiều cao và rộng',r(el).height>=parseFloat(cs.minHeight)-1&&r(el).width<=r(el.parentElement).width+1);}
 if(appShellActive()&&visible(composer)&&visible(messages)&&visible(head)){add('A13 App / vùng cuộn xuyên dưới header',Math.abs(r(messages).top-r(head).top)<=1&&parseFloat(getComputedStyle(messages).paddingTop)>=r(head).height+11);add('A14 App / composer rộng 82%',Math.abs(r(composer).width-(frame.clientWidth-parseFloat(getComputedStyle(frame).paddingLeft)-parseFloat(getComputedStyle(frame).paddingRight))*.82)<=1);add('A15 App / composer căn giữa',Math.abs((r(composer).left+r(composer).right)/2-((r(frame).left+r(frame).right)/2+(parseFloat(getComputedStyle(frame).paddingLeft)-parseFloat(getComputedStyle(frame).paddingRight))/2))<=1);add('A16 App / 1 dòng 48px',r(draft).height>parseFloat(getComputedStyle(draft).minHeight)+1?null:Math.abs(r(composer).height-48)<=1);const send=composer.querySelector('.send'),plus=composer.querySelector('.icon');const face=getComputedStyle(send,'::before');add('A17 App / vùng chạm 44px',r(send).width>=43&&r(send).height>=43&&r(plus).width>=43&&r(plus).height>=43);add('A18 App / mặt nút gửi 32px',Math.abs(parseFloat(face.width)-32)<=1&&Math.abs(parseFloat(face.height)-32)<=1);add('A19 App / cùng trục đáy nút',Math.abs(r(send).bottom-r(plus).bottom)<=1);}
-const inputParents=[composer,...document.querySelectorAll('.search-zone[data-input-parent=search]>input.input-child,.input-child[data-input-parent=standalone]')];for(const el of inputParents.filter(visible)){const cs=getComputedStyle(el),after=getComputedStyle(el,'::after');add('A20 Input / viền đơn 1px',Math.abs(parseFloat(cs.borderTopWidth)-1)<.1&&(!el.matches('.composer')||after.content==='none'));add('A21 Input / không outline chồng',matchMedia('(forced-colors: active)').matches?null:cs.outlineStyle==='none'||parseFloat(cs.outlineWidth)===0);}
+const inputParents=[composer,...document.querySelectorAll('.search-zone[data-input-parent=search]>input.input-child,.input-child[data-input-parent=standalone]')];for(const el of inputParents.filter(visible)){const cs=getComputedStyle(el),after=getComputedStyle(el,'::after');add('A20 Input / viền đơn 1px',Math.abs(parseFloat(cs.borderTopWidth)-1)<.1&&(!el.matches('.composer')||(after.content==='none'||after.content==='normal')));add('A21 Input / không outline chồng',matchMedia('(forced-colors: active)').matches?null:cs.outlineStyle==='none'||parseFloat(cs.outlineWidth)===0);}
 add('A08 Cuộn / nút về cuối',visible(messages)?jump.hidden===nearBottom():null);
 add('A09 Công việc / module được chọn',visible($('#modules'))?$('#modules').querySelectorAll('.active').length===1:null);
 add('A10 Popup / giới hạn màn hình',document.querySelector('dialog[open]')?(()=>{const d=r(document.querySelector('dialog[open]')),v=window.visualViewport,x=v?.offsetLeft||0,y=v?.offsetTop||0;return d.left>=x-1&&d.top>=y-1&&d.right<=x+(v?.width||innerWidth)+1&&d.bottom<=y+(v?.height||innerHeight)+1})():null);
-const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='v13.14 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
+const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='v13.15 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
 let timer;function schedule(){clearTimeout(timer);timer=setTimeout(test,250)}run.onclick=test;for(const event of ['click','input','focusin','focusout'])document.addEventListener(event,schedule);messages.addEventListener('scroll',schedule,{passive:true});window.visualViewport?.addEventListener('resize',schedule,{passive:true});window.addEventListener('resize',schedule);schedule();
 }
 for(const t of contactList.querySelectorAll('.time'))t.textContent=shortDay()+' '+t.textContent;
@@ -1089,7 +1072,7 @@ const chat=messages.getBoundingClientRect(),root=app.getBoundingClientRect();
 const gap=vTop+vHeight-box.bottom;
 if(box.height){minGap=Math.min(minGap,gap);maxGap=Math.max(maxGap,gap)}
 const n=x=>Math.round(x);
-const audit=auditGeometry();out.textContent=['v13.14 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Keyboard occluding: '+keyboardOccluding+' / motion: viewport only','Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
+const audit=auditGeometry();out.textContent=['v13.15 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Keyboard occluding: '+keyboardOccluding+' / motion: viewport only','Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
 }
 let frame=0;function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;measure()})}
 window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);window.addEventListener('resize',schedule);document.addEventListener('focusin',()=>{minGap=Infinity;maxGap=-Infinity;schedule()});document.addEventListener('focusout',schedule);new ResizeObserver(schedule).observe(app);new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
@@ -1106,14 +1089,13 @@ if(new URLSearchParams(location.search).has('kbmode')){
 const p=document.createElement('div');p.style.cssText='position:fixed;top:env(safe-area-inset-top);right:4px;z-index:9999;background:#fff;color:#222;border:1px solid #aaa;border-radius:8px;padding:4px;font:11px system-ui';for(const [mode,label] of [['current','A'],['native','B'],['light','C']]){const a=document.createElement('a');a.href='?v=109&kbmode='+mode;a.textContent=label;a.style.cssText='display:inline-block;padding:8px;color:inherit';if(document.documentElement.dataset.kbMode===mode)a.style.fontWeight='bold';p.append(a)}document.body.append(p)}
 </script><script>
 if(new URLSearchParams(location.search).has('glasscheck')){
-const p=document.createElement('section');p.style.cssText='position:fixed;inset:12px 12px auto;z-index:9999;background:white;color:#111;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px system-ui;max-height:60vh;overflow:auto';const title=document.createElement('strong');title.textContent='Glass check v13.14';p.append(title);for(const sel of ['.composer','.panel-head button.icon','.search-zone input','button[data-button-kind=outline]']){const el=document.querySelector(sel);if(!el)continue;const c=getComputedStyle(el),line=document.createElement('p');line.textContent=sel+' | '+c.borderRadius+' | gradient: '+c.backgroundImage.includes('gradient')+' | shadow: '+(c.boxShadow!=='none');p.append(line)}const b=document.createElement('button');b.textContent='Đóng';b.onclick=()=>p.remove();p.append(b);document.body.append(p)}
+const p=document.createElement('section');p.style.cssText='position:fixed;inset:12px 12px auto;z-index:9999;background:white;color:#111;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px system-ui;max-height:60vh;overflow:auto';const title=document.createElement('strong');title.textContent='Glass check v13.15';p.append(title);for(const sel of ['.composer','.panel-head button.icon','.search-zone input','button[data-button-kind=outline]']){const el=document.querySelector(sel);if(!el)continue;const c=getComputedStyle(el),line=document.createElement('p');line.textContent=sel+' | radius '+c.borderRadius+' | border '+c.borderTopWidth+' '+c.borderTopColor+' | outline '+c.outlineStyle+' | blur '+(c.backdropFilter||c.webkitBackdropFilter||'none')+' | rim '+getComputedStyle(el,'::after').content;p.append(line)}const b=document.createElement('button');b.textContent='Đóng';b.onclick=()=>p.remove();p.append(b);document.body.append(p)}
 </script><script>
 if(new URLSearchParams(location.search).get('glasslab')==='1'){
 const d=document.createElement('dialog');d.style.cssText='width:min(94vw,420px);max-height:85vh;padding:12px;background:white;color:#111;border:1px solid #ddd;border-radius:20px;overflow:auto';d.innerHTML='<h3>Glass Lab · upstream 6.0.0</h3><p id="glStatus">Đang tải thư viện gốc…</p><div style="position:relative;height:230px;overflow:hidden"><div id="glBackdrop" style="position:absolute;inset:0;background:#f8f8f8;padding:8px;line-height:24px">Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa<br>Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa</div><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="22" style="position:absolute;top:30px;left:12px;width:44px;height:44px;display:grid;place-items:center">‹</liquid-glass><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="29" style="position:absolute;bottom:35px;left:12px;right:12px;height:58px;display:grid;place-items:center">＋　Nhập tin nhắn mẫu　↑</liquid-glass></div><p>Chỉ mẫu thử, không thay composer thật.</p><button type="button">Đóng</button>';document.body.append(d);d.showModal();d.querySelector('button').onclick=()=>d.close();d.addEventListener('close',()=>d.remove());const s=document.createElement('script');s.type='module';s.src='https://cdn.jsdelivr.net/npm/simple-liquid-glass@6.0.0/web-component';s.onload=()=>{if(customElements.get('liquid-glass'))d.querySelector('#glStatus').textContent='Đã tải Web Component; khúc xạ cần nghiệm thu.'};s.onerror=()=>d.querySelector('#glStatus').textContent='Không tải được bản 6.0.0 từ CDN.';document.head.append(s);
 }
 </script><style>
-.panel-head button[data-upstream-glass="ready"]{background:transparent;border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;isolation:isolate}
-.panel-head button[data-upstream-glass="ready"]::after{content:none}
+.panel-head button[data-upstream-glass="ready"]{--paint-material:transparent;--paint-edge:transparent;--paint-elevation:none;--paint-filter:none;isolation:isolate}
 .panel-head button[data-upstream-glass="ready"]>svg{position:relative;z-index:1}
 </style>
 <script type="module">
@@ -1137,7 +1119,7 @@ if(new URLSearchParams(location.search).get('edgecheck')==='1'){
  const box=document.createElement('aside');box.style.cssText='position:fixed;z-index:10020;left:max(8px,env(safe-area-inset-left));top:calc(env(safe-area-inset-top) + 60px);max-width:calc(100vw - 16px);background:#fff;color:#222;border:1px solid #aaa;border-radius:10px;padding:8px;font:12px/1.45 system-ui';
  const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;margin:0';const close=document.createElement('button');close.textContent='Ẩn số đo';box.append(out,close);document.body.append(box);
  let frame=0;const vv=window.visualViewport;
- function measure(){frame=0;const cs=getComputedStyle(probe),r=document.querySelector('#app').getBoundingClientRect(),n=x=>Math.round(x),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;out.textContent=['v13.14 · '+(standalone?'PWA standalone':'Safari / browser'),'Screen CSS: '+screen.width+' × '+screen.height,'Window: '+innerWidth+' × '+innerHeight,'VisualViewport: '+n(vv?.width||innerWidth)+' × '+n(vv?.height||innerHeight)+' / top '+n(vv?.offsetTop||0),'Safe area T/R/B/L: '+[cs.paddingTop,cs.paddingRight,cs.paddingBottom,cs.paddingLeft].join(' / '),'Safe used T/R/B/L: '+['top','right','bottom','left'].map(k=>document.querySelector('#app').style.getPropertyValue('--safe-visible-'+k)||'—').join(' / '),'App: top '+n(r.top)+' / bottom '+n(r.bottom)+' / height '+n(r.height),'Screen − innerHeight: '+n(screen.height-innerHeight)+'px (chỉ tham khảo; đo lúc đóng bàn phím)'].join('\n')}
+ function measure(){frame=0;const cs=getComputedStyle(probe),r=document.querySelector('#app').getBoundingClientRect(),n=x=>Math.round(x),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;out.textContent=['v13.15 · '+(standalone?'PWA standalone':'Safari / browser'),'Screen CSS: '+screen.width+' × '+screen.height,'Window: '+innerWidth+' × '+innerHeight,'VisualViewport: '+n(vv?.width||innerWidth)+' × '+n(vv?.height||innerHeight)+' / top '+n(vv?.offsetTop||0),'Safe area T/R/B/L: '+[cs.paddingTop,cs.paddingRight,cs.paddingBottom,cs.paddingLeft].join(' / '),'Safe used T/R/B/L: '+['top','right','bottom','left'].map(k=>document.querySelector('#app').style.getPropertyValue('--safe-visible-'+k)||'—').join(' / '),'App: top '+n(r.top)+' / bottom '+n(r.bottom)+' / height '+n(r.height),'Screen − innerHeight: '+n(screen.height-innerHeight)+'px (chỉ tham khảo; đo lúc đóng bàn phím)'].join('\n')}
  function schedule(){if(!frame)frame=requestAnimationFrame(measure)}
  window.addEventListener('resize',schedule);vv?.addEventListener('resize',schedule);vv?.addEventListener('scroll',schedule);const ro=new ResizeObserver(schedule);ro.observe(document.querySelector('#app'));
  close.onclick=()=>{window.removeEventListener('resize',schedule);vv?.removeEventListener('resize',schedule);vv?.removeEventListener('scroll',schedule);ro.disconnect();if(frame)cancelAnimationFrame(frame);box.remove();probe.remove()};
