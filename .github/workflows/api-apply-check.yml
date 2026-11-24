@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [review/v13.34-api-apply]
+    branches: ['review/**']
 permissions:
   contents: read
 jobs:
@@ -22,27 +22,5 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright
           npx playwright install --with-deps chromium
-      - name: Verify typography at actual viewport sizes
-        run: |
-          node <<'JS'
-          const {chromium}=require('playwright');
-          const {pathToFileURL}=require('node:url');
-          (async()=>{
-            const browser=await chromium.launch({headless:true});
-            try {
-              for(const width of [320,375,390,430,768,1280]){
-                const page=await browser.newPage({viewport:{width,height:900}});
-                const errors=[];page.on('pageerror',e=>errors.push(e.message));
-                await page.goto(pathToFileURL(process.cwd()+'/index.html').href);
-                await page.waitForSelector('.directory .contact',{state:'visible'});
-                const issues=await page.evaluate(()=>{
-                  const tests=[['.directory .panel-head strong',17,22,600],['.directory .label-version',10,16,400],['.contact .identity b',15,20,600],['.contact .identity small',12,16,400],['.contact .time',12,16,400]];
-                  return tests.flatMap(([selector,size,line,weight])=>Array.from(document.querySelectorAll(selector)).flatMap(el=>{const s=getComputedStyle(el);return parseFloat(s.fontSize)===size&&parseFloat(s.lineHeight)===line&&parseInt(s.fontWeight)===weight?[]:[selector+': '+[s.fontSize,s.lineHeight,s.fontWeight].join('/')]}));
-                });
-                if(issues.length||errors.length)throw Error(width+'px: '+[...issues,...errors].join('; '));
-                console.log(width+'px: directory roles passed');
-                await page.close();
-              }
-            } finally { await browser.close(); }
-          })().catch(e=>{console.error(e);process.exitCode=1});
-          JS
+      - name: Verify API 1–7 on real Chromium
+        run: node audit-api-browser.cjs

@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.34)
+## 00. Chỉ mục rule đang có hiệu lực (v13.35)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -408,3 +408,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - API-APPLY-05: Layout chỉ bind nhóm đơn giản tương thích; shell, composer, contact grid đặc thù, bảng/media/bill thích ứng giữ owner hiện tại cho đến khi có profile phù hợp và kiểm thử. Geometry chỉ đọc.
 - API-APPLY-06: Trước bài toán mới phải xử lý phần áp dụng còn thiếu hoặc ghi rõ lý do và PENDING theo RULE-GATE-03. Không tự tạo API mới để che thiếu sót.
 - API-APPLY-07: Giữ nguyên bốn vùng baseline Keyboard v13.27 và không đổi dữ liệu nghiệp vụ. Không hợp nhất bản thử nếu kiểm tra hồi quy có lỗi; nghiệm thu thiết bị và phát hành là cổng riêng.
+
+## 54. API-PROOF — v13.35, nghiệm thu API 1–7
+- API-PROOF-01: ?apicheck=1 mở bảng chẩn đoán theo màn hình, chọn phần tử để đọc role, computed font/size/line/weight, profile cha, kích thước/gap. Chỉ đọc; không đổi token ở runtime người dùng, không truyền dữ liệu, không ghi nội dung tin. Chế độ chọn chặn duy nhất thao tác click đã chọn.
+- API-PROOF-02: CI Chromium 320/375/390/430/768/1280 kiểm tra danh bạ, hội thoại NV, draft, popup thêm danh bạ, đăng ký nút/icon, geometry contact và Layout lab. Kiểm tra font-role và thay token chat 17→20 rồi phục hồi trên trang test; không thay baseline keyboard, không coi synthetic focus là bàn phím native.
+- API-PROOF-03: Kiểm tra Typography popup và metadata tĩnh qua data-type-role, giữ token cũ. Không đổi nghiệp vụ, shell/composer hoặc Surface. CSS font-family báo danh sách fallback chứ không xác nhận glyph thực tế.
+- API-PROOF-04: Icon registry đầy đủ, Button text role, grid đặc thù, native IME/keyboard và các module chưa đo vẫn PENDING. Kết quả count theo phần tử đang render, không phải độ phủ toàn dự án.
+- API-PROOF-05: Không chuyển bài toán Surface trước khi xử lý lỗi API 1–7 hoặc ghi rõ phạm vi chưa đạt. CI phải xanh trước merge; Pages và người dùng duyệt riêng.
