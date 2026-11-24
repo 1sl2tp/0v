@@ -43,5 +43,13 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await page.waitForSelector('.geo-lab [data-geo-layout]');
  assert(await page.locator('.geo-lab [data-geo-layout]').count()>1);
  await page.close();
+ const surf=await browser.newPage({viewport:{width:390,height:844}});await surf.goto(url+'?surfacelab=1');
+ await surf.locator('.contact[data-id=nv]').evaluate(el=>el.click());
+ await surf.locator('.conversation .panel-head button[data-go=crm]').evaluate(el=>el.click());
+ await surf.waitForSelector('[data-surface-variant=plain]');
+ const styles=await surf.locator('#moduleContent [data-surface-variant]').evaluateAll(nodes=>nodes.map(el=>{const s=getComputedStyle(el);return {variant:el.dataset.surfaceVariant,border:s.borderTopWidth,edge:s.borderTopColor,bg:s.backgroundColor,shadow:s.boxShadow,radius:s.borderRadius,width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height}}));
+ assert.equal(styles.length,5);assert(styles.every(s=>s.border==='1px'&&s.width===styles[0].width&&s.height===styles[0].height&&s.radius===styles[0].radius));assert.notEqual(styles[2].edge,styles[0].edge);assert.notEqual(styles[3].shadow,'none');assert.notEqual(styles[4].bg,styles[0].bg);
+ const colors=await surf.locator('[data-surface-variant=subtle]').evaluate(el=>{const root=document.documentElement,s=root.style,old=s.getPropertyValue('--surface-subtle-face'),priority=s.getPropertyPriority('--surface-subtle-face'),get=()=>getComputedStyle(el).backgroundColor;const before=get();let during;try{s.setProperty('--surface-subtle-face','rgb(1, 2, 3)');during=get()}finally{old?s.setProperty('--surface-subtle-face',old,priority):s.removeProperty('--surface-subtle-face')}return {before,during,after:get()}});
+ assert.equal(colors.during,'rgb(1, 2, 3)');assert.equal(colors.after,colors.before);console.log('Surface API 5 variants, equal geometry, parent token propagation passed');await surf.close();
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

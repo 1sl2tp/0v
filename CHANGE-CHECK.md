@@ -1,3 +1,2 @@
-# CHANGE-CHECK — v13.39 (2026-11-24)
-Read AGENTS/RULES/COMPONENT-API, MAIN-BUILD/FAMILY/OWNER-UNIFY/KB-LOCK; reread Radix Flex GEO-S03 blob 0d046a4a8decbbc062c93315beca01651078f427. Removed old static #app 27614 chars, 152 opening tags; actual Main.mount/Contact.create/Message.create using existing parents; API initialized before DOM, event hookup after mount. No visual token or keyboard algorithm changes. Static JS audit 21/21, protected 4 ranges exact. Browser CI pending; native/device and specialized CSS/controllers provisional remain. Rollback revert PR, no production data changed.
-Blob 7205cc91cd2a8e7850d87ff438df4a313e65e060
+# CHANGE-CHECK — v13.40
+SURFACE-API, SURFACE-CONTEXT, KB-LOCK, FAMILY, SOURCE. Read AGENTS/RULES/COMPONENT-API; MUI Paper and Radix Card sources recorded. Five new paint variants and separate lab, not rewrite Main or protected glass. JS audit 22/22; four protected blocks unchanged. Browser CI pending. Native and visual approval, integration and Google Sheet pending. Rollback revert PR; no production data. Blob 1c050ff644bba1d1432ce604d1152024ebdc2b53.
