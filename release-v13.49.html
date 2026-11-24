@@ -683,6 +683,7 @@ button[aria-pressed=true]{outline:2px solid currentColor;outline-offset:-2px}
 [data-virtual-key]{position:absolute;inset-inline:0;height:var(--virtual-row-height);min-height:var(--virtual-row-height);max-height:var(--virtual-row-height);box-sizing:border-box;padding-inline:var(--gap-sm);align-items:center;justify-content:space-between;overflow:hidden;border-bottom:1px solid var(--line)}
 [data-virtual-key]>:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 [data-virtual-key]>:last-child{flex:none}
+[data-virtual-dynamic=true] [data-virtual-stage]{overflow:clip}
 [data-virtual-dynamic=true] [data-virtual-key]{height:auto;min-height:44px;max-height:none;align-items:stretch;justify-content:flex-start;padding-block:var(--gap-sm);overflow:visible}
 [data-virtual-dynamic=true] [data-virtual-key]>:first-child{white-space:normal;overflow-wrap:anywhere}
 [data-virtual-dynamic=true] [data-virtual-key]>[data-dynamic-extra][hidden]{display:none}
@@ -1078,8 +1079,8 @@ const Virtualizer=(()=>{
   const startAt=i=>dynamic?offsets[i]:i*rowHeight;
   const indexAt=top=>dynamic?at(offsets,top):Math.floor(top/rowHeight);
   function rebuild(){if(dynamic)offsets=prefix(items.map(item=>sizes.get(item.id)??estimate(item)));stage.style.height=startAt(items.length)+'px'}
-  function capture(){const top=viewport.scrollTop,i=indexAt(top);return {key:items[i]?.id,within:top-startAt(i),pinned:viewport.scrollHeight-viewport.clientHeight-top<=2}}
-  function restoreAnchor(anchor,followEnd=false){const i=indices.get(anchor.key);ScrollController.writeLocal(viewport,followEnd&&anchor.pinned?startAt(items.length):i===undefined?0:startAt(i)+Math.max(0,Math.min(anchor.within,startAt(i+1)-startAt(i)-1)))}
+  function capture(){const top=viewport.scrollTop,i=indexAt(top);return {key:items[i]?.id,within:top-startAt(i),pinned:(dynamic?startAt(items.length):viewport.scrollHeight)-viewport.clientHeight-top<=2}}
+  function restoreAnchor(anchor,followEnd=false){const i=indices.get(anchor.key);ScrollController.writeLocal(viewport,followEnd&&anchor.pinned?Math.max(0,startAt(items.length)-viewport.clientHeight):i===undefined?0:startAt(i)+Math.max(0,Math.min(anchor.within,startAt(i+1)-startAt(i)-1)))}
   function paint(){
    if(disposed||!viewport.isConnected||!viewport.clientHeight)return;
    const next=dynamic?dynamicRange(offsets,viewport.scrollTop,viewport.clientHeight,overscan):range(items.length,viewport.scrollTop,viewport.clientHeight,rowHeight,overscan);

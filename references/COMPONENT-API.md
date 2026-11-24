@@ -71,3 +71,5 @@ Virtualizer.range(count,offset,height,rowHeight,overscan); mount(viewport,{rowHe
 
 ## v13.49 Dynamic Virtualizer
 Same mount API with dynamic:true and estimate(item), prefix/dynamicRange, measured keyed size cache, capture/restore before batch, last-row edge follow, width invalidation and disposal. Independent 1000-item lab. No Main/chat migration.
+
+Dynamic Virtualizer correction: pre-measurement model extent owns pinned state, stage clips overflow; last-row resize follows exact model end only if previously pinned. Fixed mode and chat/keyboard unchanged. Regression grow/shrink/away; CI pending.
