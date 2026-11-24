@@ -377,12 +377,12 @@ button[data-button-kind=primary]:not(:disabled):active{background-color:var(--ac
   --paint-material:var(--surface-glass-tint);--paint-edge:var(--surface-glass-edge);
   --paint-focus-edge:var(--surface-glass-focus);--paint-elevation:var(--surface-glass-elevation);--paint-profile:glass-tint;
  }
- html[data-floating="1"] .composer[data-input-parent=chat]:focus-within{--paint-edge:var(--paint-focus-edge);--paint-material:rgba(255,255,255,.90)}
+ html[data-floating="1"] .composer[data-input-parent=chat][data-glass=g1]:focus-within{--paint-edge:var(--paint-focus-edge);--paint-material:rgba(255,255,255,.90)}
  @supports ((-webkit-backdrop-filter:blur(14px)) or (backdrop-filter:blur(14px))){
   html[data-floating="1"][data-liveglass="1"] :is(.conversation>.panel-head>button.icon[data-glass=g1],.composer[data-input-parent=chat][data-glass=g1]){
    --paint-material:rgba(255,255,255,.70);--paint-filter:blur(14px);--paint-profile:glass-blur;
   }
-  html[data-floating="1"][data-liveglass="1"] .composer[data-input-parent=chat]:focus-within{--paint-material:rgba(255,255,255,.80)}
+  html[data-floating="1"][data-liveglass="1"] .composer[data-input-parent=chat][data-glass=g1]:focus-within{--paint-material:rgba(255,255,255,.80)}
  }
 }
 @media(hover:hover) and (pointer:fine){
@@ -1148,7 +1148,7 @@ if(new URLSearchParams(location.search).get('glasslab')==='1'){
 const d=document.createElement('dialog');d.style.cssText='width:min(94vw,420px);max-height:85vh;padding:12px;background:white;color:#111;border:1px solid #ddd;border-radius:20px;overflow:auto';d.innerHTML='<h3>Glass Lab · upstream 6.0.0</h3><p id="glStatus">Đang tải thư viện gốc…</p><div style="position:relative;height:230px;overflow:hidden"><div id="glBackdrop" style="position:absolute;inset:0;background:#f8f8f8;padding:8px;line-height:24px">Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa<br>Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa</div><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="22" style="position:absolute;top:30px;left:12px;width:44px;height:44px;display:grid;place-items:center">‹</liquid-glass><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="29" style="position:absolute;bottom:35px;left:12px;right:12px;height:58px;display:grid;place-items:center">＋　Nhập tin nhắn mẫu　↑</liquid-glass></div><p>Chỉ mẫu thử, không thay composer thật.</p><button type="button">Đóng</button>';document.body.append(d);d.showModal();d.querySelector('button').onclick=()=>d.close();d.addEventListener('close',()=>d.remove());const s=document.createElement('script');s.type='module';s.src='https://cdn.jsdelivr.net/npm/simple-liquid-glass@6.0.0/web-component';s.onload=()=>{if(customElements.get('liquid-glass'))d.querySelector('#glStatus').textContent='Đã tải Web Component; khúc xạ cần nghiệm thu.'};s.onerror=()=>d.querySelector('#glStatus').textContent='Không tải được bản 6.0.0 từ CDN.';document.head.append(s);
 }
 </script><style>
-.panel-head button[data-upstream-glass="ready"]{--paint-material:transparent;--paint-edge:transparent;--paint-elevation:none;--paint-filter:none;--paint-profile:upstream;isolation:isolate}
+html[data-floating="1"] .conversation>.panel-head>button.icon[data-glass=g1][data-upstream-glass="ready"]{--paint-material:transparent;--paint-edge:transparent;--paint-elevation:none;--paint-filter:none;--paint-profile:upstream;isolation:isolate}
 .panel-head button[data-upstream-glass="ready"]>svg{position:relative;z-index:1}
 </style>
 <script type="module">
