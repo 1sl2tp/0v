@@ -53,8 +53,25 @@ function auditDesign(html,rules){
   viewportCases.push({blurWithoutViewportChange:true,pass:JSON.stringify(stable)===JSON.stringify(afterBlur)});
  }catch(e){viewportError=e.message}
  const singleViewportOwner=!retired&&viewportFunction.includes("visibleShellRect(window.visualViewport")&&viewportFunction.includes("setProperty('--view-'+name")&&!/keyboardComposer\.style|draftForm\.style|\.style\.(bottom|transform|top)/.test(viewportFunction)&&css.includes("inset:auto 0 0;z-index:5");
- const checks={singleViewportOwner,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
- return{version,checks,viewportCases,viewportError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
+ // KB-CORE-06: test the actual fast-path source with stubbed browser APIs.
+ const fastPathNoLayout=!/getComputedStyle|getBoundingClientRect|scrollTop|scrollHeight|offsetHeight|clientHeight|nearBottom|classifyKeyboard|resizeDraft|setTimeout|watchViewport/.test(viewportFunction);
+ let fastPathCases=[],fastPathQueued=0,fastPathError=null;
+ try{
+  const run=new Function(shellFunction+'\n'+viewportFunction+`
+ let appliedRect={},viewportFrame=0,innerHeight=800,innerWidth=390,writes=[],queued=0;
+ const window={visualViewport:{height:800,width:390,offsetTop:0,offsetLeft:0}};
+ const document={documentElement:{style:{setProperty:(k,v)=>writes.push([k,v])}}};
+ const reconcileViewport=()=>{},requestAnimationFrame=()=>++queued;
+ const cases=[[800,0],[500,0],[500,0],[540,0],[700,0],[800,0],[490,10],[490,10]].map(([height,top])=>{
+  const count=writes.length,prior={...appliedRect};window.visualViewport.height=height;window.visualViewport.offsetTop=top;applyViewport();
+  const expected=Object.keys(appliedRect).filter(k=>prior[k]!==appliedRect[k]).length;
+  return{height,top,writes:writes.length-count,pass:appliedRect.height===height&&appliedRect.top===top&&writes.length-count===expected};
+ });
+ return{cases,queued};`)();fastPathCases=run.cases;fastPathQueued=run.queued;
+ }catch(e){fastPathError=e.message}
+ const keyboardFastPath=fastPathNoLayout&&!fastPathError&&fastPathQueued===1&&fastPathCases.length===8&&fastPathCases.every(c=>c.pass);
+ const checks={singleViewportOwner,keyboardFastPath,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
+ return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
 }
 const fs=require('node:fs');const path=require('node:path');
 const result=auditDesign(fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),fs.readFileSync(path.join(__dirname,'RULES.md'),'utf8'));
