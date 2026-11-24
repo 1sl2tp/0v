@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.28)
+## 00. Chỉ mục rule đang có hiệu lực (v13.29)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Input / text / zoom | INPUT-TEXT-01–07 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
+| Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–05, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
@@ -341,3 +341,11 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - INPUT-TEXT-05: Số lượng/tiền inputlab chỉ làm sạch và định dạng tại change/blur, không mỗi keystroke, không ghi khi composition còn hoạt động. Giới hạn 6/12 chữ số và nhóm nghìn theo vi-VN như trước. Không áp dụng logic số vào text.
 - INPUT-TEXT-06: Ellipsis là CSS overflow:hidden; white-space:nowrap; text-overflow:ellipsis với min-width:0 ở vùng hẹp. Tên/preview/vai trò chỉ rút gọn hiển thị; nội dung đầy đủ giữ nguyên, chat wrap, không cắt value bằng JS; phân biệt dấu … người dùng nhập và ellipsis trình bày. Rule áp dụng từ CSS đầu trang; chưa nghiệm thu F5 trên Safari.
 - INPUT-TEXT-07: audit-design.cjs so sánh bốn đoạn bảo vệ với release-v13.27.html; kiểm tra 11 ca Unicode, dấu, URL, emoji, số, tìm kiếm; 10/10 nhóm kiểm tra tĩnh, 6 classic scripts parse. Test thực tế focus chuyển nhiều input, bàn phím 10 lần, Telex/VNI nhập/sửa/chọn/dán, Enter IME, dấu …, tải lại tên dài, số tiền. Chưa nghiệm thu native IME, computed style, autozoom thực tế hoặc Pages. Giữ nguyên KeyboardController, focus handler, composer sizing, Surface Parent nguyên văn mốc duyệt; không sửa production.
+
+## 46. INPUT-API — v13.29, cha–con dùng chung
+- INPUT-API-01: Input là API khai báo, gồm types, create, bind, isComposing, commitMessage, searchKey. InputController hiện hữu tiếp tục sở hữu focus/register theo KB-LOCK; không tạo controller viewport mới.
+- INPUT-API-02: Sáu profile text/search/chat/multiline/quantity/money. Gọi Input.create({type,label,value,placeholder,rows}) để tạo field; Input.bind(node,{type}) cho node HTML sẵn có. Không thay node đang nhập. Bind idempotent, loại sai bị từ chối; không tự áp dụng vào file picker.
+- INPUT-API-03: Profile cha sở hữu ngôn ngữ, inputMode, autocapitalize, numeric commit, class/token chung; số lượng 6 chữ số, tiền 12 chữ số. Không định dạng trong khi gõ. Search callback bỏ qua composition, chạy sau commit; dữ liệu gốc giữ nguyên. Không tạo handler numeric riêng từng màn.
+- INPUT-API-04: Áp dụng chat/search hiện có bằng bind; tổng hợp hàng và inputlab dùng create. Nhóm nút +/- và đơn vị tiền là layout/điều khiển con, không tự tính viewport. CSS Surface và Typography là owner riêng. Không thay đổi kích thước hay giao diện đã duyệt.
+- INPUT-API-05: Mọi bài toán có owner độc lập phải có hợp đồng cách gọi, tham số, phần sở hữu, điều cấm và test. Tận dụng ButtonController, IconController, PopupController, MediaController, CardController, TableController, ScrollController hiện có; không tạo controller trùng. Ghi danh mục tại references/COMPONENT-API.md; chưa refactor các owner khác trong vòng này.
+- INPUT-API-06: Audit so sánh 4 đoạn nguyên văn baseline v13.27, test 9 ca API bằng DOM stub, 11 ca Unicode, 12 rect, 8 fast path, 15 early-close, syntax. Chưa có browser/thiết bị thật hoặc Pages; API mới chỉ trong index.html của 0v, chưa xuất package dùng chung cho repo khác. Không sửa production.
