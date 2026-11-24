@@ -101,3 +101,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - SUR-02: Composer dùng bóng nhẹ tĩnh, nền đặc; không blur vùng gõ hoặc shell trong lúc bàn phím chuyển động. Nút icon thường không đổ bóng hàng loạt.
 - SUR-03: Popup thường có thể dùng nền bán trong suốt và backdrop-filter 12px khi hỗ trợ; fallback nền đặc. Popup ảnh giữ nền đặc. Không khẳng định giống native iOS tuyệt đối.
 - SUR-04: Kiểm tra viền, góc, lề quang học và tốc độ Safari/PWA; không đổi focus/scroll/keyboard khi chỉ chỉnh bề mặt.
+
+## 17. Hình học quang học
+- OPT-01: Composer radius 29px, inset 6px, nút tròn 44px, viền 1px; tâm nút và đường cong cha đồng tâm ở chiều cao tối thiểu 58px. Lề ngoài 8px.
+- OPT-02: Textarea giữ line-height 22px, padding dọc 11px, ngang 6px; icon căn tâm, không dùng translate để chữa lệch. Không đổi KeyboardController; kiểm tra reserve và bàn phím sau đổi chiều cao.
