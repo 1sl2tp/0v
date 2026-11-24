@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>CHAT CRM — Bố cục v1.6</title>
+<title>CHAT CRM — Bố cục v1.7</title>
 <style>
 :root{color-scheme:light;--ink:#202124;--muted:#73777d;--line:#e7e8eb;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
 *{box-sizing:border-box}
@@ -76,13 +76,23 @@ html,body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden}
 .messages>*{flex-shrink:0}.chat-view{position:relative}#jumpBottom{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:40px;height:40px;min-height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:white;box-shadow:0 2px 8px #0002;z-index:2}#jumpBottom svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.work-card{flex:0 0 auto}
 .unread-count{background:#252525;color:white;border-radius:12px;padding:2px 6px;font-size:11px;align-self:center}.contact .time{white-space:nowrap}#jumpBottom[data-count]:after{content:attr(data-count);position:absolute;top:-6px;right:-6px;background:#252525;color:white;border-radius:12px;padding:2px 5px;font-size:10px}.demo-incoming{font-size:12px;color:var(--muted);padding:0 12px;min-height:36px}/* Keep focus target stable while the keyboard animates. */
 @media(max-width:767px){#app{transition:none!important}.composer-frame,.composer,.composer textarea{transition:none!important;animation:none!important}.keyboard .panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}.keyboard .composer-frame{padding-top:8px;padding-bottom:5px}.keyboard .messages{padding-block:12px}.keyboard .composer textarea{max-height:132px}}
-@media(max-width:767px){.composer-frame,.keyboard .composer-frame{padding:8px 8px max(8px,env(safe-area-inset-bottom))}.composer textarea,.keyboard .composer textarea{max-height:132px}.panel-head,.keyboard .panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}.messages,.keyboard .messages{padding-block:12px}}</style>
+@media(max-width:767px){.composer-frame,.keyboard .composer-frame{padding:8px 8px max(8px,env(safe-area-inset-bottom))}.composer textarea,.keyboard .composer textarea{max-height:132px}.panel-head,.keyboard .panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}.messages,.keyboard .messages{padding-block:12px}}/* Single mobile layout contract: visible rectangle = header + scrollport + composer. */
+@media(max-width:767px){
+html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
+#app,#app.with-crm{position:absolute;inset:auto;top:var(--view-top,0px);left:var(--view-left,0px);width:var(--view-width,100%);height:var(--view-height,100dvh);overflow:hidden;transition:none}
+#app[data-screen="chat"] .conversation{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100%;min-height:0}
+.conversation>.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+.chat-view{min-height:0;overflow:hidden}.messages{min-height:0;overflow-y:auto}
+.composer-frame{padding:8px 8px max(8px,env(safe-area-inset-bottom));margin:0}
+.composer textarea{max-height:132px}
+}
+</style>
 </head>
 <body>
 <div id="app" data-screen="contacts">
-<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v1.6</span></nav>
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v1.7</span></nav>
 <aside class="directory" aria-label="Danh bạ">
- <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v1.6</span><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v1.7</span><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
  <div class="search-zone"><input id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
  <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả">Tất cả</button><button data-filter="KH">KH</button><button data-filter="NCC">NCC</button><button data-filter="NV">NV</button><button data-filter="Nhóm">Nhóm</button></div>
  <div class="contacts" id="contacts">
@@ -103,7 +113,7 @@ html,body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden}
  </div><button type="button" id="jumpBottom" aria-label="Cuộn đến tin mới nhất" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></section>
  <div class="composer-frame"><form class="composer" id="composer"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
 </main>
-<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v1.6</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v1.7</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
 </div>
 <script>
 (function(){
@@ -153,26 +163,30 @@ $('#composer').addEventListener('submit',e=>{e.preventDefault();const t=draft.va
 messages.addEventListener('scroll',()=>{scrolls[active]=messages.scrollTop},{passive:true});
 $('#mediaBtn').addEventListener('click',()=>{draft.placeholder='Ảnh: vị trí nút đã dựng (chưa gửi thật)';draft.focus({preventScroll:true})});
 $('#addContact').addEventListener('click',()=>{$('#search').focus();$('#search').placeholder='Thêm danh bạ sẽ triển khai sau — đang dựng bố cục'});
-let viewportFrame=0, baselineHeight=0, lastVh=0, lastWidth=0, lastTop=-1, lastKeyboard=false;
 function nearBottom(){return messages.scrollHeight-messages.clientHeight-messages.scrollTop<48}
 const jump=document.getElementById('jumpBottom');function syncJump(){if(nearBottom())pendingLatest[active]=0;const n=pendingLatest[active]||0;jump.hidden=nearBottom()||messages.clientHeight===0;if(n)jump.dataset.count=n;else delete jump.dataset.count}jump.addEventListener('click',()=>{messages.scrollTop=messages.scrollHeight;syncJump()});messages.addEventListener('scroll',syncJump,{passive:true});new ResizeObserver(syncJump).observe(messages);
-let settleTimer=0, focusAnchor=null;
+
+// Viewport controller: absolute visible rectangle, never cumulative keyboard offsets.
+let viewportFrame=0, previousRect='', anchor=null;
 function applyViewport(){
+viewportFrame=0;
 const vv=window.visualViewport;
-const height=Math.round(vv?.height||innerHeight);
-const top=Math.round(vv?.offsetTop||0);
-const pinned=focusAnchor?.pinned??nearBottom(), oldTop=focusAnchor?.top??messages.scrollTop;
-document.documentElement.style.setProperty('--app-height',height+'px');
-document.documentElement.style.setProperty('--viewport-top',top+'px');
-if(app.dataset.screen==='chat'){messages.scrollTop=pinned?messages.scrollHeight:oldTop;syncJump()}
-focusAnchor=null;
+const rect={top:Math.round(vv?.offsetTop||0),left:Math.round(vv?.offsetLeft||0),height:Math.round(vv?.height||innerHeight),width:Math.round(vv?.width||innerWidth)};
+const key=JSON.stringify(rect);
+if(key===previousRect)return;
+previousRect=key;
+const saved=anchor||{pinned:nearBottom(),top:messages.scrollTop};
+const root=document.documentElement;
+root.style.setProperty('--view-top',rect.top+'px');
+root.style.setProperty('--view-left',rect.left+'px');
+root.style.setProperty('--view-height',rect.height+'px');
+root.style.setProperty('--view-width',rect.width+'px');
+if(messages.clientHeight){messages.scrollTop=saved.pinned?messages.scrollHeight:saved.top;syncJump()}
 }
-function updateViewport(){
-clearTimeout(settleTimer);
-settleTimer=setTimeout(applyViewport,140);
-}
-document.addEventListener('focusin',e=>{if(e.target===draft||e.target===$('#search')){focusAnchor={pinned:nearBottom(),top:messages.scrollTop};updateViewport()}});
-document.addEventListener('focusout',updateViewport);
+function updateViewport(){if(!viewportFrame)viewportFrame=requestAnimationFrame(applyViewport)}
+document.addEventListener('focusin',e=>{if(e.target===draft||e.target===$('#search'))anchor={pinned:nearBottom(),top:messages.scrollTop};updateViewport()});
+document.addEventListener('focusout',()=>{anchor=null;updateViewport()});
+messages.addEventListener('pointerdown',()=>{anchor=null},{passive:true});
 window.visualViewport?.addEventListener('resize',updateViewport);
 window.visualViewport?.addEventListener('scroll',updateViewport);
 window.addEventListener('resize',updateViewport);
