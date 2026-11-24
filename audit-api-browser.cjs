@@ -90,5 +90,43 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await media.getByRole('button',{name:'Vừa khung',exact:true}).click();assert.equal(await stage.getAttribute('data-media-zoom'),'1');console.log('Media gestures simulated',JSON.stringify(gesture));
  await media.getByRole('button',{name:'Xoay 90°',exact:true}).click();assert.equal(await stage.locator('img').getAttribute('width'),'360');assert.equal(await stage.locator('img').getAttribute('height'),'640');assert.equal(await grids.nth(3).locator('.media-tile').last().locator('img').getAttribute('width'),'640');
  await media.locator('dialog[open] button').last().click();await media.waitForSelector('dialog[open]',{state:'detached'});console.log('Media: all 10 tiles, fit, zoom, rotate and close passed');await media.close();
+ const systems=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});await systems.goto(url+'?systemslab=1');await systems.locator('.contact[data-id=nv]').evaluate(e=>e.click());await systems.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());
+ const lessons=systems.locator('[data-system-lesson]');assert.equal(await lessons.count(),8);
+ const mediaLesson=systems.locator('[data-system-lesson="10 Media"]');const first=mediaLesson.locator('.media-tile').first();await first.scrollIntoViewIfNeeded();await first.locator('img').evaluate(e=>e.decode());await first.click();await systems.getByRole('button',{name:'Ảnh tiếp',exact:true}).click();assert.equal(await systems.locator('[data-media-viewer-stage]').getAttribute('data-media-index'),'1');await systems.getByRole('button',{name:'Ảnh tiếp',exact:true}).click();assert.equal(await systems.locator('[data-media-viewer-stage]').getAttribute('data-media-index'),'2');assert(await systems.getByRole('button',{name:'Ảnh tiếp',exact:true}).isDisabled());await systems.getByRole('button',{name:'Ảnh trước',exact:true}).click();assert.equal(await systems.locator('[data-media-viewer-stage]').getAttribute('data-media-index'),'1');await systems.locator('dialog[open] button').last().click();
+ assert(await mediaLesson.locator('video').evaluate(e=>e.controls&&e.playsInline&&!e.autoplay));await mediaLesson.getByRole('button',{name:'Dừng và giải phóng video'}).click();
+ assert.equal(await systems.locator('[data-system-lesson="11 Card"] [data-surface-variant]').count(),3);
+ const density=await systems.locator('[data-system-lesson="12 Table"] [data-table-density]').evaluateAll(es=>es.map(e=>({density:e.dataset.tableDensity,rows:e.querySelectorAll('tbody tr').length,cells:[...e.querySelectorAll('tbody tr')].map(r=>r.children.length),pad:parseFloat(getComputedStyle(e.querySelector('td')).paddingTop)})));assert.equal(density.length,3);assert(density.every(x=>x.rows===3&&x.cells.every(n=>n===5)));console.log('Table density',JSON.stringify(density));assert.deepEqual(density.map(x=>x.pad),[4,6,12]);
+ const scroll=systems.locator('[data-scroll-lab]');assert(await scroll.evaluate(e=>e.scrollHeight-e.clientHeight>48),'scroll sample must overflow');await scroll.evaluate(e=>e.scrollTop=0);await systems.getByRole('button',{name:'Thêm dòng',exact:true}).evaluate(e=>e.click());assert.equal(await scroll.evaluate(e=>e.scrollTop),0);await scroll.evaluate(e=>e.scrollTop=e.scrollHeight);await systems.getByRole('button',{name:'Thêm dòng',exact:true}).evaluate(e=>e.click());assert(await scroll.evaluate(e=>e.scrollHeight-e.clientHeight-e.scrollTop<2));
+ await systems.getByRole('button',{name:'Chạy chuyển động'}).evaluate(e=>e.click());assert.equal(await systems.locator('[data-motion-profile]').getAttribute('data-motion-reduced'),'true');
+ assert.equal(await systems.locator('[data-responsive-profile=cards]>section').count(),4);
+ const toggle=systems.getByRole('button',{name:'Chọn mẫu',exact:true});await toggle.evaluate(e=>e.click());assert.equal(await toggle.getAttribute('aria-pressed'),'true');await systems.getByRole('button',{name:'Đổi trạng thái bận'}).evaluate(e=>e.click());assert.equal(await toggle.getAttribute('aria-busy'),'true');assert.equal(await toggle.getAttribute('aria-pressed'),'true');
+ await systems.getByRole('button',{name:'dark',exact:true}).evaluate(e=>e.click());assert.equal(await systems.locator('[data-theme-profile]').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(32, 33, 36)');await systems.getByRole('button',{name:'light',exact:true}).evaluate(e=>e.click());assert.equal(await systems.locator('[data-theme-profile]').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 255, 255)');
+ console.log('Systems lab: 8 lessons, 3 rows x 3 tables, scroll anchor, reduced motion, state/theme and gallery navigation passed');await systems.close();
+
+ // Verify actual browser updater without network access.
+ const releaseHtml=require('fs').readFileSync('index.html','utf8'),current='v13.45',future='v13.46',futureHtml=releaseHtml.replaceAll(current,future),origin='https://1sl2tp.github.io/0v/';
+ async function checkRelease(mode){
+  const p=await browser.newPage({viewport:{width:390,height:844}});let entryReady=mode!=='stale',manifestReady=mode!=='dirty';
+  try{
+   await p.route(origin+'**',route=>{const u=new URL(route.request().url());if(u.pathname.endsWith('/version.json')){const version=manifestReady?future:current;return route.fulfill({json:{version,entry:'index.html',snapshot:'release-'+version+'.html',gitBlobSha:'a'.repeat(40)}})}if(u.pathname.endsWith('/index.html'))return route.fulfill({contentType:'text/html',body:entryReady?futureHtml:releaseHtml});if(u.searchParams.get('v')==='13.46')return route.fulfill({contentType:'text/html',body:futureHtml});return route.fulfill({contentType:'text/html',body:releaseHtml})});
+   await p.goto(origin+(mode==='lab'?'?systemslab=1':''));await p.bringToFront();await p.waitForFunction(()=>!document.hidden&&!!window.releaseStatus);
+   if(mode==='dirty'){
+    await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());await p.locator('#draft').fill('Bản nháp cần giữ');
+    assert.equal(await p.locator('#draft').inputValue(),'Bản nháp cần giữ');manifestReady=true;
+    await p.evaluate(()=>window.dispatchEvent(new Event('focus')));
+    await p.waitForFunction(()=>window.releaseStatus?.().state==='deferred'&&window.releaseStatus?.().pending==='v13.46');
+    assert.equal(await p.locator('#draft').inputValue(),'Bản nháp cần giữ');assert(!p.url().includes('v=13.46'));
+   }else if(mode==='stale'){
+    await p.waitForFunction(()=>window.releaseStatus?.().state==='waiting-pages');
+    assert(!p.url().includes('v=13.46'));entryReady=true;await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.waitForURL(u=>u.searchParams.get('v')==='13.46',{timeout:25000});assert((await p.title()).endsWith(future));
+   }else{
+    await p.waitForURL(u=>u.searchParams.get('v')==='13.46',{timeout:25000});assert((await p.title()).endsWith(future));if(mode==='lab')assert(new URL(p.url()).searchParams.get('systemslab')==='1');
+   }
+   console.log('ReleaseUpdater case passed',mode,p.url());
+  }catch(e){console.error('ReleaseUpdater failure',mode,p.url(),await p.evaluate(()=>({status:window.releaseStatus?.(),hidden:document.hidden,active:document.activeElement?.id,draft:document.querySelector('#draft')?.value})).catch(()=>null));throw e}
+  finally{await p.close()}
+ }
+ for(const mode of ['clean','dirty','stale','lab'])await checkRelease(mode);
+ console.log('ReleaseUpdater clean, dirty, stale entry and lab navigation passed');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

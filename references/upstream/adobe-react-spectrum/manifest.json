@@ -1,0 +1,63 @@
+{
+  "repository": "https://github.com/adobe/react-spectrum",
+  "commit": "7743784aa065cd42bf0d144ddc5dd5e03e0e651f",
+  "license": "Apache-2.0",
+  "purpose": "read-only source study, not executable",
+  "files": [
+    {
+      "source": "LICENSE",
+      "local": "references/upstream/adobe-react-spectrum/LICENSE",
+      "sha": "e3af6041dce3ff35457db0cfded595ec7421300e"
+    },
+    {
+      "source": "NOTICE.txt",
+      "local": "references/upstream/adobe-react-spectrum/NOTICE.txt",
+      "sha": "07a501089b6a568fc090a9a65bcd0f4f5f755919"
+    },
+    {
+      "source": "packages/react-aria/src/numberfield/useNumberField.ts",
+      "local": "references/upstream/adobe-react-spectrum/packages/react-aria/src/numberfield/useNumberField.ts.txt",
+      "sha": "05b74ab77e366e96ea8d56f7f88b53ef42fe1cde"
+    },
+    {
+      "source": "packages/react-stately/src/numberfield/useNumberFieldState.ts",
+      "local": "references/upstream/adobe-react-spectrum/packages/react-stately/src/numberfield/useNumberFieldState.ts.txt",
+      "sha": "eed17a1d22715cf92ece7156c661c026deb53acc"
+    },
+    {
+      "source": "packages/react-aria/src/selection/useSelectableCollection.ts",
+      "local": "references/upstream/adobe-react-spectrum/packages/react-aria/src/selection/useSelectableCollection.ts.txt",
+      "sha": "739a9433b098c081ce872815f10fbc83ba07172c"
+    },
+    {
+      "source": "packages/react-stately/src/selection/SelectionManager.ts",
+      "local": "references/upstream/adobe-react-spectrum/packages/react-stately/src/selection/SelectionManager.ts.txt",
+      "sha": "d6ff15c5b5efd7f9be685f87f46c3ed251c093f5"
+    },
+    {
+      "source": "packages/react-aria/src/searchfield/useSearchField.ts",
+      "local": "references/upstream/adobe-react-spectrum/packages/react-aria/src/searchfield/useSearchField.ts.txt",
+      "sha": "6278919130f3c2ce6bf871cf32429a4c700991dc"
+    },
+    {
+      "source": "packages/react-aria/src/table/useTable.ts",
+      "local": "references/upstream/adobe-react-spectrum/packages/react-aria/src/table/useTable.ts.txt",
+      "sha": "6b9108e81fd8bce49ae22fcb5d374331b8a62e49"
+    },
+    {
+      "source": "packages/react-stately/src/virtualizer/Virtualizer.ts",
+      "local": "references/upstream/adobe-react-spectrum/packages/react-stately/src/virtualizer/Virtualizer.ts.txt",
+      "sha": "3959c1cc7666f0384d31af2c770c6902662cdcb1"
+    },
+    {
+      "source": "packages/@internationalized/number/src/NumberParser.ts",
+      "local": "references/upstream/adobe-react-spectrum/packages/@internationalized/number/src/NumberParser.ts.txt",
+      "sha": "66e59aff3510121ca373c0b8e39dacd3a8a8e1e0"
+    },
+    {
+      "source": "packages/react-aria/src/overlays/usePreventScroll.ts",
+      "local": "references/upstream/adobe-react-spectrum/packages/react-aria/src/overlays/usePreventScroll.ts.txt",
+      "sha": "95421f55409cb51ab25998b3f6d0d54b74f32bf4"
+    }
+  ]
+}
