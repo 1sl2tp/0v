@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.45)
+## 00. Chỉ mục rule đang có hiệu lực (v13.46)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -504,3 +504,6 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - RELEASE-API-04: ReleaseUpdater trên trang chính và lab hợp lệ, 15s visible + focus/pageshow; giữ 2s ổn định từ lúc khởi động trước navigation; no-store manifest và entry, so sánh số version. Giữ query lab, cache-bust r và v; retry nếu CDN cũ sau 60s, không vòng lặp hoặc downgrade. Snapshot/diagnostic khác không tự reload.
 - RELEASE-API-05: Hoãn khi đang nhập, có draft, dialog, thao tác gần đây hoặc dirty dữ liệu mẫu. Search và draft đã xóa không bị khóa vĩnh viễn; hành vi thay đổi dữ liệu khác giữ bảo thủ tới reload thủ công. Không chạm KB-LOCK.
 - RELEASE-API-06: Vite client.ts blob 17fe70a1933247ba654b2a11be9a6f13a1e223fe (full reload/visibility); GitHub Docs Pages build và workflow_run security. CI mock clean/dirty/CDN stale/lab. Scroll lab độc lập dùng ngưỡng pinned 2px và con không co; chat threshold 48px giữ nguyên.
+
+## 68. RELEASE nghiệm thu — v13.46
+- RELEASE-PROOF-01: Test phiên bản phải lấy current từ version.json và sinh future theo số, không hardcode. Draft của active lấy từ editor hiện tại; cache draft chỉ kiểm các hội thoại khác. Test chuyển hội thoại, quay lại, xóa draft rồi tự tải bản mới. Không thay keyboard/viewport hoặc dữ liệu thật. PR đủ phạm vi tự merge để nghiệm thu workflow; không merge thủ công trước khi có kết quả của workflow.
