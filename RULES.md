@@ -61,3 +61,9 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - IC-02: Icon cha quản lý hình học SVG; Button cha quản lý vùng chạm; vùng cha quản lý vị trí và gap 8px với chữ. Không ép SVG minh họa, bill, QR, ảnh vào icon.
 - IC-03: Icon trang trí trong nút có aria-hidden; nút phải có tên truy cập độc lập. Không thay đổi viewBox/path để chữa lệch tâm tùy tiện.
 - IC-04: Kiểm tra icon header, composer, danh bạ, công việc, popup, nút xuống cuối; không đổi hành vi focus/scroll. Nghiệm thu thiết bị riêng.
+
+## 11. Popup cha
+- POP-01: PopupController sở hữu mở/đóng, viewport riêng và vòng đời dialog; không ghi kích thước shell hoặc inset composer.
+- POP-02: Dialog native modal, một popup hoạt động tại một thời điểm; đóng bằng nút hoặc Escape; giữ cơ chế focus native, không tự mở lại bàn phím.
+- POP-03: Popup cách mép visual viewport tối thiểu 12px khi đủ chỗ; nội dung dài cuộn bên trong; ảnh contain, nút chạm 44px.
+- POP-04: Dọn listener và tài nguyên ảnh khi đóng; popup input, menu và xác nhận tương lai kế thừa cha; kiểm tra Safari/PWA khi bàn phím mở, đóng, xoay màn hình. Không tuyên bố đã nghiệm thu nếu chưa chạy.
