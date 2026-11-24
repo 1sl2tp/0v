@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.43)
+## 00. Chỉ mục rule đang có hiệu lực (v13.44)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -471,3 +471,8 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - MEDIA-API-01: MediaController.gallery/image/tile/openImage bổ sung vào cha hiện hữu, gallery 1–4 ảnh, intrinsic width/height, ảnh đơn contain giữ tỷ lệ, nhiều ảnh thumb cover; Popup quản vòng đời, Layout nhóm nút, Button hành vi, Typography chữ. Main sample gallery gọi cha; local preview vẫn dùng grid/layout/rotate cũ.
 - MEDIA-API-02: Viewer fit theo kích thước ảnh và vùng xem, zoom 1–4 lần fit bằng nút, cuộn riêng; không zoom trang/keyboard; rotate dùng ảnh gốc và giữ thumbnail không đổi. ResizeObserver chỉ trong popup, cleanup khi đóng. Chưa hỗ trợ pinch/pan chuyên biệt hoặc video.
 - MEDIA-API-03: ?medialab=1 trong Công việc; thử mọi tile 1–4, ngang/dọc/vuông, viewer zoom/reset/rotate. Nguồn MUI ImageList/ImageListItem và PhotoSwipe ZoomLevel, xem MEDIA-API-SOURCES. Không import dependency; Safari/PWA, EXIF, video, file lớn và chia sẻ PENDING.
+
+## 63. MEDIA-GESTURE — v13.44
+- MEDIA-GESTURE-01: Thay phần chưa có pinch/pan của MEDIA-API-02: MediaController viewer nhận Pointer Events riêng trên stage, zoom giới hạn 1–4 lần fit theo khoảng cách hai điểm; giữ điểm ảnh dưới tâm gesture trong phạm vi cuộn. Không chặn touch ở document, không đổi keyboard hoặc viewport.
+- MEDIA-GESTURE-02: Kéo một ngón khi zoom >1; rebase khi thêm/bớt pointer; pointercancel/lostpointercapture dọn state. Đóng Popup hủy listener và ResizeObserver; không thêm vòng lặp toàn trang. Nút zoom/reset/xoay vẫn dùng cùng state.
+- MEDIA-GESTURE-03: Nguồn đọc PhotoSwipe zoom-handler/drag-handler và Panzoom panzoom.ts, ghi blob SHA; học midpoint, bounds, lifecycle, không nhập dependency. Test PointerEvent tổng hợp, kéo, clamp, reset, close; native multi-touch Safari/PWA chưa nghiệm thu. Không làm swipe chuyển ảnh, video, EXIF trong vòng này.

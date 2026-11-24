@@ -28,3 +28,6 @@ API implementation and 7 lab cases; every four contact rows tested by ID, header
 
 ## v13.43
 Reopened Avatar MUI/Radix sources; Fluent path not found. Media learned MUI ImageList and PhotoSwipe; gallery and viewer API implemented, lab/browser test pending at commit. Video, gestures, local preview migration and native still provisional.
+
+## v13.44
+Media gestures source study and implementation; simulated pointer CI pending at commit, native iOS/PWA, video, EXIF, large files and full local-preview integration pending.

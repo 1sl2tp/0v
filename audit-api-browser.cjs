@@ -78,6 +78,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  for(let i=0;i<4;i++){const tiles=grids.nth(i).locator('.media-tile');assert.equal(await tiles.count(),i+1);const styles=await tiles.evaluateAll(es=>es.map(e=>({fit:getComputedStyle(e.querySelector('img')).objectFit,w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height})));console.log('Media grid',i+1,JSON.stringify(styles));assert(styles.every(x=>x.fit===(i===0?'contain':'cover')&&x.w>0&&x.h>0));}
  const lastTile=grids.nth(3).locator('.media-tile').last();await lastTile.scrollIntoViewIfNeeded();await lastTile.locator('img').evaluate(img=>img.decode());await lastTile.click();await media.waitForSelector('dialog[open] [data-media-viewer-stage]');const stage=media.locator('[data-media-viewer-stage]');await media.waitForFunction(()=>document.querySelector('[data-media-viewer-stage]').dataset.mediaZoom==='1');
  const fitted=await stage.locator('img').evaluate(el=>el.getBoundingClientRect().width);await media.getByRole('button',{name:'Phóng to',exact:true}).click();assert.equal(await stage.getAttribute('data-media-zoom'),'1.5');assert(Math.abs(await stage.locator('img').evaluate(el=>el.getBoundingClientRect().width)-fitted*1.5)<1);await media.getByRole('button',{name:'Vừa khung',exact:true}).click();assert.equal(await stage.getAttribute('data-media-zoom'),'1');
+ // Simulated pointer events: logic only, not a physical iOS touch certification.
+ const gesture=await stage.evaluate(el=>{
+  const b=el.getBoundingClientRect(),cx=b.left+b.width/2,cy=b.top+b.height/2;
+  const emit=(type,id,x,y)=>el.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',clientX:x,clientY:y,bubbles:true,cancelable:true,button:0}));
+  emit('pointerdown',1,cx-30,cy);emit('pointerdown',2,cx+30,cy);emit('pointermove',1,cx-60,cy);emit('pointermove',2,cx+60,cy);
+  const pinch=Number(el.dataset.mediaZoom);emit('pointermove',1,cx-300,cy);emit('pointermove',2,cx+300,cy);const max=Number(el.dataset.mediaZoom);
+  emit('pointerup',2,cx+300,cy);const pan=el.dataset.mediaGesture;el.scrollLeft=0;emit('pointerup',1,cx-300,cy);emit('pointerdown',3,cx,cy);emit('pointermove',3,cx-40,cy);const dragged=el.scrollLeft;emit('pointercancel',3,cx-40,cy);return {pinch,max,pan,dragged,end:el.dataset.mediaGesture}
+ });
+ assert.equal(gesture.pinch,2);assert.equal(gesture.max,4);assert.equal(gesture.pan,'pan');assert(gesture.dragged>0);assert.equal(gesture.end,'idle');
+ await media.getByRole('button',{name:'Vừa khung',exact:true}).click();assert.equal(await stage.getAttribute('data-media-zoom'),'1');console.log('Media gestures simulated',JSON.stringify(gesture));
  await media.getByRole('button',{name:'Xoay 90°',exact:true}).click();assert.equal(await stage.locator('img').getAttribute('width'),'360');assert.equal(await stage.locator('img').getAttribute('height'),'640');assert.equal(await grids.nth(3).locator('.media-tile').last().locator('img').getAttribute('width'),'640');
  await media.locator('dialog[open] button').last().click();await media.waitForSelector('dialog[open]',{state:'detached'});console.log('Media: all 10 tiles, fit, zoom, rotate and close passed');await media.close();
  }finally{await browser.close()}
