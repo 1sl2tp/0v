@@ -307,7 +307,7 @@ textarea.input-child[data-input-parent=standalone]{height:var(--input-multiline-
 .composer:has(textarea:focus-visible){outline:2px solid var(--control-focus);outline-offset:2px}
 .search-zone input:focus-visible{outline:1px solid var(--control-focus);outline-offset:-1px}
 @media(max-width:767px){#app[data-keyboard="true"][data-screen="contacts"] .dir-bottom{display:none}}
-.input-lab{display:grid;gap:12px;margin-top:12px}.input-lab label{display:grid;gap:4px;font-size:var(--text-sub);color:var(--muted)}.input-lab .quantity-field{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:4px;align-items:center}.input-lab .quantity-field button{border:var(--control-border);border-radius:var(--input-field-radius);font-size:20px}.input-lab .quantity-field input{text-align:center}.input-lab .money-field{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.input-lab{display:grid;gap:12px;margin-top:12px}.input-lab .lab-field{display:grid;gap:4px;font-size:var(--text-sub);color:var(--muted)}.input-lab .quantity-field{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:4px;align-items:center}.input-lab .quantity-field button{border:var(--control-border);border-radius:var(--input-field-radius);font-size:20px}.input-lab .quantity-field input{text-align:center}.input-lab .money-field{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
 [data-input-parent=chat],[data-input-parent=search]{min-width:0;max-width:100%}
 /* Isolate heavy receipt layouts from keyboard viewport changes. */
 .bill-pair,.bill-reconcile,.work-card{contain:layout paint}
@@ -611,7 +611,7 @@ function orderTable(order){return TableController.create({keys:['stt','name','qt
 function renderInputLab(panel){
  const lab=make('section','input-lab');lab.append(make('h3','','Input cha · Mẫu kiểm tra'));
  const field=(kind,value,label)=>{const el=make('input','input-child');el.type='text';el.dataset.inputParent='standalone';el.dataset.inputKind=kind;el.value=value;el.setAttribute('aria-label',label);if(kind==='quantity'||kind==='money')el.inputMode='numeric';return el};
- const label=(name,el)=>{const wrap=make('label','','');wrap.append(make('span','',name),el);lab.append(wrap)};
+ const label=(name,el)=>{const wrap=make('div','lab-field');wrap.append(make('span','',name),el);lab.append(wrap)};
  label('Nhập nội dung',field('text','','Nhập nội dung'));
  const qty=field('quantity','10','Số lượng'),q=make('div','quantity-field');
  const step=(n,caption)=>{const b=make('button','',n<0?'−':'+');b.type='button';b.setAttribute('aria-label',caption);b.onclick=()=>{qty.value=String(Math.max(0,Math.min(999999,(Number(qty.value)||0)+n)))};return b};
@@ -848,7 +848,7 @@ navigate('contacts');await wait();check('S01 Mở danh bạ',app.dataset.screen=
 setSearchOpen(true);searchInput.value='zzzzqa-no-match';showPeople();check('S02 Tìm kiếm không có kết quả',[...contactList.querySelectorAll('.contact')].every(e=>e.hidden));
 setSearchOpen(false);check('S03 Đóng tìm kiếm',searchInput.value===''&&directory.dataset.searchOpen==='false');
 const first=contactList.querySelector('.contact:not([hidden])');if(!first)throw Error('Không có khách mẫu');first.click();await wait();check('S04 Mở đúng hội thoại',active===first.dataset.id&&$('#currentName').textContent===people[active].name);
-const testId=active,savedDraft=draft.value;try{draft.value='QA mẫu\nDòng hai\nDòng ba';draft.dispatchEvent(new Event('input',{bubbles:true}));resizeDraft();await wait();check('S05 Ô nhập nhiều dòng',draft.value.split('\n').length===3&&Math.abs(draft.getBoundingClientRect().height-(parseFloat(getComputedStyle(draft).minHeight)+2*parseFloat(getComputedStyle(draft).lineHeight)))<=1);
+const testId=active,savedDraft=draft.value;try{draft.value='QA mẫu\nDòng hai\nDòng ba';draft.dispatchEvent(new Event('input',{bubbles:true}));resizeDraft();await wait();check('S05 Ô nhập nhiều dòng',draft.value.split('\n').length===3&&Math.abs(draft.getBoundingClientRect().height-Math.min(parseFloat(getComputedStyle(draft).maxHeight),parseFloat(getComputedStyle(draft).minHeight)+2*parseFloat(getComputedStyle(draft).lineHeight)))<=1);
 const second=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id!==testId);if(second){second.click();await wait();check('S06 Chuyển khách',active===second.dataset.id);first.click();await wait();check('S07 Khôi phục bản nháp',draft.value==='QA mẫu\nDòng hai\nDòng ba')}
 messages.scrollTop=messages.scrollHeight;syncJump();await wait();check('S08 Cuộn cuối',nearBottom()&&jump.hidden);if(floatingComposer){const frame=keyboardComposer.getBoundingClientRect(),last=messages.lastElementChild?.getBoundingClientRect();check('S19 Floating: tin cuối không bị che',!!last&&last.bottom<=frame.top-11);check('S20 Floating: đáy cuộn đúng frame',Math.abs(messages.getBoundingClientRect().bottom-frame.bottom)<=1);check('S21 Floating: reserve đủ',parseFloat(getComputedStyle(messages).paddingBottom)>=frame.height+11);
 const typed=draft.value;messages.scrollTop=0;await wait();const oldTop=messages.scrollTop;
