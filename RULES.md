@@ -1,12 +1,13 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.30)
+## 00. Chỉ mục rule đang có hiệu lực (v13.31)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04 | không bỏ qua RULE khi sửa nhỏ |
+| Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
@@ -366,3 +367,17 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BUTTON-API-03: Icon.create(name) dùng registry glyph cố định, viewBox 24, SVG decorative aria-hidden trong nút có tên; Icon.replace(button,name) thay icon do API quản lý, không thay button hoặc listener, không nhận SVG tùy ý từ dữ liệu. Registry vòng này dùng glyph có sẵn của 0v, không đổi đường nét theo suy đoán.
 - BUTTON-API-04: Chuyển make('button',...) qua Button.create để đăng ký ngay; chuyển nhóm thao tác tin nhắn copy/share/save/forward và trạng thái copied qua registry. Nút tĩnh composer/rail/header giữ nguyên DOM và đăng ký bằng scan; các nút QA ngoài runtime chính và mẫu upstream là phạm vi chẩn đoán, không ép đổi trong vòng này. Không đổi CSS/kích thước, Surface, Input API, Keyboard v13.27.
 - BUTTON-API-05: Kiểm tra API loại nút, mặc định/submit, disabled, tên, glyph, callback, giữ node khi thay icon, không chấp nhận loại/glyph lạ. So sánh baseline và Input. Chưa nghiệm thu browser/thiết bị hoặc Pages; ghi nhận giới hạn ở CHANGE-CHECK.md. Chỉ 0v.
+
+## 49. SOURCE — học tập upstream cho mọi bài toán
+- SOURCE-01: Trước khi thiết kế hoặc sửa một bài toán/API cha, tìm và đọc source GitHub liên quan trực tiếp, ưu tiên thư viện trưởng thành và tiêu chuẩn. Ghi kho, file, blob SHA nếu đọc được, nguyên lý, phạm vi và giới hạn vào references/ theo từng bài toán.
+- SOURCE-02: Phân biệt source đã đọc, tài liệu, issue và đề xuất tự thiết kế; không coi số sao hoặc danh tiếng là nghiệm thu. Nếu nguồn không truy cập được, ghi rõ lý do, nguồn thay thế và PENDING; không bịa source.
+- SOURCE-03: So sánh upstream với code hiện hành trước khi chọn phương án. Ưu tiên học nguyên lý, không nhập dependency hoặc sao chép implementation khi chưa xác định giấy phép và nhu cầu. Giữ owner và baseline đã duyệt.
+- SOURCE-04: Ghi source, RULE liên quan, thay đổi, test và ngoại lệ vào CHANGE-CHECK.md và sổ Google Sheet. Không thay cơ chế ổn định chỉ vì nguồn mới. Đây là cổng bắt buộc cho mọi bài toán sau vòng v13.31.
+
+## 50. POPUP-API — v13.31
+- POPUP-API-01: PopupController tiếp tục là owner duy nhất của dialog runtime; API Popup.open({type,title,content,description,onDispose,actions}) và Popup.close(dialog,result) dùng native dialog. Không tự tạo focus trap, keyboard controller, root geometry hoặc surface riêng. Dùng Button/Input cha khi có điều khiển.
+- POPUP-API-02: Bốn profile menu (cấp 1, danh sách hành động modal, không giả ARIA menu), confirm (cấp 2), form (cấp 3), media (cấp 4); preview là biến thể media cùng cấp. Cấp phân loại nội dung, không phải 4 lớp modal chồng hay lời hứa fullscreen. Popup chỉ một tại một thời điểm. Giữ CSS hiện tại; kích thước riêng từng cấp sẽ nghiệm thu sau.
+- POPUP-API-03: Dialog có tên truy cập; tiêu đề hoặc nhãn. Đóng bằng native Escape/nút, không mặc định đóng khi chạm backdrop, không gửi dữ liệu. Ưu tiên nút an toàn hoặc tiêu đề focus ban đầu; không autofocus editable. Native focus restoration được giữ; cần test Safari khi trigger là input, không khẳng định không mở lại keyboard khi chưa chạy.
+- POPUP-API-04: Một vòng đời open/close/dispose; cleanup listener viewport, RAF, tài nguyên qua onDispose đúng một lần; từ chối popup thứ hai không tạo close event giả, không ảnh hưởng popup đang mở. Lỗi showModal cũng cleanup. Dialog chỉ ghi biến --popup-*.
+- POPUP-API-05: Chuyển viewer ảnh mẫu, preview ảnh chọn và thêm danh bạ sang API cha. ?popuplab=1 có 4 profile demo cục bộ. Glass Lab upstream riêng giữ nguyên theo phạm vi chẩn đoán; không dùng làm API runtime.
+- POPUP-API-06: Nguồn Radix, Shoelace, W3C APG tại references/POPUP-SOURCES.md; học vòng đời, tên truy cập và focus. Kiểm tra stub API và cleanup, bảo vệ v13.27, Input/Button/Icon. Chưa nghiệm thu browser, focus restoration native, keyboard popup, kích thước cấp, Pages. Không sửa production.
