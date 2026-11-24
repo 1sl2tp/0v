@@ -1,0 +1,20 @@
+# GEOMETRY — nguồn học tập v13.33 (2026-11-24)
+Đã đọc source GitHub; blob là định danh nội dung file, không phải commit. Không nhập dependency.
+| ID | File | Blob SHA | Nguyên lý |
+|---|---|---|---|
+| GEO-S01 | [Radix space.css](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/styles/tokens/space.css) | 137e86d98ea20b2a3a0c8943eff1109f891ae69c | 4/8/12/16/24/32/40/48/64; token khoảng cách độc lập. |
+| GEO-S02 | [Radix radius.css](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/styles/tokens/radius.css) | 1985f35c8d14a653c118f5c5bb0d727962b66b6a | Bậc 3/4/6/8/12/16 và radius factor; tròn/pill tách khỏi gap. |
+| GEO-S03 | [Radix Flex](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/flex.tsx), [Grid](https://github.com/radix-ui/themes/blob/main/packages/radix-ui-themes/src/components/grid.tsx) | 0d046a4a8decbbc062c93315beca01651078f427 / fce14bc2895bfc1758888eef139fbfbed64b17ef | Tách hợp đồng layout/margin/flex/grid khỏi component con. flex.props.ts/grid.props.ts trả 404, không dùng làm bằng chứng. |
+| GEO-S04 | [MUI Avatar](https://github.com/mui/material-ui/blob/master/packages/mui-material/src/Avatar/Avatar.js) | 61617badd36252be31d60856e87055b7c7334abb | 40×40, chữ 20px quy đổi rem, flex center, không co, circular/rounded/square. |
+| GEO-S05 | [MUI IconButton](https://github.com/mui/material-ui/blob/master/packages/mui-material/src/IconButton/IconButton.js) | d34397fde46bbf64b58ce10405f657a23f1f79ad | small glyph 18/pad5, medium 24/pad8, large 28/pad12; mặt tròn. Kích thước tổng thực tế phụ thuộc theme/border, không đồng nhất hit target. |
+| GEO-S06 | [MUI Grid generator](https://github.com/mui/material-ui/blob/master/packages/mui-system/src/Grid/gridGenerator.ts) | a5c9828ed862b1e15fa8845f9c4946217f8f82d5 | minWidth 0, rowSpacing/columnSpacing, ngân sách cột tính cả gap, nested parent vars. MUI dùng flex, 0v dùng CSS grid cho lưới đều. |
+| GEO-S07 | [Fluent UI Avatar styles](https://github.com/microsoft/fluentui/blob/master/packages/react-components/react-avatar/library/src/components/Avatar/useAvatarStyles.styles.ts) | 7139372e6463330be208b8f2372d8cda95484f15 | mặc định 32×32, không co, chữ/icon/image slot, radius inherit, icon size profile và badge riêng. Không bê animation hoặc badge mask. |
+| GEO-S08 | [Floating UI utils](https://github.com/floating-ui/floating-ui/blob/master/packages/utils/src/index.ts) | c6c7bd7b0d5a9a41e5e2d45606ac468bcfb1f615 | Rect/axis/side/padding là dữ liệu hình học độc lập. Chỉ học mô hình, không dùng engine positioning. |
+
+## So sánh và lựa chọn 0v
+- Cấp 1: Avatar MUI 40, Fluent 32; 0v avatar danh bạ 40, header mobile profile riêng 32. IconButton MUI glyph 18/24/28 và pad 5/8/12; 0v giữ glyph token 20/22, vùng chạm 44, mặt nút và glyph khác nhau. Mẫu SVG registry ngoài nút vẫn có thể là 18px; cần đo computed style. Không lấy số upstream làm chuẩn Apple/ChatGPT.
+- Khung chữ/icon/avatar: frame mẫu 24/32/40/44/56px, square/rounded 12/round 50%; vùng con center, không co. Frame không phải button hay avatar thay thế. Chữ dùng Typography; ảnh và tương tác do owner tương ứng.
+- Cấp 2: gap 0/4/8/12/16px, padding cùng thang; row/column, align trục phụ, justify trục chính. Cấp 3: grid 1–4 cột đều, rowGap/columnGap riêng; adaptive min 180px, gap 8px cần 368px cho hai cột (chiều rộng nội dung sau padding/border). Cấp 4: shell/panel/region/scroll giữ owner và keyboard hiện có.
+- Layout region radius none/sm/md/lg = 0/8/12/16; round riêng khung vuông. Không tự đổi radius composer/Surface.
+- Geometry chỉ đọc rect, containment, overlap, center, gap, equalInsets, square, columnCount. Overlap dùng min chiều sâu giao, không dùng diện tích. Guides tái sử dụng inside/overlap; lab có phép đo tại viewport đang xem. Không khẳng định baseline chữ chính xác khi chỉ đo hộp.
+- v13.33 chỉ chuyển hai lab và bộ đo hiện có; không migrate toàn bộ shell/danh bạ/bảng, chưa có Avatar API mới. Audit 22 ca logic/stub; chưa nghiệm thu browser, khoảng trống quang học, font fallback, keyboard, Pages. 
