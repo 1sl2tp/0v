@@ -1,0 +1,4 @@
+# Directory study — v13.61
+- [TanStack Virtual core](https://github.com/TanStack/virtual/blob/main/packages/virtual-core/src/index.ts) blob 4bd3531db01d98838db8bea9cfd8b5c62568b4c7: getItemKey, anchor key/offset, scroll adjustments and clamp. Local directory policy fixed rows and skip promoted anchor, not upstream implementation.
+- [Element RoomListStoreV3](https://github.com/element-hq/element-web/blob/develop/apps/web/src/stores/room-list-v3/RoomListStoreV3.ts) blob 87937c8cca2cd8a183d9bbcf842562c07cbba736: RecencySorter, skiplist and list update coalescing. Local uses existing ConversationStore sort, not skiplist. Adobe SelectionManager blob d6ff15c5b5efd7f9be685f87f46c3ed251c093f5 focused/selected stable keys, Astryx Stack blob c56d72759ad2f6f86102228e22c3123530b32894 local overflow owner. No source copied.
+- Fixed-size synthetic lab only; selection/read, native momentum, dynamic rows, filter and large data benchmark pending.
