@@ -147,8 +147,31 @@ function auditDesign(html,rules,baseline){
  `)();buttonApiCases=run;
  }catch(e){buttonApiError=e.message}
  const buttonApiContract=!buttonApiError&&buttonApiCases.length===10&&buttonApiCases.every(c=>c.pass)&&html.includes("if(tag==='button')return Button.create(")&&html.includes("Icon.replace(b,'copied')");
- const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,keyboardBaseline,textInputContract,inputApiContract,buttonApiContract,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
- return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,inputCases,inputError,inputApiCases,inputApiError,buttonApiCases,buttonApiError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
+ let popupApiCases=[],popupApiError=null;
+ try{
+  const src=html.slice(html.indexOf("const PopupController="),html.indexOf("const IconController="));
+  popupApiCases=new Function(src+`
+ let listeners=0,raf=0,removed=0,fail=false,disposals=[];
+ function fake(tag){return {tagName:tag.toUpperCase(),dataset:{},attrs:{},children:[],events:{},open:false,style:{values:{},getPropertyValue(k){return this.values[k]},setProperty(k,v){this.values[k]=v}},setAttribute(k,v){this.attrs[k]=v},append(n){this.children.push(n)},addEventListener(k,f){this.events[k]=f},showModal(){if(fail)throw Error('test');this.open=true},close(v){this.returnValue=v;this.open=false;this.events.close?.()},remove(){removed++}}}
+ const document={createElement:fake,querySelector:()=>null,body:{append(){}}};
+ const target={addEventListener(){listeners++},removeEventListener(){listeners--}};
+ const window={...target,visualViewport:{...target,width:390,height:500,offsetTop:8,offsetLeft:0}};
+ const innerWidth=390,innerHeight=800,requestAnimationFrame=()=>++raf,cancelAnimationFrame=()=>{};
+ const Button={create(o){const b=fake('button');b.options=o;return b}};
+ const a=Popup.open({type:'form',title:'Form',content:fake('input'),onDispose:r=>disposals.push(r)}),before=listeners;
+ const rejected=Popup.open({type:'menu',title:'Menu',onDispose:r=>disposals.push(r)});
+ const same=PopupController.active===a&&a.open;
+ const closed=Popup.close(a,'ok'),clean=listeners===0&&PopupController.active===null;
+ const noActive=Popup.close()===false;
+ const levels=['menu','confirm','form','media','preview'].map(type=>{const d=Popup.open({type,title:type});const n=d.dataset.popupLevel;Popup.close(d);return n}).join(',');
+ let invalid=false,missing=false,failed=false;try{Popup.open({type:'bad',title:'x'})}catch{invalid=true}try{Popup.open({type:'form',title:''})}catch{missing=true}
+ fail=true;try{Popup.open({type:'form',title:'error',onDispose:r=>disposals.push(r)})}catch{failed=true}
+ return [['profiles',levels==='1,2,3,4,4'],['named native',a.attrs['aria-label']==='Form'],['safe initial focus',a.children.at(-1).attrs.autofocus===''],['viewport',a.style.values['--popup-height']==='500px'&&a.style.values['--popup-top']==='8px'],['listeners',before===3],['reject second',rejected===null&&same&&disposals[0]==='busy'],['close result',closed&&a.returnValue==='ok'],['cleanup',clean&&disposals.filter(x=>x==='close').length===1],['close idle',noActive],['invalid profile',invalid],['missing label',missing],['open error',failed&&PopupController.active===null&&disposals.at(-1)==='error']].map(([name,pass])=>({name,pass}));
+ `)();
+ }catch(e){popupApiError=e.message}
+ const popupApiContract=!popupApiError&&popupApiCases.length===12&&popupApiCases.every(c=>c.pass);
+ const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,keyboardBaseline,textInputContract,inputApiContract,buttonApiContract,popupApiContract,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
+ return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,inputCases,inputError,inputApiCases,inputApiError,buttonApiCases,buttonApiError,popupApiCases,popupApiError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
 }
 const fs=require('node:fs');const path=require('node:path');
 const result=auditDesign(fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),fs.readFileSync(path.join(__dirname,'RULES.md'),'utf8'),fs.readFileSync(path.join(__dirname,'release-v13.27.html'),'utf8'));
