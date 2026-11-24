@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.40)
+## 00. Chỉ mục rule đang có hiệu lực (v13.41)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, RELEASE-API-01–06 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -454,3 +454,11 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - SURFACE-API-03: ?surfacelab=1 mở bài học riêng trong Công việc, năm mẫu dùng cùng Layout, kiểm tra computed style. Đây là mẫu API mới độc lập, chưa chuyển Main, Card hay các dự án khác sang variant mới.
 - SURFACE-API-04: Nguồn đọc trực tiếp MUI Paper (variant/outlined/elevation) và Radix Card (composition/slot), xem references/SURFACE-API-SOURCES.md. Không nhập dependency, không sao chép implementation; lựa chọn 5 variant là quy ước của 0v.
 - SURFACE-API-05: Kiểm tra variant hợp lệ, không trộn vật liệu, size không đổi khi chuyển variant, token nền/viền/bóng kế thừa. CI Chromium; native glass/keyboard và thị giác người dùng vẫn PENDING. Chỉ đánh dấu đạt trong phạm vi đã đo.
+
+## 60. RELEASE-API — v13.41, phát hành và cập nhật an toàn
+- RELEASE-API-01: Mỗi release tăng version ở manifest/title/UI/snapshot đồng nhất. CI không tự quyết định version; release commit khai báo version. CI lỗi không merge.
+- RELEASE-API-02: Workflow publish chạy sau CI PR xanh từ workflow ID đã xác định; chỉ PR mở không draft do owner 1sl2tp tạo, head cùng repo review/vX.Y-*, main đúng base đã kiểm, head SHA chính xác, version tăng, snapshot/manifest blob khớp, phạm vi file cho phép. Fork, workflow/settings edits và sai điều kiện không auto merge. Không checkout/chạy code PR trong job có quyền ghi.
+- RELEASE-API-03: Sau merge bằng GITHUB_TOKEN yêu cầu Pages build API vì push bot không tự kích hoạt branch Pages. Kiểm tra manifest + title ở URL public; build queued không phải đã publish. Workflow bootstrap này cần merge thủ công sau CI, lần tiếp theo mới kích hoạt; nếu API quyền Pages hoặc metadata không đủ, báo lỗi/skip, không vượt cổng.
+- RELEASE-API-04: ReleaseUpdater chỉ trên demo chính HTTPS, query bình thường; kiểm tra khi mở, 15 giây/lần khi visible, focus/visibility. So sánh version dạng số, fetch no-store cùng origin, kiểm manifest + title entry trước navigation; không downgrade và không lặp khi CDN cũ.
+- RELEASE-API-05: Không reload khi đang nhập, dialog mở, có draft hoặc thay đổi dữ liệu mẫu, hoặc thao tác vừa xảy ra. Phiên sạch mới reload, giữ query v theo bản mới; phiên đã chỉnh dữ liệu cần người dùng tự quyết định (tooltip version). Không sửa keyboard v13.27, không dùng timer viewport.
+- RELEASE-API-06: Nguồn Vite client.ts blob 17fe70a1933247ba654b2a11be9a6f13a1e223fe (reload/visibility, dev-only), GitHub Docs auto-merge/GITHUB_TOKEN/Pages build/security. 0v dùng cơ chế polling riêng, không import dependency. CI mô phỏng Pages sạch/dirty, kiểm tra phiên bản và no reload khi dirty; native chưa xác nhận.
