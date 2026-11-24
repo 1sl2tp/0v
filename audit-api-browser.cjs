@@ -104,23 +104,25 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  console.log('Systems lab: 8 lessons, 3 rows x 3 tables, scroll anchor, reduced motion, state/theme and gallery navigation passed');await systems.close();
 
  // Verify actual browser updater without network access.
- const releaseHtml=require('fs').readFileSync('index.html','utf8'),current='v13.45',future='v13.46',futureHtml=releaseHtml.replaceAll(current,future),origin='https://1sl2tp.github.io/0v/';
+ const releaseHtml=require('fs').readFileSync('index.html','utf8'),current=JSON.parse(require('fs').readFileSync('version.json','utf8')).version,[major,minor]=current.slice(1).split('.').map(Number),future='v'+major+'.'+(minor+1),futureQuery=future.slice(1),futureHtml=releaseHtml.replaceAll(current,future),origin='https://1sl2tp.github.io/0v/';
  async function checkRelease(mode){
   const p=await browser.newPage({viewport:{width:390,height:844}});let entryReady=mode!=='stale',manifestReady=mode!=='dirty';
   try{
-   await p.route(origin+'**',route=>{const u=new URL(route.request().url());if(u.pathname.endsWith('/version.json')){const version=manifestReady?future:current;return route.fulfill({json:{version,entry:'index.html',snapshot:'release-'+version+'.html',gitBlobSha:'a'.repeat(40)}})}if(u.pathname.endsWith('/index.html'))return route.fulfill({contentType:'text/html',body:entryReady?futureHtml:releaseHtml});if(u.searchParams.get('v')==='13.46')return route.fulfill({contentType:'text/html',body:futureHtml});return route.fulfill({contentType:'text/html',body:releaseHtml})});
+   await p.route(origin+'**',route=>{const u=new URL(route.request().url());if(u.pathname.endsWith('/version.json')){const version=manifestReady?future:current;return route.fulfill({json:{version,entry:'index.html',snapshot:'release-'+version+'.html',gitBlobSha:'a'.repeat(40)}})}if(u.pathname.endsWith('/index.html'))return route.fulfill({contentType:'text/html',body:entryReady?futureHtml:releaseHtml});if(u.searchParams.get('v')===futureQuery)return route.fulfill({contentType:'text/html',body:futureHtml});return route.fulfill({contentType:'text/html',body:releaseHtml})});
    await p.goto(origin+(mode==='lab'?'?systemslab=1':''));await p.bringToFront();await p.waitForFunction(()=>!document.hidden&&!!window.releaseStatus);
    if(mode==='dirty'){
     await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());await p.locator('#draft').fill('Bản nháp cần giữ');
     assert.equal(await p.locator('#draft').inputValue(),'Bản nháp cần giữ');manifestReady=true;
     await p.evaluate(()=>window.dispatchEvent(new Event('focus')));
-    await p.waitForFunction(()=>window.releaseStatus?.().state==='deferred'&&window.releaseStatus?.().pending==='v13.46');
-    assert.equal(await p.locator('#draft').inputValue(),'Bản nháp cần giữ');assert(!p.url().includes('v=13.46'));
+    await p.waitForFunction(v=>window.releaseStatus?.().state==='deferred'&&window.releaseStatus?.().pending===v,future);
+    assert.equal(await p.locator('#draft').inputValue(),'Bản nháp cần giữ');assert.notEqual(new URL(p.url()).searchParams.get('v'),futureQuery);
+    // Save the draft on switching away, then clear it after returning. The current editor is authoritative.
+    await p.locator('[data-go=contacts]').first().evaluate(e=>e.click());await p.locator('.contact[data-id=ncc]').evaluate(e=>e.click());await p.locator('[data-go=contacts]').first().evaluate(e=>e.click());await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());assert.equal(await p.locator('#draft').inputValue(),'Bản nháp cần giữ');await p.locator('#draft').fill('');await p.locator('#draft').blur();await p.waitForURL(u=>u.searchParams.get('v')===futureQuery,{timeout:25000});assert((await p.title()).endsWith(future));
    }else if(mode==='stale'){
     await p.waitForFunction(()=>window.releaseStatus?.().state==='waiting-pages');
-    assert(!p.url().includes('v=13.46'));entryReady=true;await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.waitForURL(u=>u.searchParams.get('v')==='13.46',{timeout:25000});assert((await p.title()).endsWith(future));
+    assert.notEqual(new URL(p.url()).searchParams.get('v'),futureQuery);entryReady=true;await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.waitForURL(u=>u.searchParams.get('v')===futureQuery,{timeout:25000});assert((await p.title()).endsWith(future));
    }else{
-    await p.waitForURL(u=>u.searchParams.get('v')==='13.46',{timeout:25000});assert((await p.title()).endsWith(future));if(mode==='lab')assert(new URL(p.url()).searchParams.get('systemslab')==='1');
+    await p.waitForURL(u=>u.searchParams.get('v')===futureQuery,{timeout:25000});assert((await p.title()).endsWith(future));if(mode==='lab')assert(new URL(p.url()).searchParams.get('systemslab')==='1');
    }
    console.log('ReleaseUpdater case passed',mode,p.url());
   }catch(e){console.error('ReleaseUpdater failure',mode,p.url(),await p.evaluate(()=>({status:window.releaseStatus?.(),hidden:document.hidden,active:document.activeElement?.id,draft:document.querySelector('#draft')?.value})).catch(()=>null));throw e}
