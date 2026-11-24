@@ -170,8 +170,20 @@ function auditDesign(html,rules,baseline){
  `)();
  }catch(e){popupApiError=e.message}
  const popupApiContract=!popupApiError&&popupApiCases.length===12&&popupApiCases.every(c=>c.pass);
- const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,keyboardBaseline,textInputContract,inputApiContract,buttonApiContract,popupApiContract,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
- return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,inputCases,inputError,inputApiCases,inputApiError,buttonApiCases,buttonApiError,popupApiCases,popupApiError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
+ let typeApiCases=[],typeApiError=null;
+ try{
+  const src=html.slice(html.indexOf("const Typography=(()=>{"),html.indexOf("function make(tag,cls,txt)"));
+  typeApiCases=new Function(src+`
+ const document={createElement(tag){return {tagName:tag.toUpperCase(),dataset:{},textContent:'',isContentEditable:false,hasAttribute:()=>false}}};
+ const a=Typography.create({role:'body',text:'Tiếng Việt… <b>...'}),b=Typography.create({role:'money',text:'1.250.000 đ',weight:'bold',decoration:'underline'});
+ const same=Typography.bind(b,{role:'number'})===b;
+ const throws=f=>{try{f();return false}catch{return true}};
+ return [['roles',Typography.roles.length===10],['text preserved',a.textContent==='Tiếng Việt… <b>...'],['body',a.dataset.typeRole==='body'],['same node',same],['clear variants',!b.dataset.typeWeight&&!b.dataset.typeDecoration],['invalid role',throws(()=>Typography.create({role:'bad'}))],['invalid weight',throws(()=>Typography.create({role:'body',weight:900}))],['invalid decoration',throws(()=>Typography.create({role:'body',decoration:'bad'}))],['editable',throws(()=>Typography.bind({tagName:'SPAN',isContentEditable:true},{role:'body'}))],['input rejected',throws(()=>Typography.create({role:'body',tag:'input'}))],['number original',b.textContent==='1.250.000 đ']].map(([name,pass])=>({name,pass}));
+ `)();
+ }catch(e){typeApiError=e.message}
+ const typeApiContract=!typeApiError&&typeApiCases.length===11&&typeApiCases.every(c=>c.pass)&&['--font-ui:', '--weight-regular:400','--weight-medium:500','--weight-semibold:600','--weight-bold:700','--type-input:17px','--line-input:22px','--type-chat:17px','--line-chat:26px'].every(x=>css.includes(x))&&css.includes('[data-type-role=money]')&&css.includes('font-variant-numeric:tabular-nums')&&!html.slice(html.indexOf('const Typography=(()=>{'),html.indexOf('function make(tag,cls,txt)')).includes('.style');
+ const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,keyboardBaseline,textInputContract,inputApiContract,buttonApiContract,popupApiContract,typeApiContract,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
+ return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,inputCases,inputError,inputApiCases,inputApiError,buttonApiCases,buttonApiError,popupApiCases,popupApiError,typeApiCases,typeApiError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
 }
 const fs=require('node:fs');const path=require('node:path');
 const result=auditDesign(fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),fs.readFileSync(path.join(__dirname,'RULES.md'),'utf8'),fs.readFileSync(path.join(__dirname,'release-v13.27.html'),'utf8'));
