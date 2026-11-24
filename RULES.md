@@ -8,7 +8,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 |---|---|---|
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
-| Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
+| Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
 | Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung) | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
@@ -309,3 +309,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - KB-CORE-06: Kiểm tra tự động: một writer, ghi ngay khi rect đổi, không ghi lại rect giống nhau, coalesce secondary rAF, không đọc layout trong fast path. Không coi test tĩnh/JS mô phỏng là nghiệm thu bàn phím iPhone.
 - KB-CORE-07: Kiểm thử cùng thiết bị: chạm mở, chạm ngoài đóng, lặp ít nhất 10 lần, 1 dòng/nhiều dòng, không mất nội dung/caret, không kéo tin cũ, không nhảy. Nếu còn rơi, phân biệt raw viewport nhảy với app theo chậm. Không tự đổi kiến trúc hoặc tuyên bố hết lỗi khi chưa có bằng chứng.
 - Kết quả vòng này: 6/6 classic scripts parse; 8/8 ca mô phỏng fast path, rect giống nhau không ghi, secondary chỉ xếp 1 callback khi chưa thực thi. Chưa có kết quả Pages hoặc iOS thực. Không sửa production.
+
+## 42. KB-LEARN — nguồn học tập và cổng chọn phương án
+- KB-LEARN-01: Thư viện tham chiếu [references/KEYBOARD-SOURCES.md](references/KEYBOARD-SOURCES.md) lưu kho, file, blob SHA nếu đọc trực tiếp, nguyên lý và giới hạn. RULES.md vẫn là nguồn quy tắc duy nhất.
+- KB-LEARN-02: Khi có lỗi hồi quy sau hai vòng sửa mà không hết, dừng sửa theo suy đoán. Đọc source upstream liên quan đến đúng hành vi; so sánh với code hiện tại, xác định khác biệt và test chứng minh. Không lấy danh sách link, số lượt sao hoặc syntax pass thay cho bằng chứng.
+- KB-LEARN-03: Nguồn ưu tiên Adobe KB-S01/S02/S03 và Ionic KB-S04; phân biệt thư viện production, demo nhỏ và báo cáo nền tảng. Không cài thư viện hoặc sao chép mã khi chưa đánh giá phạm vi, giấy phép và xung đột với architecture hiện hành.
+- KB-LEARN-04: Hướng nghiên cứu có bằng chứng mới là xử lý early-close khi blur trên iOS WebKit theo Adobe, sau khi phân biệt refocus/chuyển input với đóng thật. Khác với chờ visualViewport duy nhất ở v13.26. Nếu triển khai phải có một writer khung cha, cập nhật hợp đồng VIEW-01/05 và KB-CORE-03 cho trường hợp dữ liệu cũ; không thêm offset hay timer/animation tùy ý. Chưa phê chuẩn giải pháp runtime chỉ từ source.
+- KB-LEARN-05: Thử nghiệm thật các ca đóng, mở, đổi focus, mở lại nhanh, keyboard emoji, zoom và xoay; xác nhận Pages đúng version. Chỉ nghiệm thu khi hết rơi/giật trên thiết bị, không coi 7/7 static checks là PASS UX. Vòng này chỉ thêm tài liệu học tập, giữ nguyên v13.26 và không sửa production.
