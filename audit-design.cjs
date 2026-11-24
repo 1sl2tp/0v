@@ -114,9 +114,28 @@ function auditDesign(html,rules,baseline){
    ["limit",n("1234567",6,false)==="123456"]
   ].map(([name,pass])=>({name,pass}));
  }catch(e){inputError=e.message}
- const textInputContract=!inputError&&inputCases.length===11&&inputCases.every(c=>c.pass)&&css.includes("--input-font-floor:16px")&&css.includes("--input-font-size:max(var(--input-font-floor),var(--type-input))")&&!html.includes("function normalizeDraft(")&&html.includes("if(isTextComposing(draft,e))return;")&&html.includes("commitNumericField(amount,12,true)")&&html.includes("commitNumericField(qty,6,false)");
- const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,keyboardBaseline,textInputContract,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
- return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,inputCases,inputError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
+ const textInputContract=!inputError&&inputCases.length===11&&inputCases.every(c=>c.pass)&&css.includes("--input-font-floor:16px")&&css.includes("--input-font-size:max(var(--input-font-floor),var(--type-input))")&&!html.includes("function normalizeDraft(")&&html.includes("if(Input.isComposing(draft,e))return;")&&html.includes("commitNumericField(el,p.maxDigits,p.grouped)");
+ let inputApiCases=[],inputApiError=null;
+ try{
+  const src=html.slice(html.indexOf("const Input=(()=>{"),html.indexOf("Input.bind(searchInput,"));
+  const run=new Function(src+`
+ function fake(tag){return {tagName:tag.toUpperCase(),type:'text',lang:'',dataset:{},attrs:{},events:{},classList:{add(){}},hasAttribute(k){return k in this.attrs},setAttribute(k,v){this.attrs[k]=v},addEventListener(k,f){(this.events[k]??=[]).push(f)}}}
+ const document={createElement:fake},calls=[];
+ function commitNumericField(el,max,grouped){calls.push([el,max,grouped])}
+ function isTextComposing(el,e){return !!e?.isComposing}
+ function committedMessage(v){return v}function searchText(v){return v}
+ `.replace("const document={createElement:fake},calls=[];","var document={createElement:fake},calls=[];")+`
+ const a=Input.create({type:'text',value:'abc',label:'Tên'}),q=Input.create({type:'quantity',value:'10'}),m=Input.create({type:'money',value:'1000'}),n=Input.create({type:'multiline'}),d=fake('textarea');
+ let updates=0;const search=Input.create({type:'search',onCommittedInput:()=>updates++});
+ search.events.input[0]({isComposing:true});search.events.input[0]({isComposing:false});search.events.compositionend[0]({});
+ Input.bind(d,{type:'chat'});Input.bind(q,{type:'quantity'});
+ let bad=false;try{Input.create({type:'unknown'})}catch{bad=true}
+ return [['text',a.value==='abc'&&a.attrs['aria-label']==='Tên'],['six profiles',Object.keys(Input.types).length===6],['quantity',q.inputMode==='numeric'&&calls[0][1]===6&&!calls[0][2]],['money',m.inputMode==='numeric'&&calls[1][1]===12&&calls[1][2]],['multiline',n.tagName==='TEXTAREA'&&n.rows===4],['existing node',Input.bind(d,{type:'chat'})===d],['idempotent',calls.length===2],['search IME',updates===2],['invalid type',bad]].map(([name,pass])=>({name,pass}));
+ `)();inputApiCases=run;
+ }catch(e){inputApiError=e.message}
+ const inputApiContract=!inputApiError&&inputApiCases.length===9&&inputApiCases.every(c=>c.pass);
+ const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,keyboardBaseline,textInputContract,inputApiContract,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
+ return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,inputCases,inputError,inputApiCases,inputApiError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
 }
 const fs=require('node:fs');const path=require('node:path');
 const result=auditDesign(fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),fs.readFileSync(path.join(__dirname,'RULES.md'),'utf8'),fs.readFileSync(path.join(__dirname,'release-v13.27.html'),'utf8'));
