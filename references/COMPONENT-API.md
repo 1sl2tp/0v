@@ -84,3 +84,6 @@ Virtualizer.mount({followOnAppend:false by default}) exposes prepend(rows), appe
 
 ## v13.52 MessageStore
 MessageStore.create() → apply(batch), get(id), ids(conversationId), latest(conversationId), subscribeMessage/subscribeConversation (return unsubscribe), status(), dispose(). Normalized immutable scalar records, revision and stable sequence, atomic validation, tombstones and changed-key events. MessageStore.label(record) shared projection. No backend/cache/read state or main migration. ?messagelab=1.
+
+## v13.53 ConversationStore
+ConversationStore.create(messages) → apply(metadataBatch), get(id), project(id), ids(), subscribeRow(id,fn), subscribeList(fn), status(), dispose(). Global activityOrder and latestMessageId are authoritative metadata; row projection resolves message by ID and checks room, missing is explicit. Separate stable sorted IDs and row notifications; no duplicate message text. Independent ?conversationlab=1; no Main migration.
