@@ -110,3 +110,6 @@ empty(scope,stream,now), hydrate(record), append(record,page,now), classify(reco
 
 ## v13.60 CachedSyncSession
 CachedSyncSession.open({db,scope,stream,now,transport,initialOnline=false,pageLimit,commitOptions,signal}) restores validated checkpoint before creating existing SyncController with initialCursor and optional persistPage. Adapter commits page/cursor then projects; cache abort keeps memory unchanged; projection failure requires restore. Session exposes source/messages/conversations/sync/durableCursor()/dispose(). Synthetic ?cachedsynclab=1; caller owns DB handle. No live account/server or Main migration. Memory-only SyncController unchanged by default.
+
+## v13.61 DirectoryController
+DirectoryController.mount(viewport,{store,onRange,rowHeight=64}) → jump/status/dispose. ConversationStore sorted IDs, stable virtual item refs, updateMounted patch only, fixed Virtualizer anchorMode='directory', setItems(next,{anchorSkip}) retains viewport key + offset or next non-promoted key, top stays zero. Default Virtualizer and chat followEnd unchanged. ?directorylab=1 200 synthetic rooms; no main migration or real selection/native proof.
