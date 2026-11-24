@@ -95,3 +95,9 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 
 - COL-05: Hover chỉ cho thiết bị có hover và pointer fine; pressed dùng token riêng; nút chính hover #303030, pressed #404040; disabled không nhận hover/pressed. Không thêm animation hoặc đổi hình học.
 - COL-06: Focus ring #737373; giữ cơ chế focus hiện tại; kiểm tra trạng thái chọn, nhấn, khóa và tương phản trên thiết bị. v12.1 bỏ opacity disabled cũ bị ghi đè.
+
+## 16. Bề mặt và viền
+- SUR-01: Viền điều khiển dùng rgba(0,0,0,.15), viền phụ .09; bóng nhẹ và highlight trong dùng token chung. Không tăng độ dày viền hoặc thay kích thước để tạo hiệu ứng.
+- SUR-02: Composer dùng bóng nhẹ tĩnh, nền đặc; không blur vùng gõ hoặc shell trong lúc bàn phím chuyển động. Nút icon thường không đổ bóng hàng loạt.
+- SUR-03: Popup thường có thể dùng nền bán trong suốt và backdrop-filter 12px khi hỗ trợ; fallback nền đặc. Popup ảnh giữ nền đặc. Không khẳng định giống native iOS tuyệt đối.
+- SUR-04: Kiểm tra viền, góc, lề quang học và tốc độ Safari/PWA; không đổi focus/scroll/keyboard khi chỉ chỉnh bề mặt.
