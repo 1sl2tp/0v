@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>CHAT CRM — Bố cục v2.1</title>
+<title>CHAT CRM — Bố cục v2.2</title>
 <style>
 :root{color-scheme:light;--ink:#202124;--muted:#73777d;--line:#e7e8eb;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
 *{box-sizing:border-box}
@@ -30,7 +30,7 @@ input,textarea{font-size:16px!important}button[aria-pressed="true"]{background:#
 .mobile-only{display:none}
 @media(max-width:1199px){#app{grid-template-columns:54px 250px minmax(0,1fr)}.crm{display:none}#app.with-crm{grid-template-columns:54px 235px minmax(0,1fr) 290px}#app.with-crm .crm{display:flex}}
 @media(min-width:768px) and (max-width:999px){#app.with-crm{grid-template-columns:54px minmax(0,1fr) 290px}#app.with-crm .directory{display:none}}
-@media(max-width:767px){#app,#app.with-crm{display:block;height:var(--app-height,100dvh)}.rail{display:none}.directory,.conversation,.crm,#app.with-crm .crm{display:none;height:100%;width:100%;border:0}#app[data-screen="contacts"] .directory,#app[data-screen="chat"] .conversation,#app[data-screen="crm"] .crm{display:flex}.mobile-only{display:grid}.panel-head{height:calc(54px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}.contacts{padding-bottom:env(safe-area-inset-bottom)}.messages{padding:12px 15px;scrollbar-gutter:auto}.message{max-width:87%}.composer-frame{padding:6px 10px max(9px,env(safe-area-inset-bottom))}.keyboard .panel-head{height:49px;padding-top:0}.keyboard .composer-frame{padding-bottom:5px}.keyboard .composer textarea{max-height:88px}}
+@media(max-width:767px){#app,#app.with-crm{display:block;height:var(--view-height,100dvh)}.rail{display:none}.directory,.conversation,.crm,#app.with-crm .crm{display:none;height:100%;width:100%;border:0}#app[data-screen="contacts"] .directory,#app[data-screen="chat"] .conversation,#app[data-screen="crm"] .crm{display:flex}.mobile-only{display:grid}.panel-head{height:calc(54px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}.contacts{padding-bottom:env(safe-area-inset-bottom)}.messages{padding:12px 15px;scrollbar-gutter:auto}.message{max-width:87%}.composer-frame{padding:6px 10px max(9px,env(safe-area-inset-bottom))}}
 .module-note{margin-top:14px!important}.fields .field{align-items:baseline}.fields .field span{min-width:0;overflow-wrap:anywhere}.fields .field span:last-child{font-variant-numeric:tabular-nums}.modules button{min-height:44px;padding:8px 10px}.module-content{padding:12px}.module-content h3{font-size:17px}/* Shared UI tokens and component geometry */
 :root{--gap-xs:4px;--gap-sm:8px;--gap-md:12px;--gap-lg:16px;--touch:44px;--control-radius:12px;--avatar-size:40px;--text-main:15px;--text-sub:12px;--text-title:17px;--header-size:56px}
 .panel-head{height:var(--header-size);gap:var(--gap-sm);padding-inline:var(--gap-md)}
@@ -50,7 +50,7 @@ input,textarea{font-size:16px!important}button[aria-pressed="true"]{background:#
 .fields .field{padding:var(--gap-md);gap:var(--gap-md)}
 .fields .field span:first-child{flex:1;color:var(--muted)}.fields .field span:last-child{flex:1.2}
 .composer textarea{font-size:16px!important;line-height:22px}
-@media(max-width:767px){.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}.keyboard .panel-head{height:49px;padding-top:0}.composer-frame{padding-inline:var(--gap-sm)}}
+@media(max-width:767px){.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}.composer-frame{padding-inline:var(--gap-sm)}}
 /* Composer: stable parent geometry, independent input and actions */
 .composer-frame{padding:8px 12px max(10px,env(safe-area-inset-bottom));flex:0 0 auto}
 .composer{width:100%;max-width:760px;margin-inline:auto;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:end;gap:4px;padding:4px;border-radius:28px;min-height:54px;border:1px solid #dedfe2;box-shadow:none}
@@ -60,23 +60,11 @@ input,textarea{font-size:16px!important}button[aria-pressed="true"]{background:#
 .composer textarea::-webkit-scrollbar{display:none}
 .composer .send:disabled{background:#e9e9eb;color:#929298;opacity:1;cursor:default}
 .composer:focus-within{border-color:#bfc1c5}
-@media(max-width:767px){.composer-frame{padding-inline:8px}.keyboard .composer-frame{padding-bottom:5px}.keyboard .composer textarea{max-height:88px}}
-.messages{overflow-anchor:none}.composer-frame{overflow-anchor:none}.composer textarea{touch-action:pan-y}.keyboard .composer-frame{padding-top:4px}.keyboard .messages{padding-block:8px}
-@media(max-width:767px){#app{height:100vh;height:var(--app-height,100dvh)}.keyboard .panel-head{flex-shrink:0}.keyboard .dir-bottom{display:none}}
-/* Mobile viewport owns the entire layout; prevent Safari document panning. */
-@media(max-width:767px){
-html,body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden}
-#app,#app.with-crm{position:absolute;top:var(--viewport-top,0px);left:0;right:0;height:var(--app-height,100dvh);min-height:0;max-height:none;overflow:hidden}
-#app[data-screen="chat"] .conversation{height:100%;min-height:0;display:flex;flex-direction:column}
-.conversation>.panel-head,.conversation>.composer-frame{flex:0 0 auto}
-.chat-view{flex:1 1 0;min-height:0;overflow:hidden}
-.messages{flex:1 1 0;min-height:0}
-.composer-frame{margin-top:0}
-}
+@media(max-width:767px){.composer-frame{padding-inline:8px}}
+.messages{overflow-anchor:none}.composer-frame{overflow-anchor:none}.composer textarea{touch-action:pan-y}
+
 .messages>*{flex-shrink:0}.chat-view{position:relative}#jumpBottom{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:40px;height:40px;min-height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:white;box-shadow:0 2px 8px #0002;z-index:2}#jumpBottom svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.work-card{flex:0 0 auto}
-.unread-count{background:#252525;color:white;border-radius:12px;padding:2px 6px;font-size:11px;align-self:center}.contact .time{white-space:nowrap}#jumpBottom[data-count]:after{content:attr(data-count);position:absolute;top:-6px;right:-6px;background:#252525;color:white;border-radius:12px;padding:2px 5px;font-size:10px}.demo-incoming{font-size:12px;color:var(--muted);padding:0 12px;min-height:36px}/* Keep focus target stable while the keyboard animates. */
-@media(max-width:767px){#app{transition:none!important}.composer-frame,.composer,.composer textarea{transition:none!important;animation:none!important}.keyboard .panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}.keyboard .composer-frame{padding-top:8px;padding-bottom:5px}.keyboard .messages{padding-block:12px}.keyboard .composer textarea{max-height:132px}}
-@media(max-width:767px){.composer-frame,.keyboard .composer-frame{padding:8px 8px max(8px,env(safe-area-inset-bottom))}.composer textarea,.keyboard .composer textarea{max-height:132px}.panel-head,.keyboard .panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}.messages,.keyboard .messages{padding-block:12px}}/* Single mobile layout contract: visible rectangle = header + scrollport + composer. */
+.unread-count{background:#252525;color:white;border-radius:12px;padding:2px 6px;font-size:11px;align-self:center}.contact .time{white-space:nowrap}#jumpBottom[data-count]:after{content:attr(data-count);position:absolute;top:-6px;right:-6px;background:#252525;color:white;border-radius:12px;padding:2px 5px;font-size:10px}.demo-incoming{font-size:12px;color:var(--muted);padding:0 12px;min-height:36px}/* Single mobile layout contract: visible rectangle = header + scrollport + composer. */
 @media(max-width:767px){
 html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 #app,#app.with-crm{position:absolute;inset:auto;top:var(--view-top,0px);left:var(--view-left,0px);width:var(--view-width,100%);height:var(--view-height,100dvh);overflow:hidden;transition:none}
@@ -96,7 +84,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 .contact-status{display:grid;grid-template-rows:20px 16px;row-gap:4px;justify-items:end;align-items:center;min-width:0;font-variant-numeric:tabular-nums}
 .contact .time{margin:0;align-self:center;line-height:20px}
 .contact .unread-count{margin:0;min-width:18px;box-sizing:border-box;line-height:16px;padding:0 5px;text-align:center}
-@media(max-width:767px){.composer-frame{padding:8px 8px 8px} @media(display-mode:standalone){.composer-frame{padding-bottom:max(8px,env(safe-area-inset-bottom))}}}
+@media(max-width:767px){.composer-frame{padding:8px}} @media(max-width:767px) and (display-mode:standalone){.composer-frame{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
 /* Shared panel rhythm and optical alignment */
 :root{--panel-inset:12px;--row-gap:12px;--line-gap:4px;--composer-inset:8px}
 .panel-head,.search-zone,.filters,.contact,.dir-bottom,.module-content{padding-inline:var(--panel-inset)}
@@ -118,9 +106,9 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 </head>
 <body>
 <div id="app" data-screen="contacts">
-<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v2.1</span></nav>
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v2.2</span></nav>
 <aside class="directory" aria-label="Danh bạ">
- <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v2.1</span><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v2.2</span><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
  <div class="search-zone"><input id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
  <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả">Tất cả</button><button data-filter="KH">KH</button><button data-filter="NCC">NCC</button><button data-filter="NV">NV</button><button data-filter="Nhóm">Nhóm</button></div>
  <div class="contacts" id="contacts">
@@ -141,7 +129,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
  </div><button type="button" id="jumpBottom" aria-label="Cuộn đến tin mới nhất" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></section>
  <div class="composer-frame"><form class="composer" id="composer"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
 </main>
-<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v2.1</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v2.2</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
 </div>
 <script>
 (function(){
@@ -238,7 +226,7 @@ const chat=messages.getBoundingClientRect(),root=app.getBoundingClientRect();
 const gap=vTop+vHeight-box.bottom;
 if(box.height){minGap=Math.min(minGap,gap);maxGap=Math.max(maxGap,gap)}
 const n=x=>Math.round(x);
-out.textContent=['v2.1 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other')].join('\n');
+out.textContent=['v2.2 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other')].join('\n');
 }
 let frame=0;function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;measure()})}
 window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);window.addEventListener('resize',schedule);document.addEventListener('focusin',()=>{minGap=Infinity;maxGap=-Infinity;schedule()});document.addEventListener('focusout',schedule);new ResizeObserver(schedule).observe(app);new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
