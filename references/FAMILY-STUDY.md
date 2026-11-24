@@ -25,3 +25,6 @@ Read MUI Paper and Radix Card source, added five paint variants, standalone Surf
 
 ## v13.42 — STUDY-AVATAR
 API implementation and 7 lab cases; every four contact rows tested by ID, header update and image/fallback. Browser CI pending at commit; native/visual and remote-image policy pending. v13.41 release automation remains separate unverified branch.
+
+## v13.43
+Reopened Avatar MUI/Radix sources; Fluent path not found. Media learned MUI ImageList and PhotoSwipe; gallery and viewer API implemented, lab/browser test pending at commit. Video, gestures, local preview migration and native still provisional.
