@@ -1,0 +1,15 @@
+# FAMILY STUDY — danh sách bài học chưa hoàn thành v13.36
+
+| Study ID | Cha tạm | Bài học cần bổ sung | Trạng thái |
+|---|---|---|---|
+| STUDY-AVATAR | Layout.frame + Typography | MUI/Fluent avatar, size, image fallback, tròn vuông | PROVISIONAL |
+| STUDY-LAYOUT-SLOTS | Layout/CSS legacy | profile riêng shell/header/contact/message/grid; ownership gap/padding | PROVISIONAL |
+| STUDY-SCROLL | ScrollController | scroll anchoring, bảo vệ Keyboard | PROVISIONAL |
+| STUDY-MEDIA | MediaController | grid, ảnh/video, viewer | PROVISIONAL |
+| STUDY-CARD | CardController | slots, surface, heading | PROVISIONAL |
+| STUDY-TABLE | TableController | semantic table, số, căn trục | PROVISIONAL |
+| STUDY-DIAGNOSTIC | Audit | UI debug tách khỏi runtime | PROVISIONAL |
+| STUDY-CLASSIFY | Review | xác định họ/cha, không tự tạo style | NEEDS-STUDY |
+| STUDY-SURFACE | Surface CSS hiện hữu | paint, trạng thái tương tác, glass, radius ownership | PENDING |
+
+Mỗi bài học cần source GitHub trực tiếp, hợp đồng owner, test cha–con và đo browser. Không tự coi nhãn là đạt.
