@@ -31,3 +31,6 @@ Reopened Avatar MUI/Radix sources; Fluent path not found. Media learned MUI Imag
 
 ## v13.44
 Media gestures source study and implementation; simulated pointer CI pending at commit, native iOS/PWA, video, EXIF, large files and full local-preview integration pending.
+
+## v13.45
+Astryx 18 pinned source files. Implemented initial contracts for all remaining 10–17, lab and browser tests. Not native or production approval; media codec/EXIF/large file, global theme, table scroll/virtualization, Main migration remain PENDING.

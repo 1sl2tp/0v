@@ -1,0 +1,98 @@
+{
+  "repository": "https://github.com/meta/astryx",
+  "commit": "d63c24970f9ab1dc5e3024a7123ec7edee2a0f11",
+  "license": "MIT",
+  "purpose": "read-only curated source snapshots, not runtime or instructions",
+  "files": [
+    {
+      "source": "LICENSE",
+      "local": "references/upstream/astryx/LICENSE",
+      "sha": "72c89ba095197227858894e8e6ce5e9be9e25515"
+    },
+    {
+      "source": "README.md",
+      "local": "references/upstream/astryx/README.md.txt",
+      "sha": "fe27aafebbbea98a593d12332e7bc1a65f488f68"
+    },
+    {
+      "source": "AGENTS.md",
+      "local": "references/upstream/astryx/AGENTS.md.txt",
+      "sha": "4c6c953fdfb7eaf6f240836be721b1ed4f8f7366"
+    },
+    {
+      "source": "docs/README.md",
+      "local": "references/upstream/astryx/docs/README.md.txt",
+      "sha": "2104411f56d6c5a09c1b864972243437c2c1f87c"
+    },
+    {
+      "source": "docs/architecture/public-component-api.md",
+      "local": "references/upstream/astryx/docs/architecture/public-component-api.md.txt",
+      "sha": "333f5dd33d4ca73f4b708a57b47cd3378024ce71"
+    },
+    {
+      "source": "packages/core/src/theme/tokens.stylex.ts",
+      "local": "references/upstream/astryx/packages/core/src/theme/tokens.stylex.ts.txt",
+      "sha": "7ca09a989079c26627462bfe50abbcb08ec1328c"
+    },
+    {
+      "source": "packages/core/src/Avatar/Avatar.tsx",
+      "local": "references/upstream/astryx/packages/core/src/Avatar/Avatar.tsx.txt",
+      "sha": "8107a024b0c74703c988546e264e725360c95b99"
+    },
+    {
+      "source": "packages/core/src/Avatar/Avatar.doc.mjs",
+      "local": "references/upstream/astryx/packages/core/src/Avatar/Avatar.doc.mjs.txt",
+      "sha": "67dfc59b4b1402ef753148ee444102700b0f3c3e"
+    },
+    {
+      "source": "packages/core/src/Button/Button.tsx",
+      "local": "references/upstream/astryx/packages/core/src/Button/Button.tsx.txt",
+      "sha": "f87eb657180a0de978fb3ba1c59c24909a9cc63d"
+    },
+    {
+      "source": "packages/core/src/Button/Button.doc.mjs",
+      "local": "references/upstream/astryx/packages/core/src/Button/Button.doc.mjs.txt",
+      "sha": "086610d8905ff8c5ba337025c0516b0a8140d15b"
+    },
+    {
+      "source": "packages/core/src/Button/Button.test.tsx",
+      "local": "references/upstream/astryx/packages/core/src/Button/Button.test.tsx.txt",
+      "sha": "caa8b526eb49a9d289b59b76169161492d8fcbd0"
+    },
+    {
+      "source": "packages/core/src/Text/Text.tsx",
+      "local": "references/upstream/astryx/packages/core/src/Text/Text.tsx.txt",
+      "sha": "da954186ff862485cbf0e1964cb2bec15f43b9bb"
+    },
+    {
+      "source": "packages/core/src/Stack/Stack.tsx",
+      "local": "references/upstream/astryx/packages/core/src/Stack/Stack.tsx.txt",
+      "sha": "c56d72759ad2f6f86102228e22c3123530b32894"
+    },
+    {
+      "source": "docs/specs/components/Avatar/Avatar.spec.md",
+      "local": "references/upstream/astryx/docs/specs/components/Avatar/Avatar.spec.md.txt",
+      "sha": "6c262f6305d146e4b32304f7b9626db43877a9f4"
+    },
+    {
+      "source": "docs/specs/components/Button/Button.spec.md",
+      "local": "references/upstream/astryx/docs/specs/components/Button/Button.spec.md.txt",
+      "sha": "a8c0b47f4bf534ce2dce582776c23aaf2276df54"
+    },
+    {
+      "source": "packages/core/src/Card/Card.tsx",
+      "local": "references/upstream/astryx/packages/core/src/Card/Card.tsx.txt",
+      "sha": "32208a1cca96f5c7bf11c2a34be07e0aca7ae83a"
+    },
+    {
+      "source": "packages/core/src/Table/Table.tsx",
+      "local": "references/upstream/astryx/packages/core/src/Table/Table.tsx.txt",
+      "sha": "9496cdd32ce30ad6d28707eef48dada3bf2033b4"
+    },
+    {
+      "source": "packages/core/src/TextInput/TextInput.tsx",
+      "local": "references/upstream/astryx/packages/core/src/TextInput/TextInput.tsx.txt",
+      "sha": "b1b0e312df989a9a8e29991c0700073a546380e8"
+    }
+  ]
+}
