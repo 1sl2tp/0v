@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.32)
+## 00. Chỉ mục rule đang có hiệu lực (v13.33)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -17,7 +17,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung) | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
 | Bill layout | GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
-| Geometry QA | GEO-ADAPT-03, DESKTOP-04, BOTTOM-04, COMP-04 | phép đo chỉ hợp với composer một hàng |
+| Geometry / Layout | GEO-API-01–08, GEO-ADAPT-03, DESKTOP-04, BOTTOM-04, COMP-04 | phép đo chỉ hợp với composer một hàng |
 Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu không được nêu rõ. Khi sửa một owner, phải đối chiếu các owner khác và ghi kết quả chưa kiểm chứng.
 
 ## 01. Quản trị
@@ -389,3 +389,13 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - TYPE-API-04: Typography.create({role,text,tag,weight,decoration}) tạo text node trong phần tử phù hợp; Typography.bind(el,{role,weight,decoration}) đăng ký node hiển thị sẵn có; role/weight/decoration whitelist, giữ text nguyên văn, không innerHTML, không sửa value/caret, không nhận input/textarea/select/contenteditable. CSS data-type-role có thể dùng trực tiếp; HTML vẫn giữ ngữ nghĩa tag. Gạch chân/gạch ngang/nghiêng là biến thể, không tự đổi nội dung. Căn phải số tiền do Table/Layout sở hữu.
 - TYPE-API-05: Áp dụng metadata tĩnh và thành phần động đã xác định vai trò (tiêu đề module, bảng, card, mẫu Typography), giữ selector cũ ở vùng chưa chuyển và giữ nguyên trị số hiện có ở các vị trí chưa đo computed style. Không đổi font chat/input, geometry, Surface hoặc các đoạn baseline. ?typolab=1 hiển thị mẫu tiếng Việt có dấu, chữ đậm/nghiêng/gạch, số, tiền, ghi chú. Không tuyên bố giống ChatGPT tuyệt đối.
 - TYPE-API-06: Audit kiểm tra token, role, whitelist, text nguyên văn, từ chối editable, không ghi inline font. Kiểm tra computed style thực tế, F5, font fallback, dấu tiếng Việt, wrap/ellipsis và cỡ 320/390/768/desktop trước nghiệm thu. Browser, Pages và thiết bị PENDING; không sửa production.
+
+## 52. GEO-API — v13.33, hình học cha và đo kiểm
+- GEO-API-01: Layout khai báo bố cục vùng con bằng Layout.create(options) hoặc Layout.bind(node,options); CSS sở hữu kích thước, không dùng JS đo rồi ghi lại vị trí. Geometry chỉ đo/kiểm, không ghi DOM, viewport, scroll, font hay paint. Nguồn tại references/GEOMETRY-SOURCES.md.
+- GEO-API-02: Thang gap và padding 0/4/8/12/16 CSS px (zero/xs/sm/md/lg); rowGap và columnGap độc lập. Token radius none/sm/md/lg/round = 0/8/12/16/50%; round chỉ dùng hộp vuông, pill là hình khác. Không ghi đè radius Input/Button/Surface đang sở hữu. CSS logical padding; không cộng lề cha hai lần.
+- GEO-API-03: Cấp 1 phần tử: glyph khác mặt nút khác hit target; hiện 0v glyph 22/20, touch 44, avatar 40 (header mobile có profile riêng). Khung vuông/tròn phải rộng=cao, nội dung căn giữa hai trục, không ép chữ dài vào hình tròn. Avatar/icon fixed không co; chữ dài thuộc Typography và wrap/ellipsis theo loại. Không lấy kích thước MUI/Fluent làm chuẩn bắt buộc.
+- GEO-API-04: Cấp 2 nhóm: row/column/center, gap theo token; trục chính và phụ tách align/justify; baseline chỉ áp dụng chữ cùng hàng; flex wrap tùy chọn, con min-width/min-height 0. Cấp 3 grid 1–4 cột đều minmax(0,1fr), hoặc auto-fit min 180px, gap theo token; không áp dụng cột cố định lên vùng quá hẹp, ưu tiên adaptive. Cấp 4 shell/panel/region/scroll đã có owner riêng, không refactor keyboard/composer trong vòng này.
+- GEO-API-05: Layout.create/bind whitelist kind=row/column/grid/adaptive/center, gap/padding/rowGap/columnGap, align/justify, columns, wrap; Layout không nhận inline tọa độ tùy ý. Frame vuông/tròn/bo qua Layout.frame({size,shape,children}); dùng cho mẫu khung hiển thị, không tự tạo hit target, không thay avatar/button đang có.
+- GEO-API-06: Geometry.rect, inside, overlap, centerDelta, gap, squareError, equalInsets, columnCount dùng CSS px, chung hệ tọa độ; đo chứa, chồng, trục, gap, tỷ lệ, lề đối xứng. Tolerance 1 CSS px cho kiểm tra ổn định. Không gọi đọc layout trong đường keyboard fast path. Thay phép inside/overlap trong guides hiện hữu bằng API chung; không tuyên bố đo đủ tất cả.
+- GEO-API-07: ?geolab=1 có mẫu nút/icon/avatar/chữ trong hình vuông, bo, tròn; hàng/cột, lưới nhiều hàng/cột, gap ngang/dọc, nested adaptive. Có nút đo lab thực tế; số đo là tại viewport hiện hành, không thay nghiệm thu ma trận. Áp dụng Layout cho Typography lab và Popup lab, giữ geometry production demo chính chưa đo.
+- GEO-API-08: Audit logic thuần + DOM stub; kiểm tra browser thực ở 320/375/390/430/768/desktop, zoom, font fallback, vùng hẹp, bàn phím, F5 và trục quang học trước nghiệm thu. Không thay v13.27 baseline; không nhập dependency. Pages/thiết bị PENDING.
