@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>CHAT CRM — Bố cục v12.2</title>
+<title>CHAT CRM — Bố cục v12.3</title>
 <style>
 :root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#e5e5e5;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
 *{box-sizing:border-box}
@@ -53,10 +53,10 @@ input,textarea{font-size:var(--text-input,16px)!important}button[aria-pressed="t
 @media(max-width:767px){.panel-head{height:calc(var(--header-size) + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}}
 /* Composer: stable parent geometry, independent input and actions */
 .composer-frame{flex:0 0 auto}
-.composer{width:100%;max-width:760px;margin-inline:auto;display:grid;grid-template-columns:var(--touch) minmax(0,1fr) var(--touch);align-items:end;gap:var(--gap-xs);padding:var(--gap-xs);border-radius:28px;min-height:54px;border:1px solid var(--edge-glass);background:var(--paper);box-shadow:var(--shadow-composer),var(--shadow-inset)}
+.composer{width:100%;max-width:760px;margin-inline:auto;display:grid;grid-template-columns:var(--touch) minmax(0,1fr) var(--touch);align-items:end;gap:var(--gap-xs);padding:var(--composer-edge);border-radius:var(--composer-radius);min-height:58px;border:1px solid var(--edge-glass);background:var(--paper);box-shadow:var(--shadow-composer),var(--shadow-inset)}
 .composer .icon,.composer .send{width:44px;height:44px;min-height:44px;min-width:44px;margin:0;align-self:end;border-radius:50%}
 .composer .icon{background:transparent}
-.composer textarea{display:block;width:100%;height:44px;min-height:44px;max-height:132px;padding:11px 4px;line-height:22px;box-sizing:border-box;resize:none;outline:none!important;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.composer textarea{display:block;width:100%;height:44px;min-height:44px;max-height:132px;padding:11px var(--composer-text-inset);line-height:22px;box-sizing:border-box;resize:none;outline:none!important;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
 .composer textarea::-webkit-scrollbar{display:none}
 .composer .send:disabled{background:var(--disabled-bg);color:var(--disabled-ink);opacity:1;cursor:default}
 .composer:focus-within{border-color:var(--input-focus)}
@@ -228,12 +228,12 @@ dialog.local-preview>strong{display:block;line-height:22px;overflow-wrap:anywher
 .media-gallery .portrait-lead .media-tile:not(:first-child){grid-column:2}
 .media-viewer>img{transform:none!important;margin:0 auto!important;max-width:100%;object-fit:contain}
 
-:root{--surface-selected:#f0f0f0;--surface-pressed:#e8e8e8;--action-ink:#171717;--send-bg:#171717;--disabled-bg:#e9e9e9;--disabled-ink:#858585;--input-border:#dedede;--input-focus:#bdbdbd;--module-selected:#f3f3f3;--module-border:#bfbfbf;--surface-header:#fafafa;--avatar-bg:#ededed;--avatar-ink:#404040;--surface-hover:#f5f5f5;--edge-glass:rgba(0,0,0,.15);--edge-soft:rgba(0,0,0,.09);--surface-glass:rgba(255,255,255,.88);--shadow-control:0 1px 2px rgba(0,0,0,.035),0 3px 10px rgba(0,0,0,.045);--shadow-composer:0 1px 2px rgba(0,0,0,.035),0 5px 18px rgba(0,0,0,.065);--shadow-inset:inset 0 1px 0 rgba(255,255,255,.9);--action-hover:#303030;--action-pressed:#404040;--danger:#b42318;--overlay-ink:#171717e8;--shadow-soft:#0002;--muted-border:#aaa}
+:root{--surface-selected:#f0f0f0;--surface-pressed:#e8e8e8;--action-ink:#171717;--send-bg:#171717;--disabled-bg:#e9e9e9;--disabled-ink:#858585;--input-border:#dedede;--input-focus:#bdbdbd;--module-selected:#f3f3f3;--module-border:#bfbfbf;--surface-header:#fafafa;--avatar-bg:#ededed;--avatar-ink:#404040;--surface-hover:#f5f5f5;--edge-glass:rgba(0,0,0,.15);--edge-soft:rgba(0,0,0,.09);--surface-glass:rgba(255,255,255,.88);--shadow-control:0 1px 2px rgba(0,0,0,.035),0 3px 10px rgba(0,0,0,.045);--shadow-composer:0 1px 2px rgba(0,0,0,.035),0 5px 18px rgba(0,0,0,.065);--shadow-inset:inset 0 1px 0 rgba(255,255,255,.9);--composer-edge:6px;--composer-radius:29px;--composer-text-inset:6px;--action-hover:#303030;--action-pressed:#404040;--danger:#b42318;--overlay-ink:#171717e8;--shadow-soft:#0002;--muted-border:#aaa}
 /* Nested regions must shrink within their assigned grid tracks. */
 #app>.directory,#app>.conversation,#app>.crm,.chat-view,.composer-frame{min-width:0;min-height:0}
 .panel-head>strong,.title-group,.work-card,.fields{min-width:0;max-width:100%}
 
-@media(max-width:360px){.conversation>.panel-head{gap:2px;padding-inline:2px}.composer-frame{padding-inline:4px}}
+@media(max-width:360px){.conversation>.panel-head{gap:2px;padding-inline:2px}.composer-frame{padding-inline:var(--composer-inset)}}
 
 /* Shared business card axes */
 .business-card{width:100%;min-width:0;margin:12px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
@@ -340,13 +340,15 @@ dialog[data-popup-parent]{border-color:var(--edge-glass);box-shadow:var(--shadow
 @supports ((-webkit-backdrop-filter:blur(12px)) or (backdrop-filter:blur(12px))){
 dialog[data-popup-parent]:not(.media-viewer):not(.local-preview){background:var(--surface-glass);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 }
+.composer>[data-button-parent]{border-radius:50%}
+.composer>[data-button-parent] svg[data-icon-parent]{margin:auto}
 </style>
 </head>
 <body>
 <div id="app" data-layout="shell" data-screen="contacts">
-<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v12.2</span></nav>
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><button type="button" data-go="chat" aria-label="Hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></button><button type="button" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button><span class="version">v12.3</span></nav>
 <aside class="directory" data-layout="panel" aria-label="Danh bạ">
- <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v12.2</span><button type="button" class="icon mobile-only" id="searchToggle" aria-label="Mở tìm kiếm" aria-controls="directorySearch" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v12.3</span><button type="button" class="icon mobile-only" id="searchToggle" aria-label="Mở tìm kiếm" aria-controls="directorySearch" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button><button type="button" class="icon" data-go="crm" aria-label="Công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M9 5V3h6v2M8 10h8M8 14h8"/></svg></button></header>
  <div class="search-zone" id="directorySearch"><input id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
  <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả">Tất cả</button><button data-filter="KH">KH</button><button data-filter="NCC">NCC</button><button data-filter="NV">NV</button><button data-filter="Nhóm">Nhóm</button></div>
  <div class="contacts" id="contacts">
@@ -367,7 +369,7 @@ dialog[data-popup-parent]:not(.media-viewer):not(.local-preview){background:var(
  </div><button type="button" id="jumpBottom" aria-label="Cuộn đến tin mới nhất" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></section>
  <div class="composer-frame" data-layout="region"><form class="composer" id="composer"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><textarea id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" disabled aria-label="Thêm tin nhắn mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form></div>
 </main>
-<aside class="crm" data-layout="panel" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v12.2</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+<aside class="crm" data-layout="panel" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><strong>Công việc</strong><span class="label-version">v12.3</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
 </div>
 <script>
 (function(){
@@ -775,7 +777,7 @@ if(other){const count=messages.childElementCount;receiveDemo(other,'QA nhận ti
 /* QA hub: one entry point, isolated diagnostic modes to avoid competing overlays. */
 if(new URLSearchParams(location.search).get('verify')==='1'){
 const hub=document.createElement('details');hub.style.cssText='position:fixed;z-index:10002;right:8px;top:calc(env(safe-area-inset-top) + 8px);max-width:calc(100vw - 16px);width:280px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font:13px/1.5 system-ui;box-shadow:0 2px 12px #0002';
-const title=document.createElement('summary');title.textContent='QA · v12.2';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
+const title=document.createElement('summary');title.textContent='QA · v12.3';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
 const modes=[['','Giao diện bình thường','Không bật bộ đo'],['scenario','Kịch bản tự chạy','Kiểm tra thao tác trên demo'],['qa','UI / UX','10 kiểm tra trạng thái'],['guides','Hình học tĩnh','48 quy tắc và đường kẻ'],['dynamic','Hình học động','Viewport và vùng gõ'],['perf','Hiệu năng','Khung hình và cuộn'],['keyboardtest','Bàn phím','Thời gian và độ ổn định']];
 const params=new URLSearchParams(location.search);const activeMode=modes.find(([k])=>k&&params.get(k)==='1')?.[0]||'';
 for(const [key,label,desc] of modes){const a=document.createElement('a');const url=new URL(location.href);for(const [k] of modes)if(k)url.searchParams.delete(k);url.searchParams.set('verify','1');if(key)url.searchParams.set(key,'1');a.href=url.href;a.style.cssText='display:block;padding:8px;border-radius:8px;min-height:44px;text-decoration:none;color:inherit;background:'+(key===activeMode?'var(--surface-selected)':'transparent');if(key===activeMode)a.setAttribute('aria-current','page');const b=document.createElement('strong');b.textContent=label;const small=document.createElement('small');small.style.cssText='display:block;color:var(--muted)';small.textContent=desc;a.append(b,small);hub.append(a)}
@@ -847,7 +849,7 @@ const chat=messages.getBoundingClientRect(),root=app.getBoundingClientRect();
 const gap=vTop+vHeight-box.bottom;
 if(box.height){minGap=Math.min(minGap,gap);maxGap=Math.max(maxGap,gap)}
 const n=x=>Math.round(x);
-const audit=auditGeometry();out.textContent=['v12.2 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
+const audit=auditGeometry();out.textContent=['v12.3 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
 }
 let frame=0;function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;measure()})}
 window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);window.addEventListener('resize',schedule);document.addEventListener('focusin',()=>{minGap=Infinity;maxGap=-Infinity;schedule()});document.addEventListener('focusout',schedule);new ResizeObserver(schedule).observe(app);new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
