@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>CHAT CRM — Bố cục v0.7</title>
+<style>
+:root{color-scheme:light;--ink:#202124;--muted:#73777d;--line:#e7e8eb;--soft:#f5f5f5;--paper:#fff;--radius:14px;--space:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%;touch-action:manipulation;background:var(--paper);color:var(--ink)}
+button,input,textarea{font:inherit}button{border:0;background:transparent;color:inherit;cursor:pointer;min-height:44px}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #475569;outline-offset:2px}
+input,textarea{font-size:16px!important}button[aria-pressed="true"]{background:#ebedef}
+[hidden]{display:none!important}
+#app{width:100%;height:100dvh;display:grid;grid-template-columns:54px 290px minmax(0,1fr) 330px;min-height:0;overflow:hidden}
+.rail,.directory,.conversation,.crm{min-width:0;min-height:0;display:flex;flex-direction:column;border-right:1px solid var(--line);background:#fff}
+.rail{padding:8px 5px;gap:5px;align-items:stretch}.rail button{border-radius:12px;font-size:21px}.rail .version{font-size:10px;color:var(--muted);text-align:center;margin-top:auto}
+.panel-head{flex:none;height:60px;display:flex;align-items:center;gap:10px;padding:7px 13px;border-bottom:1px solid var(--line)}
+.panel-head strong{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}.label-version{font-size:11px;color:var(--muted);white-space:nowrap}
+.avatar{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:#ebedf0;color:#444;font-size:12px;font-weight:650}
+.icon{width:44px;min-width:44px;border-radius:12px;font-size:22px;display:grid;place-items:center}
+.search-zone{flex:none;padding:12px 12px 8px}.search-zone input{width:100%;height:43px;border:0;outline:0;background:var(--soft);border-radius:13px;padding:0 15px}
+.filters{display:flex;gap:6px;padding:0 12px 9px;overflow-x:auto;scrollbar-width:none}.filters button{min-height:33px;padding:0 12px;white-space:nowrap;border-radius:20px;background:var(--soft);font-size:13px}.filters button.active{background:#25272b;color:white}
+.contacts{overflow-y:auto;flex:1;min-height:0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.contact{width:100%;display:flex;align-items:center;gap:11px;min-height:67px;padding:10px 12px;text-align:left}.contact.active{background:#f4f4f5}.contact .identity{flex:1;min-width:0}.identity b,.identity small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.identity b{font-size:14px;font-weight:600}.identity small{font-size:12px;color:var(--muted);margin-top:3px}.contact .time{font-size:11px;color:var(--muted);align-self:flex-start;margin-top:4px}
+.dir-bottom{border-top:1px solid var(--line);padding:9px 12px;flex:none}.outline{border:1px solid var(--line);border-radius:12px;padding:0 14px}.dir-bottom .outline{width:100%}
+.conversation .panel-head .title-group{flex:1;min-width:0}.title-group b,.title-group small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.title-group b{font-size:15px}.title-group small{font-size:12px;color:var(--muted)}.chat-view{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}.messages{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;flex:1;min-height:0;padding:16px max(14px,3%);display:flex;flex-direction:column;gap:14px;scrollbar-gutter:stable}.day{text-align:center;color:var(--muted);font-size:12px;padding:5px}.message{max-width:82%;align-self:flex-start}.message.mine{align-self:flex-end}.bubble{line-height:1.55;overflow-wrap:anywhere}.mine .bubble{background:#f1f1f2;border-radius:17px;padding:9px 13px}.message .meta{font-size:11px;color:var(--muted);padding-top:3px}.mine .meta{text-align:right}
+.work-card{width:100%;align-self:stretch;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff;margin:5px 0}.work-card header{height:auto;padding:10px 13px;background:#fafafa;display:flex;align-items:center;justify-content:space-between;gap:8px;border:0}.work-card header strong{font-size:13px}.work-card header small{font-size:11px;color:var(--muted)}.table-wrap{overflow-x:auto}.work-card table{width:100%;border-collapse:collapse;font-size:13px;min-width:260px}.work-card th,.work-card td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left}.work-card th:first-child,.work-card td:first-child{width:42px;text-align:center}.work-card th:nth-child(3),.work-card td:nth-child(3){text-align:center;width:55px}
+.composer-frame{flex:none;padding:8px 14px max(10px,env(safe-area-inset-bottom));background:#fff}.composer{min-height:50px;border:1px solid #d9dade;border-radius:24px;display:flex;align-items:flex-end;gap:4px;padding:3px 5px 3px 6px}.composer textarea{flex:1;min-width:0;resize:none;border:0;outline:none;padding:10px 2px;min-height:42px;max-height:120px;background:transparent;line-height:22px;overflow:auto}.composer .send{background:#27282b;color:#fff;width:42px;min-width:42px;min-height:42px;border-radius:50%;font-size:20px}.composer .send:disabled{opacity:.4}
+.crm .modules{flex:none;padding:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;border-bottom:1px solid var(--line)}.modules button{border:1px solid var(--line);border-radius:12px;text-align:left;padding:10px;min-height:58px;font-size:13px}.modules button.active{background:#f3f3f4;border-color:#bfc2c7}.module-content{flex:1;overflow:auto;min-height:0;padding:16px}.module-content h3{margin:0 0 7px;font-size:16px}.module-content p{margin:0;color:var(--muted);font-size:13px;line-height:1.65}.fields{margin-top:13px;border:1px solid var(--line);border-radius:12px}.fields .field{display:flex;justify-content:space-between;gap:15px;padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px}.fields .field:last-child{border-bottom:0}.fields .field span:last-child{font-weight:550;text-align:right}.crm-footer{padding:11px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
+.mobile-only{display:none}
+@media(max-width:1199px){#app{grid-template-columns:54px 250px minmax(0,1fr)}.crm{display:none}#app.with-crm{grid-template-columns:54px 235px minmax(0,1fr) 290px}#app.with-crm .crm{display:flex}}
+@media(min-width:768px) and (max-width:999px){#app.with-crm{grid-template-columns:54px minmax(0,1fr) 290px}#app.with-crm .directory{display:none}}
+@media(max-width:767px){#app,#app.with-crm{display:block;height:var(--app-height,100dvh)}.rail{display:none}.directory,.conversation,.crm,#app.with-crm .crm{display:none;height:100%;width:100%;border:0}#app[data-screen="contacts"] .directory,#app[data-screen="chat"] .conversation,#app[data-screen="crm"] .crm{display:flex}.mobile-only{display:grid}.panel-head{height:calc(54px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}.contacts{padding-bottom:env(safe-area-inset-bottom)}.messages{padding:12px 15px;scrollbar-gutter:auto}.message{max-width:87%}.composer-frame{padding:6px 10px max(9px,env(safe-area-inset-bottom))}.keyboard .panel-head{height:49px;padding-top:0}.keyboard .composer-frame{padding-bottom:5px}.keyboard .composer textarea{max-height:88px}}
+</style>
+</head>
+<body>
+<div id="app" data-screen="contacts">
+<nav class="rail" aria-label="Điều hướng"><button type="button" data-go="contacts" aria-label="Danh bạ">☷</button><button type="button" data-go="chat" aria-label="Hội thoại">▣</button><button type="button" data-go="crm" aria-label="Công việc">▤</button><span class="version">v0.7</span></nav>
+<aside class="directory" aria-label="Danh bạ">
+ <header class="panel-head"><strong>CHAT CRM</strong><span class="label-version">v0.7</span><button type="button" class="icon" data-go="crm" aria-label="Công việc">▤</button></header>
+ <div class="search-zone"><input id="search" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm danh bạ"></div>
+ <div class="filters" aria-label="Lọc danh bạ"><button class="active" data-filter="Tất cả">Tất cả</button><button data-filter="KH">KH</button><button data-filter="NCC">NCC</button><button data-filter="NV">NV</button><button data-filter="Nhóm">Nhóm</button></div>
+ <div class="contacts" id="contacts">
+ <button class="contact active" data-id="kh"><span class="avatar">KH</span><span class="identity"><b>Khách hàng mẫu</b><small>KH · Báo lấy hàng hôm nay</small></span><span class="time">11:25</span></button>
+ <button class="contact" data-id="ncc"><span class="avatar">NCC</span><span class="identity"><b>Nhà cung cấp mẫu</b><small>NCC · Báo giá mới</small></span><span class="time">10:08</span></button>
+ <button class="contact" data-id="nv"><span class="avatar">NV</span><span class="identity"><b>Nhân viên mẫu</b><small>NV · Kiểm hàng</small></span><span class="time">09:30</span></button>
+ <button class="contact" data-id="nhom"><span class="avatar">NH</span><span class="identity"><b>Nhóm khách hàng mẫu</b><small>Nhóm KH · Thảo luận chung</small></span><span class="time">08:45</span></button>
+ </div>
+ <div class="dir-bottom"><button class="outline" type="button" id="addContact">＋ Thêm danh bạ (bố cục)</button></div>
+</aside>
+<main class="conversation" aria-label="Hội thoại">
+ <header class="panel-head"><button class="icon mobile-only" type="button" data-go="contacts" aria-label="Về danh bạ">‹</button><span class="avatar" id="currentAvatar">KH</span><span class="title-group"><b id="currentName">Khách hàng mẫu</b><small id="currentRole">KH · Hội thoại mẫu</small></span><button class="icon" type="button" data-go="crm" aria-label="Mở công việc">▤</button></header>
+ <section class="chat-view"><div class="messages" id="messages" role="log">
+ <div class="day">Hôm nay · Minh họa bố cục</div>
+ <div class="message"><div class="bubble">Cho lấy sản phẩm A 2, sản phẩm B 3.</div><div class="meta">11:20</div></div>
+ <div class="message mine"><div class="bubble">Đã tiếp nhận, mình sẽ kiểm tra hàng.</div><div class="meta">11:22 · Mẫu</div></div>
+ <section class="work-card"><header><strong>Tổng hợp yêu cầu · Hôm nay</strong><small>Chưa duyệt</small></header><div class="table-wrap"><table><thead><tr><th>STT</th><th>Tên hàng</th><th>SL</th></tr></thead><tbody><tr><td>1</td><td>Sản phẩm A</td><td>2</td></tr><tr><td>2</td><td>Sản phẩm B</td><td>3</td></tr></tbody></table></div></section>
+ </div></section>
+ <div class="composer-frame"><form class="composer" id="composer"><button class="icon" type="button" id="mediaBtn" aria-label="Chọn ảnh mẫu">＋</button><textarea id="draft" rows="1" placeholder="Nhập tin nhắn mẫu" aria-label="Nội dung tin nhắn mẫu"></textarea><button class="send" type="submit" aria-label="Thêm tin nhắn mẫu">↑</button></form></div>
+</main>
+<aside class="crm" aria-label="Công việc"><header class="panel-head"><button class="icon mobile-only" type="button" data-go="chat" aria-label="Về hội thoại">‹</button><strong>Công việc</strong><span class="label-version">v0.7</span><button class="icon" type="button" data-go="chat" aria-label="Đóng công việc">×</button></header><div class="modules" id="modules"><button class="active" type="button">Tổng hợp</button><button type="button">Đơn hàng</button><button type="button">Công nợ</button><button type="button">Bill</button><button type="button">Báo giá</button><button type="button">Liên kết Zalo</button></div><div class="module-content" id="moduleContent"><h3>Tổng hợp</h3><p>Khung giao diện nghiệp vụ theo danh bạ. Chưa kết nối dữ liệu thật.</p><div class="fields"><div class="field"><span>Đối tượng</span><span>Khách hàng mẫu</span></div><div class="field"><span>Trạng thái</span><span>Chưa tiếp nhận</span></div><div class="field"><span>Dữ liệu</span><span>Minh họa</span></div></div></div><footer class="crm-footer">HTML tĩnh · Không kết nối Zalo, ngân hàng hoặc dữ liệu thật</footer></aside>
+</div>
+<script>
+(function(){
+'use strict';
+const app=document.getElementById('app'),draft=document.getElementById('draft'),messages=document.getElementById('messages'),contactList=document.getElementById('contacts');
+const people={kh:{name:'Khách hàng mẫu',role:'KH',avatar:'KH',modules:['Tổng hợp','Đơn hàng','Công nợ','Bill','Báo giá','Liên kết Zalo']},ncc:{name:'Nhà cung cấp mẫu',role:'NCC',avatar:'NCC',modules:['Báo giá','Giá vốn','Nhập hàng','Liên kết Zalo']},nv:{name:'Nhân viên mẫu',role:'NV',avatar:'NV',modules:['Tiếp nhận','Kiểm hàng','Giao hàng','Công việc']},nhom:{name:'Nhóm khách hàng mẫu',role:'Nhóm',avatar:'NH',modules:['Tổng hợp','Thành viên','Đơn hàng','Liên kết Zalo']}};
+let active='kh',filter='Tất cả';const texts={kh:['Cho lấy sản phẩm A 2, sản phẩm B 3.','Đã tiếp nhận, mình sẽ kiểm tra hàng.'],ncc:['Mình gửi báo giá mới hôm nay.','Đã nhận thông tin báo giá.'],nv:['Mình đã kiểm hàng.','Đã nhận thông tin.'],nhom:['Cả nhóm cập nhật yêu cầu nhé.','Đã ghi nhận.']};
+const drafts={};const scrolls={};const $=s=>document.querySelector(s);
+function navigate(where){draft.blur();app.dataset.screen=where;app.classList.toggle('with-crm',where==='crm');if(where==='chat')requestAnimationFrame(()=>{messages.scrollTop=scrolls[active]??messages.scrollHeight})}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));
+function showPeople(){contactList.querySelectorAll('.contact').forEach(b=>{const p=people[b.dataset.id];b.hidden=!(filter==='Tất cả'||p.role===filter)&&filter!=='Nhóm'||(filter==='Nhóm'&&p.role!=='Nhóm');if(b.hidden)return;b.hidden=!p.name.toLocaleLowerCase('vi').includes($('#search').value.trim().toLocaleLowerCase('vi'));b.classList.toggle('active',b.dataset.id===active)})}
+document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));showPeople()}));$('#search').addEventListener('input',showPeople);
+contactList.addEventListener('click',e=>{const b=e.target.closest('.contact');if(!b)return;drafts[active]=draft.value;scrolls[active]=messages.scrollTop;active=b.dataset.id;draft.value=drafts[active]||'';render();navigate('chat')});
+function make(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function render(){const p=people[active];$('#currentName').textContent=p.name;$('#currentRole').textContent=p.role+' · Hội thoại mẫu';$('#currentAvatar').textContent=p.avatar;showPeople();messages.replaceChildren(make('div','day','Hôm nay · Minh họa bố cục'));
+texts[active].forEach((t,i)=>{const row=make('div','message'+(i%2?' mine':''));row.append(make('div','bubble',t),make('div','meta',i%2?'11:22 · Mẫu':'11:20'));messages.append(row)});
+if(active==='kh'||active==='nhom'){const card=make('section','work-card');const head=make('header');head.append(make('strong','', 'Tổng hợp yêu cầu · Hôm nay'),make('small','','Chưa duyệt'));card.append(head);const wrap=make('div','table-wrap'),tbl=document.createElement('table');tbl.innerHTML='<thead><tr><th>STT</th><th>Tên hàng</th><th>SL</th></tr></thead><tbody><tr><td>1</td><td>Sản phẩm A</td><td>2</td></tr><tr><td>2</td><td>Sản phẩm B</td><td>3</td></tr></tbody>';wrap.append(tbl);card.append(wrap);messages.append(card)}
+const modules=$('#modules');modules.replaceChildren();p.modules.forEach((m,i)=>{const b=make('button',i===0?'active':'',m);b.type='button';b.addEventListener('click',()=>{modules.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));showModule(m)});modules.append(b)});showModule(p.modules[0]);resizeDraft()}
+function showModule(label){const panel=$('#moduleContent');panel.replaceChildren(make('h3','',label),make('p','','Vùng bố cục '+label.toLowerCase()+' của '+people[active].name+'. Chưa kết nối nghiệp vụ.'));const fields=make('div','fields');[['Đối tượng',people[active].name],['Trạng thái','Minh họa'],['Nguồn','HTML tĩnh v0.7']].forEach(([a,b])=>{const r=make('div','field');r.append(make('span','',a),make('span','',b));fields.append(r)});panel.append(fields)}
+function resizeDraft(){draft.style.height='42px';draft.style.height=Math.min(draft.scrollHeight,app.classList.contains('keyboard')?88:120)+'px'}draft.addEventListener('input',resizeDraft);
+$('#composer').addEventListener('submit',e=>{e.preventDefault();const t=draft.value.trim();if(!t)return;texts[active].push(t);draft.value='';render();messages.scrollTop=messages.scrollHeight;draft.focus({preventScroll:true})});
+messages.addEventListener('scroll',()=>{scrolls[active]=messages.scrollTop},{passive:true});
+$('#mediaBtn').addEventListener('click',()=>{draft.placeholder='Ảnh: vị trí nút đã dựng (chưa gửi thật)';draft.focus({preventScroll:true})});
+$('#addContact').addEventListener('click',()=>{$('#search').focus();$('#search').placeholder='Thêm danh bạ sẽ triển khai sau — đang dựng bố cục'});
+let lastVh=0;function updateViewport(){const height=window.visualViewport?.height||innerHeight;if(Math.abs(lastVh-height)<1)return;lastVh=height;document.documentElement.style.setProperty('--app-height',height+'px');app.classList.toggle('keyboard',innerHeight-height>120);resizeDraft()}
+window.visualViewport?.addEventListener('resize',updateViewport);window.addEventListener('resize',updateViewport);updateViewport();render();
+// Chống zoom toàn trang; vùng xem ảnh riêng sẽ được thiết kế độc lập.
+['gesturestart','gesturechange','gestureend'].forEach(n=>document.addEventListener(n,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+let lastTap=0,lastTarget=null;document.addEventListener('touchend',e=>{const now=Date.now();if(e.changedTouches.length===1&&e.target===lastTarget&&now-lastTap<280&&!e.target.closest('input,textarea,button,select'))e.preventDefault();lastTap=now;lastTarget=e.target},{passive:false});
+})();
+</script>
+</body></html>
