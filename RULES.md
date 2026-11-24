@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.36)
+## 00. Chỉ mục rule đang có hiệu lực (v13.37)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -425,3 +425,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - FAMILY-06: Kiểm tra role/profile thực, không chỉ nhãn; Icon registry thêm glyph tĩnh nguyên dạng. SVG chứng từ và QA ngoài runtime cần owner riêng, không ép dùng glyph registry.
 - FAMILY-07: CI chạy sáu viewport, báo lỗi và PROVISIONAL. Nhãn không thay thế computed style/behavior; không tuyên bố toàn bộ API đã áp dụng nếu còn PENDING. Chặn thiếu nhãn static, báo DOM động để xử lý tiếp.
 - FAMILY-08: Component mới phải khai báo family/parent/status/role hoặc profile; nếu chưa có cha chính thức, gắn STUDY-ID và bổ sung học tập trước khi nghiệm thu. Nguồn Radix Flex GEO-S03 blob 0d046a4a8decbbc062c93315beca01651078f427 (layout props), không nhập dependency.
+
+## 56. PARENT-RUNTIME — v13.37, chuyển khai báo sang thực thi cha
+- PARENT-RUNTIME-01: HTML tĩnh khai báo profile trước paint, bindMainParents gọi Layout/TYPOGRAPHY/Button/Icon; factory động gọi cùng Layout.applyProfile, Input/Popup giữ API hiện tại. Các thuộc tính đã chuyển phải dùng selector profile cha, không thêm bản CSS song song.
+- PARENT-RUNTIME-02: Thang chữ thử nghiệm thay TYPE-API-03 trong phạm vi hiển thị: version 10/16, caption/label 13/18, detail/note/number/money 14/20, body 16/22, title 18/24, chat 18/27; input giữ 17/22 và sàn 16. Họ font hệ thống không đổi. Đây là lựa chọn demo cần người dùng duyệt, không phải thông số chính thức ChatGPT. Bảng dùng caption 13/18.
+- PARENT-RUNTIME-03: Contact row 70px, title stack dùng line token, avatar dùng profile initials tạm; Button text theo body/detail/caption; Icon tĩnh dùng glyph registry khi bind. Không đổi dữ liệu, keyboard v13.27, Surface hay các CSS viewport bảo vệ.
+- PARENT-RUNTIME-04: CI thử token chat 18→21→18, kiểm tra profile danh bạ/chat/nút chữ, font popup/input và quét family từng contact. Các slot layout/paint đặc thù, Media/Card/Table/Scroll và Avatar vẫn có bài học tạm, không coi đã chuyển toàn bộ CSS.
+- PARENT-RUNTIME-05: Giữ một file HTML, tập trung thông số tại token và API cha. Ghi rõ profile còn thiếu; tiếp tục loại bỏ CSS cũ theo owner sau khi có bằng chứng. CI và Pages độc lập; thiết bị native còn PENDING.
