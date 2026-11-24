@@ -1025,25 +1025,26 @@ const people={kh:{name:'Khách hàng mẫu',role:'KH',avatar:'KH',modules:['Tổ
 /* Collection owns data projection and selection; never owns focus, keyboard or DOM layout. */
 const Collection=(()=>{
  const collator=new Intl.Collator('vi',{numeric:true,sensitivity:'base'});
- function project(items,{query='',group=null,order='original',searchKey=Input.searchKey}={}){
+ function searchKey(value){return Input.searchKey(value).normalize('NFD').replace(/\p{M}/gu,'').replace(/đ/g,'d')}
+ function project(items,{query='',group=null,order='original',searchKey:makeKey=searchKey}={}){
   if(!['original','name-asc','name-desc'].includes(order))throw new TypeError('Invalid collection order');
-  const q=searchKey(String(query).trim()),visible=items.filter(item=>(group===null||item.group===group)&&searchKey(String(item.name)).includes(q));
+  const q=makeKey(String(query).trim()),visible=items.filter(item=>(group===null||item.group===group)&&makeKey(String(item.name)).includes(q));
   return order==='original'?visible:visible.sort((a,b)=>(order==='name-asc'?1:-1)*collator.compare(a.name,b.name));
  }
- function create(items,{mode='multiple',searchKey=Input.searchKey}={}){
+ function create(items,{mode='multiple',searchKey:makeKey=searchKey}={}){
   if(!['none','single','multiple'].includes(mode)||!Array.isArray(items))throw new TypeError('Invalid collection mode');
   const rows=items.map(item=>Object.freeze({...item})),byId=new Map();
   for(const row of rows){if(typeof row.id!=='string'||!row.id||typeof row.name!=='string'||byId.has(row.id))throw new TypeError('Invalid or duplicate collection key');byId.set(row.id,row)}
   const selected=new Set();let view={query:'',group:null,order:'original'};
-  const visible=()=>project(rows,{...view,searchKey}),eligible=()=>visible().filter(item=>!item.disabled);
-  function setView(next={}){const candidate={...view,...next};project(rows,{...candidate,searchKey});view=candidate;return visible()}
+  const visible=()=>project(rows,{...view,searchKey:makeKey}),eligible=()=>visible().filter(item=>!item.disabled);
+  function setView(next={}){const candidate={...view,...next};project(rows,{...candidate,searchKey:makeKey});view=candidate;return visible()}
   function toggle(id){const row=byId.get(id);if(mode==='none'||!row||row.disabled)return false;if(selected.has(id))selected.delete(id);else{if(mode==='single')selected.clear();selected.add(id)}return selected.has(id)}
   function selectVisible(value=true){if(mode!=='multiple')return false;for(const item of eligible())if(value)selected.add(item.id);else selected.delete(item.id);return true}
   function clear(){selected.clear()}
   function status(){const list=eligible(),count=list.filter(item=>selected.has(item.id)).length;return {total:rows.length,visible:visible().length,selected:selected.size,visibleSelected:count,eligible:list.length,allVisible:list.length>0&&count===list.length,mixed:count>0&&count<list.length}}
   return Object.freeze({setView,visible,toggle,selectVisible,clear,status,isSelected:id=>selected.has(id),selectedIds:()=>rows.filter(item=>selected.has(item.id)).map(item=>item.id)});
  }
- return Object.freeze({project,create});
+ return Object.freeze({project,create,searchKey});
 })();
 
 /* MAIN VIEW FACTORIES */
@@ -1385,8 +1386,7 @@ function renderCollectionLab(panel){
  const nodes=new Map();
  for(const item of items){const button=Button.create({text:item.name+' · SL '+item.qty,onClick:()=>{model.toggle(item.id);paint()}});button.dataset.collectionKey=item.id;button.disabled=!!item.disabled;nodes.set(item.id,button)}
  function paint(){const visible=model.visible(),s=model.status(),active=document.activeElement,focused=active?.dataset.collectionKey;
-  const desired=visible.map(item=>nodes.get(item.id));for(const node of list.children)if(!desired.includes(node))node.hidden=true;
-  for(const node of desired){node.hidden=false;node.setAttribute('aria-pressed',String(model.isSelected(node.dataset.collectionKey)))}
+  const desired=visible.map(item=>nodes.get(item.id)),shown=new Set(desired);for(const node of nodes.values()){node.hidden=!shown.has(node);node.setAttribute('aria-pressed',String(model.isSelected(node.dataset.collectionKey)))}
   // Move only when order actually changes; filtering and selecting preserve row node identity.
   const existing=[...list.children].filter(node=>!node.hidden);if(existing.length!==desired.length||existing.some((node,i)=>node!==desired[i]))for(const node of desired)list.append(node);
   if(focused&&active.isConnected&&!active.hidden&&document.activeElement!==active)active.focus({preventScroll:true});

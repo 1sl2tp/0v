@@ -6,7 +6,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01, COLLECTION-API-01–05 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01, COLLECTION-API-01–06 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -509,8 +509,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - RELEASE-PROOF-01: Test phiên bản phải lấy current từ version.json và sinh future theo số, không hardcode. Draft của active lấy từ editor hiện tại; cache draft chỉ kiểm các hội thoại khác. Test chuyển hội thoại, quay lại, xóa draft rồi tự tải bản mới. Không thay keyboard/viewport hoặc dữ liệu thật. PR đủ phạm vi tự merge để nghiệm thu workflow; không merge thủ công trước khi có kết quả của workflow.
 
 ## 69. COLLECTION — v13.47, bài toán 18
-- COLLECTION-API-01: Collection.project lọc theo group + Input.searchKey, sort vi numeric có whitelist; không sửa dữ liệu nguồn hoặc tự chuyển ID theo vị trí. Main danh bạ gọi project, giữ DOM/Contact/Keyboard.
+- COLLECTION-API-01: Collection.project lọc theo group + Collection.searchKey (kế thừa Input.searchKey rồi NFD bỏ dấu và đ→d chỉ trong khóa tìm, không đổi text gốc), sort vi numeric có whitelist; không sửa dữ liệu nguồn hoặc tự chuyển ID theo vị trí. Main danh bạ gọi project, giữ DOM/Contact/Keyboard.
 - COLLECTION-API-02: Collection.create dữ liệu snapshot, ID string duy nhất, mode none/single/multiple; selected theo key, disabled không chọn; visible độc lập selected; selectVisible chỉ tác động kết quả đủ điều kiện, không xóa lựa chọn ẩn. Clear toàn bộ phải là hành động riêng. Không chọn tất cả dữ liệu ngoài kết quả.
 - COLLECTION-API-03: UI đọc model, không lặp state riêng ở nút; Button/Typography/Input/Layout/Card là owner hiển thị; focus không thuộc model. Lab dùng button aria-pressed, disabled native, status live; giữ node khi lọc/chọn và focus khi sort. Không tạo grid/listbox ARIA giả.
 - COLLECTION-API-04: ?collectionlab=1, tám hàng có nhóm và một disabled, test toàn bộ key, lọc, sort, chọn nhiều/ẩn, clear, không kết quả, danh bạ 4 loại. Chưa làm virtualization, remote dataset, async sort, range selection hoặc nghiệp vụ thật.
 - COLLECTION-API-05: Đọc pinned Adobe SelectionManager/useSelectableCollection, Astryx Table và MUI X RowSelection/Radix ToggleGroup trước khi code. Học key, controlled state, focus độc lập, selectable rows; không copy React runtime. Source receipts trong references/COLLECTION-API-SOURCES.md.
+
+- COLLECTION-API-06: Tìm tiếng Việt không dấu là profile riêng của Collection, không thay Input.searchKey hay chuẩn hóa nội dung tin. Test sua/SỮA/dac/nuoc, đ→d, zero results; aria-pressed mọi node kể cả ẩn phải lấy từ model khi clear. Đọc Adobe useFilter và MUI X gridFilterUtils. Keyboard giữ nguyên.

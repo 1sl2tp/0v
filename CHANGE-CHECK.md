@@ -1,2 +1,4 @@
 # CHANGE-CHECK — v13.47
 v13.46 CI 45447030076, auto-publish 45447223158 success, Pages 45447265711 success, public verified by release workflow. Read AGENTS/RULES/COMPONENT-API and source receipts. COLLECTION-API/SOURCE-GATE/LIST-PROOF/KB-LOCK. Directory filter uses Collection.project, new independent eight-row lab. Static 28 checks passed, source integrity/browser pending. Keyboard 4 protected ranges exact. No new dependency or production changes. Virtualization, full business integration, iOS native pending. Blob 659afe9e72ed4c8408855bc2f976790f489a5281.
+
+CI 45460222871: six widths, Surface, Avatar, Media, systems and ReleaseUpdater all passed; Collection unaccented 'sua' expected 3 got 0. Added separate Vietnamese search folding per Adobe/MUI X, hidden selected state sync, expanded exact key/Đ tests. Static 28 pass. Rerun required; no manual release. Blob 2f8ce3eb563cf2ed9a02ff10576b7fe9fd5cea9b.
