@@ -539,7 +539,7 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
 .type-lab-row{display:grid;gap:var(--gap-xs);padding:var(--gap-sm) 0;border-bottom:1px solid var(--line);min-width:0}
 .type-lab-row>span{overflow-wrap:anywhere}
 /* Layout parent: explicit opt-in; no shell/viewport writes. */
-[data-geo-layout]{box-sizing:border-box;min-width:0;min-height:0;max-width:100%;row-gap:var(--geo-row-gap,var(--geo-gap,var(--gap-sm)));column-gap:var(--geo-column-gap,var(--geo-gap,var(--gap-sm)));padding:var(--geo-padding,var(--gap-zero));align-items:var(--geo-align,stretch);justify-content:var(--geo-justify,start)}
+[data-geo-layout]{box-sizing:border-box;min-width:0;min-height:0;max-width:100%;row-gap:var(--geo-row-gap,var(--geo-gap,var(--gap-sm)));column-gap:var(--geo-column-gap,var(--geo-gap,var(--gap-sm)));padding:var(--geo-padding,var(--gap-zero));border-radius:var(--geo-radius,0px);align-items:var(--geo-align,stretch);justify-content:var(--geo-justify,start)}
 [data-geo-layout]> *{min-width:0;min-height:0}
 [data-geo-layout=row]{display:flex;flex-direction:row}
 [data-geo-layout=column]{display:flex;flex-direction:column}
@@ -548,6 +548,10 @@ html[data-floating="1"] #app>.conversation>.composer-frame::before{background:li
 [data-geo-layout=adaptive]{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--geo-column-min)),1fr))}
 [data-geo-wrap=true]{flex-wrap:wrap}
 [data-geo-shape]{box-sizing:border-box;display:grid;place-items:center;flex:none;inline-size:var(--geo-size);block-size:var(--geo-size);aspect-ratio:1;min-width:0;min-height:0;border:1px solid var(--line);background:var(--soft);text-align:center}
+[data-geo-radius=none]{--geo-radius:0px}
+[data-geo-radius=sm]{--geo-radius:var(--media-radius)}
+[data-geo-radius=md]{--geo-radius:var(--control-radius)}
+[data-geo-radius=lg]{--geo-radius:var(--geo-radius-lg)}
 [data-geo-shape=round]{border-radius:50%}
 [data-geo-shape=square]{border-radius:0}
 [data-geo-shape=rounded]{border-radius:var(--control-radius)}
@@ -848,10 +852,10 @@ const Geometry=(()=>{
 })();
 const Layout=(()=>{
  const kinds=Object.freeze(['row','column','grid','adaptive','center']),spaces=Object.freeze(['zero','xs','sm','md','lg']),aligns=['start','center','end','stretch','baseline'],justifies=['start','center','end','space-between','space-around'],tags=['div','section','article','span'];
- function bind(el,{kind='column',gap='sm',padding='zero',rowGap,columnGap,align='stretch',justify='start',columns=2,wrap=false}={}){
+ function bind(el,{kind='column',gap='sm',padding='zero',rowGap,columnGap,align='stretch',justify='start',columns=2,wrap=false,radius='none'}={}){
   if(!el||!tags.includes(el.tagName.toLowerCase())||el.isContentEditable||el.closest?.('[contenteditable=true]'))throw new TypeError('Layout requires a non-editable region');
-  if(!kinds.includes(kind)||![gap,padding,rowGap??gap,columnGap??gap].every(v=>spaces.includes(v))||!aligns.includes(align)||!justifies.includes(justify)||!Number.isInteger(columns)||columns<1||columns>4||typeof wrap!=='boolean')throw new TypeError('Invalid layout profile');
-  Object.assign(el.dataset,{geoLayout:kind,geoGap:gap,geoPadding:padding,geoRowGap:rowGap??gap,geoColumnGap:columnGap??gap,geoAlign:align,geoJustify:justify,geoColumns:String(columns),geoWrap:String(wrap)});return el;
+  if(!kinds.includes(kind)||![gap,padding,rowGap??gap,columnGap??gap].every(v=>spaces.includes(v))||!aligns.includes(align)||!justifies.includes(justify)||!Number.isInteger(columns)||columns<1||columns>4||typeof wrap!=='boolean'||!['none','sm','md','lg'].includes(radius))throw new TypeError('Invalid layout profile');
+  Object.assign(el.dataset,{geoLayout:kind,geoGap:gap,geoPadding:padding,geoRowGap:rowGap??gap,geoColumnGap:columnGap??gap,geoAlign:align,geoJustify:justify,geoColumns:String(columns),geoWrap:String(wrap),geoRadius:radius});return el;
  }
  function append(el,children=[]){for(const child of Array.isArray(children)?children:[children])if(child!=null)el.append(child);return el}
  function create({tag='div',className='',children=[],...options}={}){if(!tags.includes(tag))throw new TypeError('Invalid layout tag');const el=bind(document.createElement(tag),options);el.className=className;return append(el,children)}
@@ -1014,18 +1018,18 @@ function renderGeometryLab(panel){
  const caption=text=>Typography.create({role:'caption',text});
  const cell=text=>Layout.create({className:'geo-cell',kind:'column',gap:'xs',children:[Typography.create({role:'body',text})]});
  lab.append(heading('1 · Hình học từng phần tử'),caption('24 / 32 / 40 / 44 / 56 px · vuông, bo, tròn · chữ và icon'));
- const frames=Layout.create({kind:'row',gap:'sm',align:'center',wrap:true,className:'geo-example',padding:'sm'});
+ const frames=Layout.create({kind:'row',gap:'sm',align:'center',wrap:true,className:'geo-example',radius:'md',padding:'sm'});
  for(const size of ['xs','sm','md','lg','xl'])for(const shape of ['square','rounded','round'])frames.append(Layout.frame({size,shape,children:Typography.create({role:'caption',text:'A'})}));
  frames.append(Layout.frame({size:'md',shape:'round',children:Icon.create('copy')}),Layout.frame({size:'lg',shape:'square',children:Icon.create('save')}));
  lab.append(frames,caption('Avatar 40px; nút và glyph là hai vùng độc lập'));
- const controls=Layout.create({kind:'row',gap:'sm',align:'center',wrap:true,className:'geo-example',padding:'sm',children:[make('span','avatar','NH'),Button.create({kind:'icon',icon:'copy',label:'Sao chép mẫu'}),Button.create({kind:'outline',text:'Nút chữ'}),Button.create({kind:'primary',icon:'forward',label:'Gửi mẫu'})]});
+ const controls=Layout.create({kind:'row',gap:'sm',align:'center',wrap:true,className:'geo-example',radius:'md',padding:'sm',children:[make('span','avatar','NH'),Button.create({kind:'icon',icon:'copy',label:'Sao chép mẫu'}),Button.create({kind:'outline',text:'Nút chữ'}),Button.create({kind:'primary',icon:'forward',label:'Gửi mẫu'})]});
  lab.append(controls,heading('2 · Hàng / cột'),caption('Gap ngang 8px · gap dọc 12px; căn giữa trục phụ'));
- const row=Layout.create({kind:'row',gap:'sm',align:'center',wrap:true,className:'geo-example',padding:'md',children:[cell('Hàng A'),cell('Hàng B')]});
- const col=Layout.create({kind:'column',gap:'md',className:'geo-example',padding:'sm',children:[cell('Dòng 1'),cell('Dòng 2')]});
+ const row=Layout.create({kind:'row',gap:'sm',align:'center',wrap:true,className:'geo-example',radius:'md',padding:'md',children:[cell('Hàng A'),cell('Hàng B')]});
+ const col=Layout.create({kind:'column',gap:'md',className:'geo-example',radius:'md',padding:'sm',children:[cell('Dòng 1'),cell('Dòng 2')]});
  lab.append(row,col,heading('3 · Lưới nhiều hàng / cột'),caption('2 cột bằng nhau · gap dọc 12px, ngang 8px'));
- const grid=Layout.create({kind:'grid',columns:2,rowGap:'md',columnGap:'sm',className:'geo-example',padding:'sm',children:['Tên khách','Số lượng','Ghi chú dài để tự xuống dòng','1.250.000'].map(cell)});
+ const grid=Layout.create({kind:'grid',columns:2,rowGap:'md',columnGap:'sm',className:'geo-example',radius:'md',padding:'sm',children:['Tên khách','Số lượng','Ghi chú dài để tự xuống dòng','1.250.000'].map(cell)});
  lab.append(grid,caption('Adaptive theo chiều rộng vùng cha · min 180px/cột'));
- const adaptive=Layout.create({kind:'adaptive',gap:'sm',className:'geo-example',padding:'sm',children:[cell('Vùng A'),Layout.create({className:'geo-cell',kind:'column',gap:'xs',children:[cell('B1'),cell('B2')]}),cell('Vùng C')]});
+ const adaptive=Layout.create({kind:'adaptive',gap:'sm',className:'geo-example',radius:'md',padding:'sm',children:[cell('Vùng A'),Layout.create({className:'geo-cell',kind:'column',gap:'xs',children:[cell('B1'),cell('B2')]}),cell('Vùng C')]});
  lab.append(adaptive,heading('4 · Đo thực tế trên thiết bị'));
  const result=Typography.create({role:'detail',text:'Ấn đo để kiểm tra các mẫu đang hiển thị.'});result.classList.add('geo-result');
  lab.append(Button.create({kind:'outline',text:'Đo hình học',onClick:()=>{
