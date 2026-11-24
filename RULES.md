@@ -55,3 +55,9 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - BTN-02: Token chung touch 44px, icon 22px, stroke 1.7px, radius 12px; nút compact chỉ là ngoại lệ có chủ đích, không ép hàng danh bạ hoặc chip thành nút vuông.
 - BTN-03: Nút icon có tên truy cập; disabled không kích hoạt; focus-visible rõ; aria-pressed chỉ dùng cho toggle.
 - BTN-04: Nút tạo động và nút HTML tĩnh cùng đăng ký cha; không thay focus/blur, không render lại vùng gõ. Kiểm tra Safari và popup trước nghiệm thu.
+
+## 10. Icon cha
+- IC-01: Icon điều khiển SVG dùng token 22px, nét 1.7px, currentColor, đầu nét tròn; icon nhỏ 20px chỉ khi có vai trò riêng.
+- IC-02: Icon cha quản lý hình học SVG; Button cha quản lý vùng chạm; vùng cha quản lý vị trí và gap 8px với chữ. Không ép SVG minh họa, bill, QR, ảnh vào icon.
+- IC-03: Icon trang trí trong nút có aria-hidden; nút phải có tên truy cập độc lập. Không thay đổi viewBox/path để chữa lệch tâm tùy tiện.
+- IC-04: Kiểm tra icon header, composer, danh bạ, công việc, popup, nút xuống cuối; không đổi hành vi focus/scroll. Nghiệm thu thiết bị riêng.
