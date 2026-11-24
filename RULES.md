@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.31)
+## 00. Chỉ mục rule đang có hiệu lực (v13.32)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -10,7 +10,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
-| Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
+| Typography | TYPE-01–03, TYPE-API-01–06 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–05, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
@@ -381,3 +381,11 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - POPUP-API-04: Một vòng đời open/close/dispose; cleanup listener viewport, RAF, tài nguyên qua onDispose đúng một lần; từ chối popup thứ hai không tạo close event giả, không ảnh hưởng popup đang mở. Lỗi showModal cũng cleanup. Dialog chỉ ghi biến --popup-*.
 - POPUP-API-05: Chuyển viewer ảnh mẫu, preview ảnh chọn và thêm danh bạ sang API cha. ?popuplab=1 có 4 profile demo cục bộ. Glass Lab upstream riêng giữ nguyên theo phạm vi chẩn đoán; không dùng làm API runtime.
 - POPUP-API-06: Nguồn Radix, Shoelace, W3C APG tại references/POPUP-SOURCES.md; học vòng đời, tên truy cập và focus. Kiểm tra stub API và cleanup, bảo vệ v13.27, Input/Button/Icon. Chưa nghiệm thu browser, focus restoration native, keyboard popup, kích thước cấp, Pages. Không sửa production.
+
+## 51. TYPE-API — v13.32, Typography cha
+- TYPE-API-01: Typography sở hữu họ font, cỡ chữ, chiều cao dòng, độ đậm, kiểu số và trang trí chữ. CSS token là nguồn số duy nhất; JS Typography chỉ khai báo vai trò và biến thể, không sở hữu kích thước vùng, keyboard hay surface. Học Radix Themes và Tailwind tại references/TYPOGRAPHY-SOURCES.md.
+- TYPE-API-02: Giữ font hệ thống -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; không tải font ngoài. Token trọng lượng regular 400, medium 500, semibold 600, bold 700; weight 550/650 chỉ giữ tương thích các vị trí cũ, không tạo thêm vai trò. Không giả định mọi font hệ thống hỗ trợ đúng mọi weight.
+- TYPE-API-03: Vai trò version 10/16 (metadata kỹ thuật), caption 12/16, detail 13/18, body 15/20, title 17/22, chat 17/26, input 17/22. Biến thể number, money dùng detail 13/18 và tabular-nums; label dùng caption; note dùng detail; các vai trò không tự đổi theo chiều rộng. Không dùng number/money của văn bản cho editable; Input luôn qua token input có sàn 16px.
+- TYPE-API-04: Typography.create({role,text,tag,weight,decoration}) tạo text node trong phần tử phù hợp; Typography.bind(el,{role,weight,decoration}) đăng ký node hiển thị sẵn có; role/weight/decoration whitelist, giữ text nguyên văn, không innerHTML, không sửa value/caret, không nhận input/textarea/select/contenteditable. CSS data-type-role có thể dùng trực tiếp; HTML vẫn giữ ngữ nghĩa tag. Gạch chân/gạch ngang/nghiêng là biến thể, không tự đổi nội dung. Căn phải số tiền do Table/Layout sở hữu.
+- TYPE-API-05: Áp dụng metadata tĩnh và thành phần động đã xác định vai trò (tiêu đề module, bảng, card, mẫu Typography), giữ selector cũ ở vùng chưa chuyển và giữ nguyên trị số hiện có ở các vị trí chưa đo computed style. Không đổi font chat/input, geometry, Surface hoặc các đoạn baseline. ?typolab=1 hiển thị mẫu tiếng Việt có dấu, chữ đậm/nghiêng/gạch, số, tiền, ghi chú. Không tuyên bố giống ChatGPT tuyệt đối.
+- TYPE-API-06: Audit kiểm tra token, role, whitelist, text nguyên văn, từ chối editable, không ghi inline font. Kiểm tra computed style thực tế, F5, font fallback, dấu tiếng Việt, wrap/ellipsis và cỡ 320/390/768/desktop trước nghiệm thu. Browser, Pages và thiết bị PENDING; không sửa production.
