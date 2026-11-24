@@ -86,3 +86,9 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 
 - QA-05: Rà soát cascade theo selector, phạm vi media và thứ tự; chỉ bỏ khai báo lặp khi có khai báo tương đương còn hiệu lực. Không gộp các override responsive hoặc bàn phím khi chưa kiểm thử computed style.
 - 2026-11-24: v11.9 dọn 4 nhóm CSS lặp ngoài bàn phím; chưa kiểm thử computed style trên thiết bị.
+
+## 15. Bảng mã màu cha
+- COL-01: Light theme trung tính: paper #ffffff, ink #0d0d0d, muted #676767, line #e5e5e5, soft #f5f5f5, selected #f0f0f0, pressed #e8e8e8.
+- COL-02: Avatar #ededed / #404040; hành động chính #171717; input border #dedede; header #fafafa. Thành phần dùng token semantic, không tự đặt mã màu.
+- COL-03: Màu nghiệp vụ lỗi #b42318 giữ riêng; không đổi màu ảnh/bill gốc; trạng thái phải có chữ hoặc icon, không chỉ dựa vào màu.
+- COL-04: Bảng màu lấy cảm hứng từ ảnh so sánh ChatGPT, không khẳng định mã chính thức; kiểm tra tương phản và thiết bị trước nghiệm thu. Không đổi hình học hoặc bàn phím khi chỉnh màu.
