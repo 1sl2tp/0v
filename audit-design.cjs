@@ -134,8 +134,21 @@ function auditDesign(html,rules,baseline){
  `)();inputApiCases=run;
  }catch(e){inputApiError=e.message}
  const inputApiContract=!inputApiError&&inputApiCases.length===9&&inputApiCases.every(c=>c.pass);
- const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,keyboardBaseline,textInputContract,inputApiContract,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
- return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,inputCases,inputError,inputApiCases,inputApiError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
+ let buttonApiCases=[],buttonApiError=null;
+ try{
+  const src=html.slice(html.indexOf("const IconController={"),html.indexOf("ButtonController.scan(document);"));
+  const run=new Function(src+`
+ function fake(tag){const el={tagName:tag.toUpperCase(),attrs:{},dataset:{},children:[],events:{},className:'',textContent:'',id:'',classList:{contains(k){return el.className.split(/\\s+/).includes(k)}},setAttribute(k,v){this.attrs[k]=String(v)},getAttribute(k){return this.attrs[k]},hasAttribute(k){return k in this.attrs},addEventListener(k,f){(this.events[k]??=[]).push(f)},append(c){this.children.push(c);c.parent=this},querySelectorAll(k){return k==='svg'?this.children.filter(c=>c.tagName==='SVG'):[]},querySelector(k){return this.children.find(c=>c.attrs['data-api-icon'])||null},closest(k){return k==='button'?this.parent:null},replaceWith(c){const p=this.parent;p.children[p.children.indexOf(this)]=c;c.parent=p}};return el}
+ const document={createElement:fake,createElementNS:(_ns,tag)=>fake(tag)};
+ let clicks=0;const a=Button.create({kind:'text',text:'OK',onClick:()=>clicks++}),b=Button.create({kind:'outline',disabled:true}),c=Button.create({kind:'icon',icon:'copy',label:'Sao chép'}),d=Button.create({kind:'primary',type:'submit',text:'Gửi'});
+ a.events.click[0]();Button.bind(a);const first=c.children[0];Icon.replace(c,'copied');
+ let badKind=false,badIcon=false,badLabel=false;try{Button.create({kind:'unknown'})}catch{badKind=true}try{Icon.create('unknown')}catch{badIcon=true}try{Button.create({icon:'copy'})}catch{badLabel=true}
+ return [['text/default',a.type==='button'&&a.dataset.buttonKind==='text'],['outline/disabled',b.disabled&&b.dataset.buttonKind==='outline'],['icon/name',c.attrs['aria-label']==='Sao chép'&&c.dataset.buttonKind==='icon'],['primary/submit',d.type==='submit'&&d.dataset.buttonShape==='round'],['callback once',clicks===1&&a.events.click.length===1],['glyph replaced',first!==c.children[0]&&c.children[0].attrs['data-api-icon']==='copied'&&c.children.length===1],['decorative',c.children[0].attrs['aria-hidden']==='true'],['invalid kind',badKind],['invalid glyph',badIcon],['missing label',badLabel]].map(([name,pass])=>({name,pass}));
+ `)();buttonApiCases=run;
+ }catch(e){buttonApiError=e.message}
+ const buttonApiContract=!buttonApiError&&buttonApiCases.length===10&&buttonApiCases.every(c=>c.pass)&&html.includes("if(tag==='button')return Button.create(")&&html.includes("Icon.replace(b,'copied')");
+ const checks={singleViewportOwner,keyboardFastPath,keyboardEarlyClose,keyboardBaseline,textInputContract,inputApiContract,buttonApiContract,viewportSequence:!viewportError&&viewportCases.length===12&&viewportCases.every(c=>c.pass),version:!!version&&rules.includes("Chỉ mục rule đang có hiệu lực ("+version+")"),uniqueRuleIds:duplicates.length===0,noDirectFontSizes:directFonts.length===0,classicScriptSyntax:syntaxErrors.length===0&&scripts>0};
+ return{version,checks,viewportCases,viewportError,fastPathCases,fastPathError,earlyCloseCases,earlyCloseError,inputCases,inputError,inputApiCases,inputApiError,buttonApiCases,buttonApiError,pass:Object.values(checks).every(Boolean),scripts,syntaxErrors,duplicates,directFonts,unused,repeatedRoot,importantCount:(css.match(/!important/g)||[]).length,repeatedCount:repeated.length,repeated};
 }
 const fs=require('node:fs');const path=require('node:path');
 const result=auditDesign(fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),fs.readFileSync(path.join(__dirname,'RULES.md'),'utf8'),fs.readFileSync(path.join(__dirname,'release-v13.27.html'),'utf8'));
