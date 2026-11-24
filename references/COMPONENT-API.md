@@ -104,3 +104,6 @@ inspect(row,now) / summarize(rows,now): pure evidence projection for delivered o
 
 ## v13.58 NoticeRecoveryAPI
 create(notice,now), claim(job,now,token), settle(job,now,token,outcome): pure state transitions, one stage/lease, stale token rejected, evidence success, known-no-effect bounded retry, ambiguous/expired review, permanent/dead. Fixture IndexedDB change(db,id,fn) commits readwrite atomically, isolated synthetic data only. ?recoverylab=1. No actual execution, server durable outbox, permission refresh or provider reconciliation.
+
+## v13.59 CacheController
+empty(scope,stream,now), hydrate(record), append(record,page,now), classify(record,scope,stream,now), open/read/commit/clear. Atomic cursor+bounded synthetic journal, CAS page.after, schema/scope/TTL checks, replay existing stores. ?cachelab=1; independent fixture, no real cache or live SyncController migration. Production incremental normalized checkpoint, auth and eviction pending.
