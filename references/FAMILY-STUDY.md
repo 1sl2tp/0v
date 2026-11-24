@@ -22,3 +22,6 @@ Main tree is built through parent factories instead of hand-written UI tags. Exi
 
 ## v13.40 — STUDY-SURFACE
 Read MUI Paper and Radix Card source, added five paint variants, standalone Surface lab and CI. Legacy glass and Main unchanged. Browser CI and native/visual validation pending at commit; integration decision deferred.
+
+## v13.42 — STUDY-AVATAR
+API implementation and 7 lab cases; every four contact rows tested by ID, header update and image/fallback. Browser CI pending at commit; native/visual and remote-image policy pending. v13.41 release automation remains separate unverified branch.

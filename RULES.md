@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.40)
+## 00. Chỉ mục rule đang có hiệu lực (v13.42)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -454,3 +454,12 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - SURFACE-API-03: ?surfacelab=1 mở bài học riêng trong Công việc, năm mẫu dùng cùng Layout, kiểm tra computed style. Đây là mẫu API mới độc lập, chưa chuyển Main, Card hay các dự án khác sang variant mới.
 - SURFACE-API-04: Nguồn đọc trực tiếp MUI Paper (variant/outlined/elevation) và Radix Card (composition/slot), xem references/SURFACE-API-SOURCES.md. Không nhập dependency, không sao chép implementation; lựa chọn 5 variant là quy ước của 0v.
 - SURFACE-API-05: Kiểm tra variant hợp lệ, không trộn vật liệu, size không đổi khi chuyển variant, token nền/viền/bóng kế thừa. CI Chromium; native glass/keyboard và thị giác người dùng vẫn PENDING. Chỉ đánh dấu đạt trong phạm vi đã đo.
+
+## 61. AVATAR — v13.42, bài toán 9
+- AVATAR-API-01: Avatar.create/bind/update; size small/directory/header/large, shape round/rounded/square; Layout giữ frame, Typography chữ caption, token chung avatar. Header mobile có biến thể riêng theo --app-avatar, danh bạ dùng --avatar-size chung, không thay token mặc định. Không ép mọi kích thước giống nhau.
+- AVATAR-API-02: Ảnh có object-fit:cover, fallback khi thiếu/lỗi/loading; giữ nguyên frame, bỏ qua callback ảnh đã thay thế. Avatar trang trí bên cạnh tên, alt ảnh rỗng. Avatar state không phải trạng thái online.
+- AVATAR-API-03: Tất cả contact từ Contact.create, header từ Avatar.create/update, geometry lab từ Avatar.create; không ghi textContent trực tiếp lên root Avatar. ?avatarlab=1 trong Công việc có 7 mẫu, chỉ dùng dữ liệu minh họa.
+- AVATAR-API-04: Đọc trực tiếp Radix Avatar và MUI Avatar source; xem references/AVATAR-API-SOURCES.md. Không import dependency. Native/visual PENDING; chỉ bỏ nhãn tạm cho API Avatar đã có hợp đồng và kiểm tra.
+- LIST-PROOF-01: Test danh sách phải kiểm tra mọi item theo id, không chỉ first/nth(0). Kiểm tra role/font/weight, size, gap, token propagation và phục hồi trên từng item, bao gồm các biến thể dữ liệu mẫu.
+- LIST-PROOF-02: Kiểm tra đổi filter và chuyển từng hội thoại, so sánh dữ liệu riêng (không yêu cầu chữ giống nhau) và hợp đồng chung. Khi cần, chọn tất cả lại để kiểm tra đủ item. Kiểm tra F5 và không đổi dữ liệu thật.
+- LIST-PROOF-03: Báo kết quả theo từng id; phân biệt sample data và thuộc tính thiết kế. Chưa có bằng chứng với danh sách động dài/virtualization hay native thì ghi PENDING.

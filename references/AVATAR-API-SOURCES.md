@@ -1,0 +1,4 @@
+# AVATAR API — bài toán 9
+- [Radix Avatar](https://github.com/radix-ui/primitives/blob/main/packages/react/avatar/src/avatar.tsx), blob dda0e63e798aa9778d3bb764381c7669b28b6781. Đọc source Root/Image/Fallback, trạng thái loading/loaded/error, cleanup. Học giữ fallback khi ảnh chưa tải.
+- [MUI Avatar](https://github.com/mui/material-ui/blob/master/packages/mui-material/src/Avatar/Avatar.js), blob 61617badd36252be31d60856e87055b7c7334abb. Đọc source variant circular/rounded/square, frame vuông, object-fit cover, fallback children/alt. Học profile và ảnh không méo, không copy React code.
+- 0v dùng native DOM, giữ token size hiện hành, header có biến thể mobile, chữ Typography. Mẫu ảnh SVG nội bộ, không kết nối dữ liệu thật. Chưa triển khai online status, remote image privacy policy ngoài demo, native/visual approval.
