@@ -92,3 +92,6 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.
 - COL-02: Avatar #ededed / #404040; hành động chính #171717; input border #dedede; header #fafafa. Thành phần dùng token semantic, không tự đặt mã màu.
 - COL-03: Màu nghiệp vụ lỗi #b42318 giữ riêng; không đổi màu ảnh/bill gốc; trạng thái phải có chữ hoặc icon, không chỉ dựa vào màu.
 - COL-04: Bảng màu lấy cảm hứng từ ảnh so sánh ChatGPT, không khẳng định mã chính thức; kiểm tra tương phản và thiết bị trước nghiệm thu. Không đổi hình học hoặc bàn phím khi chỉnh màu.
+
+- COL-05: Hover chỉ cho thiết bị có hover và pointer fine; pressed dùng token riêng; nút chính hover #303030, pressed #404040; disabled không nhận hover/pressed. Không thêm animation hoặc đổi hình học.
+- COL-06: Focus ring #737373; giữ cơ chế focus hiện tại; kiểm tra trạng thái chọn, nhấn, khóa và tương phản trên thiết bị. v12.1 bỏ opacity disabled cũ bị ghi đè.
