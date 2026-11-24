@@ -319,7 +319,7 @@ textarea.input-child[data-input-parent=standalone]{height:var(--input-multiline-
 [data-ui-slot~="bill-pair"],[data-ui-slot~="bill-reconcile"],[data-ui-slot~="work-card"]{contain:layout paint}
 /* Visible viewport is the sole mobile shell geometry. Composer stays in its parent:
    normal grid bottom track or floating absolute bottom:0. No keyboard offset on children. */
-[data-ui-slot~="shared-table"] :is(th,td)[data-align]{width:auto!important;padding:6px 3px;font-size:var(--type-caption);line-height:var(--line-caption);overflow-wrap:anywhere;vertical-align:top}[data-ui-slot~="shared-table"] [data-align=left]{text-align:left!important}[data-ui-slot~="shared-table"] [data-align=center]{text-align:center!important}[data-ui-slot~="shared-table"] [data-align=right]{text-align:right!important;font-variant-numeric:tabular-nums}[data-ui-slot~="shared-table"] tfoot td{font-weight:var(--weight-semibold);border-top:1px solid var(--line)}
+[data-ui-slot~="shared-table"] :is(th,td)[data-align]{width:auto!important;padding:var(--table-cell-pad-y,6px) 3px;font-size:var(--type-caption);line-height:var(--line-caption);overflow-wrap:anywhere;vertical-align:top}[data-ui-slot~="shared-table"] [data-align=left]{text-align:left!important}[data-ui-slot~="shared-table"] [data-align=center]{text-align:center!important}[data-ui-slot~="shared-table"] [data-align=right]{text-align:right!important;font-variant-numeric:tabular-nums}[data-ui-slot~="shared-table"] tfoot td{font-weight:var(--weight-semibold);border-top:1px solid var(--line)}
 /* Button parent: shared tokens; region owns placement, child owns action. */
 button[data-button-parent]{box-sizing:border-box;touch-action:manipulation;font-family:inherit}
 button[data-button-kind=icon]{display:grid;place-items:center;width:var(--touch);min-width:var(--touch);min-height:var(--touch);padding:0;border-radius:var(--control-radius)}
@@ -662,8 +662,9 @@ button[data-button-text-role=caption]{font-family:var(--font-ui);font-size:var(-
 
 /* Systems lessons: scope new profile styles, do not touch protected main keyboard. */
 [data-media-part=video]{display:block;width:100%;max-height:40dvh;background:var(--soft);object-fit:contain}
-[data-table-density=compact] th,[data-table-density=compact] td{padding-block:var(--gap-xs)}
-[data-table-density=spacious] th,[data-table-density=spacious] td{padding-block:var(--gap-md)}
+[data-table-density=compact]{--table-cell-pad-y:var(--gap-xs)}
+[data-table-density=balanced]{--table-cell-pad-y:6px}
+[data-table-density=spacious]{--table-cell-pad-y:var(--gap-md)}
 [data-scroll-lab]{max-height:160px;overflow:auto;overflow-anchor:none;overscroll-behavior:contain}
 [data-responsive-profile=cards]{grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))}
 button[aria-pressed=true]{outline:2px solid currentColor;outline-offset:-2px}

@@ -1,2 +1,4 @@
 # CHANGE-CHECK — v13.45
 Read AGENTS/RULES/COMPONENT-API, Astryx selected source and other sources in ASTRYX-SOURCES. ASTRYX-STUDY/SYSTEMS-API/SOURCE-GATE/LIST-PROOF/KB-LOCK. 18 snapshots + MIT/manifest. Systems 10–17 initial APIs and lab; protected keyboard unchanged; static audit 26/26; disk hash + Chromium pending. No runtime dependencies, no production data. Video local only, codec/EXIF/native, full Main migration, auto-release v13.41, Google Sheet pending. Rollback revert PR. Blob f8a867815d9479eaae434af58d805855fea89ae2.
+
+CI 45442237999 failed at table density cascade; prior six widths, Surface, Avatar, Media/gesture passed. Fix --table-cell-pad-y inherited token in existing shared-table selector; expected [4,6,12] measured. Added 11 Adobe pinned source/license files and integrity gate, source notes. Static audit passed; disk/Chromium rerun pending. No version bump within unpublished PR; new blob e0a0f6936933af16654ae31c0631d7907c711980.

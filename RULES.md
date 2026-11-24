@@ -6,7 +6,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, SYSTEMS-API-01–08 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -491,3 +491,8 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - SYSTEMS-API-06: State.toggle sở hữu pressed của nút, aria-pressed; busy độc lập aria-busy, không giả định disabled. Chưa chuyển toàn bộ state nghiệp vụ.
 - SYSTEMS-API-07: Theme.apply light/dark/system trên vùng mẫu, không đổi palette Main; theme token migration PENDING.
 - SYSTEMS-API-08: ?systemslab=1 trong Công việc, test 8 bài độc lập và các dòng mẫu. Các API mới có hợp đồng cơ bản, không đánh dấu hết PROVISIONAL hoặc native/production đạt. Nguồn và giới hạn trong ASTRYX-SOURCES.md.
+
+## 66. ADOBE-STUDY — v13.45
+- ADOBE-STUDY-01: Ghim Adobe React Spectrum commit 7743784aa065cd42bf0d144ddc5dd5e03e0e651f; 11 file tham khảo gồm LICENSE Apache-2.0, NOTICE và 9 source tại references/upstream/adobe-react-spectrum. Không import React hoặc chạy nguồn lưu trữ. CI kiểm hash từng file.
+- ADOBE-STUDY-02: Đọc React Aria cho hành vi, React Stately cho trạng thái, Internationalized cho parse theo locale trước bài liên quan. NumberField tách text đang nhập và giá trị đã commit; SelectionManager chọn theo key; SearchField clear/submit riêng; Virtualizer tách layout và visible views. Không coi snapshot là API đã tích hợp.
+- ADOBE-STUDY-03: Table density do một token --table-cell-pad-y tại cha, cell dùng token trong selector shared-table hiện hữu; balanced giữ 6px, compact 4px, spacious 12px. Không tạo selector cạnh tranh. Kiểm tra cả 3 profile và mọi dòng. KB-LOCK giữ nguyên; nguồn preventScroll chỉ đối chiếu, không thay keyboard.

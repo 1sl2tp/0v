@@ -218,4 +218,10 @@ const prefix='references/upstream/astryx/';
 const sourceCheck=manifest.repository==='https://github.com/meta/astryx'&&/^[a-f0-9]{40}$/.test(manifest.commit)&&manifest.license==='MIT'&&manifest.files.length===18&&new Set(manifest.files.map(f=>f.local)).size===18&&manifest.files.some(f=>f.source==='LICENSE')&&manifest.files.every(f=>{if(typeof f.source!=='string'||f.source.split('/').some(s=>s==='..'||!s)||f.local!==prefix+f.source+(f.source==='LICENSE'?'':'.txt'))return false;const b=fs.readFileSync(path.join(__dirname,f.local));return crypto.createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex')===f.sha&&(f.source!=='LICENSE'||b.toString().includes('MIT License'))});
 result.checks.astryxSourceIntegrity=sourceCheck;result.pass=result.pass&&sourceCheck;result.astryx={commit:manifest.commit,files:manifest.files.length,integrity:sourceCheck};
 
+
+const adobe=JSON.parse(fs.readFileSync(path.join(__dirname,'references/upstream/adobe-react-spectrum/manifest.json'),'utf8'));
+const adobePrefix='references/upstream/adobe-react-spectrum/';
+const adobeOK=adobe.repository==='https://github.com/adobe/react-spectrum'&&/^[a-f0-9]{40}$/.test(adobe.commit)&&adobe.license==='Apache-2.0'&&adobe.files.length===11&&new Set(adobe.files.map(f=>f.local)).size===11&&['LICENSE','NOTICE.txt'].every(s=>adobe.files.some(f=>f.source===s))&&adobe.files.every(f=>{if(typeof f.source!=='string'||f.source.split('/').some(s=>s==='..'||!s)||f.local!==adobePrefix+f.source+(/\.(ts|tsx)$/.test(f.source)?'.txt':''))return false;const b=fs.readFileSync(path.join(__dirname,f.local));return crypto.createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex')===f.sha});
+result.checks.adobeSourceIntegrity=adobeOK;result.pass=result.pass&&adobeOK;result.adobe={commit:adobe.commit,files:adobe.files.length,integrity:adobeOK};
+
 console.log(JSON.stringify(result,null,2));process.exitCode=result.pass?0:1;
