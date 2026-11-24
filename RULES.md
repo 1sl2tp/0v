@@ -1,14 +1,14 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. Mốc bàn phím: v11.1, commit 8866ef41ffd8e7eb4a97858efd4d23bcaa6bb52e; người dùng phản hồi nhanh, mượt trên Safari. Chưa có phép đo độc lập.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.25)
+## 00. Chỉ mục rule đang có hiệu lực (v13.26)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
 | Typography | TYPE-01–03 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
-| Keyboard / viewport | VIEW-01–06, VP-SAMPLE-01–04, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; không dùng lại |
+| Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
 | Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung) | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
@@ -299,3 +299,13 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - RELEASE-03: release-check.html kiểm tra HTTP và title version từ root/index/snapshot, xác minh Git blob SHA nếu Web Crypto hỗ trợ, kiểm tra manifest và probe. Gửi cache:no-store và query mới; không đảm bảo vượt qua tất cả CDN/cache. Phân biệt HTTP lỗi, HTML lỗi, bản cũ, version đúng nhưng nội dung khác. Không tự refresh vô hạn hoặc tự sửa code vì lỗi mạng.
 - RELEASE-04: E3 chỉ đạt khi URL công khai phục vụ đúng bản đã kiểm tra. GitHub Status xanh và commit tồn tại không đồng nghĩa Pages đạt. Trường hợp công cụ không truy cập được URL, E3=PENDING; nghiệm thu bàn phím E4 cũng PENDING. Kiểm tra trang release-check nếu truy cập được hoặc lịch sử Actions/Settings Pages; không yêu cầu deploy thủ công. Không sửa production.
 - Vòng này: 5 trường hợp phân loại mô phỏng, script trang kiểm tra parse; chưa xác minh HTTP thực từ thiết bị hoặc chạy browser. GitHub connector thấy nhánh main, không trả trạng thái Pages; hai tên workflow phổ biến kiểm tra không tồn tại, không suy ra toàn bộ workflow không có. Không tăng version app vì không thay đổi app.
+
+## 41. KB-CORE — v13.26, tối giản đường xử lý bàn phím
+- KB-CORE-01: Không khôi phục giao diện cũ, không ghép lại cơ chế inset cũ. Giữ một khung cha và một vị trí đáy. Bản cũ chỉ là lịch sử, không phải phụ thuộc runtime.
+- KB-CORE-02: Chạm input yêu cầu focus; chạm ngoài hợp lệ yêu cầu blur; thao tác cuộn, chọn chữ, nút trong composer không bị coi là chạm ngoài. Không dựng lại textarea. Hệ điều hành sở hữu bàn phím.
+- KB-CORE-03: applyViewport là đường cập nhật root duy nhất: đọc rect thực, ghi đúng các tọa độ thay đổi ngay khi resize/scroll tới. Không đọc layout, phân loại keyboard, đo chữ, điều khiển cuộn hoặc đợi timer trong đường này.
+- KB-CORE-04: reconcileViewport chạy gộp qua rAF để xử lý metadata keyboard, safe area, giới hạn chiều cao input và ý định cuộn. Không ghi tọa độ root hoặc dịch composer. Dữ liệu chữ và Surface Parent giữ nguyên.
+- KB-CORE-05: Bỏ vòng watchViewport 800ms của VP-SAMPLE-02; không animation, nội suy hoặc dự đoán. Nếu trình duyệt không cung cấp tọa độ trung gian, không thể khẳng định đường xử lý này tạo chuyển động mượt. Đo raw/frame/input bằng keyboardtest=1 khi cần.
+- KB-CORE-06: Kiểm tra tự động: một writer, ghi ngay khi rect đổi, không ghi lại rect giống nhau, coalesce secondary rAF, không đọc layout trong fast path. Không coi test tĩnh/JS mô phỏng là nghiệm thu bàn phím iPhone.
+- KB-CORE-07: Kiểm thử cùng thiết bị: chạm mở, chạm ngoài đóng, lặp ít nhất 10 lần, 1 dòng/nhiều dòng, không mất nội dung/caret, không kéo tin cũ, không nhảy. Nếu còn rơi, phân biệt raw viewport nhảy với app theo chậm. Không tự đổi kiến trúc hoặc tuyên bố hết lỗi khi chưa có bằng chứng.
+- Kết quả vòng này: 6/6 classic scripts parse; 8/8 ca mô phỏng fast path, rect giống nhau không ghi, secondary chỉ xếp 1 callback khi chưa thực thi. Chưa có kết quả Pages hoặc iOS thực. Không sửa production.
