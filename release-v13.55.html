@@ -1131,9 +1131,11 @@ const ScheduleAPI=(()=>{
 /* RuntimeContextAPI — read-only context, no location inference or notification delivery. */
 const RuntimeContextAPI=(()=>{
  const allowed=['contacts','chat','crm'];
+ // IANA tzdb backward: Link Asia/Ho_Chi_Minh Asia/Saigon. Preserve the raw reported ID.
+ const normalizeDeviceZone=zone=>zone==='Asia/Saigon'?TimeAPI.zone:zone;
  function derive({screen,selectedConversationId=null,moduleId=null,visibleRegions=[],visibility='hidden',focused=false,online=false,displayMode='browser',deviceZone=null}={}){
   const route=allowed.includes(screen)?screen:'unknown',regions=Object.freeze(allowed.filter(x=>visibleRegions.includes(x))),foreground=visibility==='visible';
-  return Object.freeze({route,selectedConversationId,openConversationId:foreground&&regions.includes('chat')?selectedConversationId:null,openModuleId:foreground&&regions.includes('crm')?moduleId:null,visibleRegions:foreground?regions:Object.freeze([]),visibility:foreground?'visible':'hidden',focused:foreground&&!!focused,online:!!online,displayMode,deviceZone,businessZone:TimeAPI.zone,physicalLocation:null,screenLock:'unknown',deliveryState:!foreground?'background':focused?'foreground-focused':'foreground-unfocused'});
+  return Object.freeze({route,selectedConversationId,openConversationId:foreground&&regions.includes('chat')?selectedConversationId:null,openModuleId:foreground&&regions.includes('crm')?moduleId:null,visibleRegions:foreground?regions:Object.freeze([]),visibility:foreground?'visible':'hidden',focused:foreground&&!!focused,online:!!online,displayMode,deviceZone:normalizeDeviceZone(deviceZone),deviceZoneRaw:deviceZone,businessZone:TimeAPI.zone,physicalLocation:null,screenLock:'unknown',deliveryState:!foreground?'background':focused?'foreground-focused':'foreground-unfocused'});
  }
  function read({app,selectedConversationId,moduleId}){
   const regions=[['contacts','directory'],['chat','conversation'],['crm','crm']].filter(([,slot])=>{const el=app.querySelector('[data-ui-slot~="'+slot+'"]');if(!el)return false;const r=el.getBoundingClientRect(),css=getComputedStyle(el);return r.width>0&&r.height>0&&css.display!=='none'&&css.visibility==='visible'}).map(([id])=>id);
@@ -1657,6 +1659,7 @@ function renderContextLab(panel){
   show('state','Trạng thái trang',c.deliveryState+' · '+(c.online?'Có mạng':'Mất mạng'));
   show('mode','Kiểu mở',c.displayMode==='standalone'?'PWA standalone':c.displayMode);
   show('device','Múi giờ thiết bị',c.deviceZone||'Không xác định');
+  show('deviceRaw','Tên múi giờ gốc',c.deviceZoneRaw||'Không xác định');
   show('business','Múi giờ nghiệp vụ',c.businessZone);
   show('source','Nguồn đồng hồ','Đồng hồ thiết bị · chưa xác minh giờ máy chủ');
   show('location','Vị trí địa lý / khóa màn hình','Không xác định · không yêu cầu GPS');
