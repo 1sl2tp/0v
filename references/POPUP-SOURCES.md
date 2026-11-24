@@ -1,0 +1,8 @@
+# POPUP — nguồn học tập v13.31 (2026-11-24)
+| Mã | File upstream đã đọc | Blob SHA | Nguyên lý và giới hạn |
+|---|---|---|---|
+| POP-S01 | [Radix UI dialog.tsx](https://github.com/radix-ui/primitives/blob/main/packages/react/dialog/src/dialog.tsx) | bd8ac8ddf5465e1cb32e0c4bde6930d3c151b745 | Tách trạng thái open, trigger, content, title/description; quản lý focus theo vòng đời. Không bê React FocusScope vào dialog native. |
+| POP-S02 | [Shoelace dialog.component.ts](https://github.com/shoelace-style/shoelace/blob/next/src/components/dialog/dialog.component.ts) | 724b9c0b4fb9a60c1b91076fc64875ebfd9f5bdd | show/hide, requestClose, dọn listener, lưu ý autofocus Safari và preventScroll. Không bê animation/timer/focus restore vào 0v. |
+| POP-S03 | [W3C APG modal dialog pattern](https://github.com/w3c/aria-practices/blob/main/content/patterns/dialog-modal/dialog-modal-pattern.html) | 09d8181eec7c76e11003fdd4530a375964ca30d4 | Tên truy cập, focus trong modal, Escape, khôi phục focus theo ngữ cảnh. APG cho phép nhiều lớp, 0v chủ ý chỉ một modal. |
+Các blob là nội dung file đã đọc, không phải commit. Học nguyên lý; không sao chép implementation hoặc cài dependency. Không tuyên bố upstream chứng minh UX trên 0v.
+So sánh: v13.30 màn hình tự tạo dialog, tự gắn close listener, controller dùng close event giả khi busy. v13.31 tập trung factory, đóng native, cleanup một lần, từ chối modal thứ hai, không sửa root. Bốn cấp là profile ngữ nghĩa; menu là modal danh sách thao tác, chưa phải anchored popover; media chưa fullscreen. Native restore có thể mở keyboard trên Safari, phải thử thực tế. Glass Lab giữ ngoài phạm vi runtime. 
