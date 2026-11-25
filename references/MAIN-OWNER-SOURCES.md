@@ -102,3 +102,6 @@ CHAT bill-app-preview.mjs verifiedMccMemo, verifiedMbvcbMemo, verifiedTwelveChar
 
 ## v13.95
 CHAT bill-app-preview.mjs sender-bound QR logic and observed private aggregate MCC shape variants; independently known recipient required for generic sender proof, not copied account/name constants. No private record payload committed.
+
+## v13.96
+CHAT bill-app-preview.mjs verifiedMbvcbTransferSuffixOcr and contiguousMemoContains studied. Private aggregate residual shapes informed diagnostic-only gap, short equality and cross-day clock conflict. No raw values copied.

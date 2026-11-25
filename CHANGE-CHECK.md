@@ -174,3 +174,6 @@ v13.93 CI passed and merged. Added diagnostic bank memo envelope parser and comp
 
 ## v13.95
 v13.94 CI passed and merged. MCC variant grammar, sender-bound generic memo and compact literal evidence. Diagnostic only; unchanged production and fixture eligibility. Direct regression run.
+
+## v13.96
+v13.95 CI passed and merged. Add literal residual diagnostics and signed MCC clock delta/day evidence. No new matching eligibility or production changes. Direct regression executed.

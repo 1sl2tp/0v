@@ -215,3 +215,6 @@ BankMemoEnvelopeAPI.inspect(raw,{account,transactionAt}) separates technical met
 
 ## v13.95
 BankMemoEnvelopeAPI supports observed MCC prefix and short sourceIdentifier; compare adds senderMemoProof and compactLiteralProof as diagnostic flags, independent of existing eligibility. No authorization.
+
+## v13.96
+BankMemoEnvelopeAPI.diagnoseLiteral(a,b) yields diagnostic type, shared prefix/suffix and gap lengths, digit conflict, reviewOnly=true. compare exposes literalDiagnostic. MCC metadata adds signed clockDeltaSeconds and clockSameDay. No eligibility change.

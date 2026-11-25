@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.95)
+## 00. Chỉ mục rule đang có hiệu lực (v13.96)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -866,3 +866,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-MCC-SENDER-03: Generic bill memo may expose separate senderMemoProof only if independently read full sender (>=3 words, >=12 characters), distinct known recipient, exact bank principal sender + same generic phrase, QR/plain format and no conflicts. Missing name or generic phrase alone fails.
 - BANK-MCC-SENDER-04: Compact literal equality >=8 characters exposes diagnostic evidence only, never changes existing eligibility. Preserve original text/digits. All outputs canPost=false. No real financial decision, OCR rewrite, or historic bill change.
 - BANK-MCC-SENDER-05: Test observed MCC variants, wrong prefix/clock, sender exact/mismatch/self/unknown recipient, compact equality and digit conflict. Private aggregate format analysis and CHAT bill-app-preview sender rule; no customer values committed. Preserve keyboard v13.27.
+
+## 119. BANK-RESIDUAL — v13.96
+- BANK-RESIDUAL-01: Preserve literal memo on both sides. Diagnostic compact comparison reports missing, short equality, digit conflict, single contiguous gap, one-letter difference, containment or different. No inferred correction; digit conflict takes priority when both sides exist.
+- BANK-RESIDUAL-02: Gap/letter difference and short equality are review hints only, never equivalent to full memo, sender or reference proof. No automatic eligibility or posting change. Do not treat repeated candidate pairs as unique receipts.
+- BANK-RESIDUAL-03: MCC exposes signed delta seconds and same Vietnam calendar day flag; retain clock conflict when absolute delta >60 seconds. Do not infer offset or alternate day, or replace printed bank timestamp. Conflicting wrapper remains original.
+- BANK-RESIDUAL-04: Diagnostics expose reason and counts, no private raw payload in source. No historical or production record changes; no automatic financial action.
+- BANK-RESIDUAL-05: Tests cover contiguous missing span, one letter, digit difference, short equality, containment, missing and cross-day MCC conflict. CHAT verifiedMbvcbTransferSuffixOcr guard reviewed; no broad fuzzy matching. Preserve keyboard v13.27.
