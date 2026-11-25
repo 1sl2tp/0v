@@ -31,3 +31,8 @@ Decision: reuse existing evidence owner, expose read-only order projection, do n
 - https://github.com/unicode-org/cldr/blob/main/docs/site/translation/date-time/date-time-patterns.md — locale date fields.
 - https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Webhook_Security_Cheat_Sheet.md — verify and persist processed event IDs for duplicate handling.
 Decision: explicit calendar dates, conservative fixture-only candidate matching; no date inference or durable posting claim.
+
+## v13.79 phase 3e
+- https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing — replay, immutable event history and idempotent consumers.
+- https://github.com/matrix-org/matrix-js-sdk/blob/develop/src/client.ts — sync reconnect states and retry.
+Decision: bounded local event dispatcher, deterministic recompute, no production event store or transport.
