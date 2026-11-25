@@ -75,3 +75,6 @@ Decision: deterministic text-to-field contract ahead of OCR engine; preserve pro
 - https://github.com/naptha/tesseract.js/blob/v6.0.1/src/worker-script/index.js — language download/cache behavior.
 - https://github.com/naptha/tesseract.js/blob/v6.0.1/package.json — exact version/core compatibility.
 Decision: opt-in demo CDN only; no real customer image until self-hosted verified assets. No copied upstream code, no dependency committed.
+
+## v13.87
+Internal CHAT reference: docs/bank-bill-ocr-casebook.md (BANK-286/317), bill-amount-rules.mjs (BANK-357/358) and test_bank269_bill_literal_date_clock_20261110.mjs. Reused field semantics and conservative literal date/clock rules only; no private source examples or data copied. Tesseract.js integration unchanged.

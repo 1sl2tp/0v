@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.86)
+## 00. Chỉ mục rule đang có hiệu lực (v13.87)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -803,3 +803,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 
 ## 109. BANK-CORPUS — v13.86 regression supplement
 - BANK-CORPUS-01: Existing private CHAT receipt reason categories inform synthetic regression cases: missing printed time, recipient account conflict, multiple transactions, direction ambiguity, invalid date, misleading balance/fee and non-bill. No customer information or images enter public repo. Stored OCR/ledger labels are reference candidates, not independent image ground truth. Preserve raw VND vs ledger thousand-unit distinction. No production replay or write.
+
+## 110. BANK-TEN — v13.87
+- BANK-TEN-01: Ten independent fields align with CHAT BANK-317: sender bank, recipient bank/name/account, amount, printed date/time, memo, reference and trace. No inference or copying reference to trace. Missing values remain null.
+- BANK-TEN-02: Printed date/time variants include YYYY/MM/DD, literal Vietnamese date without ngày, h and giờ clock, minute/second precision. Existing ParseAPI validates date; no assumed current year or send clock.
+- BANK-TEN-03: fromStored accepts explicit ten-field structured objects for local review; never uses normalized database timestamps instead of printed date/time; rejects multiline field injection and unsafe amounts. Does not fetch storage or post.
+- BANK-TEN-04: Keep existing OCR review gates and line evidence. The two lab views display all ten fields. No private bill data, names, accounts or images committed. Existing private CHAT rule casebook is a reference, not a data export.
+- BANK-TEN-05: Regression covers independent bank/trace fields, missing clock, conflicting clock, alternate printed format and absent trace. No claim of OCR image accuracy or production acceptance. Preserve keyboard v13.27.
