@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.125)
+## 00. Chỉ mục rule đang có hiệu lực (v13.126)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1090,3 +1090,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-RECOGNITION-03: Require transaction context and account evidence to flag candidate. Exclude amount, memo, reference, sender account and ignored labels from unlabelled number matching. Wrong full account or conflicting explicit recipient evidence blocks candidate; unknown or unlabelled account requires review. Never infer hidden digits or correct ambiguous glyphs.
 - BILL-RECOGNITION-04: BillRecognitionAPI.classify returns text-only candidate state, evidence length/type, role and review flag. Existing field parser, Bank matching (including existing suffix policy), receipt keys and ledger posting rules unchanged. canPost=false, canVerifyPayment=false. No new production recognition or real image validation.
 - BILL-RECOGNITION-05: Fifteen direct cases, seven classic scripts, static and browser regression for full/partial/wrong account and numeric false positives. Both CI workflows before merge. No customer images/identifiers copied, no production or keyboard changes.
+
+## 151. BILL-FIXED-RECIPIENT — v13.126
+- BILL-FIXED-RECIPIENT-01: Receiver account and holder name are fixed configuration, not inferred from OCR. Inject them from trusted configuration. Lab uses synthetic account/name only. Never publish real identifiers.
+- BILL-FIXED-RECIPIENT-02: Compare only explicit recipient-name evidence, not sender, memo, arbitrary words or transaction code. Normalize NFC/NFD combining marks, Vietnamese đ, case and presentation whitespace; no fuzzy matching or automatic character substitution. Preserve raw OCR.
+- BILL-FIXED-RECIPIENT-03: Exact normalized name supports recognition; missing name does not reject an account-based candidate. Conflicting explicit name returns recipient-conflict; invalid name requires review. Name alone never substitutes for account evidence. Account conflict takes priority. A name match never verifies funds, never bypasses missing clock review, and never posts.
+- BILL-FIXED-RECIPIENT-04: Retain existing full 13-digit and visible 4/5/6 suffix rules. No changes to ledger, bank reconciliation, production data, keyboard or old bills. References: https://lodash.com/docs/#deburr (diacritics), https://github.com/naptha/tesseract.js/blob/master/docs/api.md (raw OCR evidence). Vietnamese normalization uses native Unicode, not a new dependency.
+- BILL-FIXED-RECIPIENT-05: Static and browser regression for fixed name, accented/case variants, missing/invalid/conflicting names, sender/memo exclusion, name-only and account conflict. Synthetic only; CI and real-image acceptance separate.

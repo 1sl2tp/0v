@@ -270,3 +270,6 @@ E0: PR #90 merged, API 45555440259 and PostgreSQL 45555439969 passed. E1: user s
 
 ## v13.125
 E0: PR #91 merged; API 45559306275 and PostgreSQL 45559306282 passed. E1: user-defined 13-digit or visible matching 4/5/6-digit account suffix; separate recognition from image processing and verification. E2: 15 direct assertions passed, seven scripts compiled, static/browser regression added; CI pending. E3–E5 not certified. Synthetic account only, no real OCR corpus or production deployment, no ledger or keyboard changes.
+
+## v13.126
+E0: PR #92 merged; latest API 45559960224 and PostgreSQL 45559960003 successful. E1: fixed receiver account and name, explicit role only. E2: static/browser tests added; CI pending. No real identifiers, images or production writes; E3–E5 not certified.
