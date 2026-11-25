@@ -434,3 +434,7 @@ E0: MainData receives and renders fixture messages but did not invoke Notificati
 
 ## P01 v13.164 — Typography usage
 Chat role 17/26 plain/formatted; CardController.row both detail 14/20; TableController shared table header/data/footer detail 14/20. Typography owns size/line; Card/Table composition/alignment. Input untouched. TYPE-HARMONY-01–04, CI/native pending.
+
+
+## v13.165 — Button type
+Button.create textRole detail(default 14/20), body(16/22), caption(13/18). ButtonController registration owns bill medium profile, icon/composite excluded. Geometry independent. BUTTON-TYPE-01–03; CI/native pending.

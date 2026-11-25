@@ -122,3 +122,7 @@ CI PR #133 [45684897457](https://github.com/1sl2tp/0v/actions/runs/45684897457) 
 
 ## P01.4 PR #133 E2 and typography candidate
 [PR CI](https://github.com/1sl2tp/0v/actions/runs/45685194614), [push CI](https://github.com/1sl2tp/0v/actions/runs/45685183442), [DB](https://github.com/1sl2tp/0v/actions/runs/45685194699) success, merged ca997da7da8cfc38c1ee5d045b0d0552c2a04bda. 24 pending groups: 390px directory 5 rendered/1073 hidden, chat 8/21, order 25/1062 (14 Table), Bill 38/1269 (28 Card). Rendered not viewport visible. v13.164 changes role assignments/token per TYPE-HARMONY, not pending labels. P01 DOING, CI/native pending.
+
+
+## P01.4 v13.164 E2/E3, v13.165 candidate
+PR #134 merged, [API CI](https://github.com/1sl2tp/0v/actions/runs/45685766944), [DB CI](https://github.com/1sl2tp/0v/actions/runs/45685766913), [Pages](https://github.com/1sl2tp/0v/actions/runs/45686150128) passed. Next candidate normalizes Button text sizes by semantic role; not removing pending status. P01 remains DOING, native pending.

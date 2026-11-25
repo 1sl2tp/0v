@@ -142,11 +142,12 @@ function auditDesign(html,rules,baseline){
  const document={createElement:fake,createElementNS:(_ns,tag)=>fake(tag)};
  let clicks=0;const a=Button.create({kind:'text',text:'OK',onClick:()=>clicks++}),b=Button.create({kind:'outline',disabled:true}),c=Button.create({kind:'icon',icon:'copy',label:'Sao chép'}),d=Button.create({kind:'primary',type:'submit',text:'Gửi'});
  a.events.click[0]();Button.bind(a);const first=c.children[0];Icon.replace(c,'copied');
+ const big=Button.create({text:'Large',textRole:'body'});let badRole=false;try{Button.create({textRole:'unknown'})}catch{badRole=true}
  let badKind=false,badIcon=false,badLabel=false;try{Button.create({kind:'unknown'})}catch{badKind=true}try{Icon.create('unknown')}catch{badIcon=true}try{Button.create({icon:'copy'})}catch{badLabel=true}
- return [['text/default',a.type==='button'&&a.dataset.buttonKind==='text'],['outline/disabled',b.disabled&&b.dataset.buttonKind==='outline'],['icon/name',c.attrs['aria-label']==='Sao chép'&&c.dataset.buttonKind==='icon'],['primary/submit',d.type==='submit'&&d.dataset.buttonShape==='round'],['callback once',clicks===1&&a.events.click.length===1],['glyph replaced',first!==c.children[0]&&c.children[0].attrs['data-api-icon']==='copied'&&c.children.length===1],['decorative',c.children[0].attrs['aria-hidden']==='true'],['invalid kind',badKind],['invalid glyph',badIcon],['missing label',badLabel]].map(([name,pass])=>({name,pass}));
+ return [['text/default',a.type==='button'&&a.dataset.buttonKind==='text'],['outline/disabled',b.disabled&&b.dataset.buttonKind==='outline'],['icon/name',c.attrs['aria-label']==='Sao chép'&&c.dataset.buttonKind==='icon'],['primary/submit',d.type==='submit'&&d.dataset.buttonShape==='round'],['callback once',clicks===1&&a.events.click.length===1],['glyph replaced',first!==c.children[0]&&c.children[0].attrs['data-api-icon']==='copied'&&c.children.length===1],['decorative',c.children[0].attrs['aria-hidden']==='true'],['invalid kind',badKind],['invalid glyph',badIcon],['missing label',badLabel],['default detail',a.dataset.buttonTextRole==='detail'],['explicit body',big.dataset.buttonTextRole==='body'],['invalid text role',badRole],['icon excludes label role',!c.dataset.buttonTextRole]].map(([name,pass])=>({name,pass}));
  `)();buttonApiCases=run;
  }catch(e){buttonApiError=e.message}
- const buttonApiContract=!buttonApiError&&buttonApiCases.length===10&&buttonApiCases.every(c=>c.pass)&&html.includes("if(tag==='button')return Button.create(")&&html.includes("Icon.replace(b,'copied')");
+ const buttonApiContract=!buttonApiError&&buttonApiCases.length===14&&buttonApiCases.every(c=>c.pass)&&html.includes("if(tag==='button')return Button.create(")&&html.includes("Icon.replace(b,'copied')");
  let popupApiCases=[],popupApiError=null;
  try{
   const src=html.slice(html.indexOf("const PopupController="),html.indexOf("const IconController="));
