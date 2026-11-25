@@ -285,3 +285,6 @@ E1: adjacent unclassified fixed name/account pair as review evidence; role bound
 
 ## v13.130
 E0: v13.128 merged; v13.129 retargeted and synced main for CI. E1: unlabelled token suggestions, ambiguity and role guards. E2: static/browser regression added; CI pending. No private media, ledger or production changes. E3–E5 not certified.
+
+## v13.131
+E1: user example 99999 9; count all six visible digits, block premature suffix recognition on numeric line wrap. E2: static/browser regression added; CI pending. No production or ledger changes. E3–E5 not certified.
