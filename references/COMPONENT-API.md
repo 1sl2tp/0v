@@ -331,3 +331,6 @@ See [BILL-OCR-PIXEL-STRESS.md](BILL-OCR-PIXEL-STRESS.md). BillOCREngineAPI.combi
 
 ## v13.136 — blur rescue
 BillOCREngineAPI.sharpenPixels/rescueImage/rescueNeeded/attachRescue add bounded optional extra typed read without changing state or proposal. Exact value region only. Native benchmark and browser kernel are distinct; browser actual OCR accuracy pending. See [BILL-OCR-BLUR-RESCUE.md](BILL-OCR-BLUR-RESCUE.md).
+
+## v13.137 — quality triage
+BillOCREngineAPI.qualityPixels and qualityAdvice add uncalibrated pixel hints and review routing. No change to baseline OCR attempts or rescue gate. Only known value scope with unreadable critical data produces a request draft; never send/post. Corpus calibration, real device and production integration pending.
