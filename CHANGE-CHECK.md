@@ -258,3 +258,6 @@ E0: PR #86 merged; API 45553701213 and PostgreSQL 45553701129 passed; main blob 
 
 ## v13.121
 E0: PR #87 merged; API 45554134294 and PostgreSQL 45554134526 passed; main index blob verified. E1: BANK-BACKLOG-UI, BANK-BACKLOG, KB-LOCK; reuse parent component owners and existing Bill module. E2: seven classic scripts and browser regression syntax compiled. Browser regression for 320/390/1280 added, execution pending CI; E3–E5 not certified. No real data, persistent storage, notifications, receipts, production or keyboard changes.
+
+## v13.122
+E0: PR #88 merged; API 45554539584 and PostgreSQL 45554539640 passed; main blob verified. E1: BANK-FIELD-COMPARE, BANK-BACKLOG-UI, KB-LOCK. Read-only literal source comparison, shared existing normalization, explicit notice selection. E2: 12 direct assertions passed, seven classic scripts compiled, static and browser regression added; browser execution pending CI. E3–E5 not certified. No real receipt, message, storage, production or keyboard changes.
