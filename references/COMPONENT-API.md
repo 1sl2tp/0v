@@ -349,3 +349,6 @@ Keyboard family hosts a local accessory in the Input composer. Anchored gap 8px;
 
 ## v13.142 — native picker handoff
 Keyboard > composer frame > Input > accessory/file anchor. Native picker is external to DOM; location not controllable by CSS. Handoff suppresses only predictive blur recovery while picker is outstanding. No extra viewport writer or forced focus. Sources: pinned Astryx TextInput/Stack; https://github.com/adobe/react-spectrum/issues/9858 ; https://github.com/adobe/react-spectrum/issues/9172 ; https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/cancel_event ; https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/file. Native acceptance required.
+
+## v13.143 — keyboard frame accessory
+Keyboard frame > accessory + composer siblings. Existing frame observer owns measured reserve. Focus synchronous; iOS opening transition settled read-only (120ms stable, 600ms fallback). No frozen viewport, no asynchronous refocus. Sources: pinned Astryx TextInput/Stack; https://github.com/adobe/react-spectrum/blob/main/packages/react-aria/src/utils/runAfterKeyboard.ts ; https://bugs.webkit.org/show_bug.cgi?id=195884. Native acceptance pending.

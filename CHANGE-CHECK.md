@@ -321,3 +321,6 @@ E0: v13.140 merged after API 45575196885 and DB 45575196880 passed. E1: app-owne
 
 ## v13.142
 E0: v13.141 merged; API 45575568865 and DB 45575568838 passed, user screenshot reports native chooser/fall regression. E1: file input moved into composer; anchored geometry and room handoff; cancel early-close before native activation; exact guard exception, normal close unchanged. E2: normalized four protected ranges compared; browser tests added; CI pending. Physical iPhone acceptance open; no production or bill changes.
+
+## v13.143
+E0: v13.142 merged, API/DB passed; user screenshots show ongoing native picker and fall. E1: in-flow accessory sibling, synchronous focus and bounded read-only opening settle, keep menu during native handoff. All four protected ranges unchanged. E2: updated browser geometry/focus/reserve/picker tests; CI pending. No native acceptance or production claims.

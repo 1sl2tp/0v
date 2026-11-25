@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.142)
+## 00. Chỉ mục rule đang có hiệu lực (v13.143)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1206,3 +1206,9 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - PICKER-HANDOFF-02: On explicit choice acquire room owner and cancel pending early-close BEFORE invoking picker. While owner exists, focusout must not schedule early-close. Raw viewport remains the only writer; no forced blur/refocus, offset or new timer. Normal keyboard close unchanged. KB-LOCK exception is exactly one focusout predicate, normalized explicitly in audit.
 - PICKER-HANDOFF-03: change/cancel clear session; release reload blocked while native picker open. If browser omits cancel, next explicit + recovers session. Do not infer that OS preserved keyboard; no automatic keyboard reopen. Selection decode remains local and room-owned.
 - PICKER-HANDOFF-04: Browser contract verifies actual anchor parent/rect, pending state, cancel and file selection, plus static protected-range check. Screenshot native regression remains open until physical iPhone Safari/PWA verification. Sources: Astryx TextInput b1b0e312df989a9a8e29991c0700073a546380e8, Stack c56d72759ad2f6f86102228e22c3123530b32894; Adobe React Aria overlay discussion #9858/#9172; MDN file/cancel. No production changes.
+
+## 168. KEYBOARD-FRAME-ACCESSORY — v13.143
+- KEYBOARD-FRAME-ACCESSORY-01: Supersedes accessory placement in KEYBOARD-ACCESSORY-01. Keyboard frame directly owns two siblings: in-flow accessory and composer. Menu participates in existing frame ResizeObserver/reserve; no additional reserve or viewport writer. Gap 8px, left aligned to composer, icons leading.
+- KEYBOARD-FRAME-ACCESSORY-02: Both + paths request draft focus synchronously during user click, preserving existing focus. iOS waits for observed keyboard geometry to stabilize 120ms with bounded 600ms fallback; no async focus or synthetic keyboard. Other browsers and already-open keyboard show immediately. Fallback cannot guarantee software keyboard on all devices.
+- KEYBOARD-FRAME-ACCESSORY-03: Keep accessory in flow during native picker handoff; close on change/cancel, no forced refocus or frozen viewport. Existing handoff guard and normal close algorithm unchanged; close/cancel pending on outside pointer, Escape, focus loss or navigation.
+- KEYBOARD-FRAME-ACCESSORY-04: Browser verifies parent, flow, real reserve increase/decrease, focus convergence, resize, picker and draft. Physical iPhone Safari/PWA regression remains open. Sources: pinned Astryx TextInput/Stack; Adobe runAfterKeyboard.ts (read source, bounded transition callback); WebKit bug 195884 (trusted focus). Local adapter not copied. No production or bill changes.
