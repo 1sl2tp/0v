@@ -9,3 +9,8 @@ Decision: migrate plain-text and contact presentation through existing parents f
 - https://redux.js.org/toolkit/api/createEntityAdapter — stable IDs and derived selectors.
 - https://matrix-org.github.io/matrix-js-sdk/classes/matrix.Room.html — room-scoped ordered timelines.
 Decision: keep existing Store APIs, use MainDataController as fixture adapter, retain legacy seed display and QA rollback; no runtime dependency or copied upstream code.
+
+## v13.75 phase 3a
+- https://github.com/dinerojs/dinero.js/blob/main/README.md — immutable money, bigint and explicit precision.
+- https://github.com/tc39/proposal-temporal/blob/main/docs/timezone.md — distinguish instant, local calendar/time and zone.
+Decision: retain exact Foundation APIs, use narrow fixture boundary adapter, no new dependency. Do not infer short date year or change reconciliation policy.
