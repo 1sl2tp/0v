@@ -378,3 +378,5 @@ Revert v13.147 custom attachment menu. One direct native input in + cell; no int
 
 ## v13.149 — Input three-action trial
 Local menu only: Thư viện ảnh / Chụp ảnh / Chọn tệp, relative to Input top by 8px. Native default file inputs, local menu hidden visually during handoff. File choice currently supports image attachments only; unsupported formats reported. Native source choices may still appear. Existing keyboard lifecycle signal may dismiss local menu, no geometry writer. Native trial not acceptance.
+
+Candidate repair 1: defer local menu hide until after native default action, with epoch guard; actual hit target and event trace recorded by browser test. No geometry or keyboard writer. Native chooser timeout root cause not yet confirmed.

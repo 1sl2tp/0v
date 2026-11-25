@@ -716,7 +716,7 @@ html[data-floating="1"] #app>[data-ui-slot~="conversation"]>.composer-frame>.com
 
 /* Input owns the local attachment menu. No viewport/keyboard geometry or extra reserve. */
 #app .composer[data-input-parent=chat]{position:relative;overflow:visible}
-#app .composer>[data-input-attachment-menu]{position:absolute;inset:auto auto calc(100% + var(--gap-sm)) -1px;z-index:8;width:min(248px,100%);display:grid;grid-template-columns:minmax(0,1fr);gap:0;padding:var(--gap-sm);border:1px solid var(--surface-edge);border-radius:var(--draft-expanded-radius);background:var(--paper);box-shadow:var(--surface-glass-elevation);pointer-events:auto;isolation:isolate;transition:none;animation:none}
+#app .composer>[data-input-attachment-menu]{position:absolute;inset:auto auto calc(100% + var(--gap-sm)) -1px;z-index:8;width:min(248px,100%);display:grid;grid-template-columns:minmax(0,1fr);gap:0;grid-auto-rows:minmax(44px,auto);align-content:start;padding:var(--gap-sm);border:1px solid var(--surface-edge);border-radius:var(--draft-expanded-radius);background:var(--paper);box-shadow:var(--surface-glass-elevation);pointer-events:auto;isolation:isolate;transition:none;animation:none}
 #app .composer>[data-input-attachment-menu][hidden]{display:none!important}
 #app .composer>[data-input-attachment-menu][data-handoff=true]{opacity:0;pointer-events:none}
 #app .composer>[data-input-attachment-menu][data-handoff=true] *{pointer-events:none!important}
@@ -3864,15 +3864,15 @@ photoInput.type='file';photoInput.accept='image/*';photoInput.multiple=true;phot
 cameraInput.type='file';cameraInput.accept='image/*';cameraInput.setAttribute('capture','environment');cameraInput.dataset.cameraPicker='true';
 fileInput.type='file';fileInput.multiple=true;fileInput.dataset.filePicker='true';
 const attachmentInputs=[photoInput,cameraInput,fileInput];
-const attachmentMenu=Layout.slot({name:'input-attachment-menu',family:'Input',attrs:{id:'inputAttachmentMenu','data-input-attachment-menu':'true',role:'group','aria-label':'Đính kèm',hidden:true}});
+const attachmentMenu=Layout.slot({name:'input-attachment-menu',family:'Input',attrs:{id:'inputAttachmentMenu','data-input-attachment-menu':'true','data-input-parent':'attachment',role:'group','aria-label':'Đính kèm',hidden:true}});
 for(const [kind,label,icon,input] of [['library','Thư viện ảnh','photo',photoInput],['camera','Chụp ảnh','camera',cameraInput],['files','Chọn tệp','folder',fileInput]]){
  const row=Layout.slot({name:'attachment-action',attrs:{'data-attachment-action':kind}});input.setAttribute('aria-label',label);row.append(Icon.create(icon),Typography.create({role:'body',text:label}),input);attachmentMenu.append(row);
 }
 draftForm.append(attachmentMenu);mediaTrigger.setAttribute('aria-controls',attachmentMenu.id);mediaTrigger.setAttribute('aria-expanded','false');
-let pickerOwner=null,pickerPress=null,menuOwner=null;
+let pickerOwner=null,pickerPress=null,menuOwner=null,pickerEpoch=0;
 function closeAttachmentMenu(){attachmentMenu.hidden=true;delete attachmentMenu.dataset.handoff;attachmentMenu.removeAttribute('aria-hidden');for(const input of attachmentInputs)input.tabIndex=0;menuOwner=null;mediaTrigger.setAttribute('aria-expanded','false')}
-function finishPickerHandoff(){const owner=pickerOwner;pickerOwner=null;pickerPress=null;delete draftForm.dataset.nativePicker;closeAttachmentMenu();return owner}
-function beginPickerHandoff(owner){pickerOwner=owner;draftForm.dataset.nativePicker='true';cancelEarlyClose()}
+function finishPickerHandoff(){pickerEpoch++;const owner=pickerOwner;pickerOwner=null;pickerPress=null;delete draftForm.dataset.nativePicker;closeAttachmentMenu();return owner}
+function beginPickerHandoff(owner){pickerEpoch++;pickerOwner=owner;draftForm.dataset.nativePicker='true';cancelEarlyClose()}
 function openAttachmentMenu(){if(app.dataset.screen!=='chat'||DraftMedia.busy())return;menuOwner=active;attachmentMenu.hidden=false;mediaTrigger.setAttribute('aria-expanded','true')}
 function preserveInputFocus(e){if(document.activeElement===draft&&e.cancelable)e.preventDefault()}
 mediaTrigger.addEventListener('pointerdown',preserveInputFocus);mediaTrigger.addEventListener('mousedown',preserveInputFocus);
@@ -3884,8 +3884,9 @@ for(const input of attachmentInputs){
  input.addEventListener('click',e=>{
   if(menuOwner!==active||DraftMedia.busy()||(pickerOwner!==null&&pickerPress?.input!==input)){e.preventDefault();return}
   if(pickerOwner===null)beginPickerHandoff(menuOwner);pickerPress=null;
-  // No second visible CRM menu during system picker; keep real input connected for default activation.
-  attachmentMenu.dataset.handoff='true';attachmentMenu.setAttribute('aria-hidden','true');mediaTrigger.setAttribute('aria-expanded','false');for(const item of attachmentInputs)item.tabIndex=-1;
+  // Do not change the trusted input's paint, hit test or accessibility before default activation.
+  const epoch=pickerEpoch;
+  setTimeout(()=>{if(epoch!==pickerEpoch||pickerOwner===null)return;attachmentMenu.dataset.handoff='true';attachmentMenu.setAttribute('aria-hidden','true');mediaTrigger.setAttribute('aria-expanded','false');for(const item of attachmentInputs)item.tabIndex=-1},0);
  });
  input.addEventListener('cancel',()=>finishPickerHandoff());
  input.addEventListener('change',async()=>{
@@ -3899,7 +3900,7 @@ for(const input of attachmentInputs){
  } }finally{DraftMedia.end(owner);if(owner===active){renderDraftMedia();resizeDraft()}}
  });
 }
-document.addEventListener('pointerup',e=>{if(pickerPress?.id===e.pointerId&&!pickerPress.input.contains(e.target))finishPickerHandoff()},{passive:true});
+document.addEventListener('pointerup',e=>{const pending=pickerPress;if(pending?.id===e.pointerId)setTimeout(()=>{if(pickerPress===pending)finishPickerHandoff()},0)},{passive:true});
 document.addEventListener('pointerdown',e=>{if(pickerOwner===null&&menuOwner!==null&&!draftForm.contains(e.target))closeAttachmentMenu()},true);
 draftForm.addEventListener('focusout',e=>{if(pickerOwner===null&&menuOwner!==null&&!draftForm.contains(e.relatedTarget))requestAnimationFrame(()=>{if(pickerOwner===null&&!draftForm.contains(document.activeElement))closeAttachmentMenu()})});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&pickerOwner===null&&menuOwner!==null){e.preventDefault();closeAttachmentMenu()}});
