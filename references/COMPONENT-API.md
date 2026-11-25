@@ -343,3 +343,6 @@ DraftMedia.begin/end/pending/busy isolate pending decode and protect local send/
 
 ## v13.140 — composer geometry
 Input child inset 8px shared by text and attachment rail. Expanded radius 24px, single capsule unchanged. Surface retains paint and border; KeyboardController and resizeDraft unchanged. Sources: pinned Astryx TextInput/Stack; https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/box-sizing and https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border-radius. Native acceptance pending.
+
+## v13.141 — keyboard accessory
+Keyboard family hosts a local accessory in the Input composer. Anchored gap 8px; focus-preserving pointer interaction; room-scoped selection; only explicit action invokes native file input. Native picker/camera routing remains browser-dependent. Sources: Astryx TextInput/Stack, https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/file, https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/capture, https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events. No keyboard viewport writer.
