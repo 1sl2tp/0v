@@ -325,3 +325,6 @@ BillRecognitionAPI: fixed receiver account/name, adjacent unlabelled pair, wrapp
 | Duplicate, late notice, missing time | Existing fixtures plus cross-layer regression; actual ledger replay pending |
 | Release | CI / main merge distinct from Pages and device acceptance |
 | Device and user acceptance | E3–E5 not certified |
+
+## v13.135 — native pixel stress and independent typed evidence
+See [BILL-OCR-PIXEL-STRESS.md](BILL-OCR-PIXEL-STRESS.md). BillOCREngineAPI.combineTypedEvidence preserves baseline raw evidence; typed mismatch invalidates proposal, unavailable typed result downgrades agreement; no automatic override. Native test 31/35 known crops; customer and browser OCR pending.
