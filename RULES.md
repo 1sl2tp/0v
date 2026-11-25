@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.148)
+## 00. Chỉ mục rule đang có hiệu lực (v13.149)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1245,3 +1245,8 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - SINGLE-NATIVE-PICKER-01: User explicitly rejects two-stage source menus in v13.147. Supersedes 172 and all custom attachment-menu alternatives in 166–171. Exactly ONE native file chooser, direct default activation from +. No custom source menu, hidden intermediary, separate camera input, or extra tap. A single input with accept=image/* and multiple; platform chooses available library/camera/files. Keep + within Input.
 - SINGLE-NATIVE-PICKER-02: Restore verified v13.146 implementation and read-only probe. No changes to protected keyboard/scroll/Surface/resizeDraft code. Native popup placement and dismissal are OS-controlled; 8px upper gap and dismissal on keyboard closure remain unresolved native limitations, not permission to reintroduce a second menu. No fixed coordinate compensation.
 - SINGLE-NATIVE-PICKER-03: Regression requires one file input in composer, absence of both prior custom menu variants before and after click, no aria-controls to intermediate menu, direct real filechooser with both focus states, existing anchor/draft/cancel/selection tests. Native iPhone still required. Do not mark position fixed just because CI passes.
+
+## 174. INPUT-THREE-ACTIONS — v13.149 (trial)
+- INPUT-THREE-ACTIONS-01: User explicitly requests trial of local menu with exactly three rows: Thư viện ảnh, Chụp ảnh, Chọn tệp. Trial exception to rule 173 for first menu; local menu parent is composer, gap 8px above top, no extra reserve, no forced focus and no keyboard geometry calculation. Local menu hides during native handoff; no two visible menus.
+- INPUT-THREE-ACTIONS-02: Library input accept=image/* multiple; camera image/* capture=environment single; file input unfiltered multiple, existing image decoder only. Unsupported files explicitly report limitation; no arbitrary-file send/storage implemented. Safari may still show native source choices after library/files selection; cannot guarantee direct OS routing. No synthetic click or forced dismissal. Close local menu on outside tap, Escape, focus leaving or existing keyboard true-to-false signal, not a new geometry controller.
+- INPUT-THREE-ACTIONS-03: Browser regression verifies three labels, geometry, both focus states, real chooser for each action, exclusive paint and file image selection. Native acceptance pending. Four protected ranges unchanged; no production or bill changes. Sources: prior WebKit WKFileUploadPanel.mm and pinned Astryx Input geometry.
