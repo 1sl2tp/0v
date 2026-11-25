@@ -274,7 +274,7 @@ dialog[data-ui-slot~="local-preview"]>strong{display:block;line-height:var(--lin
 [data-ui-slot~="bill-reconcile"] [data-ui-slot~="business-row"]{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);padding:6px var(--bill-inset);gap:8px;line-height:var(--line-detail)}
 [data-ui-slot~="bill-pair"] [data-ui-slot~="business-row"]>span,[data-ui-slot~="bill-reconcile"] [data-ui-slot~="business-row"]>span{min-width:0;overflow-wrap:anywhere}
 [data-ui-slot~="bill-pair"] [data-ui-slot~="business-row"]>span:first-child{font-size:var(--bill-label);line-height:var(--line-detail);color:var(--muted)}
-[data-ui-slot~="bill-pair"] [data-ui-slot~="business-row"]>span:last-child{font-size:var(--bill-value);line-height:var(--line-detail);text-align:left;font-variant-numeric:tabular-nums}
+[data-ui-slot~="bill-pair"] [data-ui-slot~="business-row"]>span:last-child{font-size:var(--bill-value);line-height:var(--line-detail);text-align:left;font-variant-numeric:tabular-nums;white-space:pre-wrap}
 [data-ui-slot~="bill-reconcile"] [data-ui-slot~="business-row"]>span:last-child{text-align:right;font-variant-numeric:tabular-nums}
 [data-ui-slot~="bill-pair"] .bill-missing,[data-ui-slot~="bill-reconcile"] .bill-missing{color:var(--danger);font-weight:var(--weight-semibold)}
 [data-ui-slot~="bill-pair"] [data-ui-slot~="business-card"]>[data-ui-slot~="module-note"]{padding:var(--bill-inset);border-top:1px solid var(--line)}
@@ -2842,13 +2842,17 @@ const BillOCRFieldAPI=(()=>{
   return Object.freeze(out)
  }
  function literalDifferences(a,b){if(typeof a!=='string'||typeof b!=='string'||a.length>20000||b.length>20000)throw Error('Invalid literal comparison');const x=[...a],y=[...b];if(a===b)return Object.freeze([]);if(x.length!==y.length)return Object.freeze([Object.freeze({kind:'length-or-spacing-difference',position:null,left:null,right:null,reviewOnly:true})]);return Object.freeze(x.flatMap((ch,i)=>ch===y[i]?[]:[Object.freeze({kind:glyphGroups.some(g=>g.includes(ch)&&g.includes(y[i]))?'confusable-glyph':/[.,:\s]/u.test(ch)||/[.,:\s]/u.test(y[i])?'separator-difference':'literal-difference',position:i,left:ch,right:y[i],reviewOnly:true})]))}
+ // A labelled memo is a text region, not a single physical OCR line.
+ function memoContinuation(raw){const s=raw.trim(),v=fold(s);return !!s&&!identify(s)&&!s.includes(':')&&!/^(?:chuyen khoan thanh cong|giao dich thanh cong|quay ve trang chu|chia se|luu anh|ma qr|qr code|chi tiet giao dich|thong tin giao dich|thong bao bien dong so du)(?:\s|$)/.test(v)&&!/^(?:ngay )?\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}(?:\s|$)/.test(v)&&!/^(?:ngay )?.+ thang .+ nam /.test(v)&&!/^\d[\d., ]*\s*(?:vnd|vnđ|đ|dong)$/iu.test(s)&&!/^(?:FT|REF|IBFT|TRACE)[A-Z0-9-]{6,40}$/i.test(s)}
  function parse(text,{profile,configured=null,confidence=null}={}){
   if(typeof text!=='string'||text.length>20000||!['agribank-en','vi-VN','canonical'].includes(profile)||confidence!==null&&(!Number.isFinite(confidence)||confidence<0||confidence>100))throw Error('Invalid OCR input/profile');
   const lines=text.normalize('NFC').split(/\r?\n/);if(lines.length>250)throw Error('Too many OCR lines');const evidence=[],unknown=[],ignored=[],issues=new Set(),masked=[],candidates=Object.fromEntries(fields.map(k=>[k,[]]));let pending=null;
   const invalid=(k,line,raw=null,labelLine=line)=>{for(const field of k==='datetime'?['date','time']:[k])if(fields.includes(field)){issues.add('invalid-'+field);evidence.push(Object.freeze({field,line,labelLine,raw,status:'invalid',diagnostics:raw===null?Object.freeze([]):literalDiagnostics(k,raw,profile)}))}};
-  function read(k,raw,line,labelLine){if(k==='excluded'){ignored.push(line);return}if(k==='account'){const compact=raw.replace(/[ \u00a0\u202f\u2009\t]/g,''),m=compact.match(/^(\d{0,20})[*•×]{2,24}(\d{5})$/u);if(m){masked.push({suffix:m[2],prefix:m[1]||null,raw,line,labelLine});issues.add('masked-account');evidence.push(Object.freeze({field:'account',raw,line,labelLine,status:'masked'}));return}}try{const values=parseField(k,raw,profile);for(const [field,value] of Object.entries(values)){const item=Object.freeze({field,value,raw,line,labelLine,status:'candidate',diagnostics:literalDiagnostics(field,raw,profile,{valid:true})});candidates[field].push(item);evidence.push(item)}}catch{invalid(k,line,raw,labelLine)}}
+  function read(k,raw,line,labelLine,endLine=line){if(k==='excluded'){ignored.push(line);return}if(k==='account'){const compact=raw.replace(/[ \u00a0\u202f\u2009\t]/g,''),m=compact.match(/^(\d{0,20})[*•×]{2,24}(\d{5})$/u);if(m){masked.push({suffix:m[2],prefix:m[1]||null,raw,line,labelLine});issues.add('masked-account');evidence.push(Object.freeze({field:'account',raw,line,labelLine,status:'masked'}));return}}try{const values=parseField(k,raw,profile);for(const [field,value] of Object.entries(values)){const item=Object.freeze({field,value,raw,line,labelLine,...(endLine>line?{endLine}:{}),status:'candidate',diagnostics:literalDiagnostics(field,raw,profile,{valid:true})});candidates[field].push(item);evidence.push(item)}}catch{invalid(k,line,raw,labelLine)}}
   for(let i=0;i<lines.length;i++){const raw=lines[i].trim(),line=i+1;if(!raw)continue;const mark=identify(raw);
-   if(mark){if(pending&&pending.key!=='excluded')invalid(pending.key,pending.line);pending=null;if(mark.value)read(mark.key,mark.value,line,line);else pending={key:mark.key,line};continue}
+   if(mark){if(pending&&pending.key!=='excluded')invalid(pending.key,pending.line);pending=null;
+    if(mark.key==='memo'){const parts=mark.value?[mark.value]:[];let first=mark.value?line:null,last=line;while(i+1<lines.length&&memoContinuation(lines[i+1])){i++;first??=i+1;last=i+1;parts.push(lines[i].trim())}if(parts.length)read('memo',parts.join('\n'),first,line,last);else invalid('memo',line);continue}
+    if(mark.value)read(mark.key,mark.value,line,line);else pending={key:mark.key,line};continue}
    if(pending){read(pending.key,raw,line,pending.line);pending=null;continue}
    // Explicit Vietnamese calendar phrase, not a free-standing clock or number.
    if(/^(?:ngay )?(?:\d{1,2}|[a-z]+(?: [a-z]+)*) thang .+ nam /i.test(fold(raw))||/^(?:ngay )?\d{1,2} (?:thg|th)\.?\s*\d{1,2}(?:,\s*| (?:nam )?)\d{4}$/i.test(fold(raw))){read('date',raw,line,line);continue}
@@ -2861,7 +2865,7 @@ const BillOCRFieldAPI=(()=>{
   if(confidence!==null&&confidence<80)issues.add('low-ocr-confidence');
   return Object.freeze({record:Object.freeze(record),accountPartial:partial,evidence:Object.freeze(evidence),unknown:Object.freeze(unknown),ignored:Object.freeze(ignored),issues:Object.freeze([...issues]),profile,confidence,quality:'review',canPost:false})
  }
- function fromStored(obj){if(!obj||typeof obj!=='object'||Array.isArray(obj))throw Error('Invalid stored bill');const mapping={sending_bank:'Ngân hàng gửi',receiving_bank:'Ngân hàng nhận',recipient_name:'Tên TK nhận',sender_name:'Tên người chuyển',recipient_account:'STK nhận',amount_vnd:'Số tiền',transfer_date_printed_vn:'Ngày giao dịch',transfer_time_printed_vn:'Giờ giao dịch',transfer_content:'Nội dung',transfer_reference:'Mã giao dịch',trace_code:'Mã tra soát'};const lines=[];for(const [k,label] of Object.entries(mapping)){const v=obj[k];if(v==null||v==='')continue;if(k==='amount_vnd'){if(!(typeof v==='string'&&/^\d+(?:\.\d+)?$/.test(v)||typeof v==='number'&&Number.isSafeInteger(v)))throw Error('Invalid stored amount')}else if(typeof v!=='string'||/[\r\n]/.test(v))throw Error('Invalid stored field');lines.push(label+': '+String(v))}return parse(lines.join('\n'),{profile:'canonical'})}
+ function fromStored(obj){if(!obj||typeof obj!=='object'||Array.isArray(obj))throw Error('Invalid stored bill');const mapping={sending_bank:'Ngân hàng gửi',receiving_bank:'Ngân hàng nhận',recipient_name:'Tên TK nhận',sender_name:'Tên người chuyển',recipient_account:'STK nhận',amount_vnd:'Số tiền',transfer_date_printed_vn:'Ngày giao dịch',transfer_time_printed_vn:'Giờ giao dịch',transfer_content:'Nội dung',transfer_reference:'Mã giao dịch',trace_code:'Mã tra soát'};const lines=[];for(const [k,label] of Object.entries(mapping)){const v=obj[k];if(v==null||v==='')continue;if(k==='amount_vnd'){if(!(typeof v==='string'&&/^\d+(?:\.\d+)?$/.test(v)||typeof v==='number'&&Number.isSafeInteger(v)))throw Error('Invalid stored amount')}else if(typeof v!=='string'||(/[\r\n]/.test(v)&&(k!=='transfer_content'||!v.split(/\r?\n/).slice(1).every(memoContinuation))))throw Error('Invalid stored field');lines.push(label+': '+String(v))}return parse(lines.join('\n'),{profile:'canonical'})}
  // Unlabelled lines produce independent proposals only. Never fill the parsed record.
  function suggestUnlabelled(text,{profile='vi-VN',configured=null}={}){
   const p=parse(text,{profile}),target=configured===null?null:ParseAPI.accountDigits(configured,{min:13,max:13});
@@ -2887,6 +2891,7 @@ const BillOCRFieldAPI=(()=>{
   const p=parse(text,{profile,confidence}),existing=Object.freeze(p.evidence.filter(e=>e.field===field)),conflict=p.issues.some(x=>x==='conflict-'+field||x==='invalid-'+field);
   const result=(value,status,evidence,source)=>Object.freeze({field,value,status,evidence:Object.freeze(evidence),source,rawText:text,confidence,requiresVerification:true,canPost:false});
   if(conflict||p.record[field]!==null)return result(p.record[field],conflict?'conflict':'unverified',existing,'labelled');
+  if(allowBare&&field==='memo'&&!p.evidence.length&&!p.ignored.length&&p.unknown.length>1&&p.unknown.every(x=>memoContinuation(x.raw))){const raw=p.unknown.map(x=>x.raw).join('\n');try{const value=parseField('memo',raw,profile).memo;return result(value,'unverified',[Object.freeze({field,raw,value,line:p.unknown[0].line,labelLine:p.unknown[0].line,endLine:p.unknown.at(-1).line,status:'candidate',source:'scoped-bare'})],'scoped-bare')}catch{return result(null,'conflict',existing,'none')}}
   if(!allowBare||p.evidence.length||p.ignored.length||!p.unknown.length||p.unknown.length!==1)return result(null,'missing',existing,'none');
   const line=p.unknown[0],raw=line.raw;
   // Colon-bearing unknown labels cannot become a value. Clock/date parsers validate their own delimiters.
@@ -2918,7 +2923,7 @@ const BillOCRFieldAPI=(()=>{
   const map=new Map(raw.map((r,i)=>[r.line,lines[i].rect])),lineMap=new Map(raw.map((r,i)=>[r.line,lines[i]]));
   // Exact word evidence for a value following a label on the same physical line.
   function valueBounds(e){
-   if(!e||typeof e.raw!=='string')return null;const l=lineMap.get(e.line);if(!l)return null;
+   if(!e||typeof e.raw!=='string'||e.endLine>e.line)return null;const l=lineMap.get(e.line);if(!l)return null;
    if(e.labelLine!==e.line)return Object.freeze(l.rect.slice());
    const colon=l.text.indexOf(':');if(colon<0||norm(l.text.slice(colon+1))!==norm(e.raw)||!identify(l.text))return null;
    if(!Array.isArray(l.words)||!l.words.length||l.words.length>250)return null;
@@ -2929,7 +2934,7 @@ const BillOCRFieldAPI=(()=>{
    const tail=boxes.slice(i),left=Math.min(...tail.map(q=>q.x0)),top=Math.min(...tail.map(q=>q.y0)),right=Math.max(...tail.map(q=>q.x1)),bottom=Math.max(...tail.map(q=>q.y1));
    return Object.freeze([left,top,right-left,bottom-top])
   }
-  const rows=fields.map(field=>{const ev=parsed.evidence.filter(e=>e.field===field);const e=ev.length===1?ev[0]:null,valueRect=valueBounds(e);if(!e||e.status!=='candidate'||parsed.record[field]==null||e.value!==parsed.record[field])return Object.freeze({field,rect:null,valueRect,state:'manual-region-required',canPost:false});const ids=[...new Set([ev[0].labelLine,ev[0].line])],rs=ids.map(i=>map.get(i));if(rs.some(r=>!r))return Object.freeze({field,rect:null,state:'manual-region-required',canPost:false});const x=Math.min(...rs.map(r=>r[0])),y=Math.min(...rs.map(r=>r[1])),right=Math.max(...rs.map(r=>r[0]+r[2])),bottom=Math.max(...rs.map(r=>r[1]+r[3]));return Object.freeze({field,rect:Object.freeze([x,y,right-x,bottom-y]),state:'line-bounds',valueRect,lines:Object.freeze(ids),canPost:false})});
+  const rows=fields.map(field=>{const ev=parsed.evidence.filter(e=>e.field===field);const e=ev.length===1?ev[0]:null,valueRect=valueBounds(e);if(!e||e.status!=='candidate'||parsed.record[field]==null||e.value!==parsed.record[field])return Object.freeze({field,rect:null,valueRect,state:'manual-region-required',canPost:false});const ids=[...new Set([e.labelLine,...Array.from({length:(e.endLine??e.line)-e.line+1},(_,i)=>e.line+i)])],rs=ids.map(i=>map.get(i));if(rs.some(r=>!r))return Object.freeze({field,rect:null,state:'manual-region-required',canPost:false});const x=Math.min(...rs.map(r=>r[0])),y=Math.min(...rs.map(r=>r[1])),right=Math.max(...rs.map(r=>r[0]+r[2])),bottom=Math.max(...rs.map(r=>r[1]+r[3]));return Object.freeze({field,rect:Object.freeze([x,y,right-x,bottom-y]),state:'line-bounds',valueRect,lines:Object.freeze(ids),canPost:false})});
   return Object.freeze({...base,aligned:true,fields:Object.freeze(rows)})
  }
  function compareFieldAttempts({regionKey,field,attempts,profile='vi-VN',allowBare=false}={}){
@@ -2971,7 +2976,7 @@ const BillRecognitionAPI=(()=>{
    else if(explicit)type='unreadable';
    if(!type)return;const item=Object.freeze({line,explicit,type});if(type==='wrong'){if(explicit)wrong.push(item)}else if(type==='unreadable')unknown.push(item);else hits.push(item)
   }
-  const occupied=new Set([...parsed.ignored,...parsed.evidence.filter(e=>e.field!=='account').flatMap(e=>[e.line,e.labelLine])]);let pending=false;
+  const occupied=new Set([...parsed.ignored,...parsed.evidence.filter(e=>e.field!=='account').flatMap(e=>[e.labelLine,...Array.from({length:(e.endLine??e.line)-e.line+1},(_,i)=>e.line+i)])]);let pending=false;
   for(let i=0;i<lines.length;i++){
    const l=lines[i].trim();if(!l||blockedLines.has(i+1))continue;const m=fold(l).match(label);
    if(m){pending=!m[1];if(m[1])inspect(l.slice(l.indexOf(':')+1),i+1,true);continue}
