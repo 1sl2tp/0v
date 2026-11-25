@@ -138,3 +138,6 @@ v13.83 PR #50 merged d3152981cf9686d1bbc81bf636a568c544bbdbb7; CI 45536570509 su
 
 ## v13.85 — OCR text field extraction
 Based on PR #51 head cbc93a13fc824d98254658360f97c9601e8d2d01; CI pending at work start. Explicit label/next-line extraction with field provenance, date words, exact source-profile amounts, excluded balance and send clock, conflicts/missing/low confidence review. Static contract passed; browser assertions added, CI required. BANK-OCR-01–05. No actual image OCR engine, posting, production DB or keyboard changes.
+
+### v13.85 CI correction
+CI 45538091181: static and version gates passed; browser timed out on OCR lab. Root cause: DOMStringMap billOCRStatus maps to data-bill-o-c-r-status, not data-bill-ocr-status. Normalize camelCase billOcrInput/Status/Field; assert actual state with error text. Re-run full CI; do not waive test. No business or keyboard change.
