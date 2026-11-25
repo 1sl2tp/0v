@@ -75,3 +75,7 @@ Nguồn rule duy nhất vẫn là RULES.md. Tài liệu này chỉ theo dõi cô
 | L09 | Nghiệm thu thay thế hoàn toàn, giữ khả năng rollback | TODO |
 
 Không đánh dấu các bước TODO là hoạt động chỉ vì quyền admin đã được cấp. CHAT cũ không bị tắt hoặc sửa trong quá trình chuyển. 
+
+
+### P03-LIVE — F5 / v13.172
+E0 reproduced by user report and source; CI #728 failed RULES active version. Patch + synthetic browser regression for independent session, MFA, F5 restore, transient failure/retry. E2/E3/E4 pending; no completed milestone claimed. Media PR #141 prerequisite/superset; no production changes in this round.

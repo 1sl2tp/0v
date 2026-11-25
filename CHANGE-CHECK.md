@@ -471,3 +471,7 @@ E1: thêm API v0_admin_send_text và composer live; dùng Input/Contact/Layout/B
 
 ## v13.171 — hiển thị media thật
 E1: đối chiếu v21_media_assets và v21_storage_private.can_read, thêm SQL policy và RPC scoped trong references/0v-admin-media.sql; UI dùng MediaController.gallery, private download/blob, revoke khi đổi phòng/logout; fixture kiểm tra blob. v13.170 PR #140 đạt CI và merged e24aacc9. Chưa xác minh tải ảnh thật trên thiết bị; chưa gửi media.
+
+
+## v13.172 — LIVE-AUTH-RESTORE-01 / F5
+E0: user báo F5 nháy login ở Pages v13.170; source mountLiveChat chèn login trước getSession, reset contacts và lỗi mạng về login. Auth branch run 45697631038: version=false tại audit-design vì RULES index chưa cập nhật. E1 patch: boot trước paint, không login nếu lỗi restore, giữ saved view khi lỗi đọc, retry và test synthetic SDK persist AAL2 qua F5, MFA challenge, lỗi mạng/retry, logout. Study auth-js GoTrueClient.ts v2.71.1 blob 9a38e9d77e37c25a3a3ae6a12a83e474a579bfad getSession waits initializePromise, Adobe SelectionManager blob d6ff15c5b5efd7f9be685f87f46c3ed251c093f5 stable selection, Astryx Stack blob c56d72759ad2f6f86102228e22c3123530b32894 parent layout; no dependencies. No production mutation, no real messages, no manual deploy. Existing media changes retained. MFA server enforcement, native Safari/PWA, actual login/refresh and CI/Pages pending. Rollback to previous verified release if required; do not bypass auth gates.
