@@ -81,3 +81,6 @@ v13.64 PR #31 merged ca070a2b58a437ed48797ba885d4c5a28340f94a; CI 45515474679/45
 
 ## v13.66 — multi-device fixture
 v13.65 PR #32 merged 5907ddda8c7dfe175dba5315e030582d1e073c71; CI 45516273288/45516250009, publish 45516410983, Pages 45516427368 success. E1 opt-in receipt events on memory-mode SyncController, independent device projections, canonical mock server log, idempotent command and monotonic receipt, offline catchup. MULTI-API-01–05, SOURCE-GATE, KB-LOCK. Syntax checked, CI/Pages pending. No actual devices, cache receipt persistence, real writes, backend, Push or keyboard/Main changes. No manual deploy.
+
+## v13.67 — offline command fixture
+v13.66 PR #33 merged 736c0ed0d0d183106af4561d60dd8675a064897f. E1 durable synthetic outbox scoped by actor/device/run, stable command ID, ACK validation and generation fencing, reuse MultiDevice fixture and SyncController. OFFLINE-API-01–05; test cases added, CI pending. No real reload/server persistence/cross-tab arbitration, production, backend, real send or keyboard changes. No manual deploy.

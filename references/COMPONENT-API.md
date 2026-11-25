@@ -128,3 +128,6 @@ claim(old,input,{actorId,installationId,owner,token,now}), settle(old,{owner,tok
 
 ## v13.66 MultiDeviceController
 fixture({actorId,conversationId,stream}) → incoming/send/read/transport/subscribe/status/dispose; connect({actorId,conversationId,stream,server,initialOnline}) → independent messages/conversations/read/sync/submitRead/dispose. SyncController optional onReceipt, incompatible with persistPage until receipt checkpoint supports it. Synthetic ?multidevicelab=1, no real network/account or cross-device Push guarantee.
+
+## v13.67 OfflineCommandController
+open(), create({db,scope,send,initialOnline,timeoutMs}) → enqueue(text), rows(), flush(), setOnline(), status(), dispose(). One scoped durable synthetic IndexedDB record; stable command IDs, explicit one-command flush, uncertain/timeout remains queued, generation fence. ?offlinecommandlab=1 uses existing MultiDevice fixture. No full page reload recovery, durable server ledger, cross-tab arbitration, backend, media or production integration.
