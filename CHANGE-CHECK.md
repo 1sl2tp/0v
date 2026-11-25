@@ -186,3 +186,6 @@ v13.97 CI passed and merged. Mandatory clock review before Bank arrival; separat
 
 ## v13.98 revision 2
 E0: CI run 45544344099 failed audit-api-browser.cjs:110 (expected 3 pending, actual 2). Mandatory review intentionally changes initial and reset states. E1: keep clock gate, update browser assertions and add related-candidate UI assertions. BANK-CLOCK, BANK-RELATED, BANK-QUEUE, BANK-RESIDUAL, KB-LOCK. Related tier is diagnostic; no new financial authority. E2: direct contract added; full CI required. No production writes or messages.
+
+## v13.99
+E0: v13.98 PR #65 merged, CI run 45544697846 success. E1: BANK-FIELDS, BANK-RELATED, BANK-CLOCK, BANK-QUEUE, BANK-RESIDUAL, KB-LOCK; compare seven fields per candidate, show independent cards and no arbitrary first-candidate clock/date, display current revision amount. E2: 24 direct regression contracts passed; full CI pending. Astryx Card/Table pinned source and CHAT preview reviewed. No production, historic data or keyboard changes. Google Sheet log not updated in this commit.

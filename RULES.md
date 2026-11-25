@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.98)
+## 00. Chỉ mục rule đang có hiệu lực (v13.99)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -894,3 +894,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-RELATED-03: Expose candidate Bank ID, separately printed Bank clock, date, late arrival, competing evidence and canPost=false. Multiple candidates remain competing; no automatic selection or link. Duplicate and posted rows excluded from projection.
 - BANK-RELATED-04: Recompute on Bank arrival and OCR correction via existing owners. No actual messages, production deployment or financial changes.
 - BANK-RELATED-05: Regression for blank clock, missing Bank, priority, residual, competing, own transfer, conflicting evidence and OCR correction. Browser asserts initial 2 pending + 1 review and candidate rendering; preserve keyboard v13.27.
+
+## 123. BANK-FIELDS — v13.99
+- BANK-FIELDS-01: Related candidate evidence is a read-only projection per bank ID and bill ID; seven fields (amount, account, recipient, date, clock, memo, reference). Keep literal account/name/memo/reference, canonical exact amount/date; null remains unknown. Never fill bill clock from Bank.
+- BANK-FIELDS-02: Distinguish exact, normalized memo, containment, spacing, residual, embedded and unconfirmed proof. Missing reference is not a mismatch or a match. No inferred correction or new eligibility.
+- BANK-FIELDS-03: Each competing candidate gets its own comparison card; no default candidate date/time at bill level when multiple exist. Reuse CardController and FormatAPI. No auto-select or receipt authority.
+- BANK-FIELDS-04: Recompute from current OCR revision and Bank evidence; clear related projection on corrected clock. Preserve prior rules, keyboard baseline and historical receipts. No production writes or actual messages.
+- BANK-FIELDS-05: Test original values, null clock, one-letter residual, multiple candidates, ordering, corrected OCR and browser render/removal. Full CI required.
