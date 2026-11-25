@@ -126,3 +126,6 @@ CHAT credit-duplicate-identity.mjs blob 2b9f7c4231ba762dfdb80ad3e1bf7e2cb9b0d536
 
 ## v13.102
 ImageHash https://github.com/JohannesBuchner/imagehash/blob/master/imagehash/__init__.py ImageMultiHash matches/region_cutoff/Hamming distance: compare multiple region fingerprints; 0v uses bounded fixed inset candidates instead of segmentation, stricter independent bill evidence, no upstream code copied. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a, existing parent layout. No private image or customer values.
+
+## v13.103
+Adobe React Stately SelectionManager.ts pinned blob d6ff15c5b5efd7f9be685f87f46c3ed251c093f5: selected keys are separate from focused key and collection rendering. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a: existing parent layout. Reuse 0v normalized region identity and whitespace projection, not Adobe runtime. No transaction identity inferred from geometry.
