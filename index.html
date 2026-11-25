@@ -1999,7 +1999,7 @@ function mountLiveChat(){
  const root=Layout.slot({attrs:{id:'app','data-screen':'contacts','data-main-source':'live'}});
  const text=(role,value,tag='span')=>View.text({role,text:value,tag});
  const login=Layout.slot({tag:'form',name:'live-login'});
- login.style.cssText='display:flex;flex-direction:column;gap:12px;width:min(100% - 32px,360px);margin:auto';
+ login.style.cssText='display:flex;flex-direction:column;gap:12px;width:min(100%,360px);margin:auto';
  const user=Input.create({type:'text',label:'Tài khoản CHAT',placeholder:'Tài khoản CHAT'});user.autocomplete='username';user.required=true;
  const pass=document.createElement('input');pass.type='password';pass.autocomplete='current-password';pass.placeholder='Mật khẩu';pass.setAttribute('aria-label','Mật khẩu');pass.required=true;
  const submit=Button.create({kind:'outline',type:'submit',text:'Đăng nhập admin'});
