@@ -27,3 +27,5 @@ Shared runtime initialized before data branch; live swipe/input/scroll use exist
 - v13.173 gallery parity E1: ordered groups 1–4, decoded geometry, private blob lifecycle and existing viewer; real server and native acceptance pending. No upload or business changes.
 
 - v13.174 E1: live short-input and reserve regression; MIME and decoded image classification, compact footer and scroll anchor. Actual server media and device acceptance pending.
+
+- MAIN-NAV-01: shared Main navigation intent, explicit contact always latest, F5/return preserve. E1; long-history fixture/live browser regression pending.

@@ -468,3 +468,6 @@ liveMediaGroups groups ordered consecutive images within one message, up to four
 
 ## v13.174 live geometry/media
 ScrollController.replaceMedia(el,replace) owns media growth anchor; when tail and idle follow existing geometry; when entirely above visible area and idle compensate delta, otherwise preserve scroll. Live adapter accepts known image MIME under generic file/attachment and requires decoded supported image. Directory account actions use Layout grid 2 columns. Native acceptance pending.
+
+## Main navigation position
+Main.threadPosition(reason,saved): contact/send -> tail, restore/return -> saved. Main.finishNavigation(epoch,position,onDone) validates active room/screen/epoch, waits for layout and delegates scroll to ScrollController. Main is the common parent; no adapter-specific auto refresh.
