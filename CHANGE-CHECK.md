@@ -294,3 +294,6 @@ E1: user-defined numeric account, unaccented holder name, mixed memo, date/time 
 
 ## v13.133
 E1: exact same-line word bounding boxes for typed value OCR, upstream Tesseract.js v6 block evidence and quality guidance reviewed. E2: static regression added, existing browser regression retained; CI pending. No private media, production, keyboard or debt changes. E3–E5 not certified.
+
+## v13.134
+E0: v13.132 API and DB passed, merged; v13.133 synced to main for CI. E1: no business API change; cross-layer synthetic OCR text, recognition, raw Bank parse and match audit. E2: direct execution confirmed account/date/decimal, delayed ±1 minute, unverified notice pending, missing clock review, competition review and posted notice blocked. Static regression added, full CI pending. Test explicitly simulates verified Bank and clear image; no actual pixels, bank authorization or posting. E3–E5 pending.

@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.133)
+## 00. Chỉ mục rule đang có hiệu lực (v13.134)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1146,3 +1146,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-VALUE-GEOMETRY-03: Crop only measured value token union, never guess by character width. Invalid account digits may still be reread using the exact raw value span. Typed result remains review-only, no posting or bank changes.
 - BILL-VALUE-GEOMETRY-04: Upstream Tesseract.js v6 blocks/word bbox and Tesseract segmentation/whitelist docs: https://github.com/naptha/tesseract.js/issues/993 and https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html. No new dependency or private data.
 - BILL-VALUE-GEOMETRY-05: Synthetic regression for exact same-line value bounds, invalid glyph, mismatched token, merged label and reversed bbox; browser fixture retained. CI and real corpus acceptance separate.
+
+## 159. BILL-FLOW-AUDIT — v13.134
+- BILL-FLOW-AUDIT-01: Run integrated synthetic contract from original OCR text through field parser, recipient recognition, raw Agribank notice parser and existing Bank matcher. Parsing alone never authenticates notice; explicit synthetic verification only in test.
+- BILL-FLOW-AUDIT-02: Preserve exact fractional VND, full account including separated final digit, calendar words and transaction clock. Delayed notice and ±1 minute reviewed per existing policy.
+- BILL-FLOW-AUDIT-03: Unverified Bank, missing clock, competing bills and posted Bank ID must not be eligible. Recognition conflicts must be resolved before a future production adapter; no implicit integration or posting in this audit.
+- BILL-FLOW-AUDIT-04: E2 synthetic cross-layer checks do not certify real OCR pixels, Bank authenticity, durable ledger or production integration. E3–E5 remain pending; do not mark entire project done.
+- BILL-FLOW-AUDIT-05: Track remaining acceptance in references/COMPONENT-API.md. No new business API, no production, no keyboard changes.
