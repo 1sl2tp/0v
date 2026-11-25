@@ -52,6 +52,20 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
   console.log(width+'px: directory/chat/input/popup/font propagation/registration/contact geometry/F5 passed');
   await page.close();
  }
+ // Opt-in performance diagnostics: verify action capture and cleanup, not fixed timing.
+ {
+ const pp=await browser.newPage({viewport:{width:390,height:844}});
+ await pp.goto(url);assert.equal(await pp.evaluate(()=>typeof window.crmPerf),'undefined');
+ await pp.goto(url+'?perfcheck=1');await pp.waitForFunction(()=>window.crmPerf);
+ const action=async(selector,label)=>{const before=await pp.evaluate(label=>window.crmPerf.report().actions[label].count,label);await pp.locator(selector).first().evaluate(e=>e.click());await pp.waitForFunction(([label,before])=>window.crmPerf.report().actions[label].count===before+1,[label,before])};
+ await action('.contact[data-id=nv]','open-chat');await action('.conversation .panel-head button[data-go=contacts]','back-directory');
+ await action('#searchToggle','toggle-search');await pp.locator('#search').fill('NV');await pp.waitForFunction(()=>window.crmPerf.report().actions.search.count>0);
+ await action('#searchToggle','toggle-search');await action('[data-filter="KH"]','filter');
+ const report=await pp.evaluate(()=>window.crmPerf.report());assert.equal(report.mode,'local-two-frame-proxy');assert(report.actions['open-chat'].p50>=0);assert(report.actions.search.p95>=0);assert.equal(JSON.stringify(report).includes('NV'),false);
+ console.log('Local performance proxy (Chromium fixture, not INP)',JSON.stringify(report));
+ await pp.evaluate(()=>window.crmPerf.reset());assert.equal(await pp.evaluate(()=>Object.values(window.crmPerf.report().actions).reduce((n,s)=>n+s.count,0)),0);
+ await pp.evaluate(()=>window.crmPerf.dispose());await pp.locator('[data-filter="Tất cả"]').evaluate(e=>e.click());await pp.waitForTimeout(100);assert.equal(await pp.evaluate(()=>window.crmPerf.report().actions.filter.count),0);assert(await pp.evaluate(()=>window.crmPerf.report().disposed));await pp.close()
+ }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
  await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());

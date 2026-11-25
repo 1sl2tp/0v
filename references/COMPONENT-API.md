@@ -143,3 +143,6 @@ Virtualizer.mount(...).metrics() returns immutable counters: paints, stableFrame
 
 ## v13.71 Sync pointer index
 ConversationStore.validateMessageScope(record) → boolean; metrics().pointerLookups. Shared by SyncController and CacheController, retains pending pointer conflict rejection. Index updated after validated batch, cleared on dispose. No cursor or storage protocol change.
+
+## v13.72 PerformanceProbe
+mount({root,doc,clock}) → report/reset/dispose; summarize(samples) nearest-rank p50/p95/max. ?perfcheck=1 exposes window.crmPerf and a local report panel. Fixed action labels, 100 samples/action, hidden cancellation, optional long task support. Approximate two-frame proxy only, no upload or normal-mode listener attachment. No Main migration.
