@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.77)
+## 00. Chỉ mục rule đang có hiệu lực (v13.78)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -737,3 +737,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - ORDER-NOTICE-02: Only advance the next allowed stage with proof; expired ticket requires review; missing earlier stages or repeated acceptance rejected. Complete only when all required recipients accepted. Provider acceptance is not recipient read confirmation.
 - ORDER-NOTICE-03: Main order screen displays read-only notice projection from actual fixture order status. No dispatch, no actual order mutation, no network or persistent outbox. Delivered branch is tested synthetically only.
 - ORDER-NOTICE-04: Reference AWS transactional outbox pattern; real delivery requires durable committed intent and idempotent relay, not this local projection. CI before release; no real send, production or keyboard changes.
+
+## 100. BANK-RECON — v13.78, bài toán 33.3d
+- BANK-RECON-01: Persist four distinct timestamps in production design: original bank transaction, bill received, bank notification received, ledger posting; business dates Vietnam UTC+7 via TimeAPI. Never substitute receipt day for transaction day. Pending bills carry across day/week/month; fixture caller supplies all unresolved bills, no current-day filter.
+- BANK-RECON-02: One bill to one unique verified incoming bank transaction in configured account; positive exact canonical amount, clear image, compatible name if present, strong memo substring (generic transfer words removed, minimum 6 characters) or exact reference, valid dates/times, at most 60 seconds difference including midnight. Missing/malformed dates/times/account, blurry image, conflicting name/reference, weak memo or multiple plausible edges go to review. Missing name alone is not disqualifying. No automatic posting in this fixture.
+- BANK-RECON-03: Deduplicate same bank transaction ID with identical normalized evidence; conflicting payload quarantined. Previously posted bill/bank IDs excluded; absent/unverified/outgoing bank events cannot authorize receipt. Unmatched incoming bank events remain pending; never assign customer by amount alone. Production needs durable unique transaction ID and atomic ledger/idempotency transaction; fixture does not implement this.
+- BANK-RECON-04: ParseAPI.billDate supports d/m/yyyy, d-m-yyyy, d.m.yyyy, yyyy-mm-dd, Vietnamese ngày ... tháng ... năm ... (digits or supported number words, optional accents), optional HH:mm[:ss]. Require explicit year; validate calendar; missing time stays null, no midnight inference. Reject ambiguous/invalid dates, including relative words and two-digit year. Preserve original source.
+- BANK-RECON-05: Fixture bankreconcilelab demonstrates 3 unresolved bills, next-day bank arrival, 2 eligible and 1 missing-time review. Reason codes retained; eligible-fixture is a candidate, not a posted receipt. No real customer data, notifications, writes, keyboard or production change. CLDR date patterns and OWASP verified event dedup reference. CI before release.
