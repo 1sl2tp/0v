@@ -360,3 +360,6 @@ Candidate repair 2: actual native file input overlays each visible action row; n
 Candidate repair 3: accessory declares input interaction boundary for the existing capture handler. Native file hit layer above non-interactive text/icon, min row 44px and constrained grid. Browser diagnostic logs actual rect and hit target; no changes to viewport code.
 
 Test isolation: real accessory interaction must use normal URL. Opt-in apiProofPanel is a deliberate interactive diagnostic overlay, not normal UI. Keep separate API diagnostic coverage and actual hit/chooser assertions; no force click.
+
+## v13.144 — exclusive native picker
+CRM menu paints only before native activation; trusted click marks native presentation and removes menu paint/hit/tab stops while retaining frame size. Native WebKit owns its action sheet and anchor; no claim of CSS control. Cancel/change close menu without forced focus. Sources: https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm and https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/cancel_event . Native acceptance pending.

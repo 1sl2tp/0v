@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.143)
+## 00. Chỉ mục rule đang có hiệu lực (v13.144)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1220,3 +1220,8 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - KEYBOARD-FRAME-ACCESSORY-07: Mark accessory as an input interaction boundary so the existing document capture handler does not blur draft before native pointer handoff. Explicit row min 44px, constrained grid track, isolated stacking and direct input hit layer; decorative text/icon do not capture events. Preserve all protected ranges. Browser hit proof records actual rect, target, pointer and z-index on failure; real chooser checks unchanged.
 
 - KEYBOARD-FRAME-ACCESSORY-08: Run real tap/chooser acceptance in normal application URL, without opt-in apiProofPanel. Run diagnostic API assertions separately as before. CI 45585524052 measured native hit rect 230x44, dx/dy 0, but hit PRE from high-z diagnostic panel. Never disable hit testing or force clicks to bypass real interaction. No application code or protected range changes in this repair.
+
+## 169. PICKER-EXCLUSIVE — v13.144
+- PICKER-EXCLUSIVE-01: Supersedes visible menu during handoff in KEYBOARD-FRAME-ACCESSORY-03. CRM accessory is visible only before native activation. Native picker and CRM accessory must never be visible simultaneously. After trusted click (not pointerdown), make accessory paint transparent and non-hit-testable, remove its tab stops, set plus aria-expanded=false; retain in-flow size until change/cancel. Do not hide or detach actual input before default activation.
+- PICKER-EXCLUSIVE-02: During handoff, preserve measured frame; raw viewport remains sole geometry source, no frozen viewport or additional reserve writer. Native UI geometry and keyboard dismissal are OS-controlled. On change/cancel clear handoff and close accessory, no forced focus. Explicit + recovers stale session if OS omits cancel.
+- PICKER-EXCLUSIVE-03: Real Chromium test checks native chooser, menu opacity=0, no hit target in menu, unchanged frame height, cancel/reopen and actual selected fixture with draft retained. Native iPhone remains mandatory. Sources: WebKit Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm (elementRect/tap and native action sheet), MDN HTMLInputElement cancel. No business or production change.

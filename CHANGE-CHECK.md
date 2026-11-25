@@ -336,3 +336,6 @@ Run 45585154404 failed at native input hit geometry assertion, before chooser; D
 
 ### v13.143 CI repair 4
 Run 45585524052 failed on hit target PRE. Native row/input rect exactly matched 230x44, offsets 0, pointer auto. Inspected apiProofPanel fixed z-index 10030 and pre report. Separate real interaction test from opt-in diagnostic UI by normal URL and assert panel absent. All geometry/chooser assertions retained; application and snapshot unchanged. DB 45585523949 success. New CI pending.
+
+## v13.144
+E0: v13.143 merged; CI API 45585754939 and DB 45585754803 passed. User iPhone screenshot shows native and CRM menus simultaneously. E1: exclusive presentation, preserve in-flow reserve through native activation, clear on change/cancel; four protected ranges byte-equal before version label change. E2: browser test updated for paint/hit exclusivity, unchanged frame and real file selection. CI and native pending.
