@@ -36,3 +36,9 @@ Decision: explicit calendar dates, conservative fixture-only candidate matching;
 - https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing — replay, immutable event history and idempotent consumers.
 - https://github.com/matrix-org/matrix-js-sdk/blob/develop/src/client.ts — sync reconnect states and retry.
 Decision: bounded local event dispatcher, deterministic recompute, no production event store or transport.
+
+## v13.80 phase 3f
+- https://github.com/w3c/IndexedDB — IndexedDB transaction atomicity and completion.
+- https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction/complete_event — publish only on transaction completion.
+- https://github.com/postgres/postgres/blob/master/doc/src/sgml/ddl.sgml — unique constraints and durable relational design (future production adapter only).
+Decision: isolated bounded journal for fixtures; no server/database migration or real posting.
