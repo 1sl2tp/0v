@@ -250,6 +250,15 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  try{await mp.waitForFunction(()=>window.mainReadAudit('ncc').unread===0,{},{timeout:8000})}catch(e){console.error('Main read geometry',JSON.stringify(await readGeometry()));throw e}
  assert.equal(await mp.locator('.contact[data-id=ncc] .unread-count').count(),0);assert((await mp.evaluate(()=>window.ownerAudit().parents)).includes('Contact'));const data=await mp.evaluate(()=>window.mainDataAudit());assert.equal(data.messages,12);assert.equal(data.rooms.nv.count,4);assert.equal(data.rooms.nv.latestId,'main:nv:4');assert.equal(data.rooms.ncc.count,4);assert.equal(data.rooms.ncc.latestId,'main:ncc:4');assert.equal(data.rooms.kh.count,2);assert.equal(data.rooms.nhom.count,2);assert.equal(await mp.locator('#messages .message').filter({hasText:'Tin chưa đọc thứ hai'}).count(),1);await badge.dispose();await mp.close()
  }
+ // Long read: tail alone and skipped middle are insufficient; all parts must dwell.
+ {const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?apicheck=1');await p.locator('#apiProofPanel').getByRole('button',{name:'Ẩn',exact:true}).click();await p.bringToFront();await p.locator('.contact[data-id=nv]').click();await p.waitForTimeout(300);
+ await p.evaluate(()=>receiveDemo('nv','Nội dung tin nhắn dài để kiểm tra đọc theo vùng. '.repeat(100),'qa-long-read'));
+ const row=p.locator('[data-fixture-message-id="fixture-event:qa-long-read"]');const measure=()=>row.evaluate(e=>{const m=document.querySelector('#messages'),r=e.getBoundingClientRect(),root=m.getBoundingClientRect(),frame=document.querySelector('.composer-frame').getBoundingClientRect();return {height:r.height,capacity:Math.min(root.bottom,frame.top)-root.top,offset:r.top-root.top+m.scrollTop}});
+ const g=await measure();assert(g.height>g.capacity,JSON.stringify(g));await p.waitForTimeout(1450);assert.equal(await p.evaluate(()=>mainReadAudit('nv').unread),1);
+ // Scroll by small overlapping steps so every segment becomes fully exposed.
+ for(let y=0;y<g.height;y+=Math.max(80,Math.floor(g.capacity/3))){await p.evaluate(top=>{document.querySelector('#messages').scrollTop=top},Math.max(0,g.offset+y-70));await p.waitForTimeout(1450)}
+ await p.waitForFunction(()=>mainReadAudit('nv').unread===0,{},{timeout:8000});await p.close();}
+ 
  // Main business projection: common order line/total and ledger formatting in the normal fixture.
  {
  const bp=await browser.newPage({viewport:{width:390,height:844}});await bp.goto(url+'?apicheck=1');
