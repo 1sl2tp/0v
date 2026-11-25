@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.118)
+## 00. Chỉ mục rule đang có hiệu lực (v13.119)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1041,3 +1041,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-IDENTITY-BATCH-03: Prior receipt snapshot validates unique receipt/bill/canonical key, immutable owner and positive exact amount. Prior linked receipt remains collected; reserve used keys even if its original bill is absent. Manual unlinked receipt with exact matching amount proposes verification only, newCredit=0, original postedAt retained.
 - BANK-IDENTITY-BATCH-04: Separate new-receipt-plan, manual-link-plan, already-collected, manual-await-bank, review and pending. Per-customer and global exact new credit and manual link totals; no actual posting, balance or cycle mutation. Complete flag is caller assertion, not authoritative database completeness; no cross-session lock integration.
 - BANK-IDENTITY-BATCH-05: Regression for two customers across days, notice aliases, manual-link totals, competing bills, unresolved alias, missing clock, already-collected, prior key used elsewhere, incomplete scope and no owner; preserve v13.27 keyboard and existing CI. No real messages or data.
+
+## 144. BANK-ACCUMULATION — v13.119
+- BANK-ACCUMULATION-01: Synthetic account only, append-only evidence timeline, explicit event ID and ISO instant, nondecreasing event time. Exact replay is a no-op; changed payload for the same ID rejects. Vietnam business date derived from TimeAPI; no midnight purge.
+- BANK-ACCUMULATION-02: Accept bill before or after Bank, OCR revisions in sequence, immutable customer/image context, immutable Bank notice ID and explicit statement evidence. Keep firstSeenAt and lastChangedAt separate. Day/reconnect/manual triggers re-evaluate without inventing evidence.
+- BANK-ACCUMULATION-03: Explicit fixture customer assignment and receipt snapshot; no inference from name. Preserve prior receipt ID, customer, amount, method and postedAt; late manual Bank linkage preserves original credit and records verifiedAt separately. No actual receipt creation or historical mutation.
+- BANK-ACCUMULATION-04: Every new evidence event invalidates completeness; explicit scope assertion with expected revision required before new proposals. Replay as of a historical cutoff excludes later evidence; entire journal is bounded to 400 events and not a persistent store. Existing BankIdentityBatchAPI remains the proposal owner. No production data, automatic sends or actual debt changes.
+- BANK-ACCUMULATION-05: Regression for bill-first and Bank-first, late notice, missing clock, OCR correction, manual link, historical cutoff, retry/conflict, backwards time, revision conflict and completeness gate. Preserve keyboard v13.27; both CI workflows required.
