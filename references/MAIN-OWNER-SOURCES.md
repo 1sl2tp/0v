@@ -14,3 +14,9 @@ Decision: keep existing Store APIs, use MainDataController as fixture adapter, r
 - https://github.com/dinerojs/dinero.js/blob/main/README.md — immutable money, bigint and explicit precision.
 - https://github.com/tc39/proposal-temporal/blob/main/docs/timezone.md — distinguish instant, local calendar/time and zone.
 Decision: retain exact Foundation APIs, use narrow fixture boundary adapter, no new dependency. Do not infer short date year or change reconciliation policy.
+
+## v13.76 phase 3b
+- https://github.com/statelyai/xstate — explicit state transitions and guards.
+- https://github.com/stripe/stripe-node/blob/master/README.md — idempotency keys and safe retry.
+- https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Webhook_Security_Cheat_Sheet.md — verify event and persist processed IDs before suppressing duplicate delivery.
+Decision: narrow local fixture guard only; durable idempotency remains a production adapter responsibility. Do not loosen real bill matching or send notices.
