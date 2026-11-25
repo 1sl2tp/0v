@@ -41,3 +41,5 @@ Shared runtime initialized before data branch; live swipe/input/scroll use exist
 - L08 backend candidate E1: SQL read projection and isolated PostgreSQL fixture; no UI bump. Production deployment blocked until exact candidate passes DB CI and separate review. v13.177 UI E3 confirmed; E4 pending.
 
 - L08 v13.177 read backend deployed PR #150; E4 pending. L06 prepare candidate E1: private reservation with isolated tests; upload/commit and production blocked pending additional gates. UI version unchanged.
+
+- L06 phase 1 E2 API 45710167616 / DB 45710167783 passed; phase 2 E1 global reservation and quota tests added to PR #151. No production activation; upload and commit pending.

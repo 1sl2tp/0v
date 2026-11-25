@@ -493,3 +493,5 @@ ScrollController.followEnd/stopFollowing/userMoved: scoped navigation tail inten
 LIVE-BILL-02 backend candidate: existing private admin_media optional bill_receipt uses exact key join, AAL2 and same-customer collection ledger, strict printed time/date. Existing wrapper/ACL unchanged; production not yet activated.
 
 L06 candidate v0_admin_media_prepare(contact,client,body,assets): private reservation only, existing room, same-session exact replay, separate 0vm key. Not deployed; no upload or commit capability.
+
+MEDIA-PREPARE-02 candidate extends existing prepare RPC, private unique reservations and per-admin quota; unchanged signature, no upload. Exact replay unchanged.
