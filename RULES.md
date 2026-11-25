@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.127)
+## 00. Chỉ mục rule đang có hiệu lực (v13.128)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1104,3 +1104,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-OCR-SOURCE-03: Retain raw lines and aligned word tokens/confidence separately from semantic fields. If block/text order differs, expose original raw lines and no inferred word mapping. Confidence is review only, never verification. No filtering text based on desired account/name.
 - BILL-OCR-SOURCE-04: Reference Tesseract quality guidance https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html (crop background/borders) and https://github.com/naptha/tesseract.js/blob/master/docs/api.md (text and blocks). No new dependencies or production change.
 - BILL-OCR-SOURCE-05: Static source scope and raw-line assertions; browser fixture for same-size contrast and retained source. Synthetic data only; actual OCR quality remains unmeasured.
+
+## 153. BILL-SCOPED-FIELD — v13.128
+- BILL-SCOPED-FIELD-01: Parent BillOCRFieldAPI owns field routing. readScoped uses existing per-type parsing (account, recipient/sender, amount, date, clock, memo, reference, trace and bank) without changing the full-bill parser or Bank matcher.
+- BILL-SCOPED-FIELD-02: Bare value fallback is opt-in only in explicit field-scoped reread. Exactly one unclassified line; no recognized other labels, excluded lines, or competing evidence. Unknown colon label blocked outside date/time. No inference across fields.
+- BILL-SCOPED-FIELD-03: Preserve raw text, source, confidence, line and diagnostics. Scoped bare results are proposals; no automatic verification/posting. Invalid glyph or conflicting readings require review. Existing review revision guard and verified-field lock remain.
+- BILL-SCOPED-FIELD-04: Image-field reread and explicitly selected manual text reread call same owner. Full image OCR never treats every bare value as a field. Missing clock still requires verification; no change to production, old bills, ledger, keyboard or bank rules.
+- BILL-SCOPED-FIELD-05: Regression covers bare clock, amount, account, name, date, memo, reference, wrong-label rejection, multiple lines, invalid glyph, opt-in guard and isolated revision. Synthetic fixtures; CI and real-image accuracy separate.

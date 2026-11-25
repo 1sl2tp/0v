@@ -276,3 +276,6 @@ E0: PR #92 merged; latest API 45559960224 and PostgreSQL 45559960003 successful.
 
 ## v13.127
 E0: PR #93 merged; API 45560360258 and DB 45560360223 passed. E1: source scope, crop preview, optional contrast, raw line and word evidence; Tesseract docs reviewed. E2: static/browser regression added; CI pending. No private media, real ledger, keyboard or production writes. E3–E5 not certified.
+
+## v13.128
+E0: v13.127 API 45561027286 and DB 45561027299 passed; merge checked before branch creation. E1: explicit scoped bare-value parser and retained raw evidence, no cross-field inference. E2: static/browser regression added; CI pending. No private media, real ledger, keyboard or production writes. E3–E5 not certified.
