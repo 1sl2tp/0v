@@ -102,3 +102,6 @@ v13.71 PR #38 merged 5398d8dcdd15ba7f3166572d7100592782bb2843; CI 45524924977 su
 
 ## v13.73 — Main owner phase 1
 v13.72 PR #39 merged 6af775922629f8bf7857a5d65fce7bf506158a79; CI 45526405781 success. Route local sent/incoming text via Message.create, Contact owns visibility/preview/time/unread/typing. Preserve rich demo samples, scroll and keyboard. MAIN-OWNER-01–04. Classic scripts/audit syntax checked; browser assertions added; CI pending. No live stores or production integration, real send, DB or manual deploy.
+
+## v13.74 — Main data phase 2
+v13.73 PR #40 merged 08e2b51d1999b1391345a3086e9808ef63b143c8; CI 45526996155 success. Replace writable Main texts array with MainDataController over MessageStore/ConversationStore; retain fixture metadata and initial preview/order; scoped single-use QA checkpoint. Direct store smoke test and script syntax passed; added static/browser assertions; CI pending. MAIN-DATA-01–04. No live transport, DB, keyboard, production or manual deploy.

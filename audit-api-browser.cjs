@@ -72,6 +72,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await mp.locator('.contact[data-id=nv]').evaluate(e=>e.click());
  const profile=el=>({layout:el.dataset.layoutProfile,bubble:el.querySelector('.bubble')?.dataset.typeRole,meta:el.querySelector('.meta')?.dataset.typeRole});
  const initial=await mp.locator('#messages .message').first().evaluate(profile);
+ const initialData=await mp.evaluate(()=>window.mainDataAudit());assert.equal(initialData.messages,8);assert.equal(initialData.conversations,4);assert.equal(initialData.rooms.nv.count,2);
+
  assert.equal(initial.layout,'message');assert.equal(initial.bubble,'chat');assert.equal(initial.meta,'caption');
  await mp.locator('#draft').fill('Tin mẫu kiểm thử cha');await mp.locator('#composer').evaluate(e=>e.requestSubmit());
  const sent=mp.locator('#messages .message.mine').filter({hasText:'Tin mẫu kiểm thử cha'});assert.deepEqual(await sent.evaluate(profile),initial);
@@ -81,7 +83,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const badge=await mp.locator('.contact[data-id=ncc] .unread-count').elementHandle();assert.equal(await badge.textContent(),'1');
  await mp.evaluate(()=>window.receiveDemo('ncc','Tin chưa đọc thứ hai'));assert.equal(await badge.textContent(),'2');assert(await badge.evaluate(e=>e.isConnected&&e===document.querySelector('.contact[data-id=ncc] .unread-count')));
  await mp.locator('[data-go=contacts]').first().evaluate(e=>e.click());await mp.locator('.contact[data-id=ncc]').evaluate(e=>e.click());
- assert.equal(await mp.locator('.contact[data-id=ncc] .unread-count').count(),0);assert((await mp.evaluate(()=>window.ownerAudit().parents)).includes('Contact'));await badge.dispose();await mp.close()
+ assert.equal(await mp.locator('.contact[data-id=ncc] .unread-count').count(),0);assert((await mp.evaluate(()=>window.ownerAudit().parents)).includes('Contact'));const data=await mp.evaluate(()=>window.mainDataAudit());assert.equal(data.messages,12);assert.equal(data.rooms.nv.count,4);assert.equal(data.rooms.nv.latestId,'main:nv:4');assert.equal(data.rooms.ncc.count,4);assert.equal(data.rooms.ncc.latestId,'main:ncc:4');assert.equal(data.rooms.kh.count,2);assert.equal(data.rooms.nhom.count,2);assert.equal(await mp.locator('#messages .message').filter({hasText:'Tin chưa đọc thứ hai'}).count(),1);await badge.dispose();await mp.close()
  }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
