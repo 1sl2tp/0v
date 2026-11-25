@@ -155,3 +155,6 @@ create(people,seeds) → append/list/latest/checkpoint/restore/status. Local fix
 
 ## v13.75 BusinessProjectionAPI
 amount/display/line/orderTotal/ledgerTotal/signed/noticeAmount. Safe integer fixture adapter or canonical decimal strings; all math delegates DecimalAPI/MoneyAPI. Explicit bank source format; unknown amount remains null; full and compact display separate. No posting, DB or reconciliation ownership. Date labels call FormatAPI.date.
+
+## v13.76 BillEvidenceAPI
+inspect({configured,original,reread,bank,posted}) returns matched/missingDate/canManual/canAuto/state/reasons. manual(state) returns posted fixture state or rejects. Exact-match fixture only, no persistent dedup or real posting. NoticeDeliveryAPI and NoticeRecoveryAPI registered as owners; notice labs unchanged.
