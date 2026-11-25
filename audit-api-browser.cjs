@@ -228,6 +228,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  // Main owner migration: initial, outgoing and incoming text share Message factory.
  {
  const mp=await browser.newPage({viewport:{width:390,height:844}});await mp.goto(url+'?apicheck=1');
+ // Diagnostic API remains available, but the actual overlay obscures message rows.
+ await mp.locator('#apiProofPanel').getByRole('button',{name:'Ẩn',exact:true}).click();assert.equal(await mp.locator('#apiProofPanel').count(),0);
  await mp.locator('.contact[data-id=nv]').evaluate(e=>e.click());
  const profile=el=>({layout:el.dataset.layoutProfile,bubble:el.querySelector('.bubble')?.dataset.typeRole,meta:el.querySelector('.meta')?.dataset.typeRole});
  const initial=await mp.locator('#messages .message').first().evaluate(profile);
