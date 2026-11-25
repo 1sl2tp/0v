@@ -123,3 +123,6 @@ CHAT bill-transfer-identity.mjs blob 72a8bed404e47aa137d7a83df982b914d74620fc: e
 
 ## v13.101
 CHAT credit-duplicate-identity.mjs blob 2b9f7c4231ba762dfdb80ad3e1bf7e2cb9b0d536: exact entire official body including final balance, independent printed minute, verified source/amount/account; received timestamp is transport metadata. 0v requires explicit non-own flag and independent parsed memo consistency; preserves competing unposted aliases. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a, parent geometry. No upstream runtime or customer constants copied.
+
+## v13.102
+ImageHash https://github.com/JohannesBuchner/imagehash/blob/master/imagehash/__init__.py ImageMultiHash matches/region_cutoff/Hamming distance: compare multiple region fingerprints; 0v uses bounded fixed inset candidates instead of segmentation, stricter independent bill evidence, no upstream code copied. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a, existing parent layout. No private image or customer values.
