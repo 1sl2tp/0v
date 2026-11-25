@@ -118,3 +118,7 @@ PR #132: [API PR CI](https://github.com/1sl2tp/0v/actions/runs/45684219123), [AP
 
 ### Sửa CI PR #133
 CI PR #133 [45684897457](https://github.com/1sl2tp/0v/actions/runs/45684897457) và push [45684881030](https://github.com/1sl2tp/0v/actions/runs/45684881030) fail; job 139454727771: ReferenceError FamilyRegistry is not defined ở pendingEvidence. DB 45684897443 success. Biến FamilyRegistry nội bộ closure không tồn tại trong page.evaluate. Dùng public familyAudit() làm nguồn chính; ghép row qua ID tạm duy nhất chỉ trong test, giữ ID sẵn có nếu unique, restore trước đo; negative probe qua metadata đúng hợp đồng. Không bypass assert hoặc đổi runtime. CI mới pending.
+
+
+## P01.4 PR #133 E2 and typography candidate
+[PR CI](https://github.com/1sl2tp/0v/actions/runs/45685194614), [push CI](https://github.com/1sl2tp/0v/actions/runs/45685183442), [DB](https://github.com/1sl2tp/0v/actions/runs/45685194699) success, merged ca997da7da8cfc38c1ee5d045b0d0552c2a04bda. 24 pending groups: 390px directory 5 rendered/1073 hidden, chat 8/21, order 25/1062 (14 Table), Bill 38/1269 (28 Card). Rendered not viewport visible. v13.164 changes role assignments/token per TYPE-HARMONY, not pending labels. P01 DOING, CI/native pending.

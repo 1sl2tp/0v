@@ -23,3 +23,7 @@ Họ font: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif. Weight 400/5
 
 ## So sánh và phạm vi
 v13.31 đã có size token, nhưng còn số trực tiếp cho weight/line-height và chưa có API chữ theo vai trò. v13.32 bổ sung --font-ui, --weight-*, CSS data-type-role, Typography.create/bind và lab. Các khai báo weight/line-height có trị số tương đương được thay bằng token ở CSS chính ngoài vùng Surface bảo vệ. Một số line-height hình học cũ (ví dụ module title 24px, caption header 18px) vẫn giữ; rule CSS role có specificity thấp để không tự ghi đè component. Table hiện dùng caption 12/16 theo hợp đồng cũ, không ép role money 13/18 vào cột tiền. Module và header/cell bảng được gọi API, không tuyên bố đã chuyển toàn bộ static markup. Input/Keyboard và các API cũ bảo vệ; chưa có đo computed style trên browser, glyph tiếng Việt, zoom/resize, Pages. Cần đo và duyệt trước khi bỏ các selector tương thích.
+
+
+## v13.164 — semantic roles
+Astryx Text.tsx da954186ff862485cbf0e1964cb2bec15f43b9bb and Radix Themes typography.css 45b359c55b5d2c32a4913cd8ba0394cae0035632 read directly. Type owns size/line; weight/decoration separate. Chat 17/26, body 16/22, title 18/24, detail/business labels/values/shared tables 14/20, caption 13/18, version 10/16, input unchanged 17/22. Earlier values historical. TYPE-HARMONY overrides; E4 pending.
