@@ -224,3 +224,6 @@ BankReconcileAPI candidate missingClockProof and result.verification distinguish
 
 ## v13.98
 BankReconcileAPI.billClock(record) returns present, missing, invalid, conflict or unverified-date. Missing/invalid/conflict requires review even with zero Bank candidates. Queue projects clockReviewRequired and a draft verification request, never sends it.
+
+### BANK-RELATED (v13.98 revision 2)
+BankReviewQueueAPI.project exposes immutable relatedCandidates (bankId, tier, bankPrintedTime, transactionDate, receivedDate, late, competing, memoProof, canPost:false) and possiblyRelated count; derived only, no receipt authority. Existing BankReconcileAPI computes evidence; no new owner.

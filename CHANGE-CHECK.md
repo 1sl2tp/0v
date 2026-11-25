@@ -183,3 +183,6 @@ v13.96 CI passed and merged. Add strict missing-clock reference evidence, separa
 
 ## v13.98
 v13.97 CI passed and merged. Mandatory clock review before Bank arrival; separate clock state, verification count and customer request draft. No auto-send or production changes. Direct regression tested.
+
+## v13.98 revision 2
+E0: CI run 45544344099 failed audit-api-browser.cjs:110 (expected 3 pending, actual 2). Mandatory review intentionally changes initial and reset states. E1: keep clock gate, update browser assertions and add related-candidate UI assertions. BANK-CLOCK, BANK-RELATED, BANK-QUEUE, BANK-RESIDUAL, KB-LOCK. Related tier is diagnostic; no new financial authority. E2: direct contract added; full CI required. No production writes or messages.

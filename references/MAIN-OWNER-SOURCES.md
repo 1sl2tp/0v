@@ -111,3 +111,6 @@ CHAT bill-app-preview.mjs previewBillReferenceMatch and sharedBankReference: dat
 
 ## v13.98
 User clarification: missing bill clock requires verification. CHAT previewBillReferenceMatch remains review-only; no automatic collection from alternative reference proof. Explicit manual history is unchanged.
+
+## v13.98 revision 2
+CHAT bill-app-preview.mjs blob 3fb53ea99124ed673a588281787a2e135a8a5e26, existing reference/memo and competing evidence path; reuse 0v memo residual diagnostics and review projection. No external UI dependency or private constants copied.

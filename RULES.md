@@ -887,3 +887,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-CLOCK-03: Queue exposes clockState, clockReviewRequired, count and customer verification draft asking for hour:minute or complete bill image. Draft only, no notification delivery, no real customer message.
 - BANK-CLOCK-04: Day rollover/reconnect/Bank arrival never clear mandatory review; preserve original clock and evidence. No financial writes, historic receipt edits or production deployment.
 - BANK-CLOCK-05: Tests cover no Bank, blank/invalid/conflicting clock, explicit date-time, late Bank, recheck and corrected OCR. Preserve keyboard v13.27.
+
+## 122. BANK-RELATED — v13.98 revision 2
+- BANK-RELATED-01: Missing printed clock remains mandatory review. Read-only related candidates require same valid Vietnam date, exact positive amount, full receiving account, clear bill, verified incoming Bank and explicit non-own-transfer; no date, account, name, reference, digit or arrival-time conflict.
+- BANK-RELATED-02: Exact substantive memo with matching recipient name is priority; contained/compact substantive memo or bounded literal residual with matching name is possible only. No similarity score authorizes collection; generic text alone is insufficient.
+- BANK-RELATED-03: Expose candidate Bank ID, separately printed Bank clock, date, late arrival, competing evidence and canPost=false. Multiple candidates remain competing; no automatic selection or link. Duplicate and posted rows excluded from projection.
+- BANK-RELATED-04: Recompute on Bank arrival and OCR correction via existing owners. No actual messages, production deployment or financial changes.
+- BANK-RELATED-05: Regression for blank clock, missing Bank, priority, residual, competing, own transfer, conflicting evidence and OCR correction. Browser asserts initial 2 pending + 1 review and candidate rendering; preserve keyboard v13.27.
