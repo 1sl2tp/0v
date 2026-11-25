@@ -42,3 +42,8 @@ Decision: bounded local event dispatcher, deterministic recompute, no production
 - https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction/complete_event — publish only on transaction completion.
 - https://github.com/postgres/postgres/blob/master/doc/src/sgml/ddl.sgml — unique constraints and durable relational design (future production adapter only).
 Decision: isolated bounded journal for fixtures; no server/database migration or real posting.
+
+## v13.81 phase 3g
+- https://github.com/TanStack/table — separate row projection, sorting and presentation.
+- https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing — derive read models from events.
+Decision: read-only projection over existing fixture API, explicit clock and multiple reasons; no new production dependency.
