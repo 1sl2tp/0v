@@ -25,3 +25,9 @@ Decision: narrow local fixture guard only; durable idempotency remains a product
 - https://github.com/aws-samples/transactional-outbox-pattern/blob/main/README.md — separate committed write and relay, duplicate handling.
 - https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html — atomic intent and idempotent consumer.
 Decision: reuse existing evidence owner, expose read-only order projection, do not implement real outbox transport in UI.
+
+## v13.78 phase 3d
+- https://www.unicode.org/cldr/charts/50/verify/dates/vi.html — Vietnamese date patterns.
+- https://github.com/unicode-org/cldr/blob/main/docs/site/translation/date-time/date-time-patterns.md — locale date fields.
+- https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Webhook_Security_Cheat_Sheet.md — verify and persist processed event IDs for duplicate handling.
+Decision: explicit calendar dates, conservative fixture-only candidate matching; no date inference or durable posting claim.
