@@ -180,3 +180,6 @@ v13.95 CI passed and merged. Add literal residual diagnostics and signed MCC clo
 
 ## v13.97
 v13.96 CI passed and merged. Add strict missing-clock reference evidence, separate printed Bank clock, late-arrival metadata and queue review projection. Receipt remains blocked. Direct regression executed; no production mutation or customer notification.
+
+## v13.98
+v13.97 CI passed and merged. Mandatory clock review before Bank arrival; separate clock state, verification count and customer request draft. No auto-send or production changes. Direct regression tested.

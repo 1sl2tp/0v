@@ -108,3 +108,6 @@ CHAT bill-app-preview.mjs verifiedMbvcbTransferSuffixOcr and contiguousMemoConta
 
 ## v13.97
 CHAT bill-app-preview.mjs previewBillReferenceMatch and sharedBankReference: date-only alternative proof remains review pending financial guard. 0v adds conservative full recipient, explicit non-own-transfer and unique batch evidence without current-day expiry. No private constants copied.
+
+## v13.98
+User clarification: missing bill clock requires verification. CHAT previewBillReferenceMatch remains review-only; no automatic collection from alternative reference proof. Explicit manual history is unchanged.

@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.97)
+## 00. Chỉ mục rule đang có hiệu lực (v13.98)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -880,3 +880,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-NOCLOCK-03: Require unique bill and bank candidate, no duplicate or consumed evidence. Expose missing-clock-reference verification with billTime=null, separately printed bank clock/date and arrival date. Late arrival never fills missing OCR time. Review only; canPost=false; no receipt or manual link authorization.
 - BANK-NOCLOCK-04: Queue shows separate proof and next action, retains amount in outstanding total. Recheck persists ownTransfer evidence; explicitly own transfers excluded. Unknown own-transfer cannot qualify this proof. No actual messages, DB writes or historical corrections.
 - BANK-NOCLOCK-05: Test late next-day arrival, invalid clock, absent name, wrong account/reference, generic/missing memo, own transfer, ambiguity, replay and blocked posting. CHAT previewBillReferenceMatch reference. Preserve keyboard v13.27.
+
+## 121. BANK-CLOCK — v13.98
+- BANK-CLOCK-01: Bill clock is mandatory for automatic collection. Missing, invalid or contradictory printed clock enters mandatory review immediately, even before Bank arrives. A valid explicit clock in the printed date-time field counts; upload, notification and device clocks never substitute.
+- BANK-CLOCK-02: Same amount, account, date, memo, reference and later Bank evidence cannot clear missing clock; keep v13.97 evidence review-only. Only a new verified printed clock revision can restore normal automatic candidate evaluation. Explicit historical manual entries remain separate, never silently changed.
+- BANK-CLOCK-03: Queue exposes clockState, clockReviewRequired, count and customer verification draft asking for hour:minute or complete bill image. Draft only, no notification delivery, no real customer message.
+- BANK-CLOCK-04: Day rollover/reconnect/Bank arrival never clear mandatory review; preserve original clock and evidence. No financial writes, historic receipt edits or production deployment.
+- BANK-CLOCK-05: Tests cover no Bank, blank/invalid/conflicting clock, explicit date-time, late Bank, recheck and corrected OCR. Preserve keyboard v13.27.
