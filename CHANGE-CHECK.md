@@ -210,3 +210,6 @@ E0: v13.104 PR #71 merged; CI 45546743837 success. E1: BANK-FIELD-REVISION, BANK
 
 ## v13.106
 E0: v13.105 PR #72 merged; CI 45547566090 success. E1: BANK-FIELD-GEOMETRY, BANK-FIELD-REVISION, BANK-REGION-OCR, BANK-ENGINE, KB-LOCK. Explicit block output, exact ordered line alignment, bounds and manual fallback, sample UI coordinates. Tesseract v6.0.1 typings, Adobe SelectionManager, Astryx Card studied. E2: direct contract and classic syntax; browser mock pixel test added, full CI pending. No real OCR model validation, interactive manual picker, automatic field reread, production writes or messages. Google Sheet not updated.
+
+## v13.107
+E0: v13.106 PR #73 merged, CI 45548019367 success. E1: BANK-FIELD-VARIANTS, BANK-FIELD-GEOMETRY, BANK-FIELD-REVISION, BANK-ENGINE, KB-LOCK. Bounded original/contrast/scale2 variants, literal per-field comparison, no majority/confidence override. Tesseract tessdoc ImproveQuality and Astryx Card reviewed. E2: direct logic/syntax and browser mock regression added; full CI pending. Real OCR, AI model and private corpus not tested; no production data, messages or keyboard changes. Google Sheet not updated.

@@ -138,3 +138,6 @@ Adobe react-stately useNumberFieldState.ts pinned blob eed17a1d22715cf92ece7156c
 
 ## v13.106
 Tesseract.js v6.0.1 src/index.d.ts blob 1f5a9c8094fe4de7983467f9efb43bdb4de535f2: OutputFormats.blocks, Page.blocks, Block.paragraphs, Paragraph.lines, Line.text/bbox. Adobe SelectionManager pinned blob d6ff15c5b5efd7f9be685f87f46c3ed251c093f5: stable selection identity; Astryx Card blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. Reuse parser provenance and crop geometry, no upstream code copied or private values.
+
+## v13.107
+Tesseract tessdoc ImproveQuality.md blob 522d6369143d4c17cda2b4ad18d133d2f5bbf975: rescaling, binarisation and preprocessing may help or hurt recognition; compare variants instead of claiming improved accuracy. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a: reuse existing card layout. Existing Tesseract adapter and field parser reused; no upstream code or private data copied.
