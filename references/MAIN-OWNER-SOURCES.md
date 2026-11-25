@@ -105,3 +105,6 @@ CHAT bill-app-preview.mjs sender-bound QR logic and observed private aggregate M
 
 ## v13.96
 CHAT bill-app-preview.mjs verifiedMbvcbTransferSuffixOcr and contiguousMemoContains studied. Private aggregate residual shapes informed diagnostic-only gap, short equality and cross-day clock conflict. No raw values copied.
+
+## v13.97
+CHAT bill-app-preview.mjs previewBillReferenceMatch and sharedBankReference: date-only alternative proof remains review pending financial guard. 0v adds conservative full recipient, explicit non-own-transfer and unique batch evidence without current-day expiry. No private constants copied.

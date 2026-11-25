@@ -177,3 +177,6 @@ v13.94 CI passed and merged. MCC variant grammar, sender-bound generic memo and 
 
 ## v13.96
 v13.95 CI passed and merged. Add literal residual diagnostics and signed MCC clock delta/day evidence. No new matching eligibility or production changes. Direct regression executed.
+
+## v13.97
+v13.96 CI passed and merged. Add strict missing-clock reference evidence, separate printed Bank clock, late-arrival metadata and queue review projection. Receipt remains blocked. Direct regression executed; no production mutation or customer notification.
