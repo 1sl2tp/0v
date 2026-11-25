@@ -31,6 +31,19 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert(await p.locator('#messages').innerText().then(t=>t.includes('Tin mẫu khi danh bạ đang mở')));
  await back.click();await room('nv').click();assert.equal(await draft.inputValue(),'');await back.click();await room('kh').click();assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');await p.close();}
  
+ // Incoming event identity: duplicate replay does not mutate thread, directory or counters.
+ {const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?apicheck=1');
+ await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
+ await p.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&document.querySelector('#messages').childElementCount>0);
+ const read=()=>p.evaluate(()=>({data:window.mainDataAudit(),thread:document.querySelector('#messages').innerText,preview:document.querySelector('.contact[data-id=ncc] .identity small').textContent,unread:document.querySelector('.contact[data-id=ncc] .unread-count')?.textContent||'0'}));
+ await p.evaluate(()=>receiveDemo('ncc','QA event identity','qa-ncc-1'));const one=await read();
+ await p.evaluate(()=>receiveDemo('ncc','QA event identity','qa-ncc-1'));assert.deepEqual(await read(),one);
+ await p.evaluate(()=>receiveDemo('ncc','QA event identity','qa-ncc-2'));const two=await read();assert.equal(two.data.messages,one.data.messages+1);assert.equal(Number(two.unread),Number(one.unread)+1);assert.equal(two.thread,one.thread);
+ assert.equal(await p.evaluate(()=>{try{receiveDemo('kh','QA event identity','qa-ncc-1');return false}catch(e){return /Conflicting/.test(e.message)}}),true);assert.deepEqual(await read(),two);
+ await p.evaluate(()=>receiveDemo('nv','QA current room','qa-nv-1'));const current=await read();
+ await p.evaluate(()=>receiveDemo('nv','QA current room','qa-nv-1'));assert.deepEqual(await read(),current);assert.equal(current.data.messages,two.data.messages+1);
+ await p.close();}
+ 
  // Incoming scroll policy: idle tail follows, reader away stays, jump clears, other room untouched.
  {const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url);
  await p.evaluate(()=>document.querySelector('.contact[data-id=kh]').click());
