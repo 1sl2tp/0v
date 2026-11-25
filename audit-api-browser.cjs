@@ -111,7 +111,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await page.getByRole('button',{name:'Nhận bank ngày hôm sau (mẫu)',exact:true}).evaluate(e=>e.click());
  assert.equal(await status.getAttribute('data-ready'),'2');assert.equal(await status.getAttribute('data-review'),'1');assert.equal(await status.getAttribute('data-pending'),'0');
  assert.equal(await page.locator('[data-bank-bill=bill-3]').getAttribute('data-bank-state'),'review');assert((await page.locator('[data-bank-bill=bill-1]').textContent()).includes('25/11/2026'));assert((await page.locator('[data-bank-bill=bill-1]').textContent()).includes('24/11/2026'));
- await page.getByRole('button',{name:'Đọc lại giờ bill 3 (mẫu)',exact:true}).evaluate(e=>e.click());assert.equal(await status.getAttribute('data-ready'),'3');assert.equal(await status.getAttribute('data-review'),'0');assert.equal(await status.getAttribute('data-trigger'),'ocr');
+ assert((await page.locator('[data-bank-bill="bill-3"]').getAttribute('data-review-reasons')).includes('transaction-time-missing'));const waitBefore=await page.locator('[data-bank-bill="bill-3"]').getAttribute('data-wait-hours');await page.getByRole('button',{name:'Đọc lại giờ bill 3 (mẫu)',exact:true}).evaluate(e=>e.click());assert.equal(await page.locator('[data-bank-bill="bill-3"]').getAttribute('data-review-reasons'),'');assert.equal(await page.locator('[data-bank-bill="bill-3"]').getAttribute('data-wait-hours'),waitBefore);assert.equal(await status.getAttribute('data-ready'),'3');assert.equal(await status.getAttribute('data-review'),'0');assert.equal(await status.getAttribute('data-trigger'),'ocr');
  await page.getByRole('button',{name:'Kết nối lại (mẫu)',exact:true}).evaluate(e=>e.click());assert.equal(await status.getAttribute('data-ready'),'3');assert.equal(await status.getAttribute('data-trigger'),'reconnect');
  await page.getByRole('button',{name:'Chuyển ngày (mẫu)',exact:true}).evaluate(e=>e.click());assert.equal(await status.getAttribute('data-day'),'2026-11-26');assert.equal(await status.getAttribute('data-ready'),'3');
  await page.getByRole('button',{name:'Đặt lại mẫu',exact:true}).evaluate(e=>e.click());assert.equal(await status.getAttribute('data-pending'),'3');await page.close()
@@ -124,7 +124,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await open();assert.equal(await s.getAttribute('data-state'),'empty');
  await click('Nhận bill (mẫu)');await wait('state','pending');await p.reload();await open();assert.equal(await s.getAttribute('data-state'),'pending');
  await click('Nhận Bank (mẫu)');await wait('state','eligible-fixture');await click('Ghi thu mô phỏng');await wait('state','posted');assert.equal(await s.getAttribute('data-receipts'),'1');
- await p.reload();await open();assert.equal(await s.getAttribute('data-receipts'),'1');assert.equal(await s.getAttribute('data-state'),'posted');
+ await p.reload();await open();assert.equal(await s.getAttribute('data-receipts'),'1');assert.equal(await s.getAttribute('data-state'),'posted');assert((await p.locator('[data-bank-journal-bill="bill-fixture-1"]').textContent()).includes('Đã ghi thu mẫu'));
  await click('Thử thu trùng (mẫu)');await wait('error','rejected');await click('Thử hủy giao dịch (mẫu)');await wait('error','aborted');await p.reload();await open();assert.equal(await s.getAttribute('data-entries'),'3');assert.equal(await s.getAttribute('data-receipts'),'1');await p.close()
  }
  // Layout and Typography lab coverage is separate from the normal UI.

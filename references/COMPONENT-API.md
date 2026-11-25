@@ -170,3 +170,6 @@ create({configured,postedBillIds,postedBankIds}) returns dispatch({id,type,at,re
 
 ## v13.80 BankJournalAPI
 empty(scope,configured), append(journal,entry), replay(journal), open/read/change. Versioned isolated fixture IndexedDB journal with max 200 entries, evidence and receipt replay, scoped unique bill/bank pair, transactional commit before projection. ?bankjournallab=1 exercises pending → matched → posted-demo and F5, duplicate/abort. No server persistence or real ledger.
+
+## v13.81 BankReviewQueueAPI
+project(snapshot,{configured,now,receipts}) returns immutable ordered rows, codes/labels/actions, hours, firstSeenAt, OCR revision, relevant evidence history and counts/sum excluding unknown amounts and posted receipts. Snapshot from BankRecheckController or BankJournalAPI replay. Does not infer true cause when bank is unmatched, or authorize receipts. Both bank labs show details. Fixture only.
