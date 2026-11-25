@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.115)
+## 00. Chỉ mục rule đang có hiệu lực (v13.116)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1020,3 +1020,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-ROLLING-PERSIST-03: Replay whole journal before and after mutation, preserving original postedAt, exact amount, manual-to-bank linkage without second receipt; later known Bank aliases cannot be assigned twice. Transaction failure rolls back both evidence and ownership.
 - BANK-ROLLING-PERSIST-04: Browser fixture API only at ?bankpersistlab=1; no real balance changes, no messages, no reminder changes, no production adapter. Local same-origin storage can be cleared or isolated by browser/PWA; server-side database uniqueness and posting transaction remain required.
 - BANK-ROLLING-PERSIST-05: Direct checks for replay, unknown receipt, owner conflict, late manual link, synthetic-only scope; browser regression for abort, concurrent tabs, reload and reopen. Preserve keyboard v13.27; CI gate before release.
+
+## 141. BANK-ROLLING-DB — v13.116
+- BANK-ROLLING-DB-01: Standalone synthetic PostgreSQL fixture only, not a Supabase migration or production adapter. Account fixture:123456789 only; private schema, RLS enabled, no public/anon/authenticated/service_role grants, SECURITY INVOKER, fixed search_path.
+- BANK-ROLLING-DB-02: Database uniqueness by account+receipt ID, account+bill ID and account+verified provider transaction identity. No day/session/recipient customer in the Bank identity; no deduplication on amount/date/memo alone. Stable canonical Bank identity must come from a trusted verification service; absent or ambiguous identity needs review. No OCR guess or notification ID as transaction identity.
+- BANK-ROLLING-DB-03: Same receipt and immutable posting payload replay is a no-op; conflicting owner or payload rejects. Manual receipt late Bank link locks existing row, preserves original postedAt and amount; verifiedAt separately recorded. Missing bank transaction timestamp rejected. Trusted service must validate explicit clock from evidence before calling; SQL timestamp alone cannot prove clock was present.
+- BANK-ROLLING-DB-04: Exact numeric amount, no rounding during ledger operations, atomic SQL transaction. No actual customer balance, notification, cycle closing or reminder changes. Different verified transaction IDs may share amount and timestamp. Manual copies with different bill IDs and missing canonical Bank ID still require evidence review; old independent journal data not imported.
+- BANK-ROLLING-DB-05: CI-only PostgreSQL 16 service runs serial checks, rollback and two independent concurrent sessions. Existing browser/UI CI still required, preserve keyboard v13.27. No production rollout until authoritative identity, legacy reconciliation, auth and atomic actual ledger adapter are separately verified.

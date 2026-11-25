@@ -169,3 +169,9 @@ PostgreSQL doc/src/sgml/ddl.sgml blob d78d986756ebd1fe76aa778516fc0a3246a17491: 
 ## v13.115 persistent fixture references
 - [MDN IndexedDB basic terminology](https://github.com/mdn/content/blob/main/files/en-us/web/api/indexeddb_api/basic_terminology/index.md): overlapping readwrite scopes cannot run concurrently.
 - [PostgreSQL unique index checks](https://www.postgresql.org/docs/current/index-unique-checks.html): server-side unique index needed for real cross-device guarantees; not implemented in this fixture.
+
+## v13.116 database references
+- https://www.postgresql.org/docs/current/index-unique-checks.html — concurrent uniqueness at index insertion.
+- https://www.postgresql.org/docs/current/transaction-iso.html — concurrent conflict visibility in Read Committed.
+- https://github.com/supabase/supabase/blob/master/apps/docs/content/guides/database/functions.mdx — security invoker, restricted function execution.
+- https://supabase.com/docs/guides/database/postgres/row-level-security — RLS defense in depth.
