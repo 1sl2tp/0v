@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.166)
+## 00. Chỉ mục rule đang có hiệu lực (v13.167)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1337,3 +1337,12 @@ E0: MainData receives and renders fixture messages but did not invoke Notificati
 - TYPE-RHYTHM-01: Version 11/16, contact name body 16/22 medium 500 (was 600), contact preview detail 14/20 (was caption 13/18), time caption 13/18. Contact row keeps 70px; track derives from line-detail. Remove redundant local preview font. User requests direct code changes; this overrides corresponding typography values in TYPE-HARMONY-01 and PARENT-RUNTIME-02/03, not historical snapshots.
 - TYPE-RHYTHM-02: Chat font 17px, line 24px (was 26); formatted text shares chat role. Desktop thread-gap uses gap-sm 8px (was 12), mobile floating gap untouched. Keep input 17/22, 44px, protected keyboard/Surface regions; do not reduce icon touch or change data. Do not claim exact ChatGPT specs.
 - TYPE-RHYTHM-03: Test all six widths, contact token propagation, name weight/preview size, version, chat line, desktop gap and existing F5; native/visual review pending. UI tuning may be performed directly per user request but preserve CI and release gates.
+
+
+## CHAT-READ-01–04 — giai đoạn chuyển đổi do user yêu cầu
+- CHAT-READ-01: CHAT giữ auth/device approval/session/sync/cache/permission owner; 0v chỉ projection. Không copy token/secret, không direct RPC, không mở conversation, mark-read, heartbeat, send, collect, media download. Không thêm polling. Live host chưa được cài; public 0v chỉ fixture. Chỉ host đã xác thực, cùng origin hoặc kiểm chứng boundary riêng, mới được cấp adapter; callback do host kiểm quyền mỗi lần. Không dùng ID từ client để cấp quyền.
+- CHAT-READ-02: ChatReadAPI nhận session() {accountId,epoch,approved}, readContacts(scope), readThread(scope,authorizedConversationId); chỉ đọc contact đã trả về, không conversation mới, tối đa 100 tin. Từ chối stale request/account rotation/logout, foreign conversation, duplicate ID, invalid time; dispose xóa directory; host phải dispose và xóa UI ngay khi auth đổi, không cache/persist dữ liệu thật trong 0v. Không tự đoán phân nhóm/loại media. Text render textContent.
+- CHAT-READ-03: Fixture popup opt-in chatread=fixture, không network/credential/real data, dùng API cha Layout/Popup/Button/Typography. Default Main/keyboard unchanged; không thay labels fixture thành dữ liệu thật. Test denied, empty, mismatch, session rotation, dispose, text literal và UI.
+- CHAT-READ-04: Tích hợp live tiếp theo cần kiểm tra SQL grants/membership và hiệu ứng thực của sidebar/snapshot, contract host theo session đã duyệt, test tài khoản staging A/B, device native. Không deploy live trước E2/E4 security; user cho phép hướng kết nối nhưng không cho phép bỏ quyền. Không thay CHAT repo trong vòng này; PR #414 đang riêng. P01/ROADMAP giữ trạng thái, chuyển đổi P03/P04 theo yêu cầu mới.
+
+- CHAT-READ-05: Kiến trúc một Supabase hiện hữu, hai frontend trong thời gian chuyển; không đồng bộ bản sao database, không sao chép credential giữa domain. Đăng nhập cùng hệ tài khoản nhưng phiên phải được duyệt theo cơ chế CHAT. Tái sử dụng RPC hiện hữu sau khi chứng minh quyền/side effects. Chuyển feature từng bước; CHAT vẫn vận hành. Fixture phải gọi API cha trong Main closure, không expose global để chữa test.

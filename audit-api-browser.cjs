@@ -5,6 +5,26 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try{
+ // CHAT read boundary: test actual source via injected synthetic host, never network.
+ {
+ const html=require('node:fs').readFileSync('index.html','utf8'),start=html.indexOf('const ChatReadAPI=(()=>{'),end=html.indexOf('/* MainDataController',start);
+ const API=new Function(html.slice(start,end)+';return ChatReadAPI')();
+ let state={accountId:'a',epoch:'e1',approved:true},calls=0,rows=[{id:'c',display_name:'Khách',conversation_id:'r',preview_text:'<b>text</b>'},{id:'empty',display_name:'Trống',conversation_id:null},{id:'locked',display_name:'Ẩn',locked_at:'yes'}],reply=[{id:'m',conversation_id:'r',sender_account_id:'a',body:'<script>text</script>',created_at:'2026-11-25T18:00:00Z'}];
+ let resolve=null;
+ const api=API.create({session:()=>state,readContacts:async()=>rows,readThread:async()=>{calls++;return resolve?await new Promise(r=>{resolve=r}):reply}});
+ assert.deepEqual(Object.keys(api),['directory','thread','dispose']);
+ await assert.rejects(api.thread('c'),/authorized directory/);assert.equal(calls,0);
+ const dir=await api.directory();assert.deepEqual(dir.map(r=>r.id),['c','empty']);assert.equal(dir[0].preview,'<b>text</b>');assert(!Object.hasOwn(dir[0],'avatar_path'));
+ assert.deepEqual(await api.thread('empty'),[]);assert.equal(calls,0);
+ const msgs=await api.thread('c');assert.equal(msgs[0].mine,true);assert.equal(msgs[0].text,'<script>text</script>');assert.equal(msgs[0].time,'01:00');
+ reply=[{...reply[0],conversation_id:'foreign'}];await assert.rejects(api.thread('c'),/scope/);
+ state={...state,epoch:'e2'};await assert.rejects(api.thread('c'),/session changed/);assert.equal(calls,2);await api.directory();
+ resolve=true;const pending=api.thread('c');state={...state,accountId:'b',epoch:'e3'};resolve([]);await assert.rejects(pending,/session changed|Stale/);
+ api.dispose();await assert.rejects(api.directory(),/unavailable/);
+ const blocked=API.create({session:()=>({accountId:'a',epoch:'e',approved:false}),readContacts:async()=>{throw Error('unexpected network')},readThread:async()=>[]});await assert.rejects(blocked.directory(),/unavailable/);
+ const pg=await browser.newPage({viewport:{width:390,height:844}});const readErrors=[];pg.on('pageerror',e=>readErrors.push(e.message));await pg.goto(url+'?chatread=fixture');await pg.getByRole('button',{name:'Khách đọc mẫu',exact:true}).click();await pg.waitForFunction(()=>document.querySelector('[data-chat-read-status]').textContent==='2 tin · Chỉ đọc');assert(await pg.locator('[data-chat-read-fixture]').getByText('Cho lấy 2 thùng sữa.',{exact:true}).isVisible());assert.equal(await pg.locator('[data-chat-read-fixture] textarea').count(),0);await pg.getByRole('button',{name:'Liên hệ chưa có hội thoại',exact:true}).click();await pg.waitForFunction(()=>document.querySelector('[data-chat-read-status]').textContent==='0 tin · Chỉ đọc');await pg.getByRole('dialog').getByRole('button',{name:'Đóng',exact:true}).click();await pg.locator('[data-chat-read-fixture]').waitFor({state:'detached'});assert.deepEqual(readErrors,[]);await pg.close();
+ console.log('CHAT read boundary fixture + denied/foreign/stale/disposed checks passed');
+ }
 
  // Directory search: empty result feedback, clear Escape, mobile disclosure and desktop focus.
  for(const width of [320,390,1024]){
