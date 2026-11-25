@@ -129,3 +129,6 @@ v13.80 PR #47 merged b75a6ab5342af61ad1cdbc237c8159b6673b4760; CI 45532746509 su
 
 ## v13.82 — manual receipt and late Bank evidence
 v13.81 PR #48 merged a3d2bb3920eb3870ba886faa179c45d40a4007f4; CI 45535546559 success. Manual fixture receipt and separate Bank link, immutable amount/time, duplicate guards, OCR amount conflict and Vietnamese labels. Direct smoke and exact static contract passed; Chromium F5 assertions added, CI pending. BANK-MANUAL-01–05. Image dedup/region handling not yet implemented. No real posting, production DB or keyboard change.
+
+## v13.83 — duplicate bill evidence guard
+Based on PR #49 head 5b979a7f32a74a7334316d0196a276f8adb06016; CI pending when work started. Exact image/region, reference and conservative near-hash review; immutable metadata; journal blocks duplicate manual/automatic fixture posting, preserves prior receipts. Separate duplicate count and provisional sum. No actual image decoding, region detection, production or keyboard change. BANK-DUP-01–05. CI required before release.
