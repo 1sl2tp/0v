@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.172)
+## 00. Chỉ mục rule đang có hiệu lực (v13.173)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1374,3 +1374,12 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-INTEGRATE-02: Tự chọn mẫu theo dữ liệu thật: text/multiline theo Message/Typography; ảnh/video/audio/file theo metadata đã xác thực và MediaController; loại nghiệp vụ theo trường/type đáng tin, không suy đoán từ tên khách hoặc chỉ từ vài chữ. Nội dung chưa rõ giữ nguyên và đánh dấu cần nhận diện; thiếu API hiển thị lỗi/giới hạn, không giả dữ liệu mẫu. Nhận diện bill là gợi ý đọc/OCR, không xác nhận thu; đối soát phải qua BankReconcile, receipt hợp lệ, chống trùng và quyền server.
 - LIVE-INTEGRATE-03: Bắt buộc parity fixture/live: kiểm tra mỗi owner trên dữ liệu mẫu tương đương shape server, cả trường thiếu, loại lạ, lỗi mạng, F5, nhiều ảnh, mobile/desktop. Ghi trạng thái CONNECTED / PARTIAL / BLOCKED / E2/E3/E4 độc lập; không tuyên bố toàn bộ chuyển xong khi CI xanh hoặc UI xuất hiện. Danh mục ban đầu ở references/LIVE-INTEGRATION-MAP.md.
 - LIVE-INTEGRATE-04: Phát hành theo allowlist hiện hành, snapshot duy nhất đúng phiên bản. SQL hoặc ROADMAP ngoài phạm vi tự phát hành phải tách và review riêng; không nới cổng chỉ để CI xanh. Ghi đường dẫn nguồn và blocker trong CHANGE-CHECK.
+
+## LIVE-RUNTIME-01 — v13.173
+- LIVE-RUNTIME-01: Live và fixture chạy cùng ScrollController, KeyboardController, InputController, resizeDraft và swipe-back trước nhánh dữ liệu. Không viết lại thuật toán viewport/early-close; ba vùng protected giữ nguyên so với v13.27, composer chỉ thêm điều kiện quyền gửi live (không đổi hình học). Navigation dùng beginSharedNavigation; thao tác gửi thật vẫn yêu cầu admin, ảnh chưa upload không gửi. Khi chuyển vùng giữ draft, khi restore không ghi đè vị trí đọc trong lúc tải. Test live phải kiểm tra keyboard owner, multiline, vuốt và draft. Native iOS/PWA vẫn cần nghiệm thu; không đánh dấu E4. Không sửa production/CHAT cũ.
+
+- LIVE-RUNTIME-02: Gửi text gọi Input.commitMessage và Input.isComposing chung, chặn gửi khi attachment đang xử lý; focus input ngay trong thao tác gửi, không force refocus sau response khi user đã chuyển vùng. Test target danh bạ bằng #contacts, không lẫn header; kiểm tra giữ focus sau gửi. Không thay thuật toán viewport/resize.
+
+- LIVE-RUNTIME-03: Dấu + ở live và fixture phải gọi đúng một native picker chung, giữ begin/finish handoff, một input co-located, synchronous click, cancel/change, không forced blur/refocus và không ghi viewport. Adapter live chỉ kiểm scope trước/sau decode, giữ ảnh draft theo room và xóa khi logout. Chưa upload: chặn send khi pending/có ảnh. Test live thực hiện một chooser, chọn hai ảnh, xóa, hủy, giữ text, không phát sinh send khi chọn ảnh. Native iOS menu vẫn cần kiểm tra. Không đổi vùng bảo vệ KB-LOCK.
+
+- LIVE-RUNTIME-04: Media thật phân loại theo kind/MIME và nhóm ảnh liền nhau cùng message, tối đa 4 theo MediaController.gallery. Giữ thứ tự, dùng kích thước decode thật (không đoán 360×360), giữ ảnh đã tải nếu một ảnh lỗi và hiện retry; không tạo viewer riêng. Private download, epoch/session guard trước/sau decode, revoke URL khi đổi phòng/logout; video dùng MediaController.video/releaseVideo. ScrollController giữ tail khi phù hợp, không tự kéo khi đang đọc tin cũ. Test nhóm ảnh dọc/ngang/vuông, chuyển ảnh và zoom. Native iOS, server media API, upload, thao tác nghiệp vụ chưa nghiệm thu; không thay keyboard.

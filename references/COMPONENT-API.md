@@ -456,3 +456,12 @@ Main.mount({live,onSearch}) creates same shell, no fixture contacts for live, re
 
 ## Live content projection
 Real text routes through Message.create; authenticated media parts attach before metadata; unavailable media metadata is explicit unknown, not an invented file type. See LIVE-INTEGRATION-MAP.md and LIVE-INTEGRATE-01–04 for all existing owners and missing adapters.
+
+## v13.173 shared interaction runtime
+ScrollController, KeyboardController, InputController, resizeDraft, swipe and beginSharedNavigation execute before live/fixture data split; view uses canonical owners. liveCanSend adapter only restricts submit eligibility. Protected keyboard geometry unchanged. Native acceptance pending.
+
+## Shared picker live/fixture
+Same native picker before split. Live callbacks authorize capture/decode by session, track room cleanup and status only. Existing DraftMedia and composer geometry unchanged; upload unavailable, native OS menu acceptance pending.
+
+## Live gallery adapter
+liveMediaGroups groups ordered consecutive images within one message, up to four. mediaImageGroup decodes private blobs, passes natural sizes to MediaController.gallery, keeps successful images on partial failure, retry missing. Existing viewer supplies navigation/zoom/rotation; non-images stay in source order. No backend media guarantee or upload.
