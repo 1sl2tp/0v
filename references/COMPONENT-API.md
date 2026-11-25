@@ -302,3 +302,6 @@ renderBankBacklogLab(panel) in Bill module or ?bankbackloglab=1. Uses BankBacklo
 
 ## v13.122 BANK-FIELD-COMPARE
 BankFieldCompareAPI.compare({configured,bill,bank,identity}) gives per-field literal values, diagnostic status/reason and clockReviewRequired; project(journal,{billId,bankId,asOf}) limits selection to candidate or linked notices. UI expands in backlog detail with explicit notice selection when multiple. No correction, identity assignment, message or receipt write. canPost=false and canSend=false.
+
+## v13.123 BANK-OCR-CORRECTION
+BankOCRCorrectionAPI.propose/apply(journal,command) uses existing field review API to validate one field from synthetic image-region text; replay validates ocr-verified event and retains old/new, reason, operator and raw evidence. Backlog sample previews and confirms clock from fixed synthetic source. No real image rerun, production authorization or posting.

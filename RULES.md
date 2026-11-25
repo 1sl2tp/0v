@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.122)
+## 00. Chỉ mục rule đang có hiệu lực (v13.123)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1069,3 +1069,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-FIELD-COMPARE-03: Project only candidate notices or prior linked canonical aliases from the accumulated evidence scope. Multiple notices require explicit display selection; selecting one never assigns a transaction or enables posting. No Bank means no fabricated comparison.
 - BANK-FIELD-COMPARE-04: Expandable Bill backlog details show each field with both source values, status and reason; reuse Layout, Card, Button, Typography. No actual editing, sending, ledger mutation or persistent storage. Preserve v13.27 keyboard.
 - BANK-FIELD-COMPARE-05: Twelve direct assertions for exact/near/conflicting/missing evidence and no-post; browser regression for multiple Bank selection, missing clock and unchanged new-credit total. Both CI workflows required before merge.
+
+## 148. BANK-OCR-CORRECTION — v13.123
+- BANK-OCR-CORRECTION-01: Reuse BillOCRFieldAPI reread/confirm in BankOCRCorrectionAPI; only explicit synthetic image-region evidence, never fill from Bank. Field, bill, fixture region, raw text, operator and reason required.
+- BANK-OCR-CORRECTION-02: Verified revision changes exactly one field; retain old/new values and literal reread text. Reject invalid or unchanged candidate, wrong region, stale journal/bill revision and already linked receipt. Existing legacy fixture OCR event path remains unchanged.
+- BANK-OCR-CORRECTION-03: Replay validates verified event against previous record and evidence, rejects unrelated field changes; preserve historical cutoff and receipt ownership. New evidence invalidates completeness; explicit scope revision needed before new proposal. No real authorization or posting.
+- BANK-OCR-CORRECTION-04: Bill backlog sample previews independent synthetic clock text and confirms explicitly, then recomputes queue; history shows before/after and reason. No actual image reread in this sample; no message or database changes, preserve keyboard v13.27.
+- BANK-OCR-CORRECTION-05: 13 direct assertions plus browser regression for preview/confirmation and history, no credit or send. Existing application and PostgreSQL CI required.

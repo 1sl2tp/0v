@@ -261,3 +261,6 @@ E0: PR #87 merged; API 45554134294 and PostgreSQL 45554134526 passed; main index
 
 ## v13.122
 E0: PR #88 merged; API 45554539584 and PostgreSQL 45554539640 passed; main blob verified. E1: BANK-FIELD-COMPARE, BANK-BACKLOG-UI, KB-LOCK. Read-only literal source comparison, shared existing normalization, explicit notice selection. E2: 12 direct assertions passed, seven classic scripts compiled, static and browser regression added; browser execution pending CI. E3–E5 not certified. No real receipt, message, storage, production or keyboard changes.
+
+## v13.123
+E0: PR #89 merged; API 45555022770 and PostgreSQL 45555022710 passed; main blob verified. E1: BANK-OCR-CORRECTION, existing BillOCRFieldAPI, BANK-ACCUMULATION. E2: 13 direct assertions passed, seven scripts compiled, static/browser regression added; CI pending. E3–E5 not certified. Synthetic text evidence only, not real OCR rerun or authorization. No production, real debt, messages, reminders, storage or keyboard changes.
