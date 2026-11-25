@@ -334,3 +334,6 @@ BillOCREngineAPI.sharpenPixels/rescueImage/rescueNeeded/attachRescue add bounded
 
 ## v13.137 — quality triage
 BillOCREngineAPI.qualityPixels and qualityAdvice add uncalibrated pixel hints and review routing. No change to baseline OCR attempts or rescue gate. Only known value scope with unreadable critical data produces a request draft; never send/post. Corpus calibration, real device and production integration pending.
+
+## v13.138 — composer attachments
+Role font tokens retained; DraftMedia per-room local preview, removal, image-only local send. 94% width when attached; no transport or durable storage. Native device acceptance pending.
