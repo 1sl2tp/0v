@@ -164,3 +164,6 @@ create({orderId,commandId,orderStatus,customerId,staffId,channel}), inspect(rows
 
 ## v13.78 BankReconcileAPI / ParseAPI.billDate
 match({configured,bills,banks,postedBillIds,postedBankIds}) returns immutable candidate results and unmatched bank evidence; bill/bank IDs independent, exact amount, date/time, normalized memo or reference, ambiguity review. All unresolved bills must be supplied by caller. `eligible-fixture` does not post receipts. Date parser accepts explicit Vietnamese textual dates, numeric dates and supported number words; time null if absent. ?bankreconcilelab=1 provides 3-bill next-day fixture. Production atomic posting and actual bank adapter not implemented.
+
+## v13.79 BankRecheckController
+create({configured,postedBillIds,postedBankIds}) returns dispatch({id,type,at,record,revision}), snapshot(), subscribe(), dispose(). In-memory fixture events only, match result via BankReconcileAPI. Monotonic OCR revisions and day watermark, conflict/replay guards. Reconnect/day are explicit simulated events; no actual scheduler or bank transport. ?bankreconcilelab=1 includes OCR reread, reconnect and day controls.

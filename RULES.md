@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.78)
+## 00. Chỉ mục rule đang có hiệu lực (v13.79)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -744,3 +744,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-RECON-03: Deduplicate same bank transaction ID with identical normalized evidence; conflicting payload quarantined. Previously posted bill/bank IDs excluded; absent/unverified/outgoing bank events cannot authorize receipt. Unmatched incoming bank events remain pending; never assign customer by amount alone. Production needs durable unique transaction ID and atomic ledger/idempotency transaction; fixture does not implement this.
 - BANK-RECON-04: ParseAPI.billDate supports d/m/yyyy, d-m-yyyy, d.m.yyyy, yyyy-mm-dd, Vietnamese ngày ... tháng ... năm ... (digits or supported number words, optional accents), optional HH:mm[:ss]. Require explicit year; validate calendar; missing time stays null, no midnight inference. Reject ambiguous/invalid dates, including relative words and two-digit year. Preserve original source.
 - BANK-RECON-05: Fixture bankreconcilelab demonstrates 3 unresolved bills, next-day bank arrival, 2 eligible and 1 missing-time review. Reason codes retained; eligible-fixture is a candidate, not a posted receipt. No real customer data, notifications, writes, keyboard or production change. CLDR date patterns and OWASP verified event dedup reference. CI before release.
+
+## 101. BANK-RECHECK — v13.79 (phase 3e)
+- BANK-RECHECK-01: BankRecheckController is a fixture-only event owner. Recompute all supplied unresolved bills and bank evidence on bill, OCR, bank, reconnect, day or manual events. No daily expiry or replacement of transaction date with receipt date. Bank-before-bill and bill-before-bank supported.
+- BANK-RECHECK-02: Event ID + normalized event payload is replay identity; identical replay has no effect; conflicting event ID rejected. OCR revision is monotonic per bill: older revision cannot overwrite newer; equal revision conflicting data rejected. Preserve conflicting bank evidence for BankReconcileAPI quarantine.
+- BANK-RECHECK-03: Validate candidate state before commit; no partial event changes if validation fails. Day watermark monotonic, previous bill and bank evidence retained. Subscribers receive immutable match snapshots; dispose prevents further events. Bounded fixture 4000 events and existing 1000 bill/bank limit; no silent eviction.
+- BANK-RECHECK-04: Bank reconciliation lab uses controller for new bank, corrected OCR, reconnect, day and reset. Recheck is not posting; missing time remains review unless independently corrected. Production event ingress, durable checkpoint, timer/scheduler, atomic ledger and provider authentication remain unimplemented.
+- BANK-RECHECK-05: Study Microsoft event sourcing/idempotent consumer and Matrix reconnect/retry. Tests verify both arrival orders, OCR revision, exact replay, ID conflict, day, reconnect, dispose and unchanged keyboard/production. No real transaction, DB or message.

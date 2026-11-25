@@ -117,3 +117,6 @@ Shared OrderNoticeProjectionAPI and Main read-only order notice card. Direct tes
 
 ## v13.78 — cross-day bank evidence and Vietnamese dates
 Extend ParseAPI.billDate; new BankReconcileAPI pure batch candidates, no day cut-off, unique bill↔bank, verified credit, exact amount, date/time ±60 seconds, memo/reference and quality gates; carry missing time to review and bank-only to pending; duplicate/conflict guard. 3-bill fixture lab. Direct tests, static bank contract and syntax passed; browser assertions added, CI pending. BANK-RECON-01–05. No production, ledger, actual customer data, real notifications or keyboard change. Based on v13.77 PR #44 head c4dd49dd547d6ccaa3520b0c23575f477adecfad; require CI and merge before release.
+
+## v13.79 — event-driven bank recheck
+v13.78 PR #45 merged bb482b7b9660d5a2391ed286923c97666b2c9dab; CI 45529221225 success. BankRecheckController owns local event state, OCR revision, replay and day watermark, no external effects. Direct smoke and static contract passed; browser lab assertions added; CI pending. BANK-RECHECK-01–05. No real posting, scheduling, bank ingress, DB or keyboard changes.
