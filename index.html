@@ -4540,6 +4540,23 @@ window.runtimeContext=()=>Object.freeze({time:TimeAPI.current(),view:readRuntime
 window.releaseStatus=()=>ReleaseUpdater.status();
 ReleaseUpdater.start();
 
+// Explicit synthetic integration lab. A live host is intentionally not installed.
+if(new URLSearchParams(location.search).get('chatread')==='fixture'){
+ const api=ChatReadAPI.create({
+  session:()=>({accountId:'fixture-self',epoch:'fixture-session-1',approved:true}),
+  readContacts:async()=>[{id:'fixture-contact-1',display_name:'Khách đọc mẫu',role:'KH',conversation_id:'fixture-room-1',preview_text:'Hội thoại chỉ đọc',latest_at:'2026-11-25T18:00:00Z'},{id:'fixture-contact-2',display_name:'Liên hệ chưa có hội thoại',role:'KH',conversation_id:null}],
+  readThread:async(_scope,room)=>room==='fixture-room-1'?[{id:'fixture-message-1',conversation_id:room,sender_account_id:'fixture-other',body:'Cho lấy 2 thùng sữa.',created_at:'2026-11-25T18:00:00Z'},{id:'fixture-message-2',conversation_id:room,sender_account_id:'fixture-self',body:'Đã tiếp nhận.',created_at:'2026-11-25T18:01:00Z'}]:[]
+ });
+ const content=Layout.slot({name:'chat-read-fixture',attrs:{'data-chat-read-fixture':'true'},children:[]});
+ const status=View.text({role:'detail',text:'Đang đọc dữ liệu mẫu…',attrs:{role:'status','data-chat-read-status':'true'}});
+ const list=Layout.slot({name:'chat-read-directory',children:[]}),thread=Layout.slot({name:'chat-read-thread',children:[]});
+ content.append(status,list,thread);
+ let alive=true;
+ const dialog=Popup.open({type:'form',title:'CHAT → 0v · Chỉ đọc (mẫu)',description:'Dữ liệu giả. Không kết nối tài khoản, không gửi tin, không ghi đã đọc.',content,onDispose:()=>{alive=false;api.dispose();list.replaceChildren();thread.replaceChildren()}});
+ if(dialog)void api.directory().then(rows=>{if(!alive)return;status.textContent=rows.length+' liên hệ mẫu · Chỉ đọc';for(const row of rows)list.append(Button.create({kind:'outline',text:row.name,onClick:async()=>{if(!alive)return;thread.replaceChildren();status.textContent='Đang đọc…';try{const messages=await api.thread(row.id);if(!alive)return;status.textContent=messages.length+' tin · Chỉ đọc';for(const msg of messages)thread.append(View.text({role:'chat',text:(msg.mine?'Bạn: ':'')+msg.text}),View.text({role:'caption',text:msg.time}));}catch{if(alive)status.textContent='Không đọc được hội thoại';}}}));}).catch(()=>{if(alive)status.textContent='Không đọc được danh bạ'});
+ else api.dispose();
+}
+
 })();
 </script>
 <pre id="geometryDebug" hidden></pre><script>
@@ -4621,22 +4638,6 @@ if(new URLSearchParams(location.search).get('perfcheck')==='1'){
  details.addEventListener('toggle',()=>{if(details.open)show()});refresh.onclick=show;reset.onclick=()=>{probe.reset();show()};close.onclick=()=>{probe.dispose();details.remove()};show();
 }
 
-// Explicit synthetic integration lab. A live host is intentionally not installed.
-if(new URLSearchParams(location.search).get('chatread')==='fixture'){
- const api=ChatReadAPI.create({
-  session:()=>({accountId:'fixture-self',epoch:'fixture-session-1',approved:true}),
-  readContacts:async()=>[{id:'fixture-contact-1',display_name:'Khách đọc mẫu',role:'KH',conversation_id:'fixture-room-1',preview_text:'Hội thoại chỉ đọc',latest_at:'2026-11-25T18:00:00Z'},{id:'fixture-contact-2',display_name:'Liên hệ chưa có hội thoại',role:'KH',conversation_id:null}],
-  readThread:async(_scope,room)=>room==='fixture-room-1'?[{id:'fixture-message-1',conversation_id:room,sender_account_id:'fixture-other',body:'Cho lấy 2 thùng sữa.',created_at:'2026-11-25T18:00:00Z'},{id:'fixture-message-2',conversation_id:room,sender_account_id:'fixture-self',body:'Đã tiếp nhận.',created_at:'2026-11-25T18:01:00Z'}]:[]
- });
- const content=Layout.slot({name:'chat-read-fixture',attrs:{'data-chat-read-fixture':'true'},children:[]});
- const status=View.text({role:'detail',text:'Đang đọc dữ liệu mẫu…',attrs:{role:'status','data-chat-read-status':'true'}});
- const list=Layout.slot({name:'chat-read-directory',children:[]}),thread=Layout.slot({name:'chat-read-thread',children:[]});
- content.append(status,list,thread);
- let alive=true;
- const dialog=Popup.open({type:'form',title:'CHAT → 0v · Chỉ đọc (mẫu)',description:'Dữ liệu giả. Không kết nối tài khoản, không gửi tin, không ghi đã đọc.',content,onDispose:()=>{alive=false;api.dispose();list.replaceChildren();thread.replaceChildren()}});
- if(dialog)void api.directory().then(rows=>{if(!alive)return;status.textContent=rows.length+' liên hệ mẫu · Chỉ đọc';for(const row of rows)list.append(Button.create({kind:'outline',text:row.name,onClick:async()=>{if(!alive)return;thread.replaceChildren();status.textContent='Đang đọc…';try{const messages=await api.thread(row.id);if(!alive)return;status.textContent=messages.length+' tin · Chỉ đọc';for(const msg of messages)thread.append(View.text({role:'chat',text:(msg.mine?'Bạn: ':'')+msg.text}),View.text({role:'caption',text:msg.time}));}catch{if(alive)status.textContent='Không đọc được hội thoại';}}}));}).catch(()=>{if(alive)status.textContent='Không đọc được danh bạ'});
- else api.dispose();
-}
 
 </script>
 </body></html>
