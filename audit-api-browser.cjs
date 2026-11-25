@@ -152,6 +152,12 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.waitForSelector('[data-bill-ocr-status]');assert.equal(await p.locator('[data-bill-ocr-status]').getAttribute('data-bill-ocr-status'),'ready',await p.locator('[data-bill-ocr-status]').textContent());assert((await p.locator('[data-bill-ocr-field=amount]').textContent()).includes('400000'));assert((await p.locator('[data-bill-ocr-field=time]').textContent()).includes('15:16'));
  await p.locator('[data-bill-ocr-input]').fill('Số tiền: 400.000\nSố tiền: 500.000\nGiờ gửi ảnh: 08:00');await p.getByRole('button',{name:'Phân tích OCR',exact:true}).evaluate(e=>e.click());assert((await p.locator('[data-bill-ocr-status]').getAttribute('data-issues')).includes('conflict-amount'));assert((await p.locator('[data-bill-ocr-field=time]').textContent()).includes('Thiếu hoặc mâu thuẫn'));await p.close()
  }
+ // OCR worker contract with injected fixture engine; no external network, no real data.
+ {
+ const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?billenginelab=1&ocrfixture=1');await p.locator('.contact[data-id=kh]').evaluate(e=>e.click());await p.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());await p.waitForSelector('[data-bill-engine-status=idle]');
+ const result=await p.evaluate(()=>window.billEngineFixtureCheck());
+ assert.deepEqual(result,{creates:1,reads:2,stops:1,closed:true,amount:'400000',canPost:false,time:null});await p.close()
+ }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
  await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());
