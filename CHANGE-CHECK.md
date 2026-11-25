@@ -306,3 +306,6 @@ E0: v13.135 merged, API 45564486573 and DB 45564486312 passed. E1: native 84 rea
 
 ## v13.137
 E0: v13.136 merged, API 45567193269 and DB 45567193106 passed. E1: bounded original-crop quality metrics, scope, advisory preprocessing and request draft; Tesseract quality documentation reviewed. E2: direct synthetic contract passed and static regression added; CI pending. Thresholds uncalibrated, no real image accuracy measured. No production, actual messages, private images, ledger or keyboard changes. E3–E5 pending.
+
+## v13.138
+E0: v13.137 merged, CI API and DB passed. User screenshot review. E1: local rail/send, two scoped composer predicate changes; viewport unchanged. Astryx sources reviewed. E2: direct model test passed, browser regression added; CI pending. No production, OCR changes or native device claim. Bill dossier deferred.

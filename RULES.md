@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.137)
+## 00. Chỉ mục rule đang có hiệu lực (v13.138)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1174,3 +1174,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-QUALITY-TRIAGE-03: Conflict requires comparing original; absent value region requires crop selection. Unreadable critical account, amount, date or clock with known value region produces an editable-purpose draft to request clearer evidence, never sends. No inference of missing values; name/memo/reference review individually.
 - BILL-QUALITY-TRIAGE-04: Tesseract quality guidance https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html reviewed; no claimed correspondence between thresholds and production accuracy. No production, customer data, ledger or keyboard changes.
 - BILL-QUALITY-TRIAGE-05: Synthetic pixel and advice tests for uniform, contrast, dark, small crop, non-mutation, conflict, missing scope, unreadable clock and no sending/posting. Actual corpus calibration pending.
+
+## 163. COMPOSER-MEDIA — v13.138
+- COMPOSER-MEDIA-01: screenshot compact width approx 82%, attachment width approx 94%; inline rail above text, toolbar below. Estimates, not official ChatGPT measurements. Keep chat 18/27, input 17/22, body 16/22, title 18/24, detail 14/20, caption 13/18, version 10/16.
+- COMPOSER-MEDIA-02: 100px preview tile, 8px gap, 12px media radius, 24px expanded radius, semantic 1px edge, 44px remove target. Layout, Surface, Input, Media owners unchanged.
+- COMPOSER-MEDIA-03: Max 8 local files per room, 15 MiB each; remove revokes URL, local demo send transfers to message; group by four. Session only, no transport. Release blocked for unsent drafts. Decode failures skipped.
+- COMPOSER-MEDIA-04: Only two explicit predicate changes in protected composer range; no viewport/scroll change. Baseline normalization limited to exact predicate strings. Native keyboard acceptance pending.
+- COMPOSER-MEDIA-05: Astryx Text/Stack/Button snapshots studied; static model and browser geometry checks added. No OCR or production change.
