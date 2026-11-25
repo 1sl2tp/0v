@@ -11,12 +11,23 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const p=await browser.newPage({viewport:{width:390,height:844}});
  await p.goto(url);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
  const plus=p.locator('#mediaBtn'),menu=p.locator('#inputAttachmentMenu'),file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
- if(focused){await draft.fill('Bản nháp giữ nguyên');await draft.focus();await p.setViewportSize({width:390,height:360})}
+ if(focused){await draft.fill('Bản nháp giữ nguyên');await draft.focus();await p.setViewportSize({width:390,height:360});await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true')}
+ await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard!==undefined);
  const geometry=()=>menu.evaluate(e=>{const m=e.getBoundingClientRect(),c=e.parentElement.getBoundingClientRect(),f=c=>c.getBoundingClientRect(),frame=f(e.closest('.composer-frame'));return {parent:e.parentElement.id,gap:c.top-m.bottom,left:m.left-c.left,frame:frame.height,bottom:frame.bottom,top:m.top,opacity:getComputedStyle(e).opacity}});
  const base=await p.locator('.composer-frame').evaluate(e=>e.getBoundingClientRect().height);
  await plus.click();await menu.waitFor({state:'visible'});assert.deepEqual(await menu.locator('[data-attachment-action]').evaluateAll(rows=>rows.map(r=>r.querySelector('input').getAttribute('aria-label'))),['Thư viện ảnh','Chụp ảnh','Chọn tệp']);assert.equal(await menu.locator('input[type=file]').count(),3);const g=await geometry();assert(g.parent==='composer'&&Math.abs(g.gap-8)<=2&&Math.abs(g.left)<=2&&Math.abs(g.frame-base)<=1,JSON.stringify(g));assert.equal(await draft.evaluate(e=>document.activeElement===e),focused);
- if(focused){await p.setViewportSize({width:390,height:844});await p.waitForFunction(old=>{const m=document.querySelector('#inputAttachmentMenu').getBoundingClientRect(),c=document.querySelector('#composer').getBoundingClientRect();return m.top>old+100&&Math.abs(c.top-m.bottom-8)<=2},g.top)}
- const before=await geometry();const hit=await file.evaluate(e=>{const r=e.getBoundingClientRect(),t=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {w:r.width,h:r.height,hit:t===e,target:t?.tagName,cls:t?.className}});assert(hit.w>100&&hit.h>=44&&hit.hit,JSON.stringify(hit));
+ if(focused){
+ // A moving open keyboard keeps the local menu anchored. A closed keyboard dismisses it.
+ await p.setViewportSize({width:390,height:400});
+ await p.waitForFunction(old=>{const m=document.querySelector('#inputAttachmentMenu'),r=m.getBoundingClientRect(),c=document.querySelector('#composer').getBoundingClientRect();return document.querySelector('#app').dataset.keyboard==='true'&&!m.hidden&&r.top>old+20&&Math.abs(c.top-r.bottom-8)<=2},g.top);
+ await p.setViewportSize({width:390,height:844});
+ await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='false');
+ await menu.waitFor({state:'hidden'});assert.equal(await plus.getAttribute('aria-expanded'),'false');assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');
+ // Reopen in the keyboard-open state for the real chooser tests, not while closing.
+ await draft.focus();await p.setViewportSize({width:390,height:400});await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true');
+ await plus.click();await menu.waitFor({state:'visible'});assert.equal(await draft.evaluate(e=>document.activeElement===e),true);
+ }
+ const before=await geometry();const hit=await file.evaluate(e=>{const r=e.getBoundingClientRect(),t=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {w:r.width,h:r.height,hit:t===e,target:t?.tagName,cls:t?.className}});assert(hit.w>100&&hit.h>=44&&hit.hit,JSON.stringify({focused,hit,before,keyboard:await p.locator('#app').getAttribute('data-keyboard')}));
  const trace=[];await p.exposeFunction('attachmentTestEvent',s=>trace.push(s));await p.evaluate(()=>{for(const type of ['pointerdown','pointerup','pointercancel','mousedown','click','focusout'])document.addEventListener(type,e=>{if(e.target.closest?.('#composer'))window.attachmentTestEvent({type,target:e.target.tagName,action:e.target.closest('[data-attachment-action]')?.dataset.attachmentAction,prevented:e.defaultPrevented,session:document.querySelector('#composer').dataset.nativePicker,menu:document.querySelector('#inputAttachmentMenu').dataset.handoff})})});
  let chooser;try{[chooser]=await Promise.all([p.waitForEvent('filechooser'),file.click()])}catch(e){console.log('Attachment activation failure',JSON.stringify({focused,hit,trace}));throw e};assert(chooser.isMultiple());assert.equal(await form.getAttribute('data-native-picker'),'true');await p.waitForFunction(()=>getComputedStyle(document.querySelector('#inputAttachmentMenu')).opacity==='0');const during=await geometry();assert.equal(during.opacity,'0');assert(Math.abs(during.frame-before.frame)<=1);assert.equal(await plus.getAttribute('aria-expanded'),'false');
  await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));await menu.waitFor({state:'hidden'});assert.equal(await form.getAttribute('data-native-picker'),null);
