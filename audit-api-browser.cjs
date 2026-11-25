@@ -6,28 +6,24 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const browser=await chromium.launch({headless:true});
  try{
 
- {const p=await browser.newPage({viewport:{width:390,height:844}});
- // Real interaction test uses the normal application, without the opt-in diagnostic overlay.
+ // Direct real file picker: normal UI, no diagnostic overlay and no intermediate menu.
+ for(const focused of [false,true]){
+ const p=await browser.newPage({viewport:{width:390,height:844}});
  await p.goto(url);assert.equal(await p.locator('#apiProofPanel').count(),0);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
- const plus=p.locator('#mediaBtn'),menu=p.locator('#composerAccessory'),draft=p.locator('#draft');
- const geom=()=>menu.evaluate(e=>{const m=e.getBoundingClientRect(),c=document.querySelector('#composer').getBoundingClientRect(),f=e.parentElement.getBoundingClientRect(),h=document.querySelector('.conversation>.panel-head').getBoundingClientRect();return {gap:c.top-m.bottom,left:m.left-c.left,top:m.top,head:h.bottom,frame:f.height,parent:e.parentElement.classList.contains('composer-frame'),position:getComputedStyle(e).position,reserve:parseFloat(getComputedStyle(document.querySelector('#app')).getPropertyValue('--composer-reserve'))}});
- const base=await p.locator('.composer-frame').evaluate(e=>e.getBoundingClientRect().height);
- await plus.click();await menu.waitFor({state:'visible'});assert.equal(await plus.getAttribute('aria-expanded'),'true');assert(await draft.evaluate(e=>document.activeElement===e));await p.waitForFunction(base=>{const f=document.querySelector('.composer-frame');return f.getBoundingClientRect().height>base+50&&Math.abs(parseFloat(getComputedStyle(document.querySelector('#app')).getPropertyValue('--composer-reserve'))-f.getBoundingClientRect().height)<=1},base);
- const a=await geom();assert(a.parent&&a.position!=='absolute'&&Math.abs(a.gap-8)<=2&&Math.abs(a.left)<=2&&a.top>=a.head-1);
- await plus.click();await menu.waitFor({state:'hidden'});await p.waitForFunction(base=>Math.abs(document.querySelector('.composer-frame').getBoundingClientRect().height-base)<=1,base);
- await draft.fill('Bản nháp giữ nguyên');await draft.focus();await plus.click();await menu.waitFor({state:'visible'});assert(await draft.evaluate(e=>document.activeElement===e));assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');
- await p.setViewportSize({width:390,height:360});await p.waitForFunction(()=>{const e=document.querySelector('#composerAccessory'),m=e.getBoundingClientRect(),c=document.querySelector('#composer').getBoundingClientRect(),h=document.querySelector('.conversation>.panel-head').getBoundingClientRect();return m.height>0&&Math.abs(c.top-m.bottom-8)<=2&&m.top>=h.bottom-1});
- await p.keyboard.press('Escape');await menu.waitFor({state:'hidden'});assert(await draft.evaluate(e=>document.activeElement===e));
- await plus.click();await menu.waitFor({state:'visible'});
- const file=p.locator('[data-draft-media-picker]');
- await file.scrollIntoViewIfNeeded();
- const anchor=await file.evaluate(e=>{const a=e.getBoundingClientRect(),b=e.parentElement.getBoundingClientRect(),m=e.closest('[data-composer-accessory]').getBoundingClientRect(),hit=document.elementFromPoint(a.x+a.width/2,a.y+a.height/2),s=getComputedStyle(e);return {parent:e.parentElement.dataset.accessoryChoice,w:a.width,h:a.height,dx:Math.abs(a.left-b.left),dy:Math.abs(a.top-b.top),hit:hit===e,hitTag:hit?.tagName,hitClass:hit?.className,hitSlot:hit?.getAttribute('data-ui-slot'),rect:a.toJSON(),row:b.toJSON(),menu:m.toJSON(),pointer:s.pointerEvents,z:s.zIndex}});console.log('Accessory hit proof',JSON.stringify(anchor));assert.equal(anchor.parent,'files');assert(anchor.w>100&&anchor.h>=44&&anchor.dx<=1&&anchor.dy<=1&&anchor.hit,JSON.stringify(anchor));
- const beforePicker=await geom();
- const [chooser]=await Promise.all([p.waitForEvent('filechooser'),file.click()]);assert(chooser.isMultiple());assert.equal(await p.locator('#composer').getAttribute('data-native-picker'),'true');assert.equal(await plus.getAttribute('aria-expanded'),'false');
- const during=await menu.evaluate(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {opacity:s.opacity,pointer:s.pointerEvents,hit:e.contains(hit),height:r.height,frame:e.parentElement.getBoundingClientRect().height,presented:e.parentElement.dataset.pickerPresented}});assert.equal(during.presented,'true');assert.equal(during.opacity,'0');assert.equal(during.pointer,'none');assert.equal(during.hit,false);assert(Math.abs(during.frame-beforePicker.frame)<=1&&during.height>0);
- await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await p.locator('#composer').getAttribute('data-native-picker'),null);await menu.waitFor({state:'hidden'});assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');
- await plus.click();await menu.waitFor({state:'visible'});const camera=p.locator('[data-native-accessory-input=camera]');assert.equal(await camera.getAttribute('capture'),'environment');const [camChooser]=await Promise.all([p.waitForEvent('filechooser'),camera.click()]);assert(!camChooser.isMultiple());assert.equal(await menu.evaluate(e=>getComputedStyle(e).opacity),'0');await camChooser.setFiles([]);await camera.evaluate(e=>e.dispatchEvent(new Event('cancel')));await menu.waitFor({state:'hidden'});
- await plus.click();await menu.waitFor({state:'visible'});assert.equal(await menu.evaluate(e=>getComputedStyle(e).opacity),'1');const [selected]=await Promise.all([p.waitForEvent('filechooser'),file.click()]);const png=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=16;c.height=16;return c.toDataURL('image/png').split(',')[1]});await selected.setFiles({name:'handoff.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});await p.waitForFunction(()=>document.querySelector('[data-draft-media] .draft-media-item'));await menu.waitFor({state:'hidden'});assert.equal(await p.locator('#composer').getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');await plus.click();await menu.waitFor({state:'visible'});await p.locator('#messages').click({position:{x:10,y:10}});await menu.waitFor({state:'hidden'});await p.close();}
+ const file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
+ assert.equal(await p.locator('#composerAccessory,[data-composer-accessory]').count(),0);assert.equal(await form.locator('input[type=file]').count(),1);
+ assert.equal(await file.getAttribute('capture'),null);assert.equal(await file.getAttribute('accept'),'image/*');
+ if(focused){await draft.fill('Bản nháp giữ nguyên');await draft.focus();await p.setViewportSize({width:390,height:360})}
+ await p.waitForFunction(()=>{const f=document.querySelector('.composer-frame');return Math.abs(parseFloat(getComputedStyle(document.querySelector('#app')).getPropertyValue('--composer-reserve'))-f.getBoundingClientRect().height)<=1});
+ const geometry=()=>file.evaluate(e=>{const r=e.getBoundingClientRect(),b=document.querySelector('#mediaBtn').getBoundingClientRect(),f=e.closest('.composer-frame').getBoundingClientRect();return {w:r.width,h:r.height,dx:Math.abs(r.left-b.left),dy:Math.abs(r.top-b.top),hit:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e,frame:f.height,bottom:f.bottom}});
+ const before=await geometry();assert(before.w===44&&before.h===44&&before.dx<=1&&before.dy<=1&&before.hit,JSON.stringify(before));
+ const [chooser]=await Promise.all([p.waitForEvent('filechooser'),file.click()]);assert(chooser.isMultiple());assert.equal(await form.getAttribute('data-native-picker'),'true');
+ const during=await geometry();assert(Math.abs(before.frame-during.frame)<=1&&Math.abs(before.bottom-during.bottom)<=1,JSON.stringify({before,during}));assert.equal(await p.locator('#composerAccessory').count(),0);
+ if(!focused)assert.equal(await draft.evaluate(e=>document.activeElement===e),false);
+ await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),focused?'Bản nháp giữ nguyên':'');
+ const [selected]=await Promise.all([p.waitForEvent('filechooser'),file.click()]);const png=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=16;c.height=16;return c.toDataURL('image/png').split(',')[1]});await selected.setFiles({name:'handoff.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});await p.waitForFunction(()=>document.querySelector('[data-draft-media] .draft-media-item'));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),focused?'Bản nháp giữ nguyên':'');
+ await p.close();
+ }
 
  for(const width of [320,390,768]){
   const p=await browser.newPage({viewport:{width,height:844}});

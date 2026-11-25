@@ -363,3 +363,6 @@ Test isolation: real accessory interaction must use normal URL. Opt-in apiProofP
 
 ## v13.144 — exclusive native picker
 CRM menu paints only before native activation; trusted click marks native presentation and removes menu paint/hit/tab stops while retaining frame size. Native WebKit owns its action sheet and anchor; no claim of CSS control. Cancel/change close menu without forced focus. Sources: https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm and https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/cancel_event . Native acceptance pending.
+
+## v13.145 — direct native picker
+Keyboard frame > composer > one native file control sharing + grid cell. No accessory menu or additional reserve. Native default activation exposes OS-supported choices. Keep room handoff and ordinary keyboard baseline. Source: https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm (native action sheet, elementRect). Physical iPhone validation required.

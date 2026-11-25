@@ -339,3 +339,6 @@ Run 45585524052 failed on hit target PRE. Native row/input rect exactly matched 
 
 ## v13.144
 E0: v13.143 merged; CI API 45585754939 and DB 45585754803 passed. User iPhone screenshot shows native and CRM menus simultaneously. E1: exclusive presentation, preserve in-flow reserve through native activation, clear on change/cancel; four protected ranges byte-equal before version label change. E2: browser test updated for paint/hit exclusivity, unchanged frame and real file selection. CI and native pending.
+
+## v13.145
+E0: v13.144 merged; API 45586540477 and DB 45586540402 passed. User requested removal of duplicate CRM menu. E1: remove intermediate accessory, camera-specific input, settling loop and reserve; direct native + cell, existing picker guard and decode. Four protected ranges equal before version labels. E2: real chooser in both focus states, hit/geometry/cancel/selection regression. CI and native pending.
