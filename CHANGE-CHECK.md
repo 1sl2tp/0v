@@ -159,3 +159,6 @@ v13.88 verified CI and merged. Masked account parsing, separate partial evidence
 
 ## v13.90 — memo formatting and attached references
 Prior v13.89 CI passed and merged. Added explicit comparison forms, bounded known wrappers and independently printed reference suffix, digit conflict and compact spacing review. Raw bank identity retained. Updated IBFT expectation from contained to exact after explicit prefix separation; retained standalone containment case. Direct regression suite executed; no real bank/customer data, financial write or keyboard change.
+
+## v13.91
+Shared account whitespace normalization, raw evidence retained, partial evidence still review. Existing image fixture now imports ParseAPI dependency. Direct regression suite run; no production changes.
