@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.128)
+## 00. Chỉ mục rule đang có hiệu lực (v13.129)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1111,3 +1111,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-SCOPED-FIELD-03: Preserve raw text, source, confidence, line and diagnostics. Scoped bare results are proposals; no automatic verification/posting. Invalid glyph or conflicting readings require review. Existing review revision guard and verified-field lock remain.
 - BILL-SCOPED-FIELD-04: Image-field reread and explicitly selected manual text reread call same owner. Full image OCR never treats every bare value as a field. Missing clock still requires verification; no change to production, old bills, ledger, keyboard or bank rules.
 - BILL-SCOPED-FIELD-05: Regression covers bare clock, amount, account, name, date, memo, reference, wrong-label rejection, multiple lines, invalid glyph, opt-in guard and isolated revision. Synthetic fixtures; CI and real-image accuracy separate.
+
+## 154. BILL-RECIPIENT-PAIR — v13.129
+- BILL-RECIPIENT-PAIR-01: Fixed name and account may appear on adjacent unlabelled physical OCR lines in either order. Require exact normalized fixed name, matching full or suffix account evidence, and independent amount/date/time/transfer-heading context.
+- BILL-RECIPIENT-PAIR-02: Both lines must be unclassified by the parent parser. Sender, memo, reference and recognized fields cannot be reused. Exclude sender/memo/reference boundary immediately before pair. No substring or fuzzy name inference; no cross-blank-line pairing.
+- BILL-RECIPIENT-PAIR-03: Explicit recipient name/account and contradictions take precedence. Adjacent pair is review evidence only; no mutation of parsed fields or bank verification, no posting or retroactive processing.
+- BILL-RECIPIENT-PAIR-04: Expose original line numbers and pair evidence class; preserve original OCR. Synthetic configuration only. No changes to bank, ledger or production.
+- BILL-RECIPIENT-PAIR-05: Regression for both orders, suffix, accents, wrong name, sender/memo, nonadjacent lines, explicit conflict, no context, and no posting. CI and real-image accuracy separate.
