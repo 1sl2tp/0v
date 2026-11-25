@@ -375,3 +375,8 @@ Composer > attachment menu and action rows. Menu follows parent via CSS only, 8p
 
 ## v13.148 — one native chooser only
 Revert v13.147 custom attachment menu. One direct native input in + cell; no intermediate source choice, no separate camera control. User prioritizes single chooser. Native positioning/dismissal cannot be guaranteed by web UI; do not reintroduce a second menu as a workaround. Keep read-only anchor probe and protected keyboard geometry.
+
+## v13.149 — Input three-action trial
+Local menu only: Thư viện ảnh / Chụp ảnh / Chọn tệp, relative to Input top by 8px. Native default file inputs, local menu hidden visually during handoff. File choice currently supports image attachments only; unsupported formats reported. Native source choices may still appear. Existing keyboard lifecycle signal may dismiss local menu, no geometry writer. Native trial not acceptance.
+
+Candidate repair 1: defer local menu hide until after native default action, with epoch guard; actual hit target and event trace recorded by browser test. No geometry or keyboard writer. Native chooser timeout root cause not yet confirmed.

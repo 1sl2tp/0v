@@ -351,3 +351,9 @@ E0: v13.146 merged, both CI passed; user requests Input-owned menu independent o
 
 ## v13.148
 E0: v13.147 merged and CI passed; two screenshots at 16:54 show sequential CRM and native source menus. User rejects duplicate steps. E1: restore v13.146 app/browser suite, version bump and stronger single-menu assertions; verified all four protected ranges equal to v13.147. E2: CI pending. Native placement and dismissal remain unresolved; no bill or production changes.
+
+## v13.149
+E0: v13.148 merged and CI passed; native menu still retains old position. User requests three-action local menu trial. E1: restore v13.147 relative menu with three distinct rows, file input and explicit unsupported file notice, close on existing keyboard lifecycle transition, exclusive handoff. Four protected ranges identical to v13.148. E2: Chromium tests updated for real third chooser and image selection; CI pending. Native secondary chooser possible, iPhone acceptance pending; no business/production changes.
+
+### v13.149 CI repair 1
+Run 45591058031 failed at first real library chooser event (line 19); DB 45591057899 passed. Cause not yet proved; candidate changes order of handoff to avoid changing input before native default activation, adds input boundary and hit/event diagnostics. Same real chooser tests for all three rows. CI/native pending.
