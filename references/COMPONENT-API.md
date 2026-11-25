@@ -176,3 +176,6 @@ project(snapshot,{configured,now,receipts}) returns immutable ordered rows, code
 
 ## v13.82 BankJournalAPI manual evidence
 New journal entries manual-receipt({id,billId,amount,operator,reason,at}) and manual-link({id,receiptId,billId,bankId,at}). Existing receipt remains one, bank link adds verification metadata; original amount/time immutable. Review projects manual-await-bank/manual-verified and OCR amount conflict. Same fixture-only journal and UI. No real posting or reversal.
+
+## v13.83 BillDuplicateAPI
+validate(bill), inspect(bills) returns peer conflicts Map; digest(Uint8Array) computes source SHA-256 in secure context; regionHash(Uint8Array(72)) computes 64-bit dHash from pre-sampled grayscale region. Controller retains metadata. Reconcile marks conflict review; journal blocks posting; queue exposes duplicateReview and excludes these rows from provisional total. Fixture metadata only; no image decoder, detector or actual OCR ingestion.

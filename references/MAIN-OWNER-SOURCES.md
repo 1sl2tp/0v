@@ -52,3 +52,9 @@ Decision: read-only projection over existing fixture API, explicit clock and mul
 - https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/coding/data-modeling.md — immutable financial transfers and idempotent IDs.
 - https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/reference/transfer.md — stable financial transaction identity.
 Decision: attach verification evidence to original fixture receipt, no additional posting and no silent amount change. Production implementation separate.
+
+## v13.83 phase 3i
+- https://github.com/JohannesBuchner/imagehash — difference and crop-resistant hashing.
+- https://github.com/thorn-oss/perception/blob/main/docs/examples/deduplication.rst — similarity thresholds.
+- https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/coding/data-modeling.md — idempotent transaction identity.
+Decision: source digest + normalized regions, conservative dHash candidates, no automatic merge. No upstream code copied or dependency added.
