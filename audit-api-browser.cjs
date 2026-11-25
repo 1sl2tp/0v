@@ -25,6 +25,22 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.close();
  }
 
+ // Read-only anchor diagnostic: a changing viewport must move the real + and native input together.
+ {const p=await browser.newPage({viewport:{width:390,height:844}});
+ await p.goto(url+'?pickerprobe=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
+ const file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
+ await p.waitForFunction(()=>window.pickerAnchorProof.read().visibleAnchor);
+ const first=await p.evaluate(()=>window.pickerAnchorProof.read());assert(Math.abs(first.deltaX)<=1&&Math.abs(first.deltaY)<=1);
+ await draft.fill('Neo bản nháp');await draft.focus();await p.setViewportSize({width:390,height:360});
+ await p.waitForFunction(()=>{const s=window.pickerAnchorProof.read();return s.visibleAnchor&&Math.abs(s.bottomGap)<=1});
+ const short=await p.evaluate(()=>window.pickerAnchorProof.read());assert(Math.abs(short.deltaY)<=1&&short.anchor.y<first.anchor.y-100);
+ const [chooser]=await Promise.all([p.waitForEvent('filechooser'),file.click()]);
+ const act=await p.evaluate(()=>window.pickerAnchorProof.activation());assert(act&&act.picker&&act.visibleAnchor&&Math.abs(act.deltaY)<=1);
+ await p.setViewportSize({width:390,height:844});
+ await p.waitForFunction(()=>{const s=window.pickerAnchorProof.read();return s.visibleAnchor&&Math.abs(s.bottomGap)<=1&&s.activationDriftY>100});
+ const after=await p.evaluate(()=>window.pickerAnchorProof.read());assert(Math.abs(after.deltaX)<=1&&Math.abs(after.deltaY)<=1);assert.equal(await p.locator('#pickerAnchorProbe').evaluate(e=>getComputedStyle(e).pointerEvents),'none');
+ await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),'Neo bản nháp');await p.close();}
+
  for(const width of [320,390,768]){
   const p=await browser.newPage({viewport:{width,height:844}});
   await p.goto(url+'?apicheck=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
