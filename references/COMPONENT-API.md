@@ -506,3 +506,5 @@ Message.flow(previous,row) is presentation-only, marks adjacent text rows with s
 ParseAPI.billRecipientEvidence(raw) -> suffix|full|masked|null, literal receiver field with four to six nines; no arbitrary substring or cross-line assembly. BillReceiptProjection.read requires this and transaction evidence (positive amount or date/time shaped value), otherwise null -> standard media. Existing receipt/ledger state remains unchanged; no backend authority.
 
 Missing projected receipt fields display “Không có”, not “Chưa đọc được”; ordinary images have no bill table. No assertion about physical original without evidence.
+
+LIVE-BILL-06: exact full receiver; matching suffix/mask are recognition hints only. Name mismatch -> review, raw OCR preserved; missing name not fabricated. Date independent of clock. No ledger mutation.
