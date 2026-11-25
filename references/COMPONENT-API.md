@@ -158,3 +158,6 @@ amount/display/line/orderTotal/ledgerTotal/signed/noticeAmount. Safe integer fix
 
 ## v13.76 BillEvidenceAPI
 inspect({configured,original,reread,bank,posted}) returns matched/missingDate/canManual/canAuto/state/reasons. manual(state) returns posted fixture state or rejects. Exact-match fixture only, no persistent dedup or real posting. NoticeDeliveryAPI and NoticeRecoveryAPI registered as owners; notice labs unchanged.
+
+## v13.77 OrderNoticeProjectionAPI
+create({orderId,commandId,orderStatus,customerId,staffId,channel}), inspect(rows,now), advance(rows,recipientId,stage,proof,now,options). Pure fixture projection over NoticeDeliveryAPI, no network or storage. Main order card displays draft skipped; delivery progression tested only in fixture.

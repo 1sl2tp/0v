@@ -111,3 +111,6 @@ v13.74 PR #41 merged 403c35c594c15f0b50aa5eaf19d68c5ca3c4f508; CI 45527316410 su
 
 ## v13.76 — bill evidence phase 3b
 v13.75 PR #42 merged 7af501d0e53361f33c99d47d63dd72cb872baf83; CI 45528009392 success. BillEvidenceAPI shared guard in Main fixture; exact decimal comparison, valid date, manual-only, repeated transition blocked; payment/debt cards derive amounts; register existing notice APIs without live integration. Direct tests and script syntax passed; static/browser checks added, CI pending. BILL-EVIDENCE-01–04. No real receipt, notice, DB, keyboard or production change.
+
+## v13.77 — order notice phase 3c
+Shared OrderNoticeProjectionAPI and Main read-only order notice card. Direct tests: draft skipped, delivered two required recipients, partial then complete, repeat/skip/out-of-order blocked. Seven classic scripts and audits syntax checked. Added browser draft projection assertion; CI pending. Based on PR #43 head a7931fcc5281dbabe79ccdc9b701bda385570010; require its CI and merge before release. No real sending or production changes.

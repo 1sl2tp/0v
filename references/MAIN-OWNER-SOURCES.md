@@ -20,3 +20,8 @@ Decision: retain exact Foundation APIs, use narrow fixture boundary adapter, no 
 - https://github.com/stripe/stripe-node/blob/master/README.md — idempotency keys and safe retry.
 - https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Webhook_Security_Cheat_Sheet.md — verify event and persist processed IDs before suppressing duplicate delivery.
 Decision: narrow local fixture guard only; durable idempotency remains a production adapter responsibility. Do not loosen real bill matching or send notices.
+
+## v13.77 phase 3c
+- https://github.com/aws-samples/transactional-outbox-pattern/blob/main/README.md — separate committed write and relay, duplicate handling.
+- https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html — atomic intent and idempotent consumer.
+Decision: reuse existing evidence owner, expose read-only order projection, do not implement real outbox transport in UI.
