@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.107)
+## 00. Chỉ mục rule đang có hiệu lực (v13.108)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -957,3 +957,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-FIELD-VARIANTS-03: No automatic confirmation, no field overwrite, no financial authority. Existing verified lock remains. Failed worker is closed before next variant; cancel and stale results guarded.
 - BANK-FIELD-VARIANTS-04: Sample CDN engine lab exposes explicit field selection and rerun only for known bounds. Manual rectangle API exists but interactive picker not yet implemented. No AI model, private bill or production use; no uploads by application or historic changes.
 - BANK-FIELD-VARIANTS-05: Direct comparison, contrast pixel and wrong-scope regressions; mock browser crop sizes, conflict, source pixel and close lifecycle. Preserve keyboard v13.27; full CI required. Thresholds experimental, no real OCR accuracy claim.
+
+## 132. BANK-LITERAL — v13.108
+- BANK-LITERAL-01: Preserve invalid labeled raw OCR value, line and labelLine. Diagnostic positions are zero-based Unicode code points relative to trimmed OCR field, not image coordinates. Possible glyph groups 0/O, 1/I/l/|, 2/Z, 5/S, 6/G, 8/B only warn on invalid numeric field; no substitution or suggested repaired value.
+- BANK-LITERAL-02: Retain explicit money profile and existing exact ParseAPI; valid separators and account horizontal presentation spaces are informational. Invalid punctuation/space remains review, no broad digit stripping. Leading zeros unchanged; dates with valid words unchanged.
+- BANK-LITERAL-03: Valid alphanumeric reference/trace, names and memo are not suspicious simply for letters. Compare actual differing field raw values between OCR methods; label glyph, separator or length/spacing difference, preserve canonical equality flag. No fuzzy correction, score override or eligibility change.
+- BANK-LITERAL-04: Existing OCR text lab displays raw invalid value and position; variant UI shows differing raw values. Review only, no real OCR accuracy claim, production action or history rewrite.
+- BANK-LITERAL-05: Test O/I numeric errors, grouped account/leading zeros, profile punctuation, valid names/reference, cross-method confusable reference, separator/space differences, browser raw display. Preserve keyboard v13.27 and CI gate.
