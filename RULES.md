@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.109)
+## 00. Chỉ mục rule đang có hiệu lực (v13.110)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -971,3 +971,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-MEMO-CODE-03: Independently printed strong reference must not be a substring joined to an alphanumeric token by dot/underscore/slash/hyphen. Delimited reference handling remains, known wrapper handling unchanged. Do not treat a routing code as transfer identity.
 - BANK-MEMO-CODE-04: Candidate evidence and existing review UI retain both token lists, explain the reason; exclude code-conflict candidates from missing-clock related suggestions, not from review queue. No production data, history or real receipts.
 - BANK-MEMO-CODE-05: Test accents, punctuation in codes, one-sided unknown code, exact delimited reference, attached compound reference, missing-clock guard. Preserve keyboard v13.27 and CI gate.
+
+## 134. BANK-MEMO-SPAN — v13.110
+- BANK-MEMO-SPAN-01: Extend existing residual diagnostic with immutable normalized compact spans (match, bill-only, bank-only, different). Show ordered unique containment or single-gap and single-letter evidence; do not infer which source lost text or reconstruct original memo.
+- BANK-MEMO-SPAN-02: Repeated containment or ambiguous gap placement returns ambiguous-position without fabricated alignment. Missing, short, digit-conflict and unrelated inputs produce no aligned spans. Preserve original raw evidence separately.
+- BANK-MEMO-SPAN-03: Keep all previous financial gates; for missing-clock residual suggestions require unique alignment and no numeric token codeReview even when memo kind is none. No expanded matching or posting authorization.
+- BANK-MEMO-SPAN-04: Expose diagnostic per candidate in existing review evidence and related cards; normalized spans are not original image coordinates and cannot prove bank truncation. No real records, messages or historical repair.
+- BANK-MEMO-SPAN-05: Test both containment directions, internal gap, one-letter, repeated substring, digit/code conflict, immutable spans and review-only related candidate. Preserve keyboard v13.27; full CI required.
