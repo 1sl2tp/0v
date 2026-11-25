@@ -1424,3 +1424,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 
 ## LIVE-BILL-05 — v13.181
 - Status duplicate/review/received/amount_read không đủ để phân loại ảnh. BillReceiptProjection.read chỉ dùng trường receiving_account đã được chiếu đúng asset/message, ParseAPI.billRecipientEvidence nhận 9999–999999 (4–6 chữ số 9, khoảng trắng ngang cho phép), 13 chữ số có đuôi 4–6 số 9, hoặc mask có đuôi hợp lệ. Không tìm chuỗi trong memo, tên, ảnh hàng, số bất kỳ hay ghép qua dòng. Cần thêm ít nhất số tiền dương hoặc ngày/giờ có định dạng hợp lệ. Thiếu evidence thì ảnh thường, không nhãn bill trùng, không đổi receipt/ledger. Đây là gate hiển thị, không chứng minh tiền về hay danh tính người nhận; đối soát backend vẫn cần sửa riêng. Không sửa KB-LOCK.
+
+- LIVE-BILL-05 clarification: Ảnh hàng hóa không phải bill; hiển thị ảnh thường, không dựng bảng rỗng. Với bill đã có bằng chứng, trường null/trống trong projection hiện “Không có” (không có dữ liệu trả về; chưa kết luận trường đó có được in trên ảnh gốc hay không). Không gọi thiếu dữ liệu là lỗi OCR; chỉ dùng nhãn lỗi đọc khi có chứng cứ OCR riêng. Không thay trạng thái sổ.
