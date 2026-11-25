@@ -242,3 +242,6 @@ BillImageIntakeAPI.inspect adds cropHashes (null or comma-separated unique up to
 
 ## v13.103 BANK-REGION
 BillImageIntakeAPI.propose(p,w,h,mode='auto') supports row/column/grid whitespace proposals (<=4). regionPlan(rows,selectedKeys) returns immutable sourceCount, regionCount, selectedCount, overlapCount and per-region stable key/selected/overlap/canRead/canPost=false. canRead means selected scope only, no actual OCR execution. Existing image lab resets selection on geometry/rotation changes.
+
+## v13.104 BANK-REGION-OCR
+BillOCREngineAPI.createRegionBatch({factory,profile}) -> run({rows,selected,makeImage}), close(). Uses existing regionPlan and sequential run; failed region returned with state:error and null parsed data, failed worker closed; next region independent. Stable regionKey, immutable review results, canPost:false. Sample-only OCR lab; no ledger adapter.

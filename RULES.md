@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.103)
+## 00. Chỉ mục rule đang có hiệu lực (v13.104)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -929,3 +929,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-REGION-03: Reject repeated identical region keys; flag overlapping rectangles of same source and block their read-plan eligibility. Selected distinct regions only mark requested OCR scope, not confirmed OCR, transfer or receipt. No payment authority.
 - BANK-REGION-04: Reset region selection on new image, split mode or rotation. Existing local image module only, no actual OCR job, upload, journal or production changes. Whitespace projection cannot reliably segment touching/overlapping/complex collage; manual geometry editing remains future work.
 - BANK-REGION-05: Test synthetic 2x2 grid, row/column modes, stable selection, overlap, duplicate and unknown keys, distinct sources, browser selection/reset. Preserve keyboard v13.27 and CI gate.
+
+## 128. BANK-REGION-OCR — v13.104
+- BANK-REGION-OCR-01: Validate selected stable region keys with existing regionPlan before opening OCR worker; reject overlaps, empty or unknown selection. Only selected crops reach engine, no full-image fallback.
+- BANK-REGION-OCR-02: Sequential per-region recognition/parse, original region identity, raw text and confidence kept separately; never fill missing fields from neighbors. All outputs review-only and canPost=false.
+- BANK-REGION-OCR-03: Failed region yields error with null parsed/text/confidence; close failed session and start fresh for later regions. Cancellation or changed source/selection invalidates stale outputs. No automated retry or posting.
+- BANK-REGION-OCR-04: Existing billenginelab sample-only CDN adapter uses explicit region selection. No private image processing claim, production deployment, journal, real messages or historic repair.
+- BANK-REGION-OCR-05: Test three mock regions with middle failure and missing last clock; assert unique identities, exact independent amounts and lifecycle. Static and browser checks required; real engine accuracy not claimed. Preserve keyboard v13.27.
