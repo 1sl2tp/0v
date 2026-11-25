@@ -94,6 +94,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await bp.locator('#modules button[data-module=balance]').evaluate(e=>e.click());assert((await bp.locator('#moduleContent').textContent()).includes('−650.000 đ'));
  await bp.locator('#modules button[data-module=payments]').evaluate(e=>e.click());assert((await bp.locator('#moduleContent').textContent()).includes('24/11/2026 · 10:30'));await bp.close()
  }
+ // Fixture bill evidence transitions. No financial or messaging side effects.
+ {
+ const bp=await browser.newPage({viewport:{width:390,height:844}});await bp.goto(url+'?apicheck=1');
+ await bp.locator('.contact[data-id=kh]').evaluate(e=>e.click());const card=bp.locator('.bill-reconcile');
+ const collect=()=>card.getByRole('button',{name:'Xác minh ngày và thu thủ công (mẫu)'});
+ assert.equal(await card.getAttribute('data-bill-evidence'),'reread');assert(await collect().isDisabled());
+ await card.getByRole('button',{name:'Mô phỏng ngân hàng xác nhận'}).evaluate(e=>e.click());assert(await collect().isDisabled());
+ await card.getByRole('button',{name:'Đọc lại STK (mẫu)'}).evaluate(e=>e.click());assert.equal(await card.getAttribute('data-bill-evidence'),'review');assert(await collect().isEnabled());
+ await collect().evaluate(e=>e.click());assert.equal(await card.getAttribute('data-bill-evidence'),'posted-demo');assert(await collect().isDisabled());await bp.close()
+ }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
  await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());

@@ -108,3 +108,6 @@ v13.73 PR #40 merged 08e2b51d1999b1391345a3086e9808ef63b143c8; CI 45526996155 su
 
 ## v13.75 — Main business foundation phase 3a
 v13.74 PR #41 merged 403c35c594c15f0b50aa5eaf19d68c5ca3c4f508; CI 45527316410 success. BusinessProjectionAPI delegates exact line/total/ledger/format/bank amount to existing Foundation APIs. Direct tests: order 350000, ledger -650000, bank 1000000.8, compact remainder 0.8, line rounding, malformed input. Seven classic scripts and audit syntax checked; browser assertions added; CI pending. MAIN-BIZ-01–04. No real receipts, reconciliation policy change, DB, keyboard or production.
+
+## v13.76 — bill evidence phase 3b
+v13.75 PR #42 merged 7af501d0e53361f33c99d47d63dd72cb872baf83; CI 45528009392 success. BillEvidenceAPI shared guard in Main fixture; exact decimal comparison, valid date, manual-only, repeated transition blocked; payment/debt cards derive amounts; register existing notice APIs without live integration. Direct tests and script syntax passed; static/browser checks added, CI pending. BILL-EVIDENCE-01–04. No real receipt, notice, DB, keyboard or production change.
