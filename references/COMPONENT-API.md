@@ -140,3 +140,6 @@ MessageStore.metrics() → comparisons/appendBatches/prependBatches/mergeBatches
 
 ## v13.70 Virtualizer performance
 Virtualizer.mount(...).metrics() returns immutable counters: paints, stableFrames, created, removed, moves, attributeWrites, styleWrites. Stable DOM writes guarded; keyed overlapping rows retained. Existing range/anchor/resize/dispose API unchanged. Counters count Virtualizer writes only, not browser paint time or arbitrary consumer DOM changes.
+
+## v13.71 Sync pointer index
+ConversationStore.validateMessageScope(record) → boolean; metrics().pointerLookups. Shared by SyncController and CacheController, retains pending pointer conflict rejection. Index updated after validated batch, cleared on dispose. No cursor or storage protocol change.
