@@ -252,3 +252,6 @@ E0: PR #84 merged; PostgreSQL CI 45553014792 and API CI 45553015030 passed; main
 
 ## v13.119
 E0: PR #85 merged after API 45553390224 and PostgreSQL 45553392792 passed. E1: BANK-ACCUMULATION, BANK-IDENTITY-BATCH, KB-LOCK. Replayable synthetic evidence timeline, historical cutoff, explicit completeness revision, immutable receipt linkage. E2: 14 direct assertions passed, seven classic scripts compiled, static regression added; CI pending. E3–E5 not certified. No actual data, persistent storage, real receipt, production posting, messages, reminders, historical or keyboard changes.
+
+## v13.120
+E0: PR #86 merged; API 45553701213 and PostgreSQL 45553701129 passed; main blob verified. E1: BANK-BACKLOG, BANK-ACCUMULATION, KB-LOCK. Derived backlog for bills, manual verification and canonical Bank groups, age and customer counts; no new ledger. E2: 13 direct assertions passed, seven classic scripts compiled and regression added. CI pending; E3–E5 not certified. Synthetic data and caller completeness only. No production, persistence, real debt, messages, reminders or keyboard changes.

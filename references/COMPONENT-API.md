@@ -293,3 +293,6 @@ BankIdentityBatchAPI.plan({configured,bills,banks,attestations,assignments,prior
 
 ## v13.119 BANK-ACCUMULATION
 BankAccumulationAPI.empty(configured,openedAt), append(journal,event), replay(journal,{asOf}) manage bounded synthetic event history and compute BankIdentityBatchAPI proposals. New evidence invalidates completeness; scope event requires expectedRevision. OCR version, bank receipt time, manual postedAt and verifiedAt separate. Caller snapshots only, no persistent adapter or actual posting, canPost=false.
+
+## v13.120 BANK-BACKLOG
+BankBacklogAPI.project(journal,{asOf}) derives immutable bill/customer/Bank queues from BankAccumulationAPI. Exposes ageHours, daysWaiting, clockReviewRequired, open and manual counts, resolved no-bill Bank amount and separate new-credit/manual-link plans. No duplicate aliases counted as multiple resolved transactions; unresolved notices excluded from no-bill total. No UI, durable storage, sending or posting adapter.
