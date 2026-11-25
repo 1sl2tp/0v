@@ -150,3 +150,6 @@ CHAT bill-app-preview.mjs blob 3fb53ea99124ed673a588281787a2e135a8a5e26: contigu
 
 ## v13.110
 Google diff-match-patch javascript/diff_match_patch_uncompressed.js blob 88a702c2e232a2b8158f176a4cee9be845def2a2: common prefix/suffix concept. CHAT bill-app-preview.mjs blob 3fb53ea99124ed673a588281787a2e135a8a5e26: contiguousMemoContains and sender-bound QR/suffix guards. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. No generic edit-distance proof or upstream runtime/private values copied.
+
+## v13.111
+CHAT bill-app-preview.mjs blob 3fb53ea99124ed673a588281787a2e135a8a5e26: explicit sender_name independent of receiving account/name. ERPNext erpnext/accounts/doctype/payment_entry/payment_entry.py blob 57dd7c862089e9342b43db6da0d426eb3c2dade4: party and paid_from/paid_to are distinct fields. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. No upstream runtime or private constants copied.
