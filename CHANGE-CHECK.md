@@ -467,3 +467,7 @@ User xác nhận bỏ duyệt thiết bị riêng 0v, không sửa CHAT cũ. Đ�
 
 ## v13.170 — CHAT chính thức, gửi tin thật
 E1: thêm API v0_admin_send_text và composer live; dùng Input/Contact/Layout/Button/ChatReadAPI hiện có, idempotency, nháp, giới hạn 8000 ký tự, từ chối non-admin/contact ngoài phạm vi. Đã kiểm tra định nghĩa v21_message_send, v21_conversation_open và trigger v21_messages thực: sync, push enqueue, Zalo outbound, customer summary. Chỉ admin bấm Gửi mới ghi thật; kiểm thử dùng fixture không gửi khách. Không thay schema bảng hiện hữu/CHAT repo. Chưa triển khai nhận realtime/sửa/xóa/media/CRM trong vòng này. CI/Pages/thiết bị pending.
+
+
+## v13.171 — hiển thị media thật
+E1: đối chiếu v21_media_assets và v21_storage_private.can_read, thêm SQL policy và RPC scoped trong references/0v-admin-media.sql; UI dùng MediaController.gallery, private download/blob, revoke khi đổi phòng/logout; fixture kiểm tra blob. v13.170 PR #140 đạt CI và merged e24aacc9. Chưa xác minh tải ảnh thật trên thiết bị; chưa gửi media.
