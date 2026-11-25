@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.180)
+## 00. Chỉ mục rule đang có hiệu lực (v13.181)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1421,3 +1421,6 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 
 ## CONTENT-FLOW — v13.180 (bước 1 trình bày hội thoại)
 - CONTENT-FLOW-01: Giữ mốc ngày và giờ VN, thời gian là metadata nhỏ căn cuối dòng; không làm tiêu đề thời gian cho từng tin. Message.flow chỉ nối hai tin văn bản liền kề cùng A/B, cùng ngày, cùng HH:mm hợp lệ. Giờ trùng chỉ hiện một lần cuối nhóm; giờ từng tin vẫn giữ trong DOM và aria-label. Khác phút/ngày/bên, media, bill, placeholder, mẫu không rõ giờ, hoặc thẻ nghiệp vụ thì ngắt nhóm. Không gộp ID hay thay thứ tự, không sửa thời gian giao dịch bill. Dùng token hiện có, không đổi keyboard/input/scroll owner. Không phân tích ý định hoặc tự tạo đơn ở bước 1.
+
+## LIVE-BILL-05 — v13.181
+- Status duplicate/review/received/amount_read không đủ để phân loại ảnh. BillReceiptProjection.read chỉ dùng trường receiving_account đã được chiếu đúng asset/message, ParseAPI.billRecipientEvidence nhận 9999–999999 (4–6 chữ số 9, khoảng trắng ngang cho phép), 13 chữ số có đuôi 4–6 số 9, hoặc mask có đuôi hợp lệ. Không tìm chuỗi trong memo, tên, ảnh hàng, số bất kỳ hay ghép qua dòng. Cần thêm ít nhất số tiền dương hoặc ngày/giờ có định dạng hợp lệ. Thiếu evidence thì ảnh thường, không nhãn bill trùng, không đổi receipt/ledger. Đây là gate hiển thị, không chứng minh tiền về hay danh tính người nhận; đối soát backend vẫn cần sửa riêng. Không sửa KB-LOCK.
