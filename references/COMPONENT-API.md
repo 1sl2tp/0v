@@ -495,3 +495,6 @@ LIVE-BILL-02 backend candidate: existing private admin_media optional bill_recei
 LIVE-BILL-03: BillReceiptProjection.recipientDisplay returns proposed display and raw when a known prefix is detected; raw stays visible for review. Live bill preview uses existing MediaController.rotate from original, room-scoped, 24 MP cap; no automatic text orientation, persistence or financial authority.
 
 LIVE-BILL-04: MediaController.printedOrientation(image) -> 0|90|180|270|null; conservative local glyph direction hint, only live bill preview consumes, original retained, manual override available, no semantic recognition or financial authority. Browser canvas required.
+
+## v13.179 CONTENT-AB
+Message.create sets data-content-party A/B from existing mine flag. ContentAPI.line/segments/create render limited explicit formatting through Typography (plain text, headings, bold, unit-bearing quantity, divider); no HTML, no business parsing or writes. Existing CardController/TableController/MediaController remain specialized owners. Live and fixture share Message.create. Native and full business-card migration pending.
