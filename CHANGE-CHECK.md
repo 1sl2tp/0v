@@ -321,3 +321,18 @@ E0: v13.140 merged after API 45575196885 and DB 45575196880 passed. E1: app-owne
 
 ## v13.142
 E0: v13.141 merged; API 45575568865 and DB 45575568838 passed, user screenshot reports native chooser/fall regression. E1: file input moved into composer; anchored geometry and room handoff; cancel early-close before native activation; exact guard exception, normal close unchanged. E2: normalized four protected ranges compared; browser tests added; CI pending. Physical iPhone acceptance open; no production or bill changes.
+
+## v13.143
+E0: v13.142 merged, API/DB passed; user screenshots show ongoing native picker and fall. E1: in-flow accessory sibling, synchronous focus and bounded read-only opening settle, keep menu during native handoff. All four protected ranges unchanged. E2: updated browser geometry/focus/reserve/picker tests; CI pending. No native acceptance or production claims.
+
+### v13.143 CI repair 1
+Run 45583429500: static and snapshot checks passed; browser timed out on filechooser. DB 45583429496 passed. Candidate amended: guard focusout during accessory press, native showPicker synchronous, same real filechooser test; no assertion removed. New CI pending.
+
+### v13.143 CI repair 2
+Run 45584025796 failed again waiting for filechooser; DB 45584025870 passed. Replace synthetic activation with real file controls in accessory rows; shared change/cancel/decode and pointer handoff, actual chooser test both actions. Exact four protected ranges unchanged. CI/native pending.
+
+### v13.143 CI repair 3
+Run 45585154404 failed at native input hit geometry assertion, before chooser; DB 45585154427 passed. Correct input interaction boundary and row hit stacking, add exact diagnostic output and scroll row into view before measuring; keep all assertions and chooser tests. Four protected ranges unchanged. CI/native pending.
+
+### v13.143 CI repair 4
+Run 45585524052 failed on hit target PRE. Native row/input rect exactly matched 230x44, offsets 0, pointer auto. Inspected apiProofPanel fixed z-index 10030 and pre report. Separate real interaction test from opt-in diagnostic UI by normal URL and assert panel absent. All geometry/chooser assertions retained; application and snapshot unchanged. DB 45585523949 success. New CI pending.
