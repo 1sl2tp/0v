@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.96)
+## 00. Chỉ mục rule đang có hiệu lực (v13.97)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -873,3 +873,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-RESIDUAL-03: MCC exposes signed delta seconds and same Vietnam calendar day flag; retain clock conflict when absolute delta >60 seconds. Do not infer offset or alternate day, or replace printed bank timestamp. Conflicting wrapper remains original.
 - BANK-RESIDUAL-04: Diagnostics expose reason and counts, no private raw payload in source. No historical or production record changes; no automatic financial action.
 - BANK-RESIDUAL-05: Tests cover contiguous missing span, one letter, digit difference, short equality, containment, missing and cross-day MCC conflict. CHAT verifiedMbvcbTransferSuffixOcr guard reviewed; no broad fuzzy matching. Preserve keyboard v13.27.
+
+## 120. BANK-NOCLOCK — v13.97
+- BANK-NOCLOCK-01: Distinguish truly absent printed bill clock from invalid/conflicting clock. Require explicit valid bill date, same printed bank day, valid bank clock, clear image, full recipient account/name, exact positive amount, verified incoming bank and independently declared non-own-transfer evidence.
+- BANK-NOCLOCK-02: Require strong alphanumeric bill reference (>=8 chars and >=6 consecutive digits) delimited in BOTH literal memos and exact normalized full memo. No conflicting reference, digit, name, date or receipt time. Only missing clock may remain as candidate reason.
+- BANK-NOCLOCK-03: Require unique bill and bank candidate, no duplicate or consumed evidence. Expose missing-clock-reference verification with billTime=null, separately printed bank clock/date and arrival date. Late arrival never fills missing OCR time. Review only; canPost=false; no receipt or manual link authorization.
+- BANK-NOCLOCK-04: Queue shows separate proof and next action, retains amount in outstanding total. Recheck persists ownTransfer evidence; explicitly own transfers excluded. Unknown own-transfer cannot qualify this proof. No actual messages, DB writes or historical corrections.
+- BANK-NOCLOCK-05: Test late next-day arrival, invalid clock, absent name, wrong account/reference, generic/missing memo, own transfer, ambiguity, replay and blocked posting. CHAT previewBillReferenceMatch reference. Preserve keyboard v13.27.

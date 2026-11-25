@@ -218,3 +218,6 @@ BankMemoEnvelopeAPI supports observed MCC prefix and short sourceIdentifier; com
 
 ## v13.96
 BankMemoEnvelopeAPI.diagnoseLiteral(a,b) yields diagnostic type, shared prefix/suffix and gap lengths, digit conflict, reviewOnly=true. compare exposes literalDiagnostic. MCC metadata adds signed clockDeltaSeconds and clockSameDay. No eligibility change.
+
+## v13.97
+BankReconcileAPI candidate missingClockProof and result.verification distinguish strict date/reference/memo review from posting. BankReviewQueueAPI exposes verification and missingClockVerified count, with separately printed Bank clock. Recheck retains ownTransfer flag. No eligibility relaxation.
