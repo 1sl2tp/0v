@@ -44,6 +44,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.evaluate(()=>receiveDemo('nv','QA current room','qa-nv-1'));assert.deepEqual(await read(),current);assert.equal(current.data.messages,two.data.messages+1);
  await p.close();}
  
+ // Main notification policy: actual route projection; no OS effects.
+ {const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?apicheck=1');await p.locator('#apiProofPanel').getByRole('button',{name:'Ẩn',exact:true}).click();await p.bringToFront();await p.waitForFunction(()=>document.hasFocus());
+ const directory=await p.evaluate(()=>receiveDemo('ncc','QA notification directory','qa-notice-dir'));assert.equal(directory.surface,'in-app');assert.equal(directory.renotify,false);
+ await p.locator('.contact[data-id=nv]').click();await p.waitForTimeout(300);
+ const thread=await p.evaluate(()=>receiveDemo('nv','QA notification thread','qa-notice-thread'));assert.equal(thread.surface,'thread');
+ const other=await p.evaluate(()=>receiveDemo('ncc','QA notification other','qa-notice-other'));assert.equal(other.surface,'in-app');assert.notEqual(other.id,directory.id);
+ assert.equal(await p.evaluate(()=>receiveDemo('ncc','QA notification other','qa-notice-other')),null);
+ const result=await p.evaluate(()=>{const ctx={visibility:'hidden',focused:false,route:'chat',openConversationId:'ncc',visibleRegions:[]},id='fixture-event:qa-notice-other';return [mainNotificationAudit(id,ctx,'granted'),mainNotificationAudit(id,ctx,'denied'),mainNotificationAudit('main:ncc:1',ctx,'granted')]});assert.equal(result[0].surface,'push');assert.equal(result[1].surface,'unavailable');assert.equal(result[2].surface,'none');
+ await p.waitForFunction(()=>mainReadAudit('nv').unread===0,{},{timeout:8000});const read=await p.evaluate(()=>mainNotificationAudit('fixture-event:qa-notice-thread',{visibility:'hidden',focused:false,visibleRegions:[]},'granted'));assert.equal(read.reason,'confirmed-read');assert.equal(read.surface,'none');await p.close();}
+ 
  // Incoming scroll policy: idle tail follows, reader away stays, jump clears, other room untouched.
  {const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url);
  await p.evaluate(()=>document.querySelector('.contact[data-id=kh]').click());
