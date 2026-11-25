@@ -278,3 +278,6 @@ BankJournalAPI.planRollingDebt({journal,customer,openingAt,asOf,purchases,receip
 
 ## v13.114 BANK-ROLLING-BATCH
 BankJournalAPI.planRollingBatch({journal,openingAt,asOf,customers:[{customer,purchases}],assignments:[{customerId,receiptId,expectedRevision}]}) reuses rollingProjection after one replay. Reject repeated receipt or known Bank alias across customers and repeated purchase IDs. Exact separate debt, credit, bankReceived, manualUnlinked and unassigned receipt totals. Read-only fixture, no persistent allocation lock. Manual linkage after asOf does not count as Bank-backed at earlier cutoff.
+
+## v13.115 BANK-ROLLING-PERSIST
+BankJournalAPI.persistentEmpty/persistentProof/applyPersistent and openPersistent/readPersistent/changePersistent implement one account-keyed synthetic fixture journal and immutable receipt ownership in one IndexedDB transaction. Retry exact entries and same owner is idempotent; conflicts reject; existing independent journals not migrated. Browser-only hook ?bankpersistlab=1. canPost=false; canCloseCycle=false. No production adapter or cross-device guarantee.
