@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.132)
+## 00. Chỉ mục rule đang có hiệu lực (v13.133)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1139,3 +1139,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-TYPED-OCR-03: Store raw typed output independently; mismatch or inability to read is review only. No automatic letter-to-digit replacement, no fixed account/name used as OCR answer, no posting. Original raw evidence remains authoritative for review.
 - BILL-TYPED-OCR-04: Preserve date words and mixed memo; no production, bank, ledger, old bill or keyboard change. Tesseract.js worker.setParameters documentation: https://github.com/naptha/tesseract.js/blob/master/docs/api.md.
 - BILL-TYPED-OCR-05: Synthetic static profile and browser worker parameter/cleanup regressions; real OCR corpus not certified.
+
+## 158. BILL-VALUE-GEOMETRY — v13.133
+- BILL-VALUE-GEOMETRY-01: A same-line label/value can use typed OCR only if original aligned OCR word tokens reconstruct the entire normalized line exactly and the raw field value is an exact unique trailing token span.
+- BILL-VALUE-GEOMETRY-02: Require every word bounding box within the original line, ordered without horizontal overlap; reject missing, reversed, merged label/value or mismatched tokens. Preserve whole-line OCR fallback and existing separate-line value geometry.
+- BILL-VALUE-GEOMETRY-03: Crop only measured value token union, never guess by character width. Invalid account digits may still be reread using the exact raw value span. Typed result remains review-only, no posting or bank changes.
+- BILL-VALUE-GEOMETRY-04: Upstream Tesseract.js v6 blocks/word bbox and Tesseract segmentation/whitelist docs: https://github.com/naptha/tesseract.js/issues/993 and https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html. No new dependency or private data.
+- BILL-VALUE-GEOMETRY-05: Synthetic regression for exact same-line value bounds, invalid glyph, mismatched token, merged label and reversed bbox; browser fixture retained. CI and real corpus acceptance separate.
