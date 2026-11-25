@@ -104,6 +104,15 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await card.getByRole('button',{name:'Đọc lại STK (mẫu)'}).evaluate(e=>e.click());assert.equal(await card.getAttribute('data-bill-evidence'),'review');assert(await collect().isEnabled());
  await collect().evaluate(e=>e.click());assert.equal(await card.getAttribute('data-bill-evidence'),'posted-demo');assert(await collect().isDisabled());await bp.close()
  }
+ // Cross-day bank reconciliation: three independent synthetic bills.
+ {
+ const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?bankreconcilelab=1');await page.locator('.contact[data-id=kh]').evaluate(e=>e.click());await page.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());
+ const status=page.locator('[data-bank-batch-status]');assert.equal(await status.getAttribute('data-pending'),'3');
+ await page.getByRole('button',{name:'Nhận bank ngày hôm sau (mẫu)',exact:true}).evaluate(e=>e.click());
+ assert.equal(await status.getAttribute('data-ready'),'2');assert.equal(await status.getAttribute('data-review'),'1');assert.equal(await status.getAttribute('data-pending'),'0');
+ assert.equal(await page.locator('[data-bank-bill=bill-3]').getAttribute('data-bank-state'),'review');assert((await page.locator('[data-bank-bill=bill-1]').textContent()).includes('25/11/2026'));assert((await page.locator('[data-bank-bill=bill-1]').textContent()).includes('24/11/2026'));
+ await page.getByRole('button',{name:'Đặt lại mẫu',exact:true}).evaluate(e=>e.click());assert.equal(await status.getAttribute('data-pending'),'3');await page.close()
+ }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
  await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());
