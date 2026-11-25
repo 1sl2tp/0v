@@ -120,3 +120,6 @@ Extend ParseAPI.billDate; new BankReconcileAPI pure batch candidates, no day cut
 
 ## v13.79 — event-driven bank recheck
 v13.78 PR #45 merged bb482b7b9660d5a2391ed286923c97666b2c9dab; CI 45529221225 success. BankRecheckController owns local event state, OCR revision, replay and day watermark, no external effects. Direct smoke and static contract passed; browser lab assertions added; CI pending. BANK-RECHECK-01–05. No real posting, scheduling, bank ingress, DB or keyboard changes.
+
+## v13.80 — durable fixture bank journal
+v13.79 PR #46 merged 1ec34abb68700d3d0c47e3bc0c7a7b0830c5b89c; CI 45530554763 success. BankJournalAPI replay, isolated IndexedDB transaction, receipt pair uniqueness, event replay and rollback; same-tab F5 lab. Direct smoke and exact static contract passed; Chromium F5/abort tests added, CI pending. BANK-JOURNAL-01–05. No production ledger, real bank, real message, server or keyboard changes.
