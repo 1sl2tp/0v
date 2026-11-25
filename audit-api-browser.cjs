@@ -59,7 +59,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollTop<=1&&m.scrollHeight-m.clientHeight-m.scrollTop>300});
  await p.waitForTimeout(250);
  const before=await state();assert(before.top<=1&&before.gap>300,JSON.stringify(before));
- await p.evaluate(()=>receiveDemo('kh','Tin mẫu khi đang đọc cũ '.repeat(15)));const away=await state();assert(Math.abs(away.top-before.top)<=1&&away.gap>48&&!away.hidden&&away.count==='1',JSON.stringify({before,away}));
+ await p.evaluate(()=>receiveDemo('kh','Tin mẫu khi đang đọc cũ '.repeat(15)));const away=await state();assert.equal(await p.locator('.contact[data-id=kh] .unread-count').textContent(),'1');assert(Math.abs(away.top-before.top)<=1&&away.gap>48&&!away.hidden&&away.count==='1',JSON.stringify({before,away}));
  assert.equal(await draft.inputValue(),'Bản nháp không mất');await p.evaluate(()=>receiveDemo('ncc','Tin mẫu khách khác'));const other=await state();assert(Math.abs(other.top-away.top)<=1&&other.count===away.count);
  await p.locator('#jumpBottom').evaluate(e=>e.click());await p.waitForTimeout(250);const tail=await state();assert(tail.gap<2&&tail.hidden&&tail.count===null,JSON.stringify(tail));
  await p.evaluate(()=>receiveDemo('kh','Tin mẫu khi đang ở cuối '.repeat(20)));const after=await state();assert(after.gap<2&&after.hidden&&after.count===null,JSON.stringify(after));assert.equal(await draft.inputValue(),'Bản nháp không mất');await p.close();}
@@ -228,6 +228,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  // Main owner migration: initial, outgoing and incoming text share Message factory.
  {
  const mp=await browser.newPage({viewport:{width:390,height:844}});await mp.goto(url+'?apicheck=1');
+ // Diagnostic API remains available, but the actual overlay obscures message rows.
+ await mp.locator('#apiProofPanel').getByRole('button',{name:'Ẩn',exact:true}).click();assert.equal(await mp.locator('#apiProofPanel').count(),0);
  await mp.locator('.contact[data-id=nv]').evaluate(e=>e.click());
  const profile=el=>({layout:el.dataset.layoutProfile,bubble:el.querySelector('.bubble')?.dataset.typeRole,meta:el.querySelector('.meta')?.dataset.typeRole});
  const initial=await mp.locator('#messages .message').first().evaluate(profile);
@@ -241,7 +243,11 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await mp.evaluate(()=>window.receiveDemo('ncc','Tin chưa đọc thứ nhất'));
  const badge=await mp.locator('.contact[data-id=ncc] .unread-count').elementHandle();assert.equal(await badge.textContent(),'1');
  await mp.evaluate(()=>window.receiveDemo('ncc','Tin chưa đọc thứ hai'));assert.equal(await badge.textContent(),'2');assert(await badge.evaluate(e=>e.isConnected&&e===document.querySelector('.contact[data-id=ncc] .unread-count')));
- await mp.locator('[data-go=contacts]').first().evaluate(e=>e.click());await mp.locator('.contact[data-id=ncc]').evaluate(e=>e.click());
+ // Use actual visible navigation and foreground focus; do not assume selected === read.
+ await mp.bringToFront();await mp.locator('.conversation .panel-head button[data-go=contacts]').click();await mp.locator('.contact[data-id=ncc]').click();
+ assert.equal(await mp.evaluate(()=>window.mainReadAudit('ncc').unread),2);
+ const readGeometry=()=>mp.evaluate(()=>{const root=document.querySelector('#messages'),frame=document.querySelector('.composer-frame'),v=window.visualViewport;return {screen:document.querySelector('#app').dataset.screen,focused:document.hasFocus(),visibility:document.visibilityState,receipt:window.mainReadAudit('ncc'),root:root.getBoundingClientRect().toJSON(),frame:frame.getBoundingClientRect().toJSON(),viewport:{top:v?.offsetTop,height:v?.height},scrollTop:root.scrollTop,rows:[...root.querySelectorAll('[data-fixture-message-id]:not(.mine)')].map(row=>{const r=row.getBoundingClientRect(),x=(r.left+r.right)/2;return {id:row.dataset.fixtureMessageId,rect:r.toJSON(),hits:[r.top+2,(r.top+r.bottom)/2,r.bottom-2].map(y=>{const e=document.elementFromPoint(x,y);return {inside:row.contains(e),hit:e?.className?.toString()}})}})}});
+ try{await mp.waitForFunction(()=>window.mainReadAudit('ncc').unread===0,{},{timeout:8000})}catch(e){console.error('Main read geometry',JSON.stringify(await readGeometry()));throw e}
  assert.equal(await mp.locator('.contact[data-id=ncc] .unread-count').count(),0);assert((await mp.evaluate(()=>window.ownerAudit().parents)).includes('Contact'));const data=await mp.evaluate(()=>window.mainDataAudit());assert.equal(data.messages,12);assert.equal(data.rooms.nv.count,4);assert.equal(data.rooms.nv.latestId,'main:nv:4');assert.equal(data.rooms.ncc.count,4);assert.equal(data.rooms.ncc.latestId,'main:ncc:4');assert.equal(data.rooms.kh.count,2);assert.equal(data.rooms.nhom.count,2);assert.equal(await mp.locator('#messages .message').filter({hasText:'Tin chưa đọc thứ hai'}).count(),1);await badge.dispose();await mp.close()
  }
  // Main business projection: common order line/total and ledger formatting in the normal fixture.
