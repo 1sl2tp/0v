@@ -456,3 +456,6 @@ Main.mount({live,onSearch}) creates same shell, no fixture contacts for live, re
 
 ## Live content projection
 Real text routes through Message.create; authenticated media parts attach before metadata; unavailable media metadata is explicit unknown, not an invented file type. See LIVE-INTEGRATION-MAP.md and LIVE-INTEGRATE-01–04 for all existing owners and missing adapters.
+
+## v13.173 shared interaction runtime
+ScrollController, KeyboardController, InputController, resizeDraft, swipe and beginSharedNavigation execute before live/fixture data split; view uses canonical owners. liveCanSend adapter only restricts submit eligibility. Protected keyboard geometry unchanged. Native acceptance pending.

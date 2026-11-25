@@ -18,3 +18,6 @@ Status is source-level, not physical-device acceptance. One parent owns each fea
 
 ## Release and evidence
 Prior PR #143 CI success, publish #678 blocked by file allowlist. This candidate keeps the single v13.172 snapshot. The SQL proposal remains at [reviewed source](https://github.com/1sl2tp/0v/blob/da433e9f0dcf87b529f0f49e4eb89030b3881d6f/references/0v-admin-media.sql); separate backend review needed. ROADMAP not modified in this frontend-only release per gate. Keep rule IDs LIVE-INTEGRATE-01–04 in all subsequent PRs. No production records or real sends used for tests.
+
+## v13.173 recovery
+Shared runtime initialized before data branch; live swipe/input/scroll use existing owners. E1 only; synthetic browser and native acceptance pending. Media upload, business, realtime and server MFA still pending.
