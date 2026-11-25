@@ -25,7 +25,18 @@ BEGIN
           AND coalesce(r.raw_read->>'printed_date_invalid','false')='false'
           AND coalesce(r.raw_read->>'date_swap_suspected','false')='false'
           AND coalesce(r.raw_read->>'ocr_iso_date_conflict','false')='false'
-          THEN to_char(r.transfer_at_vn,'DD/MM/YYYY') END,
+          THEN to_char(r.transfer_at_vn,'DD/MM/YYYY')
+          WHEN r.transfer_at_vn IS NULL
+          AND jsonb_typeof(r.raw_read->'transfer_date_printed_vn')='string'
+          AND r.raw_read->>'transfer_date_printed_vn' ~ '^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}$'
+          AND r.raw_read->>'transfer_date_vn' ~ '^(19[789][0-9]|20[0-9]{2})-[0-9]{2}-[0-9]{2}$'
+          AND coalesce(r.raw_read->>'time_date_conflict','false')='false'
+          AND coalesce(r.raw_read->>'printed_date_invalid','false')='false'
+          AND coalesce(r.raw_read->>'date_swap_suspected','false')='false'
+          AND coalesce(r.raw_read->>'ocr_iso_date_conflict','false')='false'
+          THEN CASE WHEN pg_input_is_valid(r.raw_read->>'transfer_date_vn','date') THEN
+            CASE WHEN lpad(split_part(r.raw_read->>'transfer_date_printed_vn','/',1),2,'0')||'/'||lpad(split_part(r.raw_read->>'transfer_date_printed_vn','/',2),2,'0')||'/'||split_part(r.raw_read->>'transfer_date_printed_vn','/',3)=to_char((r.raw_read->>'transfer_date_vn')::date,'DD/MM/YYYY')
+            THEN to_char((r.raw_read->>'transfer_date_vn')::date,'DD/MM/YYYY') END END END,
         'time_vn',CASE WHEN r.transfer_at_vn IS NOT NULL
           AND coalesce(r.raw_read->>'time_date_conflict','false')='false'
           AND coalesce(r.raw_read->>'clock_text_conflict','false')='false'

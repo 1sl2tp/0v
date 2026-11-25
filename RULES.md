@@ -1421,3 +1421,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 
 ## CONTENT-FLOW — v13.180 (bước 1 trình bày hội thoại)
 - CONTENT-FLOW-01: Giữ mốc ngày và giờ VN, thời gian là metadata nhỏ căn cuối dòng; không làm tiêu đề thời gian cho từng tin. Message.flow chỉ nối hai tin văn bản liền kề cùng A/B, cùng ngày, cùng HH:mm hợp lệ. Giờ trùng chỉ hiện một lần cuối nhóm; giờ từng tin vẫn giữ trong DOM và aria-label. Khác phút/ngày/bên, media, bill, placeholder, mẫu không rõ giờ, hoặc thẻ nghiệp vụ thì ngắt nhóm. Không gộp ID hay thay thứ tự, không sửa thời gian giao dịch bill. Dùng token hiện có, không đổi keyboard/input/scroll owner. Không phân tích ý định hoặc tự tạo đơn ở bước 1.
+
+- LIVE-DATA-PROJECTION-01: directory API returns bounded existing avatar_path only for already-authorized directory rows; reject unsafe path; no new grant. Bill date projection may use independent printed date and matching canonical calendar date when timestamp is null; reject conflict/invalid and never infer clock. Existing AAL2 receipt scope, joins, status and ledger untouched. Backend-only review; no production deployment from this PR.
