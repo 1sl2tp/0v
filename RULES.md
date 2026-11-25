@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.149)
+## 00. Chỉ mục rule đang có hiệu lực (v13.150)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1252,3 +1252,6 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - INPUT-THREE-ACTIONS-03: Browser regression verifies three labels, geometry, both focus states, real chooser for each action, exclusive paint and file image selection. Native acceptance pending. Four protected ranges unchanged; no production or bill changes. Sources: prior WebKit WKFileUploadPanel.mm and pinned Astryx Input geometry.
 
 - INPUT-THREE-ACTIONS-04: Candidate repair after real filechooser timeout. Leave native input hit/paint/accessibility unchanged through trusted click default action; hide local menu in next task with session epoch guard. Release abandoned pointer only after click opportunity. Log actual hit target and pointer/click trace on failure. No bypass of real chooser assertions or protected code change.
+
+## 175. NATIVE-TOUCH-HANDOFF — v13.150
+- INPUT-THREE-ACTIONS-05: User reports all three attachment actions fail on iPhone after v13.149 CI passed. Shared pointerup cleanup used zero-delay and may hide the native input before delayed compatibility click. Candidate: keep the real input unchanged, remove its mousedown cancellation, use touch-action manipulation and an epoch-guarded 1000ms abandoned-press cleanup only (never delay actual picker activation). No geometry writer or keyboard API change. Add real Chromium touch taps for all three actions, both focus states; native iPhone still required. WebKit WKFileUploadPanel.mm and WebKit bug 328902 support preserving direct user activation; they do not prove the reported root cause. File attachment still image-only.
