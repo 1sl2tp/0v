@@ -346,3 +346,6 @@ Input child inset 8px shared by text and attachment rail. Expanded radius 24px, 
 
 ## v13.141 — keyboard accessory
 Keyboard family hosts a local accessory in the Input composer. Anchored gap 8px; focus-preserving pointer interaction; room-scoped selection; only explicit action invokes native file input. Native picker/camera routing remains browser-dependent. Sources: Astryx TextInput/Stack, https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/file, https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/capture, https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events. No keyboard viewport writer.
+
+## v13.142 — native picker handoff
+Keyboard > composer frame > Input > accessory/file anchor. Native picker is external to DOM; location not controllable by CSS. Handoff suppresses only predictive blur recovery while picker is outstanding. No extra viewport writer or forced focus. Sources: pinned Astryx TextInput/Stack; https://github.com/adobe/react-spectrum/issues/9858 ; https://github.com/adobe/react-spectrum/issues/9172 ; https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/cancel_event ; https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/file. Native acceptance required.
