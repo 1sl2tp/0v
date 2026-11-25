@@ -28,6 +28,24 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.close();
  }
 
+ // Regression: real touch on editable draft must not trigger attachment preflight or lose focus.
+ for(const width of [320,390,430]){
+ const p=await browser.newPage({viewport:{width,height:844},hasTouch:true,userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 27_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1'});
+ await p.goto(url);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
+ const draft=p.locator('#draft'),file=p.locator('[data-draft-media-picker]'),form=p.locator('#composer');
+ await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='false');
+ const trace=[];p.on('filechooser',()=>trace.push('filechooser'));
+ await draft.tap();await p.waitForFunction(()=>document.activeElement===document.querySelector('#draft'));
+ await p.setViewportSize({width,height:360});await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true');
+ await draft.fill('Bản nháp vùng gõ');await p.waitForFunction(()=>document.querySelector('#composer').dataset.mode==='single');
+ const geometry=()=>form.evaluate(e=>{const d=e.querySelector('textarea'),r=d.getBoundingClientRect(),f=e.parentElement.getBoundingClientRect();return {active:document.activeElement===d,keyboard:document.querySelector('#app').dataset.keyboard,height:r.height,frame:f.height,bottom:f.bottom,hit:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===d}});
+ const before=await geometry();assert(before.active&&before.keyboard==='true'&&before.hit,JSON.stringify(before));
+ for(let i=0;i<3;i++){await draft.tap();const after=await geometry();assert(after.active&&after.keyboard==='true'&&after.hit&&Math.abs(after.height-before.height)<=1&&Math.abs(after.frame-before.frame)<=1,JSON.stringify({width,i,before,after}));assert.equal(await file.getAttribute('data-picker-preflight'),null);assert.equal(await form.getAttribute('data-native-picker'),null);}
+ assert.equal(await draft.inputValue(),'Bản nháp vùng gõ');assert.equal(trace.length,0);
+ await draft.fill('Dòng 1\nDòng 2\nDòng 3');await p.waitForFunction(()=>document.querySelector('#composer').dataset.mode==='expanded');const expanded=await geometry();await draft.tap();const after=await geometry();assert(after.active&&after.keyboard==='true'&&Math.abs(after.height-expanded.height)<=1&&Math.abs(after.frame-expanded.frame)<=1,JSON.stringify({width,expanded,after}));
+ assert.equal(await draft.inputValue(),'Dòng 1\nDòng 2\nDòng 3');assert.equal(trace.length,0);await p.close();
+ }
+ 
  // iOS preflight: no native chooser while the keyboard is moving; a fresh tap after closure opens it.
  {const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 27_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1'});
  await p.goto(url);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
