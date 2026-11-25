@@ -179,3 +179,6 @@ New journal entries manual-receipt({id,billId,amount,operator,reason,at}) and ma
 
 ## v13.83 BillDuplicateAPI
 validate(bill), inspect(bills) returns peer conflicts Map; digest(Uint8Array) computes source SHA-256 in secure context; regionHash(Uint8Array(72)) computes 64-bit dHash from pre-sampled grayscale region. Controller retains metadata. Reconcile marks conflict review; journal blocks posting; queue exposes duplicateReview and excludes these rows from provisional total. Fixture metadata only; no image decoder, detector or actual OCR ingestion.
+
+## v13.84 BillImageIntakeAPI
+decode(file) returns local grayscale raster, original source SHA, bounded preview and dimensions; propose(p,w,h) suggests horizontal split rectangles; inspect(p,w,h,sha,regions,turn) yields unconfirmed normalized region identities, dHash, contrast/detail metrics and warnings. sample/normalized are pure. ?billimagelab=1 local file picker and preview. No OCR, automated bill count, ledger, real messages or network. Experimental heuristics only.

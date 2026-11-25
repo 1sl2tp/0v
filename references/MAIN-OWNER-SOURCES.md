@@ -58,3 +58,9 @@ Decision: attach verification evidence to original fixture receipt, no additiona
 - https://github.com/thorn-oss/perception/blob/main/docs/examples/deduplication.rst — similarity thresholds.
 - https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/coding/data-modeling.md — idempotent transaction identity.
 Decision: source digest + normalized regions, conservative dHash candidates, no automatic merge. No upstream code copied or dependency added.
+
+## v13.84 phase 3j
+- https://github.com/opencv/opencv/blob/5.x/doc/tutorials/imgproc/shapedescriptors/find_contours/find_contours.markdown — region segmentation concepts; current lightweight horizontal projection is not OpenCV contour detection.
+- https://github.com/JohannesBuchner/imagehash/blob/master/README.rst — luminance hashes vs cryptographic digests.
+- https://github.com/naptha/tesseract.js/blob/master/README.md — reusable OCR worker interface; not installed in this phase.
+Decision: local browser decode and review-only region proposals. No upstream code copied, no external dependency.

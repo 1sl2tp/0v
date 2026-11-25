@@ -132,3 +132,6 @@ v13.81 PR #48 merged a3d2bb3920eb3870ba886faa179c45d40a4007f4; CI 45535546559 su
 
 ## v13.83 — duplicate bill evidence guard
 Based on PR #49 head 5b979a7f32a74a7334316d0196a276f8adb06016; CI pending when work started. Exact image/region, reference and conservative near-hash review; immutable metadata; journal blocks duplicate manual/automatic fixture posting, preserves prior receipts. Separate duplicate count and provisional sum. No actual image decoding, region detection, production or keyboard change. BANK-DUP-01–05. CI required before release.
+
+## v13.84 — local image intake and candidate regions
+v13.83 PR #50 merged d3152981cf9686d1bbc81bf636a568c544bbdbb7; CI 45536570509 success. Local file decode and original digest, horizontal region proposals, preview, rotation of fingerprint samples, unconfirmed quality warnings. Static raster contract added; Chromium PNG test added, CI pending. BANK-IMAGE-01–05. No real OCR, perspective recovery, real ledger/DB, messages or keyboard changes.
