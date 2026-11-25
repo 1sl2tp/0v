@@ -337,3 +337,6 @@ BillOCREngineAPI.qualityPixels and qualityAdvice add uncalibrated pixel hints an
 
 ## v13.138 — composer attachments
 Role font tokens retained; DraftMedia per-room local preview, removal, image-only local send. 94% width when attached; no transport or durable storage. Native device acceptance pending.
+
+## v13.139 — composer media state
+DraftMedia.begin/end/pending/busy isolate pending decode and protect local send/release. CSS consumes visible height without modifying viewport owner. Same-room rail scroll retained. Browser short-height and room-switch regression added; actual native keyboard acceptance pending.
