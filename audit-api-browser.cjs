@@ -13,7 +13,12 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  window.calls=[];let logged=false;
  window.supabase={createClient:()=>({auth:{onAuthStateChange(){},async getSession(){return {data:{session:logged?{user:{id:'a'}}:null}}},async signInWithPassword(o){if(o.email!=='admin@taphoa.chat')throw Error('bad test login');logged=true;return {}},async signOut(){logged=false}},async rpc(name,args){window.calls.push(name);if(name==='v21_auth_bootstrap')return {data:{account:{id:'a',role:'admin'},session:{app_session_id:'fixture-session'}}};if(name==='v21_contacts_sidebar')return {data:[{id:'c',display_name:'Liên hệ kiểm thử',conversation_id:'room',preview_text:'Nội dung gần nhất',latest_at:'2026-11-25T18:00:00Z'}]};if(name==='v21_sync_snapshot'&&args.p_conversation_id==='room')return {data:{account_id:'a',messages:[{id:'m',conversation_id:'room',sender_account_id:'c',body:'Tin nhắn kiểm thử',created_at:'2026-11-25T18:00:00Z'}]}};if(name==='v21_auth_logout')return {data:true};throw Error('unexpected RPC')}})};
  `}));
- await pg.goto(url+'?live=1');
+ await pg.route('https://1sl2tp.github.io/0v/',r=>r.fulfill({contentType:'text/html; charset=utf-8',body:require('node:fs').readFileSync('index.html','utf8')}));
+ await pg.goto('https://1sl2tp.github.io/0v/');
+ await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
+ await pg.waitForFunction(()=>Array.isArray(window.calls));
+ assert.deepEqual(await pg.evaluate(()=>window.calls),[]);
+ assert.equal(await pg.getByText('Khách hàng mẫu',{exact:true}).count(),0);
  await pg.getByLabel('Tài khoản CHAT',{exact:true}).fill('admin');
  await pg.getByLabel('Mật khẩu',{exact:true}).fill('fixture-password');
  await pg.getByRole('button',{name:'Đăng nhập admin',exact:true}).click();
@@ -545,7 +550,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
   const p=await browser.newPage({viewport:{width:390,height:844}});let entryReady=mode!=='stale',manifestReady=!['dirty','resume','readonly','mutation'].includes(mode);
   try{
    await p.route(origin+'**',route=>{const u=new URL(route.request().url());if(u.pathname.endsWith('/version.json')){const version=manifestReady?future:current;return route.fulfill({json:{version,entry:'index.html',snapshot:'release-'+version+'.html',gitBlobSha:'a'.repeat(40)}})}if(u.pathname.endsWith('/index.html'))return route.fulfill({contentType:'text/html',body:entryReady?futureHtml:releaseHtml});if(u.searchParams.get('v')===futureQuery)return route.fulfill({contentType:'text/html',body:futureHtml});return route.fulfill({contentType:'text/html',body:releaseHtml})});
-   await p.goto(origin+(mode==='lab'?'?systemslab=1':mode==='resume'?'?floating=1&v='+current.slice(1)+'&r='+Date.now():''));await p.bringToFront();await p.waitForFunction(()=>!document.hidden&&!!window.releaseStatus);
+   await p.goto(origin+(mode==='lab'?'?systemslab=1':mode==='resume'?'?demo=1&floating=1&v='+current.slice(1)+'&r='+Date.now():'?demo=1'));await p.bringToFront();await p.waitForFunction(()=>!document.hidden&&!!window.releaseStatus);
    if(mode==='dirty'){
     await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());await p.locator('#draft').fill('Bản nháp cần giữ');
     assert.equal(await p.locator('#draft').inputValue(),'Bản nháp cần giữ');manifestReady=true;
