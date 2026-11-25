@@ -330,3 +330,6 @@ Run 45583429500: static and snapshot checks passed; browser timed out on filecho
 
 ### v13.143 CI repair 2
 Run 45584025796 failed again waiting for filechooser; DB 45584025870 passed. Replace synthetic activation with real file controls in accessory rows; shared change/cancel/decode and pointer handoff, actual chooser test both actions. Exact four protected ranges unchanged. CI/native pending.
+
+### v13.143 CI repair 3
+Run 45585154404 failed at native input hit geometry assertion, before chooser; DB 45585154427 passed. Correct input interaction boundary and row hit stacking, add exact diagnostic output and scroll row into view before measuring; keep all assertions and chooser tests. Four protected ranges unchanged. CI/native pending.

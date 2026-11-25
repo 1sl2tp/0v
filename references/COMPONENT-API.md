@@ -356,3 +356,5 @@ Keyboard frame > accessory + composer siblings. Existing frame observer owns mea
 Candidate repair: preserve accessory pointer activation through blur; invoke native showPicker synchronously, unsupported fallback click. No change to frame reserve/viewport owner.
 
 Candidate repair 2: actual native file input overlays each visible action row; no showPicker or programmatic click, native default activation, handoff before focus loss, shared room-owned decode. Prior + anchor superseded by actual selected action. Browser and physical iPhone acceptance pending.
+
+Candidate repair 3: accessory declares input interaction boundary for the existing capture handler. Native file hit layer above non-interactive text/icon, min row 44px and constrained grid. Browser diagnostic logs actual rect and hit target; no changes to viewport code.
