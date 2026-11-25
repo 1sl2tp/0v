@@ -231,3 +231,9 @@ E0: v13.111 PR #78 merged; CI 45549980158 success. E1: BANK-ALLOC, BANK-JOURNAL,
 
 ## v13.113
 E0: v13.112 PR #79 merged, CI 45550280456 success. E1: BANK-CYCLE, BANK-ALLOC, BANK-JOURNAL, DECIMAL-API, KB-LOCK. Explicit cycle scope, per-order contributions, exact partial/covered plan states; two receipt lab and browser regression. ERPNext payment entry and Astryx Card reviewed. E2: direct logic and syntax; browser test added, full CI pending. No actual cycle closure, current debt data, cadence inference, production writes, messages or keyboard changes. Google Sheet not updated.
+
+## v13.113 correction
+User clarified nợ đuổi, thu gạch đối soát dần, not mandatory invoice matching. BANK-ROLLING added before release; order-allocation plans remain optional diagnostics only. ERPNext accounts_receivable party grouping studied, existing DecimalAPI/BankJournal reused. Direct contracts and syntax tested, new browser regression added; CI must rerun. No actual customer data, production changes or history rewrite; no cross-customer assignment ledger; no Google Sheet update.
+
+## v13.114
+E0: PR #80 CI 45550868991 passed for original head 9468c3ac; main merge 4c5d8e59 lacks planRollingDebt; correction b3f3c018 remains on old branch. Restore correction content into new branch based on actual main. E1: BANK-ROLLING, BANK-ROLLING-BATCH, BANK-JOURNAL, KB-LOCK. Explicit batch uniqueness and manual linkage classification, no duplicate payment. PostgreSQL unique constraint and ERPNext party report reviewed. E2: direct contracts/syntax; full CI pending; restored browser test. No production writes, real bill data, messages, historical rewrite, Google Sheet or reminder changes. No cross-request persistence. Verify actual merged blob after CI.
