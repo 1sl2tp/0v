@@ -126,3 +126,6 @@ v13.79 PR #46 merged 1ec34abb68700d3d0c47e3bc0c7a7b0830c5b89c; CI 45530554763 su
 
 ## v13.81 — bill review queue
 v13.80 PR #47 merged b75a6ab5342af61ad1cdbc237c8159b6673b4760; CI 45532746509 success. Read-only BankReviewQueueAPI projects multiple evidence gaps, actions, first-seen age, current evidence event history and receipt status. No matching/receipt-policy change. Direct smoke and exact static contract passed; browser assertions added, CI pending. BANK-QUEUE-01–05. No production writes, actual customer data or keyboard change.
+
+## v13.82 — manual receipt and late Bank evidence
+v13.81 PR #48 merged a3d2bb3920eb3870ba886faa179c45d40a4007f4; CI 45535546559 success. Manual fixture receipt and separate Bank link, immutable amount/time, duplicate guards, OCR amount conflict and Vietnamese labels. Direct smoke and exact static contract passed; Chromium F5 assertions added, CI pending. BANK-MANUAL-01–05. Image dedup/region handling not yet implemented. No real posting, production DB or keyboard change.
