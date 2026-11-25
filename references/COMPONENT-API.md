@@ -311,3 +311,6 @@ BillImageIntakeAPI.single(p,w,h,sha,{kind,crop,rotation}) returns exactly one re
 
 ## v13.125 BILL-RECOGNITION
 BillRecognitionAPI.classify(text,{configured,profile}) routes text to bill-candidate/account-review/account-conflict/not-recognized. Configured 13-digit receiver, full or matching 4–6 digit suffix with context, separate explicit and unlabelled evidence. Uses existing parser for context; does not authorize payment or change existing Bank match policy. Text lab uses synthetic receiver.
+
+## v13.126–v13.133 — bill OCR recognition and field geometry
+BillRecognitionAPI: fixed receiver account/name, adjacent unlabelled pair, wrapped digit review. BillOCRFieldAPI: scoped field reads, unlabelled suggestions, value-only word geometry. BillOCREngineAPI: one image source plan, crop/contrast, raw lines, typed read on exact value scope. All remain review-only and cannot post. Typed name uses unaccented Latin; memo and date words unrestricted. Real image acceptance and production integration remain pending.

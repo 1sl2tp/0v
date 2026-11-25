@@ -291,3 +291,6 @@ E1: user example 99999 9; count all six visible digits, block premature suffix r
 
 ## v13.132
 E1: user-defined numeric account, unaccented holder name, mixed memo, date/time grammar; value-only typed OCR in isolated worker. E2: static and browser fixture added; CI pending. No actual images or production data. E3–E5 not certified.
+
+## v13.133
+E1: exact same-line word bounding boxes for typed value OCR, upstream Tesseract.js v6 block evidence and quality guidance reviewed. E2: static regression added, existing browser regression retained; CI pending. No private media, production, keyboard or debt changes. E3–E5 not certified.
