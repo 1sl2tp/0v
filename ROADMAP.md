@@ -2,8 +2,8 @@
 
 **Mốc gốc:** v13.163 — 335ee17249d061ebec9aa6656204572c1e70aecb; index blob 71461d93541241b9fa8b3aa365056582ee3c4c18. Ngày 26/11/2026 (VN).
 **Mục tiêu:** hoàn thiện theo hệ thống cha–con; không tạo API mới nếu owner hiện có giải quyết được.
-**Bước đang chạy:** P01.4 — phân loại thành phần chờ xác minh theo vùng/owner; [bản đồ P01](references/P01-OWNER-MATRIX.md).
-**Tiếp theo:** đọc log P01 pending groups, chọn nhóm rendered lớn/có tác động thực; chứng minh hợp đồng cha bằng test hoặc sửa owner nếu tái hiện lỗi; P01.5 native pending.
+**Bước đang chạy:** P03-LIVE — 0v trở thành CHAT CRM thật (user xác nhận không quay lại CHAT cũ); P01 tiếp tục theo nhu cầu UI nhưng không chặn chức năng live.
+**Tiếp theo:** phát hành gửi text thật; tiếp nhận realtime, lịch sử, sửa/thu hồi, ảnh/tệp/ghi âm, Push độc lập, OCR và nghiệp vụ CRM theo các bước bên dưới.
 
 ## Bảng tiến trình duy nhất
 Trạng thái: TODO → DOING → E1 → E2 → E3 → E4 → DONE (E5 nếu cần chấp nhận). BLOCKED có lý do, bằng chứng và điều kiện gỡ. E0 tái hiện/kiểm kê; E1 sửa + kiểm thử; E2 CI; E3 Pages; E4 thiết bị; E5 chấp nhận. Ký hiệu E chỉ dùng khi có bằng chứng tương ứng. PENDING thiết bị không được biến thành DONE vì Chromium đạt. Đếm hoàn thành theo từng giai đoạn đã nghiệm thu, không theo số commit.
@@ -45,7 +45,7 @@ Nguồn: [index.html tại baseline](https://github.com/1sl2tp/0v/blob/335ee1724
 4. Cập nhật rule trước/cùng patch, test hồi quy và giữ mốc keyboard v13.27; ghi bằng chứng thật.
 5. Mở PR, chạy CI; CI đỏ sửa cùng bài toán, không bỏ test. CI đạt mới merge theo cổng hiện hành. Phát hành tự động, không deploy tay. Chỉ tăng version giao diện khi runtime/UI thay đổi; cập nhật tài liệu không tạo bản app giả.
 6. Cập nhật bảng và nhật ký: ID, trạng thái, phiên bản, PR/CI/Pages, E4/E5, blocker, bước kế. Không đánh dấu DONE thiếu bằng chứng.
-7. Khi người dùng yêu cầu “làm tiếp”, tiếp tục bước kế trong file này. Không tự kích hoạt lịch nền; không gửi tin thật, thu thật, thay DB production, truy cập/copy ảnh riêng tư vào repo hoặc sửa repo khác. Tích hợp dữ liệu thật cần phạm vi/cho phép riêng.
+7. Khi người dùng yêu cầu “làm tiếp”, tiếp tục bước kế trong file này. Không tự kích hoạt lịch nền; không gửi tin thử thật, thu thử thật, truy cập/copy ảnh riêng tư vào repo hoặc sửa repo khác. User đã cho phép chức năng 0v thao tác dữ liệu thật khi admin trực tiếp sử dụng; API production mới phải giới hạn thao tác và có kiểm thử, không sửa dữ liệu khách để test.
 
 ## Nhật ký tiến trình
 | Ngày VN | Bước | Kết quả | Tiếp theo |
@@ -59,3 +59,19 @@ Nguồn: [index.html tại baseline](https://github.com/1sl2tp/0v/blob/335ee1724
 | 26/11/2026 | P01.4 | CI PR #133 [45684897457](https://github.com/1sl2tp/0v/actions/runs/45684897457) và push [45684881030](https://github.com/1sl2tp/0v/actions/runs/45684881030) fail; job 139454727771: ReferenceError FamilyRegistry is not defined ở pendingEvidence. DB 45684897443 success. Sửa test qua public familyAudit; chưa xác nhận CI mới | Đọc log nhóm pending sau CI xanh |
 
 Nguồn rule duy nhất vẫn là RULES.md. Tài liệu này chỉ theo dõi công việc và bằng chứng; không thay đổi hợp đồng API.
+
+
+## Chuyển hẳn sang 0v — phạm vi user xác nhận 26/11/2026
+| Bước | Chức năng live | Trạng thái |
+|---|---|---|
+| L01 | Admin login độc lập, danh bạ thật | E4: ảnh user v13.169, 148 liên hệ |
+| L02 | Mở hội thoại và đọc nội dung | E2 fixture v13.169; thiết bị chưa xác nhận nội dung |
+| L03 | Gửi tin text thật, mở phòng mới, chống gửi trùng | E1 v13.170 |
+| L04 | Nhận tin realtime, đọc/đã đọc, phân trang lịch sử, offline | TODO |
+| L05 | Sửa/thu hồi/trả lời/chuyển tiếp tin | TODO |
+| L06 | Ảnh, video, tệp, ghi âm, camera, xem media | TODO |
+| L07 | Push 0v độc lập, không phụ thuộc UI/phiên CHAT cũ | TODO |
+| L08 | OCR bill, đối soát, đơn, hàng, công nợ, báo giá, báo cáo | TODO |
+| L09 | Nghiệm thu thay thế hoàn toàn, giữ khả năng rollback | TODO |
+
+Không đánh dấu các bước TODO là hoạt động chỉ vì quyền admin đã được cấp. CHAT cũ không bị tắt hoặc sửa trong quá trình chuyển. 
