@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.123)
+## 00. Chỉ mục rule đang có hiệu lực (v13.124)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1076,3 +1076,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-OCR-CORRECTION-03: Replay validates verified event against previous record and evidence, rejects unrelated field changes; preserve historical cutoff and receipt ownership. New evidence invalidates completeness; explicit scope revision needed before new proposal. No real authorization or posting.
 - BANK-OCR-CORRECTION-04: Bill backlog sample previews independent synthetic clock text and confirms explicitly, then recomputes queue; history shows before/after and reason. No actual image reread in this sample; no message or database changes, preserve keyboard v13.27.
 - BANK-OCR-CORRECTION-05: 13 direct assertions plus browser regression for preview/confirmation and history, no credit or send. Existing application and PostgreSQL CI required.
+
+## 149. BILL-SINGLE-IMAGE — v13.124
+- BILL-SINGLE-IMAGE-01: User scope overrides multi-bill collage workflows: one image = at most one bill. Three accepted source types: saved sharp bill, photographed bill/screen with background, transaction journal. Journal may show multiple rows but one explicitly selected transaction only; never sum or generate multiple receipts from one image.
+- BILL-SINGLE-IMAGE-02: Saved image defaults to whole raster. Photo or journal uses one manually chosen bounded rectangle; no automatic multi-region splitting in user-facing intake/engine. Keep original image and existing field reread methods; never use background text, phone status clock, fee or balance as transaction evidence. Crop is manual, not automatic document detection.
+- BILL-SINGLE-IMAGE-03: Retain legacy low-level partition and batch APIs for historical regression only; remove collage sample and split controls from current UI. Single scope validates bounds and rejects unsupported type; OCR remains review-only, canPost=false.
+- BILL-SINGLE-IMAGE-04: Read-only CHAT source audit 25/11/2026: 577 receipt scan records with linked media and OCR JSON; 357 linked ledger, 187 null transfer timestamp. Stored OCR classifications (not manually validated): successful_transfer_receipt/app_screenshot 110, paper_photo 57, rotated_photo 10, missing layout 235; multiple_transactions 4 overall. Private media bytes not accessible through current connector; no pixel-level corpus validation, no customer image or identifier exported to repository.
+- BILL-SINGLE-IMAGE-05: Six direct single-region assertions, seven classic scripts compiled; static/browser regression updated for single image, bounds and three source options. No real posting, messages, production writes or keyboard changes. Full CI before merge.

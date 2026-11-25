@@ -305,3 +305,6 @@ BankFieldCompareAPI.compare({configured,bill,bank,identity}) gives per-field lit
 
 ## v13.123 BANK-OCR-CORRECTION
 BankOCRCorrectionAPI.propose/apply(journal,command) uses existing field review API to validate one field from synthetic image-region text; replay validates ocr-verified event and retains old/new, reason, operator and raw evidence. Backlog sample previews and confirms clock from fixed synthetic source. No real image rerun, production authorization or posting.
+
+## v13.124 BILL-SINGLE-IMAGE
+BillImageIntakeAPI.single(p,w,h,sha,{kind,crop,rotation}) returns exactly one review-only region, source kind saved/photo/journal. Engine accepts only one selected region and manual crop coordinates; legacy partition helpers retained for regression, no collage UI. No automatic background segmentation or actual customer image OCR validation.
