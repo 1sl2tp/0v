@@ -105,3 +105,6 @@ v13.72 PR #39 merged 6af775922629f8bf7857a5d65fce7bf506158a79; CI 45526405781 su
 
 ## v13.74 — Main data phase 2
 v13.73 PR #40 merged 08e2b51d1999b1391345a3086e9808ef63b143c8; CI 45526996155 success. Replace writable Main texts array with MainDataController over MessageStore/ConversationStore; retain fixture metadata and initial preview/order; scoped single-use QA checkpoint. Direct store smoke test and script syntax passed; added static/browser assertions; CI pending. MAIN-DATA-01–04. No live transport, DB, keyboard, production or manual deploy.
+
+## v13.75 — Main business foundation phase 3a
+v13.74 PR #41 merged 403c35c594c15f0b50aa5eaf19d68c5ca3c4f508; CI 45527316410 success. BusinessProjectionAPI delegates exact line/total/ledger/format/bank amount to existing Foundation APIs. Direct tests: order 350000, ledger -650000, bank 1000000.8, compact remainder 0.8, line rounding, malformed input. Seven classic scripts and audit syntax checked; browser assertions added; CI pending. MAIN-BIZ-01–04. No real receipts, reconciliation policy change, DB, keyboard or production.
