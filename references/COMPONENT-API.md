@@ -245,3 +245,6 @@ BillImageIntakeAPI.propose(p,w,h,mode='auto') supports row/column/grid whitespac
 
 ## v13.104 BANK-REGION-OCR
 BillOCREngineAPI.createRegionBatch({factory,profile}) -> run({rows,selected,makeImage}), close(). Uses existing regionPlan and sequential run; failed region returned with state:error and null parsed data, failed worker closed; next region independent. Stable regionKey, immutable review results, canPost:false. Sample-only OCR lab; no ledger adapter.
+
+## v13.105 BANK-FIELD-REVISION
+BillOCRFieldAPI.createFieldReview({regionKey,text,profile,confidence}) -> snapshot(), reread({regionKey,field,text,confidence,expectedRevision}), confirm({regionKey,field,expectedRevision,source:'initial'|'proposal'}). Immutable field rows and revision history, proposal independent of current value, verified lock; no automatic authorization. Text-lab only, no physical field crop or real OCR call.

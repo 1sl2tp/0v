@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.104)
+## 00. Chỉ mục rule đang có hiệu lực (v13.105)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -936,3 +936,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-REGION-OCR-03: Failed region yields error with null parsed/text/confidence; close failed session and start fresh for later regions. Cancellation or changed source/selection invalidates stale outputs. No automated retry or posting.
 - BANK-REGION-OCR-04: Existing billenginelab sample-only CDN adapter uses explicit region selection. No private image processing claim, production deployment, journal, real messages or historic repair.
 - BANK-REGION-OCR-05: Test three mock regions with middle failure and missing last clock; assert unique identities, exact independent amounts and lifecycle. Static and browser checks required; real engine accuracy not claimed. Preserve keyboard v13.27.
+
+## 129. BANK-FIELD-REVISION — v13.105
+- BANK-FIELD-REVISION-01: Create per-region field review from existing parser with explicit money profile; ten fields start unverified/missing/conflict. Never infer verified from OCR confidence. Keep original raw evidence and per-field lines.
+- BANK-FIELD-REVISION-02: Reread accepts one explicitly selected field and same region key + expected revision; other fields from returned text never overwrite existing values. Keep proposal separate until explicit confirmation. Missing/conflicting proposals cannot be confirmed.
+- BANK-FIELD-REVISION-03: Confirm only a valid literal candidate with evidence. Lock verified field against reread or further confirmation in current review session. Reject stale/wrong region, unknown field; bounded immutable history. No automatic ledger authorization or overwrite of historic receipt.
+- BANK-FIELD-REVISION-04: Text-only sample lab exposes reread and explicit simulated confirmation; physical field crop requires independent coordinates and remains future work. No actual OCR model or customer images, no journal, messages, production changes.
+- BANK-FIELD-REVISION-05: Test isolated time reread, unrelated fields unchanged, verified lock, stale/wrong region, missing proposal, immutable history and browser confirmation. Keep keyboard v13.27; full CI required.
