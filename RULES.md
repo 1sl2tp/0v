@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.81)
+## 00. Chỉ mục rule đang có hiệu lực (v13.82)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -765,3 +765,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-QUEUE-03: First accepted bill-event time anchors waiting hours; OCR revision does not reset it. Clock must be explicit; negative/invalid duration remains unknown. Sort unposted first, longest wait first. Posted age stops at recorded receipt time when available.
 - BANK-QUEUE-04: Immutable snapshot exposes current fixture records and event metadata. Bill history shows its evidence events, currently linked bank events and batch-wide rechecks; not a full per-bill historical decision ledger. Restore same projection from BankJournalAPI. Posted fixture receipt distinct from actual/manual receipt.
 - BANK-QUEUE-05: Browser regression verifies reason labels, OCR update and restored receipt display. Reference TanStack Table sorting and event sourcing; no production data, financial write, real notifications, keyboard or server change.
+
+## 104. BANK-MANUAL — v13.82 (phase 3h)
+- BANK-MANUAL-01: Manual fixture receipt requires an existing bill, configured account, clear image, positive exact amount, operator and reason, posting timestamp no earlier than first bill event. Receipt ID, amount, operator and original posting time remain immutable. No real manual posting.
+- BANK-MANUAL-02: Manual receipt blocks any further receipt on the bill, even before Bank arrives. Keep the underlying candidate match active so later Bank can be linked without creating a second receipt. Bank linkage requires unique eligible-fixture match, same amount and original receipt ID, verification time no earlier than original receipt and Bank receipt.
+- BANK-MANUAL-03: Manual link consumes the Bank ID and stores verification metadata separately. Duplicate link and competing automatic receipt rejected. Original financial amount is retained in review projection; changed OCR amount before linkage flags manual-amount-conflict. No silent financial correction or reversal.
+- BANK-MANUAL-04: Review labels distinguish Đã thu thủ công · Chờ soát Bank and Đã thu thủ công – đã soát bill. Both are posted, excluded from outstanding unposted total. F5 replays same receipt and link; UI link is explicit simulation, not automatic real execution.
+- BANK-MANUAL-05: TigerBeetle immutable transfer and idempotent identity reference. Test original amount/time, late linkage, replay, duplicate rejection and mismatch. Duplicate image fingerprint/region intake, real operator authorization, reversal, cross-device production uniqueness and actual Bank ingress remain separate.

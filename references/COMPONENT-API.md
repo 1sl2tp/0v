@@ -173,3 +173,6 @@ empty(scope,configured), append(journal,entry), replay(journal), open/read/chang
 
 ## v13.81 BankReviewQueueAPI
 project(snapshot,{configured,now,receipts}) returns immutable ordered rows, codes/labels/actions, hours, firstSeenAt, OCR revision, relevant evidence history and counts/sum excluding unknown amounts and posted receipts. Snapshot from BankRecheckController or BankJournalAPI replay. Does not infer true cause when bank is unmatched, or authorize receipts. Both bank labs show details. Fixture only.
+
+## v13.82 BankJournalAPI manual evidence
+New journal entries manual-receipt({id,billId,amount,operator,reason,at}) and manual-link({id,receiptId,billId,bankId,at}). Existing receipt remains one, bank link adds verification metadata; original amount/time immutable. Review projects manual-await-bank/manual-verified and OCR amount conflict. Same fixture-only journal and UI. No real posting or reversal.
