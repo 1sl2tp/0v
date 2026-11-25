@@ -132,3 +132,6 @@ Adobe React Stately SelectionManager.ts pinned blob d6ff15c5b5efd7f9be685f87f46c
 
 ## v13.104
 Tesseract.js v6.0.1 src/createWorker.js blob 89b53b89b27f6579155ed2a0ef372fa8c2a8b8e6: per-image recognize job and terminate lifecycle; reuse current adapter, separate region job data, close failed worker. Astryx Button pinned blob f87eb657180a0de978fb3ba1c59c24909a9cc63d: separate interaction/loading state; no upstream code copied. No real bill samples.
+
+## v13.105
+Adobe react-stately useNumberFieldState.ts pinned blob eed17a1d22715cf92ece7156c661c026deb53acc: draft input distinct from commit/validation. Tesseract.js v6.0.1 docs/api.md blob cc3f82d7d0eacd6df825b4c50ad19357fdca557c: recognize supports rectangle; not used until field bounding geometry exists. Astryx Button pinned blob f87eb657180a0de978fb3ba1c59c24909a9cc63d. Reuse 0v parse and Card/Button; no upstream code or private values copied.
