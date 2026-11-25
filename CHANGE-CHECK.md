@@ -309,3 +309,6 @@ E0: v13.136 merged, API 45567193269 and DB 45567193106 passed. E1: bounded origi
 
 ## v13.138
 E0: v13.137 merged, CI API and DB passed. User screenshot review. E1: local rail/send, two scoped composer predicate changes; viewport unchanged. Astryx sources reviewed. E2: direct model test passed, browser regression added; CI pending. No production, OCR changes or native device claim. Bill dossier deferred.
+
+## v13.139
+E0: v13.138 merged; API 45568639720 and DB 45568639667 passed. E1: adaptive rail height and input budget, picker room ownership, pending-decode send/release gate, transactional transfer. E2: direct model contract passed; browser regression added for short viewport, long text, room switch, last image removal. Full CI pending. No native keyboard claim, production or OCR changes. E3–E5 pending.

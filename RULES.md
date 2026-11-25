@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.138)
+## 00. Chỉ mục rule đang có hiệu lực (v13.139)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1181,3 +1181,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - COMPOSER-MEDIA-03: Max 8 local files per room, 15 MiB each; remove revokes URL, local demo send transfers to message; group by four. Session only, no transport. Release blocked for unsent drafts. Decode failures skipped.
 - COMPOSER-MEDIA-04: Only two explicit predicate changes in protected composer range; no viewport/scroll change. Baseline normalization limited to exact predicate strings. Native keyboard acceptance pending.
 - COMPOSER-MEDIA-05: Astryx Text/Stack/Button snapshots studied; static model and browser geometry checks added. No OCR or production change.
+
+## 164. COMPOSER-MEDIA-STATE — v13.139
+- COMPOSER-MEDIA-STATE-01: On mobile, media preview size uses existing visible-height token, clamp 48–100px; textarea budget subtracts media rail and gap, never below input minimum. No viewport writer or focus mutation. Desktop unchanged. Short-height browser simulation is not actual iOS keyboard acceptance.
+- COMPOSER-MEDIA-STATE-02: File selection captures room at picker launch; cancellation clears picker owner; pending decode belongs to one room and blocks that room's send and release reload. Other room text remains independent. No overlapping decode batches.
+- COMPOSER-MEDIA-STATE-03: Preserve horizontal rail scroll in same room, reset on room change. Transfer draft URLs only after local message append succeeds, no upload. Keep text when final image removed and return to ordinary composer rules.
+- COMPOSER-MEDIA-STATE-04: Existing protected range changed only for exact send predicate; normalize that explicit expression in baseline audit. Existing viewport, surface, typography, keyboard and scroll owner unchanged.
+- COMPOSER-MEDIA-STATE-05: Direct pending-room model test and browser short viewport, room isolation, final removal and long-text checks. Native iPhone/PWA and production remain pending. No bill/ledger changes.
