@@ -18,3 +18,6 @@ Observed old RPC supports image/audio/file, max 12 assets, 15 MiB each; file all
 - Partial upload, logout, room switch, cancellation, expired ticket and cleanup -> no committed message or dangling accessible objects.
 - Transaction rollback and trigger side effects tested with synthetic accounts and disabled external delivery; validate real Zalo/Push/Bank contract separately before go-live.
 - Schema grants/RLS review, isolated DB fixture and browser fixture, explicit production rollout separate from UI release. Existing legacy API untouched.
+
+## Prepare SQL candidate — phase 1
+`0v-admin-media-prepare.sql` reserves an ordered manifest for an existing conversation only, using separate `0vm:` client IDs, AAL2, active admin/session/contact, 15-minute private reservation, SHA256 declaration (not proof of bytes), 1–8 allowed assets ≤15 MiB each and server-generated canonical paths. Exact retry returns unchanged reservation, changed manifest/body/session or expired ticket rejects. No room/message/media creation, no Storage access grant. New room creation, cross-batch asset-ID reservation uniqueness, rate/retention limits, byte verification, upload policy and atomic commit are required before production. No frontend invocation. Isolated tests are included in existing DB fixture; concurrent and session-switch coverage remains pending.

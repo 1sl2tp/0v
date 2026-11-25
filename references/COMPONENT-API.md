@@ -491,3 +491,5 @@ CardController.billPair(leftLabel,rightLabel) is shared sample/live layout. Bill
 ScrollController.followEnd/stopFollowing/userMoved: scoped navigation tail intent after Main final commit; shared content ResizeObserver watches current rows, repositions only when extent changes and user has not left target. Existing replaceMedia uses this intent, and jump re-arms it. No changes to KeyboardController; nonpinned restore stays nonpinned.
 
 LIVE-BILL-02 backend candidate: existing private admin_media optional bill_receipt uses exact key join, AAL2 and same-customer collection ledger, strict printed time/date. Existing wrapper/ACL unchanged; production not yet activated.
+
+L06 candidate v0_admin_media_prepare(contact,client,body,assets): private reservation only, existing room, same-session exact replay, separate 0vm key. Not deployed; no upload or commit capability.
