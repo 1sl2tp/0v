@@ -246,3 +246,6 @@ E0: PR #82 merged, CI 45551969249 success; main index blob matches version manif
 
 ## v13.117
 E0: v13.116 PR #83 merged after API and PostgreSQL workflows 45552657294/45552657301 passed; main blob verified. E1: BANK-IDENTITY, BANK-ROLLING-DB; Plaid account-scoped stable transaction identity and pending/posted distinctions reviewed as external design references, not Agribank evidence. E2: 10 direct identity tests passed, seven classic scripts compiled, static regression added; full CI pending. E3–E5 not certified. Synthetic attestation only, no actual bank identity proof, no production posting, messages, reminders, keyboard or historical edits.
+
+## v13.118
+E0: PR #84 merged; PostgreSQL CI 45553014792 and API CI 45553015030 passed; main blob verified. E1: BANK-IDENTITY-BATCH, BANK-IDENTITY, BANK-ROLLING-DB; reuse verified fixture identity and conservative competition graph. E2: 12 direct assertions passed, seven classic scripts compiled, static regression added. CI pending; E3–E5 not certified. No production, real receipt, real customer, actual balances, messages, reminder, keyboard or historical changes. Caller-supplied prior ledger and completeness only.
