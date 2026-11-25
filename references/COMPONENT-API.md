@@ -122,3 +122,6 @@ create({actorId,ttlMs=45000}) → register({actorId,sessionId,generation},now), 
 
 ## v13.64 NotificationController
 plan({actorId,installationId,message,origin,read,presence,sessionIds,permission,enabled,muted,allowForeground}) chooses none/thread/in-app/push/unavailable. create({actorId,installationId}) → offer(input), settle({id,attempt,surface,sessionId,generation,kind,proof}), get/status/dispose. In-memory intent dedupe; foreground offer not delivery evidence, known no-effect fallback, uncertain review, stable tag. No actual notification, durable ledger, auth or worker. ?notificationlab=1 synthetic only.
+
+## v13.65 DurableAlertController
+claim(old,input,{actorId,installationId,owner,token,now}), settle(old,{owner,token,now,outcome}), open/read/acquire/finish, exchange(row,mode,timeout). Shared NotificationController transitions; atomic synthetic IndexedDB lease, duplicate read, expired review, local MessageChannel timeout uncertain. ?durablealertlab=1. No registered Service Worker or actual notifications, server authorization/retention/reconciliation pending.
