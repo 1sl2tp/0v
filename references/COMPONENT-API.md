@@ -230,3 +230,6 @@ BankReviewQueueAPI.project exposes immutable relatedCandidates (bankId, tier, ba
 
 ## v13.99 BANK-FIELDS
 Each relatedCandidates entry has immutable fields [{field,billValue,bankValue,proof}] derived by BankReconcileAPI; amount/date canonical, raw account/name/memo/reference, separate bank clock. No changes to receipt eligibility. CardController.business presents candidate-specific evidence.
+
+## v13.100 BANK-COMPETE
+BankReviewQueueAPI.project adds immutable competitionGroups with billIds, bankIds, billCount, bankRecordCount, billFaceTotal, relatedBankRecordTotal, sharedBankIds, canPost:false. Connected components use existing candidate graph; Bank record ID is not financial identity; no posting or new matching owner.
