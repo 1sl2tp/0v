@@ -299,3 +299,6 @@ BankBacklogAPI.project(journal,{asOf}) derives immutable bill/customer/Bank queu
 
 ## v13.121 BANK-BACKLOG-UI
 renderBankBacklogLab(panel) in Bill module or ?bankbackloglab=1. Uses BankBacklogAPI.project and BankAccumulationAPI only with fixed synthetic sample, filter buttons, status, expandable detail and simulated manual verification; reset is local. No transport or storage; new credit remains zero. Uses existing Card, Button, Layout and Typography APIs.
+
+## v13.122 BANK-FIELD-COMPARE
+BankFieldCompareAPI.compare({configured,bill,bank,identity}) gives per-field literal values, diagnostic status/reason and clockReviewRequired; project(journal,{billId,bankId,asOf}) limits selection to candidate or linked notices. UI expands in backlog detail with explicit notice selection when multiple. No correction, identity assignment, message or receipt write. canPost=false and canSend=false.
