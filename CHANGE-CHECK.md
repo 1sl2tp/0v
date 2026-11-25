@@ -93,3 +93,6 @@ v13.68 PR #35 merged 49dd024bf88e2fd4ab7d8f04b2853ccf4ff4df6f; CI 45521541365 su
 
 ## v13.70 — virtual DOM performance phase 2
 v13.69 PR #36 merged 9720a7252420ebdea8e645297a17d4a0aa237313; CI 45521974423 success. E1 guarded DOM style/attribute writes, keyed minimal insertion for both virtual modes, avoid fixed-list redundant map and directory revision writes. VIRTUAL-PERF-01–04; browser MutationObserver regression added; six classic scripts and audit syntax checked, CI pending. No Main/keyboard/production changes or real FPS claim.
+
+## v13.71 — sync index phase 3
+v13.70 PR #37 merged dc6bfe9eca9040b540746627b11f575c57bcc59f; CI 45522587547 success. E1 shared reverse pointer index removes per-message directory scan for Sync/Cache. Synthetic 10,000 rooms, one lookup per message, ambiguous pointer rejected and replacement correct, classic scripts syntax checked; static audit extended, CI pending. SYNC-PERF-01–04. No Main/keyboard/production changes; no network or device latency claim.
