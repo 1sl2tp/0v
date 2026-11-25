@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.94)
+## 00. Chỉ mục rule đang có hiệu lực (v13.95)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -859,3 +859,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-ENVELOPE-03: Wrapper evidence requires exact normalized principal and independently supplied full sender bound to bill memo, with no conflicting printed reference. Routing references never automatically become shared transfer IDs. No fuzzy correction.
 - BANK-ENVELOPE-04: Exposes diagnostic review-only result, never changes existing matching/posting policy. No raw private records committed, no old receipt modification.
 - BANK-ENVELOPE-05: Regression covers valid/invalid wrappers, destination/clock/reference conflict, missing sender, generic memo, unknown routing data. Source CHAT bill-app-preview.mjs and aggregate private notification formats. Preserve keyboard v13.27.
+
+## 118. BANK-MCC-SENDER — v13.95
+- BANK-MCC-SENDER-01: MCC supports observed optional anchored 10-character routing prefix (four digits, one letter, five digits) and source identifier 7–20 digits. A short source identifier is not a full account. Preserve technical fields; no arbitrary prefix stripping.
+- BANK-MCC-SENDER-02: Require valid embedded clock within one minute of independent printed bank time; unsupported or conflicting wrapper retains original principal. Never infer a shared transfer reference.
+- BANK-MCC-SENDER-03: Generic bill memo may expose separate senderMemoProof only if independently read full sender (>=3 words, >=12 characters), distinct known recipient, exact bank principal sender + same generic phrase, QR/plain format and no conflicts. Missing name or generic phrase alone fails.
+- BANK-MCC-SENDER-04: Compact literal equality >=8 characters exposes diagnostic evidence only, never changes existing eligibility. Preserve original text/digits. All outputs canPost=false. No real financial decision, OCR rewrite, or historic bill change.
+- BANK-MCC-SENDER-05: Test observed MCC variants, wrong prefix/clock, sender exact/mismatch/self/unknown recipient, compact equality and digit conflict. Private aggregate format analysis and CHAT bill-app-preview sender rule; no customer values committed. Preserve keyboard v13.27.

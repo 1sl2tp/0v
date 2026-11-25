@@ -99,3 +99,6 @@ CHAT bill-app-preview.mjs bankEventTime, creditAccountFromEvent, bankMemo and wr
 
 ## v13.94
 CHAT bill-app-preview.mjs verifiedMccMemo, verifiedMbvcbMemo, verifiedTwelveCharRoutingMemo and verifiedIbftMemo. Adopt anchored layouts and independent account/clock/sender checks, no customer-specific constants. Read-only aggregate notification shape analysis.
+
+## v13.95
+CHAT bill-app-preview.mjs sender-bound QR logic and observed private aggregate MCC shape variants; independently known recipient required for generic sender proof, not copied account/name constants. No private record payload committed.
