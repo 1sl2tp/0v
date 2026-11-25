@@ -237,3 +237,6 @@ User clarified nợ đuổi, thu gạch đối soát dần, not mandatory invoic
 
 ## v13.114
 E0: PR #80 CI 45550868991 passed for original head 9468c3ac; main merge 4c5d8e59 lacks planRollingDebt; correction b3f3c018 remains on old branch. Restore correction content into new branch based on actual main. E1: BANK-ROLLING, BANK-ROLLING-BATCH, BANK-JOURNAL, KB-LOCK. Explicit batch uniqueness and manual linkage classification, no duplicate payment. PostgreSQL unique constraint and ERPNext party report reviewed. E2: direct contracts/syntax; full CI pending; restored browser test. No production writes, real bill data, messages, historical rewrite, Google Sheet or reminder changes. No cross-request persistence. Verify actual merged blob after CI.
+
+## v13.115
+E0: v13.114 PR #81 merged; CI 45551432181 success; main blob verified. E1: BANK-ROLLING-PERSIST, BANK-JOURNAL, KB-LOCK. MDN IndexedDB overlapping write transaction and PostgreSQL uniqueness reviewed. E2: seven direct synthetic contracts passed; concurrent tabs, rollback, F5/reopen browser regression added; full CI pending. Local synthetic account only; no server lock, production ledger, actual bill, reminder, keyboard, history or Google Sheet changes.
