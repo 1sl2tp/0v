@@ -33,3 +33,5 @@ Shared runtime initialized before data branch; live swipe/input/scroll use exist
 - MEDIA-MIME-01: read-only metadata evidence image/jpg (1260 objects), alias normalization at parent; synthetic JPEG regression, CI/device pending.
 
 - L06 v13.174 E2/E3: PR #146 API 45705464673, DB 45705464771, publish 45705766769, Pages 45705790630 success; device pending. L06 v13.175 E1: audio/video/file classification, missing key, retry and codec fallback; CSV/WAV fixture, upload and actual native/server media still pending. Next: validate upload contract before enabling send.
+
+- L06 v13.175 E2/E3: PR #147 API 45706068382, DB 45706068380, publish 45706390212, Pages 45706420278 success. v13.176 E1: one picker, live mixed image/document/audio drafts, retain binary in memory. Upload BLOCKED on independent authenticated ticket/commit contract; see MEDIA-SEND-CONTRACT.md. Video send blocked by canonical kind support. No device acceptance yet.
