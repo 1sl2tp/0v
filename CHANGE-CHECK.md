@@ -267,3 +267,6 @@ E0: PR #89 merged; API 45555022770 and PostgreSQL 45555022710 passed; main blob 
 
 ## v13.124
 E0: PR #90 merged, API 45555440259 and PostgreSQL 45555439969 passed. E1: user single image scope, read-only CHAT aggregate audit (577 scans, 577 linked assets; private media bytes not accessed). E2: six direct assertions passed, seven scripts compiled, browser and static regressions updated; CI pending. No image pixels or customer records copied; no production changes. E3–E5 not certified.
+
+## v13.125
+E0: PR #91 merged; API 45559306275 and PostgreSQL 45559306282 passed. E1: user-defined 13-digit or visible matching 4/5/6-digit account suffix; separate recognition from image processing and verification. E2: 15 direct assertions passed, seven scripts compiled, static/browser regression added; CI pending. E3–E5 not certified. Synthetic account only, no real OCR corpus or production deployment, no ledger or keyboard changes.

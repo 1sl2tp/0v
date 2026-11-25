@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.124)
+## 00. Chỉ mục rule đang có hiệu lực (v13.125)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1083,3 +1083,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-SINGLE-IMAGE-03: Retain legacy low-level partition and batch APIs for historical regression only; remove collage sample and split controls from current UI. Single scope validates bounds and rejects unsupported type; OCR remains review-only, canPost=false.
 - BILL-SINGLE-IMAGE-04: Read-only CHAT source audit 25/11/2026: 577 receipt scan records with linked media and OCR JSON; 357 linked ledger, 187 null transfer timestamp. Stored OCR classifications (not manually validated): successful_transfer_receipt/app_screenshot 110, paper_photo 57, rotated_photo 10, missing layout 235; multiple_transactions 4 overall. Private media bytes not accessible through current connector; no pixel-level corpus validation, no customer image or identifier exported to repository.
 - BILL-SINGLE-IMAGE-05: Six direct single-region assertions, seven classic scripts compiled; static/browser regression updated for single image, bounds and three source options. No real posting, messages, production writes or keyboard changes. Full CI before merge.
+
+## 150. BILL-RECOGNITION — v13.125
+- BILL-RECOGNITION-01: Image preprocessing/OCR, text recognition, field extraction, Bank reconciliation and ledger posting have separate responsibilities. A bill is an image-form claim of transfer, not proof of funds or image authenticity. Recognition never permits collection.
+- BILL-RECOGNITION-02: Configured 13-digit receiving account; exact full match or matching visible suffix of 4/5/6 digits (including masked account). Remove presentation whitespace only, preserve leading zeros. Suffix is a candidate signal only; not an account verification or permission to post. Do not hardcode real account in lab; synthetic 1234567999999.
+- BILL-RECOGNITION-03: Require transaction context and account evidence to flag candidate. Exclude amount, memo, reference, sender account and ignored labels from unlabelled number matching. Wrong full account or conflicting explicit recipient evidence blocks candidate; unknown or unlabelled account requires review. Never infer hidden digits or correct ambiguous glyphs.
+- BILL-RECOGNITION-04: BillRecognitionAPI.classify returns text-only candidate state, evidence length/type, role and review flag. Existing field parser, Bank matching (including existing suffix policy), receipt keys and ledger posting rules unchanged. canPost=false, canVerifyPayment=false. No new production recognition or real image validation.
+- BILL-RECOGNITION-05: Fifteen direct cases, seven classic scripts, static and browser regression for full/partial/wrong account and numeric false positives. Both CI workflows before merge. No customer images/identifiers copied, no production or keyboard changes.
