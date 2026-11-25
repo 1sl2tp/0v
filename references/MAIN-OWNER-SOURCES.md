@@ -81,3 +81,6 @@ Internal CHAT reference: docs/bank-bill-ocr-casebook.md (BANK-286/317), bill-amo
 
 ## v13.88
 Internal CHAT bill-amount-rules.mjs printed date parser supports abbreviated Vietnamese month labels. Private structured corpus analysis yielded grouped account, abbreviated date and numeric reference prefix patterns; only format categories were used, no record values copied. Existing shared ParseAPI remains date owner.
+
+## v13.89
+Internal CHAT bill-app-preview.mjs and bill-transfer-identity.mjs: full bank destination, literal memo and competing-credit safeguards, independent transaction clock and late notice. Adopted conservative review-only partial account evidence and token-boundary memo checks; no customer constants copied.

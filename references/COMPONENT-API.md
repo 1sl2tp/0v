@@ -194,3 +194,6 @@ BillOCRFieldAPI.parse now exposes ten fields, including sendingBank, receivingBa
 
 ## v13.88 format normalization
 Shared ParseAPI.billDate accepts Vietnamese abbreviated numeric month tokens with explicit year. BillOCRFieldAPI accepts digit-only groups with spaces, and numeric reference prefix #; raw line evidence retained. Review-only, no missing digit inference.
+
+## v13.89 evidence tiers
+BillOCRFieldAPI.parse returns accountPartial (visible prefix/suffix only, no reconstruction); BankReconcileAPI.destination and memoProof distinguish evidence levels. Explicit accountLast5/accountPrefix input is carried by recheck; candidate.reviewEvidence records proof types. Partial or date-only remains review. No production action.

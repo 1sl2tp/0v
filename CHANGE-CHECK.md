@@ -153,3 +153,6 @@ Align ten independent fields with existing CHAT structured schema, support print
 
 ## v13.88 — format normalization
 Prior v13.87 CI passed and merged. Added narrow shared date formats, grouped account and numeric reference marker normalization. Raw evidence retained. Static regressions, private metadata comparison in read-only session; no private data committed or production changes.
+
+## v13.89 — partial account and bank evidence tiers
+v13.88 verified CI and merged. Masked account parsing, separate partial evidence fields, token-boundary memo and candidate proof levels. No relaxed posting policy; partial/missing clock remain review. Static regression executed before commit. No private data/production/keyboard changes.
