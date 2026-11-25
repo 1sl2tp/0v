@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.179)
+## 00. Chỉ mục rule đang có hiệu lực (v13.180)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1418,3 +1418,6 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - CONTENT-AB-01: Bên A (đối tác/khách) nền surface-selected, bên B (admin/mình) nền trong; cả hai full-width cùng lề, không bubble, không thay sender hoặc thứ tự. Message.create dùng chung live/fixture, giữ role metadata và media. Không đổi composer/keyboard.
 - CONTENT-AB-02: ContentAPI chỉ compose Typography, Layout/Card/Table hiện hữu. Text literal an toàn; tiêu đề có # hoặc nhãn nghiệp vụ rõ, **bold** và số lượng có đơn vị cuối dòng/SL: rõ thì nhấn semibold. Dòng --- hoặc ___ độc lập là separator. Không suy diễn mã hàng, giá, đơn vị hay nghiệp vụ, không render HTML từ tin nhắn. Tin gốc lưu nguyên. Không auto tạo đơn/thu tiền; bảng/card hiện hữu giữ nguyên. Các loại bảng báo giá, đối soát, danh sách nghiệp vụ live tiếp tục L08.
 - CONTENT-AB-03: Dùng token hiện hành (không đổi font chat/input, viền, geometry keyboard). E4/E5 cần xác nhận iPhone/Android và mẫu tài liệu dài. Quy tắc mới chỉ áp dụng row Message.create, không đổi mẫu lab cũ chưa migrate.
+
+## CONTENT-FLOW — v13.180 (bước 1 trình bày hội thoại)
+- CONTENT-FLOW-01: Giữ mốc ngày và giờ VN, thời gian là metadata nhỏ căn cuối dòng; không làm tiêu đề thời gian cho từng tin. Message.flow chỉ nối hai tin văn bản liền kề cùng A/B, cùng ngày, cùng HH:mm hợp lệ. Giờ trùng chỉ hiện một lần cuối nhóm; giờ từng tin vẫn giữ trong DOM và aria-label. Khác phút/ngày/bên, media, bill, placeholder, mẫu không rõ giờ, hoặc thẻ nghiệp vụ thì ngắt nhóm. Không gộp ID hay thay thứ tự, không sửa thời gian giao dịch bill. Dùng token hiện có, không đổi keyboard/input/scroll owner. Không phân tích ý định hoặc tự tạo đơn ở bước 1.
