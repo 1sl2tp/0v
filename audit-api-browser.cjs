@@ -48,6 +48,12 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 
  assert.deepEqual(await pg.evaluate(()=>window.calls),['session','directory','thread','media','thread','media']);
  await pg.getByLabel('Nội dung tin nhắn',{exact:true}).fill('Tin gửi kiểm thử');
+ const plusLive=pg.locator('#mediaBtn'),fileLive=pg.locator('[data-draft-media-picker]'),formLive=pg.locator('#composer');let liveChoosers=0;pg.on('filechooser',()=>liveChoosers++);
+ const [chooserLive]=await Promise.all([pg.waitForEvent('filechooser'),plusLive.click()]);assert.equal(liveChoosers,1);assert.equal(chooserLive.isMultiple(),true);assert.equal(await formLive.getAttribute('data-native-picker'),'true');assert.equal(await pg.evaluate(()=>document.activeElement?.id),'draft');
+ const imageFixture=await pg.evaluate(()=>{const c=document.createElement('canvas');c.width=24;c.height=32;return c.toDataURL('image/png').split(',')[1]});await chooserLive.setFiles([{name:'live-a.png',mimeType:'image/png',buffer:Buffer.from(imageFixture,'base64')},{name:'live-b.png',mimeType:'image/png',buffer:Buffer.from(imageFixture,'base64')}]);
+ await pg.waitForFunction(()=>document.querySelectorAll('[data-draft-media] .draft-media-item').length===2&&document.querySelector('#composer').dataset.mediaPending==='false');assert.equal(await formLive.getAttribute('data-native-picker'),null);assert.equal(await pg.getByRole('button',{name:'Gửi tin nhắn',exact:true}).isEnabled(),false);assert.equal(await pg.getByLabel('Nội dung tin nhắn',{exact:true}).inputValue(),'Tin gửi kiểm thử');
+ await pg.getByRole('button',{name:'Bỏ ảnh live-a.png',exact:true}).click();await pg.getByRole('button',{name:'Bỏ ảnh live-b.png',exact:true}).click();assert.equal(await pg.getByRole('button',{name:'Gửi tin nhắn',exact:true}).isEnabled(),true);
+ const [cancelLive]=await Promise.all([pg.waitForEvent('filechooser'),plusLive.click()]);assert.equal(liveChoosers,2);await cancelLive.setFiles([]);await fileLive.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await formLive.getAttribute('data-native-picker'),null);assert.equal(await pg.getByLabel('Nội dung tin nhắn',{exact:true}).inputValue(),'Tin gửi kiểm thử');
  await pg.getByRole('button',{name:'Gửi tin nhắn',exact:true}).click();
  await pg.waitForFunction(()=>window.calls.filter(c=>c==='media').length===3);
  assert.deepEqual(await pg.evaluate(()=>({id:window.sent.p_contact_id,body:window.sent.p_body,key:window.sent.p_client_id.startsWith('0v:')})),{id:'c',body:'Tin gửi kiểm thử',key:true});

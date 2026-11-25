@@ -1858,7 +1858,7 @@ const DraftMedia=(()=>{
 })();
 function renderDraftMedia(){
  const rail=document.querySelector('[data-draft-media]');if(!rail)return;const items=DraftMedia.list(active),owner=active,prior=rail.dataset.owner===owner?rail.scrollLeft:0;rail.dataset.owner=owner;rail.replaceChildren();rail.hidden=!items.length;draftForm.dataset.hasAttachments=String(Boolean(items.length));draftForm.dataset.mediaPending=String(DraftMedia.pending(owner));
- for(const item of items){const tile=make('div','draft-media-item'),img=MediaController.image({...item,lazy:false}),remove=Button.create({label:'Bỏ ảnh '+item.alt});remove.type='button';remove.dataset.draftRemove='true';const mark=make('span','','×');mark.setAttribute('aria-hidden','true');remove.append(mark);remove.addEventListener('click',()=>{DraftMedia.remove(owner,item.key);renderDraftMedia();resizeDraft()});tile.append(img,remove);rail.append(tile)}rail.scrollLeft=prior;
+ for(const item of items){const tile=make('div','draft-media-item'),img=MediaController.image({...item,lazy:false}),remove=Button.create({label:'Bỏ ảnh '+item.alt});remove.type='button';remove.dataset.draftRemove='true';const mark=make('span','','×');mark.setAttribute('aria-hidden','true');remove.append(mark);remove.addEventListener('click',()=>{DraftMedia.remove(owner,item.key);renderDraftMedia();resizeDraft();if(isLive)liveAttachmentFinished(owner)});tile.append(img,remove);rail.append(tile)}rail.scrollLeft=prior;
 }
 const Message=Object.freeze({create({text,time,mine=false,day,media=[]}){
  return Layout.slot({name:'message'+(mine?' mine':''),attrs:{'data-message-day':day},children:[
@@ -2056,7 +2056,7 @@ function mountLiveChat(root){
  $live('.dir-bottom').replaceChildren(refresh,logout);list.before(count);
  const sendStatus=text('caption','','p');sendStatus.setAttribute('role','status');frame.prepend(sendStatus);sendStatus.hidden=true;
  const setSendStatus=value=>{sendStatus.textContent=value;sendStatus.hidden=!value};
- let filter='Tất cả',pickerOwner=null;const attachmentRooms=new Set();
+ let filter='Tất cả';const attachmentRooms=new Set();
  const roleGroup=role=>({customer:'KH',supplier:'NCC',staff:'NV',employee:'NV',group:'Nhóm',kh:'KH',ncc:'NCC',nv:'NV','nhóm':'Nhóm'}[String(role||'').toLowerCase()]||null);
  function navigateLive(where,loading=false){if(where==='chat'&&!selected)return;const {epoch:nav,saved}=beginSharedNavigation(where,saveView,loading);if(where==='chat'&&!loading)requestAnimationFrame(()=>{if(nav!==navigationEpoch||root.dataset.screen!=='chat')return;ScrollController.write(!saved||saved.pinned?thread.scrollHeight:saved.top,'navigation');navigationPending=false;resizeDraft();syncJump()});saveView()}
  liveNavigate=navigateLive;
@@ -2067,20 +2067,18 @@ function mountLiveChat(root){
  for(const btn of root.querySelectorAll('[data-filter]'))btn.addEventListener('click',()=>{filter=btn.dataset.filter;for(const x of root.querySelectorAll('[data-filter]'))x.classList.toggle('active',x===btn);renderDirectory()});
  $live('#moduleContent').append(text('detail','Chưa kết nối API nghiệp vụ. Không hiển thị dữ liệu mẫu.','p'));
  draft.maxLength=8000;composer.hidden=true;
- const photoInput=document.createElement('input');photoInput.type='file';photoInput.accept='image/*';photoInput.multiple=true;photoInput.dataset.draftMediaPicker='true';photoInput.tabIndex=-1;photoInput.setAttribute('aria-hidden','true');mediaTrigger.insertAdjacentElement('afterend',photoInput);
  liveCanSend=()=>!!scope&&!!selected&&!sending&&!DraftMedia.pending(selected)&&!DraftMedia.list(selected).length&&!!draft.value.trim();
+ livePickerContext=()=>scope&&selected?scope:null;
+ livePickerValid=session=>!!session&&scope===session;
+ liveAttachmentStarted=owner=>attachmentRooms.add(owner);
+ liveAttachmentFinished=owner=>{if(owner===selected)setSendStatus(DraftMedia.list(owner).length?'Ảnh đang ở bản nháp. API gửi ảnh chưa kết nối.':'')};
  function updateComposer(){if(selected)renderDraftMedia();else{$live('[data-draft-media]').replaceChildren();$live('[data-draft-media]').hidden=true}resizeDraft();mediaTrigger.disabled=DraftMedia.busy()||!selected}
- mediaTrigger.addEventListener('pointerdown',e=>{if(e.button===0&&document.activeElement===draft&&e.cancelable)e.preventDefault()});
- mediaTrigger.addEventListener('mousedown',e=>{if(e.button===0&&document.activeElement===draft&&e.cancelable)e.preventDefault()});
- mediaTrigger.addEventListener('click',()=>{if(!scope||!selected||DraftMedia.busy())return;pickerOwner={scope,id:selected};photoInput.click()});
- photoInput.addEventListener('cancel',()=>{pickerOwner=null});
- photoInput.addEventListener('change',async()=>{const owner=pickerOwner;pickerOwner=null;const files=Array.from(photoInput.files);photoInput.value='';if(!owner||scope!==owner.scope||!files.length||!DraftMedia.begin(owner.id))return;attachmentRooms.add(owner.id);try{for(const file of files){if(scope!==owner.scope||DraftMedia.list(owner.id).length>=DraftMedia.limit)break;if(!/^image\/(?:png|jpeg|webp|gif|avif|heic|heif)$/i.test(file.type)||file.size>DraftMedia.maxBytes)continue;const src=URL.createObjectURL(file),img=new Image();img.src=src;try{await img.decode();if(scope!==owner.scope||!img.naturalWidth||!DraftMedia.add(owner.id,{src,width:img.naturalWidth,height:img.naturalHeight,alt:file.name}))URL.revokeObjectURL(src)}catch{URL.revokeObjectURL(src)}}}finally{DraftMedia.end(owner.id);if(scope===owner.scope&&selected===owner.id){updateComposer();setSendStatus(DraftMedia.list(owner.id).length?'Ảnh đang ở bản nháp. API gửi ảnh chưa kết nối.':'Không chọn được ảnh hỗ trợ.')}}});
  draft.addEventListener('input',()=>{if(selected)drafts.set(selected,draft.value);updateComposer()});
  draft.addEventListener('compositionend',updateComposer);
  composer.addEventListener('submit',e=>{e.preventDefault();if(Input.isComposing(draft,e))return;void sendText()});
  show('boot');document.body.prepend(boot,loginScreen,mfa,root);thread.addEventListener('scroll',saveView,{passive:true});list.addEventListener('scroll',saveView,{passive:true});window.addEventListener('pagehide',saveView);
  const style=document.createElement('style');style.textContent='[hidden]{display:none!important}#liveBoot,#liveMfa{display:flex;flex-direction:column;gap:12px;align-items:stretch;width:min(100%,360px);margin:auto;padding:16px}#liveBoot{min-height:100dvh;justify-content:center}#liveMfa{min-height:100dvh;justify-content:center}#liveMfa img{align-self:center}#liveMfa input{min-height:44px}#liveLogin input{width:100%;min-height:44px;border:1px solid var(--line);border-radius:12px;padding:10px}';document.head.append(style);
- function clear(){epoch++;choice++;navigationEpoch++;navigationPending=false;cancelEarlyClose();cancelGeometryScroll();InputController.blur();active=null;for(const id of Object.keys(scrolls))delete scrolls[id];clearMedia();for(const id of attachmentRooms){for(const item of DraftMedia.list(id))DraftMedia.remove(id,item.key)}attachmentRooms.clear();pickerOwner=null;clearInterval(heartbeat);reader?.dispose();reader=null;scope=null;rows=[];selected=null;list.replaceChildren();thread.replaceChildren();title.textContent='Chọn hội thoại';$live('#currentRole').textContent='';Avatar.update($live('#currentAvatar'),{text:'',name:''});drafts.clear();pending.clear();draft.value='';composer.hidden=true;setSendStatus('');sending=false;resetMfa();show('boot')}
+ function clear(){epoch++;choice++;navigationEpoch++;navigationPending=false;cancelEarlyClose();cancelGeometryScroll();InputController.blur();active=null;for(const id of Object.keys(scrolls))delete scrolls[id];clearMedia();for(const id of attachmentRooms){for(const item of DraftMedia.list(id))DraftMedia.remove(id,item.key)}attachmentRooms.clear();finishPickerHandoff();pickerSession=null;clearInterval(heartbeat);reader?.dispose();reader=null;scope=null;rows=[];selected=null;list.replaceChildren();thread.replaceChildren();title.textContent='Chọn hội thoại';$live('#currentRole').textContent='';Avatar.update($live('#currentAvatar'),{text:'',name:''});drafts.clear();pending.clear();draft.value='';composer.hidden=true;setSendStatus('');sending=false;resetMfa();show('boot')}
  async function rpc(name,args){const {data,error}=await client.rpc(name,args);if(error)throw error;return data}
  async function getClient(){if(client)return client;await new Promise((resolve,reject)=>{const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js';el.onload=resolve;el.onerror=reject;document.head.append(el)});client=window.supabase.createClient(endpoint,publicKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'0v.chat.auth.v1'}});client.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();show('guest');status.textContent='Đã đăng xuất.'}});return client}
  async function connect(withPassword){
@@ -2147,7 +2145,7 @@ function mountLiveChat(root){
 }
 const liveParams=new URLSearchParams(location.search);
 const isLive=liveParams.get('live')==='1'||(location.hostname==='1sl2tp.github.io'&&!Array.from(liveParams.keys()).some(k=>k!=='v'&&k!=='r'&&k!=='__build'));
-let liveSearch=()=>{},liveCanSend=()=>false,liveNavigate=()=>{};
+let liveSearch=()=>{},liveCanSend=()=>false,liveNavigate=()=>{},livePickerContext=()=>null,livePickerValid=()=>false,liveAttachmentStarted=()=>{},liveAttachmentFinished=()=>{};
 const app=isLive?Main.mount({live:true,onSearch:()=>liveSearch()}):Main.mount();
 if(isLive)document.body.prepend(app);
 /* END MAIN VIEW FACTORIES */
@@ -2386,6 +2384,43 @@ function beginSharedNavigation(where,save,switching=false){
  cancelEarlyClose();previousRect='';appliedChatLimit=null;updateViewport();const epoch=++navigationEpoch;
  if(!switching)save();navigationPending=where==='chat';const saved=scrolls[active];InputController.blur();anchor=null;preFocusAnchor=null;app.dataset.screen=where;app.classList.toggle('with-crm',where==='crm');return {epoch,saved}
 }
+// One native picker. The + button owns activation; the co-located file input is its native anchor.
+const mediaTrigger=$('#mediaBtn'),photoInput=make('input');
+photoInput.type='file';photoInput.accept='image/*';photoInput.multiple=true;photoInput.dataset.draftMediaPicker='true';photoInput.tabIndex=-1;photoInput.setAttribute('aria-hidden','true');mediaTrigger.setAttribute('aria-label','Thêm ảnh');mediaTrigger.insertAdjacentElement('afterend',photoInput);
+let pickerOwner=null,pickerTrace=()=>{},pickerSession=null;
+function finishPickerHandoff(){const owner=pickerOwner;pickerOwner=null;delete draftForm.dataset.nativePicker;return owner}
+function beginPickerHandoff(owner){pickerOwner=owner;draftForm.dataset.nativePicker='true'}
+// Attachment owns one native request only. The v13.27 Input focus/blur owner is independent.
+function preserveAttachmentFocus(e){
+ if(e.type==='pointerdown')pickerTrace('press-start');
+ if(e.button===0&&document.activeElement===draft&&e.cancelable)e.preventDefault();
+}
+mediaTrigger.addEventListener('pointerdown',preserveAttachmentFocus);
+mediaTrigger.addEventListener('mousedown',preserveAttachmentFocus);
+mediaTrigger.addEventListener('click',()=>{
+ if(app.dataset.screen!=='chat'||DraftMedia.busy()||(isLive&&!livePickerContext()))return;
+ if(pickerOwner!==null)finishPickerHandoff();
+ beginPickerHandoff(active);pickerSession=isLive?livePickerContext():null;
+ try{
+  pickerTrace('before-native-request');
+  photoInput.click();
+  pickerTrace('after-native-request');
+ }catch(error){finishPickerHandoff();pickerTrace('native-request-error');console.warn('Native attachment picker unavailable',error?.name||'Error')}
+});
+photoInput.addEventListener('click',e=>e.stopPropagation());
+photoInput.addEventListener('cancel',()=>{finishPickerHandoff();pickerSession=null});
+photoInput.addEventListener('change',async()=>{
+ const files=Array.from(photoInput.files),picked=finishPickerHandoff(),owner=picked??active,session=pickerSession;pickerSession=null;photoInput.value='';if(!files.length||(isLive&&(picked===null||!session||!livePickerValid(session))))return;
+ const supported=files.filter(file=>/^image\/(?:png|jpeg|webp|gif|avif|heic|heif)$/i.test(file.type)&&file.size<=DraftMedia.maxBytes);
+ if(supported.length!==files.length&&owner===active)Popup.open({type:'form',title:'Tệp chưa được hỗ trợ',description:'Hiện vùng gõ chỉ nhận ảnh tối đa 15 MB mỗi ảnh; tệp khác chưa được thêm.'});
+ if(!supported.length||!DraftMedia.begin(owner))return;if(isLive)liveAttachmentStarted(owner);
+ if(owner===active){renderDraftMedia();resizeDraft()}
+ try{for(const file of supported){if(DraftMedia.list(owner).length>=DraftMedia.limit||(isLive&&!livePickerValid(session)))break;if(!/^image\/(?:png|jpeg|webp|gif|avif|heic|heif)$/i.test(file.type)||file.size>DraftMedia.maxBytes)continue;
+ const src=URL.createObjectURL(file),img=new Image();img.src=src;try{await img.decode();if((isLive&&!livePickerValid(session))||!img.naturalWidth||!img.naturalHeight||!DraftMedia.add(owner,{src,width:img.naturalWidth,height:img.naturalHeight,alt:file.name}))URL.revokeObjectURL(src)}catch{URL.revokeObjectURL(src)}
+ } }finally{DraftMedia.end(owner);if(owner===active&&(!isLive||livePickerValid(session))){renderDraftMedia();resizeDraft();if(isLive)liveAttachmentFinished(owner)}}
+});
+
+
 applyViewport();
 if(isLive){mountLiveChat(app);return}
 let filter='Tất cả';const MainData=MainDataController.create(people,{kh:['Cho lấy sản phẩm A 2, sản phẩm B 3.','Đã tiếp nhận, mình sẽ kiểm tra hàng.'],ncc:['Mình gửi báo giá mới hôm nay.','Đã nhận thông tin báo giá.'],nv:['Mình đã kiểm hàng.','Đã nhận thông tin.'],nhom:['Cả nhóm cập nhật yêu cầu nhé.','Đã ghi nhận.']});
@@ -4264,42 +4299,6 @@ const fields=make('div','fields');(samples[label]||[['Trạng thái','Minh họa
 const note=make('p','module-note',label==='Công nợ'?'Nợ đuổi: âm là còn nợ, dương là dư tiền. Không phân bổ theo đơn.':label==='Bill'?'Chỉ ghi thu sau khi đối soát hợp lệ.':'Bố cục tĩnh, không phát sinh nghiệp vụ thật.');panel.append(note);
 }
 $('#composer').addEventListener('submit',e=>{e.preventDefault();if(Input.isComposing(draft,e))return;const {text:t,originalText}=Input.commitMessage(draft.value);if(DraftMedia.pending(active)||(!t&&!DraftMedia.list(active).length))return;const media=DraftMedia.list(active).map(({src,width,height,alt})=>({src,width,height,alt}));const sent=MainData.append(active,{text:t,originalText,mine:true,time:clock(),date:Date.now(),media});DraftMedia.take(active);updateContact(active);draft.value='';drafts[active]='';renderDraftMedia();const row=Message.create({mine:true,day:messageDay(sent),text:t,time:sent.time,media});appendDailyMessage(row,sent);resizeDraft();draft.focus({preventScroll:true});const epoch=navigationEpoch,owner=active;requestAnimationFrame(()=>{if(epoch!==navigationEpoch||owner!==active||app.dataset.screen!=='chat')return;ScrollController.end('send');anchor={pinned:true,top:messages.scrollTop};syncJump()})});
-
-// One native picker. The + button owns activation; the co-located file input is its native anchor.
-const mediaTrigger=$('#mediaBtn'),photoInput=make('input');
-photoInput.type='file';photoInput.accept='image/*';photoInput.multiple=true;photoInput.dataset.draftMediaPicker='true';photoInput.tabIndex=-1;photoInput.setAttribute('aria-hidden','true');mediaTrigger.setAttribute('aria-label','Thêm ảnh');mediaTrigger.insertAdjacentElement('afterend',photoInput);
-let pickerOwner=null,pickerTrace=()=>{};
-function finishPickerHandoff(){const owner=pickerOwner;pickerOwner=null;delete draftForm.dataset.nativePicker;return owner}
-function beginPickerHandoff(owner){pickerOwner=owner;draftForm.dataset.nativePicker='true'}
-// Attachment owns one native request only. The v13.27 Input focus/blur owner is independent.
-function preserveAttachmentFocus(e){
- if(e.type==='pointerdown')pickerTrace('press-start');
- if(e.button===0&&document.activeElement===draft&&e.cancelable)e.preventDefault();
-}
-mediaTrigger.addEventListener('pointerdown',preserveAttachmentFocus);
-mediaTrigger.addEventListener('mousedown',preserveAttachmentFocus);
-mediaTrigger.addEventListener('click',()=>{
- if(app.dataset.screen!=='chat'||DraftMedia.busy())return;
- if(pickerOwner!==null)finishPickerHandoff();
- beginPickerHandoff(active);
- try{
-  pickerTrace('before-native-request');
-  photoInput.click();
-  pickerTrace('after-native-request');
- }catch(error){finishPickerHandoff();pickerTrace('native-request-error');console.warn('Native attachment picker unavailable',error?.name||'Error')}
-});
-photoInput.addEventListener('click',e=>e.stopPropagation());
-photoInput.addEventListener('cancel',()=>{finishPickerHandoff()});
-photoInput.addEventListener('change',async()=>{
- const files=Array.from(photoInput.files),owner=finishPickerHandoff()??active;photoInput.value='';if(!files.length)return;
- const supported=files.filter(file=>/^image\/(?:png|jpeg|webp|gif|avif|heic|heif)$/i.test(file.type)&&file.size<=DraftMedia.maxBytes);
- if(supported.length!==files.length&&owner===active)Popup.open({type:'form',title:'Tệp chưa được hỗ trợ',description:'Hiện vùng gõ chỉ nhận ảnh tối đa 15 MB mỗi ảnh; tệp khác chưa được thêm.'});
- if(!supported.length||!DraftMedia.begin(owner))return;
- if(owner===active){renderDraftMedia();resizeDraft()}
- try{for(const file of supported){if(DraftMedia.list(owner).length>=DraftMedia.limit)break;if(!/^image\/(?:png|jpeg|webp|gif|avif|heic|heif)$/i.test(file.type)||file.size>DraftMedia.maxBytes)continue;
- const src=URL.createObjectURL(file),img=new Image();img.src=src;try{await img.decode();if(!img.naturalWidth||!img.naturalHeight||!DraftMedia.add(owner,{src,width:img.naturalWidth,height:img.naturalHeight,alt:file.name}))URL.revokeObjectURL(src)}catch{URL.revokeObjectURL(src)}
- } }finally{DraftMedia.end(owner);if(owner===active){renderDraftMedia();resizeDraft()}}
-});
 
 // PickerAnchor audit: coordinate observation only, enabled explicitly for native acceptance.
 // The browser owns the system popup. Its bounds are NOT exposed to the DOM.

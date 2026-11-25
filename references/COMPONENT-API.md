@@ -459,3 +459,6 @@ Real text routes through Message.create; authenticated media parts attach before
 
 ## v13.173 shared interaction runtime
 ScrollController, KeyboardController, InputController, resizeDraft, swipe and beginSharedNavigation execute before live/fixture data split; view uses canonical owners. liveCanSend adapter only restricts submit eligibility. Protected keyboard geometry unchanged. Native acceptance pending.
+
+## Shared picker live/fixture
+Same native picker before split. Live callbacks authorize capture/decode by session, track room cleanup and status only. Existing DraftMedia and composer geometry unchanged; upload unavailable, native OS menu acceptance pending.
