@@ -442,3 +442,7 @@ Button.create textRole detail(default 14/20), body(16/22), caption(13/18). Butto
 
 ## v13.166 — Type rhythm
 Typography: version 11/16, contact name medium 16/22, preview detail 14/20, time 13/18, chat 17/24. Layout: contact preview track derives from detail, desktop thread gap 8. Input untouched. TYPE-RHYTHM-01–03; native pending.
+
+
+## CHAT-READ — read-only integration boundary
+ChatReadAPI.create({session,readContacts,readThread}) consumes host-authorized canonical CHAT data; exposes directory/thread/dispose only. No token, network, storage or business API. Fixture Popup `?chatread=fixture`, not live. Host must clear view on auth change and validate membership each call; see CHAT-READ-01–04 and CHAT-READ-BRIDGE.md.
