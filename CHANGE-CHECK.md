@@ -282,3 +282,6 @@ E0: v13.127 API 45561027286 and DB 45561027299 passed; merge checked before bran
 
 ## v13.129
 E1: adjacent unclassified fixed name/account pair as review evidence; role boundaries and context. E2: static/browser regressions added; CI pending. Prior release gate checked before PR; no private media, ledger, keyboard or production changes. E3–E5 not certified.
+
+## v13.130
+E0: v13.128 merged; v13.129 retargeted and synced main for CI. E1: unlabelled token suggestions, ambiguity and role guards. E2: static/browser regression added; CI pending. No private media, ledger or production changes. E3–E5 not certified.
