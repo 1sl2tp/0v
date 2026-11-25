@@ -127,6 +127,15 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.reload();await open();assert.equal(await s.getAttribute('data-receipts'),'1');assert.equal(await s.getAttribute('data-state'),'posted');assert((await p.locator('[data-bank-journal-bill="bill-fixture-1"]').textContent()).includes('Đã ghi thu mẫu'));
  await click('Thử thu trùng (mẫu)');await wait('error','rejected');await click('Thử hủy giao dịch (mẫu)');await wait('error','aborted');await p.reload();await open();assert.equal(await s.getAttribute('data-entries'),'3');assert.equal(await s.getAttribute('data-receipts'),'1');await p.close()
  }
+ // Manual fixture receipt, late Bank linkage and F5; no second receipt.
+ {
+ const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?bankjournallab=1');
+ async function open(){await p.locator('.contact[data-id=kh]').evaluate(e=>e.click());await p.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());await p.waitForSelector('[data-bank-journal-status][data-ready=true]')}
+ const s=p.locator('[data-bank-journal-status]'),click=name=>p.getByRole('button',{name,exact:true}).evaluate(e=>e.click()),wait=async(key,value)=>p.waitForFunction(([k,v])=>document.querySelector('[data-bank-journal-status]')?.dataset[k]===v,[key,value]);
+ await open();await click('Nhận bill (mẫu)');await wait('state','pending');await click('Thu thủ công (mẫu)');await wait('state','posted');assert.equal(await s.getAttribute('data-receipts'),'1');
+ await click('Nhận Bank (mẫu)');await wait('entries','3');await click('Ghi thu mô phỏng');await wait('error','rejected');await click('Soát Bank khoản thu tay (mẫu)');await wait('manualVerified','true');assert.equal(await s.getAttribute('data-receipts'),'1');
+ await p.reload();await open();assert.equal(await s.getAttribute('data-manual-verified'),'true');assert.equal(await s.getAttribute('data-receipts'),'1');assert((await p.locator('[data-bank-journal-bill="bill-fixture-1"]').textContent()).includes('Đã thu thủ công – đã soát bill'));await p.close()
+ }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
  await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());
