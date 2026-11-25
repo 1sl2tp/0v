@@ -53,6 +53,21 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  let count=0;p.on('filechooser',()=>count++);const [chooser]=await Promise.all([p.waitForEvent('filechooser'),plus.tap()]);assert(chooser.isMultiple());assert.equal(count,1);assert.equal(await draft.evaluate(e=>document.activeElement===e),true);assert.equal(await form.getAttribute('data-native-picker'),'true');assert.equal(await form.locator('input[type=file]').count(),1);
  await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),'Bản nháp iOS');assert.equal(await draft.evaluate(e=>document.activeElement===e),true);await p.close();}
  
+ // Controlled focus-loss fault injection: restore previously focused draft before one real native request.
+ for(const touch of [false,true]){
+ const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:touch});
+ await p.goto(url+'?pickerprobe=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
+ const plus=p.locator('#mediaBtn'),file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
+ await draft.fill('Bản nháp giữ con trỏ');await draft.focus();await draft.evaluate(e=>e.setSelectionRange(2,7,'forward'));
+ await p.setViewportSize({width:390,height:360});await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true');
+ // Simulate a browser moving focus to the attachment button after pointerdown, not native iOS proof.
+ await plus.evaluate(e=>e.addEventListener('pointerdown',()=>e.focus({preventScroll:true}),{once:true}));
+ let count=0;p.on('filechooser',()=>count++);const [chooser]=await Promise.all([p.waitForEvent('filechooser'),touch?plus.tap():plus.click()]);
+ const proof=await p.evaluate(()=>({press:window.pickerAnchorProof.press(),request:window.pickerAnchorProof.request(),trace:window.pickerAnchorProof.trace().map(x=>({reason:x.reason,focused:x.focused})),selection:[document.querySelector('#draft').selectionStart,document.querySelector('#draft').selectionEnd]}));
+ assert(proof.press?.focused&&proof.request?.focused,JSON.stringify(proof));assert(proof.trace.some(x=>x.reason==='focusout'&&!x.focused)||proof.trace.some(x=>x.reason==='before-focus-check'&&!x.focused),JSON.stringify(proof));assert.deepEqual(proof.selection,[2,7]);assert.equal(count,1);assert.equal(await form.getAttribute('data-native-picker'),'true');
+ await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await draft.inputValue(),'Bản nháp giữ con trỏ');assert.equal(await form.getAttribute('data-native-picker'),null);await p.close();
+ }
+ 
  // Read-only anchor diagnostic: a changing viewport must move the real + and native input together.
  {const p=await browser.newPage({viewport:{width:390,height:844}});
  await p.goto(url+'?pickerprobe=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
