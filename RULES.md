@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.89)
+## 00. Chỉ mục rule đang có hiệu lực (v13.90)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -824,3 +824,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-EVIDENCE-03: Memo equality or containment must use complete normalized tokens, not arbitrary substring; generic transfer text alone is insufficient. No fuzzy OCR correction. Existing amount/clock, reference/name conflict, duplicate and competing credit gates retained.
 - BANK-EVIDENCE-04: Candidate exposes account, memo, reference and time proof independently; date-only same day remains review, late arrival flag compares transaction date to receipt day, no fabricated time. Recheck events preserve partial fields. No production write or old bill repair.
 - BANK-EVIDENCE-05: Tests cover masked/contradicting account, partial candidate, missing clock, late bank, wrong suffix, substring collision, generic memo and full proof regression. Consult CHAT bill-app-preview and bill-transfer-identity; do not copy customer-specific constants. Preserve keyboard v13.27.
+
+## 113. BANK-MEMO — v13.90
+- BANK-MEMO-01: Keep original memo unchanged. Compare case, Vietnamese accents, punctuation and whitespace separately. Full token containment stays bounded; compact equality/containment with >=16 characters is review-only, never sufficient for fixture posting.
+- BANK-MEMO-02: Anchored bank-side QR/IBFT prefix and complete MB(six digits)(memo) envelope can be separated; unknown wrapper not guessed. Numeric sequence conflicts remain review. Generic transfer phrase is insufficient.
+- BANK-MEMO-03: Independently printed bill reference (>=8 chars, >=6 consecutive digits) must be delimited in bank memo. Strip only exact known trailing reference, preserve embedded reference and marker evidence. Never infer a reference from arbitrary digits; distinct explicit references block.
+- BANK-MEMO-04: Raw memo preserved in bank-event identity, changing bank memo on same ID quarantines conflict. Full bank account, amount, valid transaction time, clear image, unique candidate and duplicate/ledger guards unchanged. Missing time stays review.
+- BANK-MEMO-05: Test punctuation/accents/spacing, anchored wrappers, attached reference, substring collision, number conflict, generic phrase and late bank; source CHAT bank-app-preview, no private constants. Preserve v13.27 keyboard. No production write.

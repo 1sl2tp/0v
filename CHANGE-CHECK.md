@@ -156,3 +156,6 @@ Prior v13.87 CI passed and merged. Added narrow shared date formats, grouped acc
 
 ## v13.89 — partial account and bank evidence tiers
 v13.88 verified CI and merged. Masked account parsing, separate partial evidence fields, token-boundary memo and candidate proof levels. No relaxed posting policy; partial/missing clock remain review. Static regression executed before commit. No private data/production/keyboard changes.
+
+## v13.90 — memo formatting and attached references
+Prior v13.89 CI passed and merged. Added explicit comparison forms, bounded known wrappers and independently printed reference suffix, digit conflict and compact spacing review. Raw bank identity retained. Updated IBFT expectation from contained to exact after explicit prefix separation; retained standalone containment case. Direct regression suite executed; no real bank/customer data, financial write or keyboard change.

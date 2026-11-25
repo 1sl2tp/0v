@@ -197,3 +197,6 @@ Shared ParseAPI.billDate accepts Vietnamese abbreviated numeric month tokens wit
 
 ## v13.89 evidence tiers
 BillOCRFieldAPI.parse returns accountPartial (visible prefix/suffix only, no reconstruction); BankReconcileAPI.destination and memoProof distinguish evidence levels. Explicit accountLast5/accountPrefix input is carried by recheck; candidate.reviewEvidence records proof types. Partial or date-only remains review. No production action.
+
+## v13.90 memo evidence
+BankReconcileAPI.memoDetails(billMemo,bankMemo,{billReference,bankReference}) returns normalized comparison forms, proof kind, embedded reference, digit conflict and known markers. Compact match is review-only. Original memo retained; no arbitrary code stripping.
