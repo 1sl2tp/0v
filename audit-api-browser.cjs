@@ -6,6 +6,17 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const browser=await chromium.launch({headless:true});
  try{
 
+ // Directory search: empty result feedback, clear Escape, mobile disclosure and desktop focus.
+ for(const width of [320,390,1024]){
+ const p=await browser.newPage({viewport:{width,height:844}});
+ await p.goto(url);const search=p.locator('#search'),toggle=p.locator('#searchToggle'),empty=p.locator('#directoryEmpty'),contacts=p.locator('#contacts .contact');
+ if(width<768){await p.evaluate(()=>document.querySelector('[data-go=contacts]').click());await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true')}
+ await search.fill('zzzzqa-no-match');assert.equal(await contacts.filter({visible:true}).count(),0);assert.equal(await empty.textContent(),'Không tìm thấy danh bạ phù hợp.');
+ await search.press('Escape');assert.equal(await search.inputValue(),'');assert.equal(await empty.textContent(),'');assert((await contacts.filter({visible:true}).count())>0);assert.equal(await search.evaluate(e=>document.activeElement===e),true);
+ await search.press('Escape');if(width<768){assert.equal(await toggle.getAttribute('aria-expanded'),'false');assert.equal(await search.isVisible(),false);assert.equal(await toggle.evaluate(e=>document.activeElement===e),true);await toggle.click();assert.equal(await search.inputValue(),'');}else{assert.equal(await search.isVisible(),true);assert.equal(await search.evaluate(e=>document.activeElement===e),true)}
+ await search.fill('zzzzqa-no-match');await search.fill('');assert.equal(await empty.textContent(),'');await p.close();
+ }
+
  // Direct real file picker: normal UI, no diagnostic overlay and no intermediate menu.
  for(const [focused,touch] of [[false,false],[true,false],[false,true],[true,true]]){
  const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:touch});
