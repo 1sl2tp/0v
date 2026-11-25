@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.114)
+## 00. Chỉ mục rule đang có hiệu lực (v13.115)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1013,3 +1013,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-ROLLING-BATCH-03: Manual receipt linked to Bank stays one receipt at original postedAt. As-of projection before verifiedAt counts it as unlinked manual, after link as Bank-backed; do not add second payment. Exact separate debt and credit totals, no offset across customers. Caller snapshot completeness only.
 - BANK-ROLLING-BATCH-04: Existing rolling lab uses batch API; no live customer or ledger adapter, no changes to reminder cadence, history or actual settlement. Full journal integrity replay remains required; not an independently reconstructed historical ledger.
 - BANK-ROLLING-BATCH-05: Test cross-customer duplicate, stale revision, unknown customer, unassigned receipt, manual then Bank link and earlier as-of classification, exact residual. Restore previous browser debt/zero/credit regression; CI gate and verify actual merged main blob. Preserve v13.27 keyboard.
+
+## 140. BANK-ROLLING-PERSIST — v13.115
+- BANK-ROLLING-PERSIST-01: Synthetic account 123456789 only; one stable account-keyed IndexedDB journal and receipt-owner registry, not scoped by day, tab or session. Existing independent journals are not imported.
+- BANK-ROLLING-PERSIST-02: Atomic read-modify-write on one accounts store; identical evidence/receipt entry and same owner retry is a no-op; conflicting payload or customer rejected. No silent reassignment, no inference from name or amount.
+- BANK-ROLLING-PERSIST-03: Replay whole journal before and after mutation, preserving original postedAt, exact amount, manual-to-bank linkage without second receipt; later known Bank aliases cannot be assigned twice. Transaction failure rolls back both evidence and ownership.
+- BANK-ROLLING-PERSIST-04: Browser fixture API only at ?bankpersistlab=1; no real balance changes, no messages, no reminder changes, no production adapter. Local same-origin storage can be cleared or isolated by browser/PWA; server-side database uniqueness and posting transaction remain required.
+- BANK-ROLLING-PERSIST-05: Direct checks for replay, unknown receipt, owner conflict, late manual link, synthetic-only scope; browser regression for abort, concurrent tabs, reload and reopen. Preserve keyboard v13.27; CI gate before release.
