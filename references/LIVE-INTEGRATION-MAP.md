@@ -37,3 +37,5 @@ Shared runtime initialized before data branch; live swipe/input/scroll use exist
 - L06 v13.175 E2/E3: PR #147 API 45706068382, DB 45706068380, publish 45706390212, Pages 45706420278 success. v13.176 E1: one picker, live mixed image/document/audio drafts, retain binary in memory. Upload BLOCKED on independent authenticated ticket/commit contract; see MEDIA-SEND-CONTRACT.md. Video send blocked by canonical kind support. No device acceptance yet.
 
 - L08 v13.177 E1: shared bill pair connected to optional asset.bill_receipt (exact asset/message keys); existing backend only returns media metadata. Real C Sâm PL receipts already exist, one amount_read/no ledger, one received/ledger. API contract pending separate backend review; no claim live card available yet. No real DB writes.
+
+- L08 backend candidate E1: SQL read projection and isolated PostgreSQL fixture; no UI bump. Production deployment blocked until exact candidate passes DB CI and separate review. v13.177 UI E3 confirmed; E4 pending.

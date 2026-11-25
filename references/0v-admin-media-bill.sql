@@ -1,0 +1,50 @@
+-- Review-only candidate: existing private read API, no table writes or new grants.
+-- Apply only after isolated tests and separate rollout review. Preserve existing owner and ACL.
+CREATE OR REPLACE FUNCTION v0_private.admin_media(p_conversation_id uuid)
+RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO ''
+AS $function$
+DECLARE me uuid; result jsonb;
+BEGIN
+  me:=(v0_private.admin_read('session',null)->>'account_id')::uuid;
+  IF NOT EXISTS (
+    SELECT 1 FROM public.v21_conversations c JOIN public.v21_accounts a ON a.id=CASE WHEN c.member_a=me THEN c.member_b ELSE c.member_a END
+    WHERE c.id=p_conversation_id AND me IN(c.member_a,c.member_b) AND a.role='user' AND a.deleted_at IS NULL AND a.locked_at IS NULL
+  ) THEN RAISE EXCEPTION 'conversation_forbidden' USING errcode='42501'; END IF;
+  SELECT coalesce(jsonb_agg(to_jsonb(x) ORDER BY x.message_id,x.sort_index,x.id),'[]'::jsonb) INTO result
+  FROM (
+    SELECT a.id,a.message_id,a.kind,a.mime_type,a.storage_key,a.width_px,a.height_px,a.file_name,a.sort_index,
+      CASE WHEN r.status IN ('received','amount_read','review','duplicate') THEN jsonb_build_object(
+        'asset_id',a.id,'message_id',a.message_id,'status',r.status,
+        'has_ledger',EXISTS(SELECT 1 FROM public.taphoa_debt_ledger l WHERE l.id=r.ledger_id AND l.customer_account_id=r.customer_account_id AND l.entry_type='collection'),
+        'amount_vnd',CASE WHEN r.amount_vnd>0 THEN r.amount_vnd::text END,
+        'date_vn',CASE WHEN r.transfer_at_vn IS NOT NULL
+          AND jsonb_typeof(r.raw_read->'transfer_date_printed_vn')='string'
+          AND nullif(btrim(r.raw_read->>'transfer_date_printed_vn'),'') IS NOT NULL
+          AND r.raw_read->>'transfer_date_vn'=to_char(r.transfer_at_vn,'YYYY-MM-DD')
+          AND coalesce(r.raw_read->>'time_date_conflict','false')='false'
+          AND coalesce(r.raw_read->>'printed_date_invalid','false')='false'
+          AND coalesce(r.raw_read->>'date_swap_suspected','false')='false'
+          AND coalesce(r.raw_read->>'ocr_iso_date_conflict','false')='false'
+          THEN to_char(r.transfer_at_vn,'DD/MM/YYYY') END,
+        'time_vn',CASE WHEN r.transfer_at_vn IS NOT NULL
+          AND coalesce(r.raw_read->>'time_date_conflict','false')='false'
+          AND coalesce(r.raw_read->>'clock_text_conflict','false')='false'
+          AND r.raw_read->>'transaction_time_precision' IN ('minute','second')
+          AND jsonb_typeof(r.raw_read->'transfer_time_printed_vn')='string'
+          AND r.raw_read->>'transfer_time_printed_vn'=CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
+          THEN r.raw_read->>'transfer_time_printed_vn' END,
+        'receiving_account',left(r.receiving_account,200),'receiving_name',left(r.receiving_name,200),
+        'transfer_content',CASE WHEN jsonb_typeof(r.raw_read->'transfer_content')='string' THEN left(r.raw_read->>'transfer_content',1000) END,
+        'transfer_reference',left(r.transfer_reference,200),'sending_bank',left(r.sending_bank,200),'receiving_bank',left(r.receiving_bank,200)
+      ) END AS bill_receipt
+    FROM public.v21_media_assets a
+    JOIN (SELECT id FROM public.v21_messages WHERE conversation_id=p_conversation_id AND deleted_at IS NULL ORDER BY created_at DESC,id DESC LIMIT 100) m ON m.id=a.message_id
+    LEFT JOIN public.chat_bank_bill_receipts r ON r.media_asset_id=a.id AND r.message_id=a.message_id
+      AND r.customer_account_id=a.owner_account_id AND r.customer_account_id<>me
+      AND EXISTS(SELECT 1 FROM public.v21_conversations c WHERE c.id=p_conversation_id AND r.customer_account_id IN(c.member_a,c.member_b))
+      AND auth.jwt()->>'aal'='aal2'
+    WHERE a.conversation_id=p_conversation_id AND a.deleted_at IS NULL
+  ) x;
+  RETURN jsonb_build_object('account_id',me,'assets',result);
+END;
+$function$;
