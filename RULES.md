@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.141)
+## 00. Chỉ mục rule đang có hiệu lực (v13.142)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1200,3 +1200,9 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - KEYBOARD-ACCESSORY-02: Preserve existing draft focus on pointer/mouse down; never force keyboard open/closed when toggling; no viewport/scroll writer. Size clipped to room above composer/header, scrollable if needed. Escape, outside pointer, navigation and second + dismiss.
 - KEYBOARD-ACCESSORY-03: Device choice opens native file picker with image filter and multiple; camera requests capture=environment and single. OS controls native UI and can fall back; no claim of separate photo-library/file routing on Safari. Existing room ownership and decode guard unchanged.
 - KEYBOARD-ACCESSORY-04: Browser regression checks focus/no-focus, anchor after resize, dismissal, picker invocation and unchanged draft. Native iPhone keyboard and system picker still require acceptance. Sources: pinned Astryx TextInput/Stack; MDN input/file, capture and Pointer Events. No production or bill changes.
+
+## 167. PICKER-HANDOFF — v13.142
+- PICKER-HANDOFF-01: Keyboard > composer frame > Input > accessory and file input; actual file input is a transparent, non-interactive 44px anchor at the + corner, not a display-none body child. Browser owns native sheet and may still choose its location.
+- PICKER-HANDOFF-02: On explicit choice acquire room owner and cancel pending early-close BEFORE invoking picker. While owner exists, focusout must not schedule early-close. Raw viewport remains the only writer; no forced blur/refocus, offset or new timer. Normal keyboard close unchanged. KB-LOCK exception is exactly one focusout predicate, normalized explicitly in audit.
+- PICKER-HANDOFF-03: change/cancel clear session; release reload blocked while native picker open. If browser omits cancel, next explicit + recovers session. Do not infer that OS preserved keyboard; no automatic keyboard reopen. Selection decode remains local and room-owned.
+- PICKER-HANDOFF-04: Browser contract verifies actual anchor parent/rect, pending state, cancel and file selection, plus static protected-range check. Screenshot native regression remains open until physical iPhone Safari/PWA verification. Sources: Astryx TextInput b1b0e312df989a9a8e29991c0700073a546380e8, Stack c56d72759ad2f6f86102228e22c3123530b32894; Adobe React Aria overlay discussion #9858/#9172; MDN file/cancel. No production changes.

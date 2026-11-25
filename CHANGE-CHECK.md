@@ -318,3 +318,6 @@ E0: v13.139 merged; API 45571279386 and DB 45571279406 passed. E1: shared compos
 
 ## v13.141
 E0: v13.140 merged after API 45575196885 and DB 45575196880 passed. E1: app-owned keyboard accessory above composer, focus-preserving pointer interaction and explicit native picker selection. Four protected ranges equal. E2: browser test added; CI pending. Native iPhone/PWA and actual picker not claimed.
+
+## v13.142
+E0: v13.141 merged; API 45575568865 and DB 45575568838 passed, user screenshot reports native chooser/fall regression. E1: file input moved into composer; anchored geometry and room handoff; cancel early-close before native activation; exact guard exception, normal close unchanged. E2: normalized four protected ranges compared; browser tests added; CI pending. Physical iPhone acceptance open; no production or bill changes.
