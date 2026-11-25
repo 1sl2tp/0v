@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.111)
+## 00. Chỉ mục rule đang có hiệu lực (v13.112)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -985,3 +985,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-PAYER-03: Known sender mismatch adds sender-name-conflict and blocks related suggestions. Explicit customer context requires separate allocation review even when names match; no new customer posting path. Legacy unscoped fixture matching remains unchanged. Bank duplicate ID fingerprint includes normalized sender.
 - BANK-PAYER-04: Carry role evidence through recheck and review card. Existing customer context cannot be replaced or introduced by OCR revision; no real directory binding, customer receipt allocation, message or production action. Historical simulated journal is not a customer ledger.
 - BANK-PAYER-05: Test labelled roles, stored adaptation, no memo inference, third-party/same-name review, sender conflict, missing-clock gate, OCR context lock and browser labels. Update ten-field historical contract count intentionally; preserve v13.27 keyboard and full CI gate.
+
+## 136. BANK-ALLOC — v13.112
+- BANK-ALLOC-01: BankJournalAPI.planAllocations is read-only, fixture-only; derive receipt amount from replayed bank-backed receipt, not a bill face value or supplied amount. One plan per receipt and bank ID; reject known replay alias across plans. Unlinked manual receipt is not Bank money.
+- BANK-ALLOC-02: Explicit order ID, customer ID and outstanding revision required, independently provided obligation snapshot. Unique order within plan, cumulative remaining across plans, exact positive canonical decimal string amount; no allocation above current outstanding or receipt amount. No automatic division or inference from names/memo.
+- BANK-ALLOC-03: Preserve exact received, allocated and unallocated totals using DecimalAPI; residual is not automatically customer credit. Count distinct bank records, orders per receipt and customer IDs separately; no claim of bank identity beyond existing replay evidence. All projections canPost=false; no journal mutation.
+- BANK-ALLOC-04: New fixture lab uses existing Card/Input/Button, three obligations across two customers, editable proposed amounts; no live directory, order lookup, authorization or ledger adapter. Snapshot revision is local test evidence, not server concurrency protection.
+- BANK-ALLOC-05: Test fractional residual, multi-order/multi-customer, two receipts against cumulative outstanding, duplicate receipt/order, stale or wrong customer, overpayment and negative amount, missing receipt. Preserve keyboard v13.27 and CI gate.

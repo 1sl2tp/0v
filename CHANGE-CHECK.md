@@ -225,3 +225,6 @@ E0: v13.109 PR #76 merged, CI 45548947279 success. E1: BANK-MEMO-SPAN, BANK-RESI
 
 ## v13.111
 E0: v13.110 PR #77 merged; CI 45549225862 success. E1: BANK-PAYER, BANK-OCR, BANK-RELATED, BANK-ACCOUNT, KB-LOCK. Explicit sender field, separate role evidence, customer-context lock and review-only customer allocation. CHAT bill-app-preview, ERPNext payment entry and Astryx Card reviewed. E2: direct contracts and syntax, browser labelled sender fixture added; full CI pending. No directory linkage, real bill corpus, production changes, messages or historical repair. Google Sheet not updated.
+
+## v13.112
+E0: v13.111 PR #78 merged; CI 45549980158 success. E1: BANK-ALLOC, BANK-JOURNAL, BANK-PAYER, DECIMAL-API, KB-LOCK. Read-only bank-backed receipt allocation plan, cumulative limits and exact residual, fixture UI. ERPNext payment entry and Astryx Card studied. E2: direct regression and classic syntax; full CI pending, new interactive lab not separately browser-tested. No live obligations, authorization, production changes, messages, old records or keyboard changes. Google Sheet not updated.
