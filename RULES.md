@@ -800,3 +800,6 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-ENGINE-03: Crop and rotate preview raster using proposed normalized source regions, retain source identity and OCR confidence, route raw text to BillOCRFieldAPI. No claim of full resolution OCR, automatic image segmentation, or calibrated accuracy.
 - BANK-ENGINE-04: ?billenginelab=1 is isolated synthetic-image experiment, explicitly click to load CDN. All output review-only, no journal, uploads by application, messages or financial writes. No real customer bill until approved self-hosted asset path. No persistent OCR text cache.
 - BANK-ENGINE-05: Static engine config and injected-worker Chromium lifecycle tests; real network/model accuracy not verified by those tests. Reference Tesseract.js v6.0.1 API/source. Preserve v13.27 keyboard.
+
+## 109. BANK-CORPUS — v13.86 regression supplement
+- BANK-CORPUS-01: Existing private CHAT receipt reason categories inform synthetic regression cases: missing printed time, recipient account conflict, multiple transactions, direction ambiguity, invalid date, misleading balance/fee and non-bill. No customer information or images enter public repo. Stored OCR/ledger labels are reference candidates, not independent image ground truth. Preserve raw VND vs ledger thousand-unit distinction. No production replay or write.

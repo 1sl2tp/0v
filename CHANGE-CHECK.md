@@ -144,3 +144,6 @@ CI 45538091181: static and version gates passed; browser timed out on OCR lab. R
 
 ## v13.86 — OCR engine adapter and synthetic demo
 Based on corrected v13.85 head 6e34441d1ff4ab78c9d5f6f804b9304ca750e99e; parent CI pending when work started. Explicit Tesseract.js 6.0.1/CDN demo, per-region worker session, OCR text pipeline and cancel guards. Static configuration contract passed; injected worker Chromium test added; actual CDN/recognition quality not validated. BANK-ENGINE-01–05. No real data, production ledger/DB, messages or keyboard change. External assets not bundled; private bills prohibited in demo.
+
+### v13.86 CI correction and corpus-derived cases
+CI static/version gates passed; Chromium worker test failed because the API lives in the application closure. Expose only a fixture self-test callback on explicit ocrfixture lab query, not the engine or customer data. Add synthetic cases based on existing private CHAT reason categories, with no private records copied. Test missing time, mismatched account, conflicting amounts, negative amount, fee/balance, invalid date and non-bill; no actual OCR model validation. Re-run CI. No production or keyboard change.
