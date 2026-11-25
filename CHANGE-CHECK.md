@@ -168,3 +168,6 @@ Batch fixture matching distinguishes explicit disproven cross-pairs from plausib
 
 ## v13.93
 v13.92 CI passed and merged. Add independent Agribank notice parser, exact amount and explicit direction/date/clock, memo classification and balance/overdraft separation. Direct regression tested. No production trust adapter.
+
+## v13.94
+v13.93 CI passed and merged. Added diagnostic bank memo envelope parser and comparison. Unknown wrappers preserve raw memo; independent account and clock checks, sender binding, no posting policy change. Static regression executed. No production modification.

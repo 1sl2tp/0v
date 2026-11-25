@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.93)
+## 00. Chỉ mục rule đang có hiệu lực (v13.94)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -852,3 +852,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-NOTICE-03: Validate calendar, account and amount. Compare supplied stored amount/account/time, separate arrival and printed transaction dates. Own-transfer flag requires independent metadata.
 - BANK-NOTICE-04: Always verified=false, referenceScope=null, canPost=false. No authenticated source adapter, production write or customer notice.
 - BANK-NOTICE-05: Test decimal remainder, grouped STK, late arrival, debit, own transfer, conflict, invalid calendar/amount, ambiguous labels and overdraft. CHAT bill-app-preview reference and aggregate private format analysis. Preserve keyboard v13.27.
+
+## 117. BANK-ENVELOPE — v13.94
+- BANK-ENVELOPE-01: BankMemoEnvelopeAPI separates known anchored QR, IBFT, MB, MBVCB, MCC and routing12 envelopes; retain literal source and technical fields independently. Unknown/unsupported structures remain intact.
+- BANK-ENVELOPE-02: MBVCB destination must match independent account; MCC embedded clock must be valid and within one minute of printed bank time. Conflicting or unknown context cannot supply wrapper proof.
+- BANK-ENVELOPE-03: Wrapper evidence requires exact normalized principal and independently supplied full sender bound to bill memo, with no conflicting printed reference. Routing references never automatically become shared transfer IDs. No fuzzy correction.
+- BANK-ENVELOPE-04: Exposes diagnostic review-only result, never changes existing matching/posting policy. No raw private records committed, no old receipt modification.
+- BANK-ENVELOPE-05: Regression covers valid/invalid wrappers, destination/clock/reference conflict, missing sender, generic memo, unknown routing data. Source CHAT bill-app-preview.mjs and aggregate private notification formats. Preserve keyboard v13.27.

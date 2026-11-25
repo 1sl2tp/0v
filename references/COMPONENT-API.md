@@ -209,3 +209,6 @@ BankReconcileAPI.match accepts optional referenceScope='shared-transfer' only as
 
 ## v13.93
 AgribankNoticeAPI.parse(raw,metadata) returns literal evidence, memo classification, exact VND and separate balance/interest, conflict flags. Always unverified, no shared reference scope or posting.
+
+## v13.94
+BankMemoEnvelopeAPI.inspect(raw,{account,transactionAt}) separates technical metadata and principal; compare(billMemo,bankMemo,context) returns diagnostic literal and principal proof types, sender binding and conflict flags. Always canPost=false; not wired to ledger or existing reconcile eligibility.

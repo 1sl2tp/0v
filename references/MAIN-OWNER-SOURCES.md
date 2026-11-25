@@ -96,3 +96,6 @@ CHAT bill-transfer-identity.mjs BANK-214: equal amounts do not establish identit
 
 ## v13.93
 CHAT bill-app-preview.mjs bankEventTime, creditAccountFromEvent, bankMemo and wrapper formats. Aggregate private notice format analysis informed strict anchored parser; no private records or customer constants committed.
+
+## v13.94
+CHAT bill-app-preview.mjs verifiedMccMemo, verifiedMbvcbMemo, verifiedTwelveCharRoutingMemo and verifiedIbftMemo. Adopt anchored layouts and independent account/clock/sender checks, no customer-specific constants. Read-only aggregate notification shape analysis.
