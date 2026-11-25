@@ -510,3 +510,5 @@ Missing projected receipt fields display “Không có”, not “Chưa đọc �
 LIVE-BILL-06: exact full receiver; matching suffix/mask are recognition hints only. Name mismatch -> review, raw OCR preserved; missing name not fabricated. Date independent of clock. No ledger mutation.
 
 LIVE-BILL-07: BillOCRFieldAPI.parse memo evidence may include endLine; readScoped accepts bounded multi-line memo in explicit region. Geometry spans label and value lines with no misleading single-line valueRect. Live BillReceiptProjection preserves returned line breaks in shared bill pair CSS. No mutation.
+
+LIVE-BILL-08: BillOCRFieldAPI.identify(line) exposes existing typed label routing; BillRecognitionAPI consumes it rather than maintaining a separate recipient label regex. Journal unlabelled amount + date proposals are review-only contextual evidence. No server OCR, posting or image-corpus claims.
