@@ -136,6 +136,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await click('Nhận Bank (mẫu)');await wait('entries','3');await click('Ghi thu mô phỏng');await wait('error','rejected');await click('Soát Bank khoản thu tay (mẫu)');await wait('manualVerified','true');assert.equal(await s.getAttribute('data-receipts'),'1');
  await p.reload();await open();assert.equal(await s.getAttribute('data-manual-verified'),'true');assert.equal(await s.getAttribute('data-receipts'),'1');assert((await p.locator('[data-bank-journal-bill="bill-fixture-1"]').textContent()).includes('Đã thu thủ công – đã soát bill'));await p.close()
  }
+ // Local real PNG decoding, split proposals, no receipt or network.
+ {
+ const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?billimagelab=1');
+ await p.locator('.contact[data-id=kh]').evaluate(e=>e.click());await p.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());
+ const encoded=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=200;c.height=500;const x=c.getContext('2d');x.fillStyle='white';x.fillRect(0,0,200,500);x.fillStyle='black';for(const [a,b] of [[20,200],[300,480]])for(let y=a;y<b;y+=12)x.fillRect(10,y,180,3);return c.toDataURL('image/png').split(',')[1]});
+ await p.locator('[data-bill-image-file]').setInputFiles({name:'fixture.png',mimeType:'image/png',buffer:Buffer.from(encoded,'base64')});await p.waitForSelector('[data-bill-image-status=ready]');assert.equal(await p.locator('[data-bill-image-region]').count(),2);
+ await p.getByRole('button',{name:'Dùng toàn ảnh',exact:true}).evaluate(e=>e.click());assert.equal(await p.locator('[data-bill-image-region]').count(),1);
+ await p.getByRole('button',{name:'Gợi ý tách vùng',exact:true}).evaluate(e=>e.click());assert.equal(await p.locator('[data-bill-image-region]').count(),2);
+ await p.getByRole('button',{name:'Xoay dấu ảnh 90°',exact:true}).evaluate(e=>e.click());assert.equal(await p.locator('[data-bill-image-status]').getAttribute('data-rotation'),'90');await p.close()
+ }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
  await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());

@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.83)
+## 00. Chỉ mục rule đang có hiệu lực (v13.84)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -779,3 +779,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-DUP-03: All unposted conflicting bills go to review, no silent merge or automatic/manual fixture receipt. Previously posted receipt immutable; no second receipt or silent unlink.
 - BANK-DUP-04: Review includes Vietnamese labels and peer IDs in projection; duplicate rows excluded from provisional open-amount sum and counted separately. SHA-256 helper and 9x8 grayscale dHash helper do not decode images or detect crop regions; real examples remain future work.
 - BANK-DUP-05: Static fixture tests cover exact repeat, possible recapture, disjoint regions, distinct reference, post-before-repeat, manual/auto block, replay, immutable fields and invalid bounds. Research ImageHash and TigerBeetle. No production or keyboard change.
+
+## 106. BANK-IMAGE — v13.84 (phase 3j)
+- BANK-IMAGE-01: Local PNG/JPEG/WebP decoding, max 16 MB and 16 MP, orientation from decoder, normalized raster max 1024 px; hash original bytes before resizing. No upload or storage. Unsupported input fails closed. Pixel limit checked after browser decoding.
+- BANK-IMAGE-02: Horizontal whitespace projection proposes up to four regions; no assumption that a region is a real bill. Full-image fallback, original normalized coordinates, explicit user rotation of fingerprint sampling. No automatic crop recovery or perspective correction.
+- BANK-IMAGE-03: Contrast and edge-detail signals flag low contrast, low detail, small region; thresholds experimental, never authorize OCR or payment. All regions remain unconfirmed and quality review. No trained blur or bill detector.
+- BANK-IMAGE-04: Isolated ?billimagelab=1 module, local file chooser, region preview, whole-image and split buttons, rotation of hash only. No journal or production action. Superseded reads ignored; release bitmap. No new dependencies.
+- BANK-IMAGE-05: Static raster/region/rotation/bounds tests and Chromium generated PNG test. References OpenCV contour segmentation, ImageHash luminance hash, Tesseract.js OCR worker interface. OCR adapter, real bill corpus and manual region editing remain separate. Preserve keyboard v13.27.
