@@ -96,3 +96,6 @@ v13.69 PR #36 merged 9720a7252420ebdea8e645297a17d4a0aa237313; CI 45521974423 su
 
 ## v13.71 — sync index phase 3
 v13.70 PR #37 merged dc6bfe9eca9040b540746627b11f575c57bcc59f; CI 45522587547 success. E1 shared reverse pointer index removes per-message directory scan for Sync/Cache. Synthetic 10,000 rooms, one lookup per message, ambiguous pointer rejected and replacement correct, classic scripts syntax checked; static audit extended, CI pending. SYNC-PERF-01–04. No Main/keyboard/production changes; no network or device latency claim.
+
+## v13.72 — local performance probe phase 4
+v13.71 PR #38 merged 5398d8dcdd15ba7f3166572d7100592782bb2843; CI 45524924977 success. E1 opt-in local bounded interaction frame proxy, navigation timings, optional long tasks and lifecycle controls. MEASURE-PERF-01–05. Seven classic scripts and audit syntax compiled; percentile test passed; CI pending. No real device data, INP claim, production/keyboard change or manual deploy.
