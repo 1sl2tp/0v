@@ -297,3 +297,6 @@ E1: exact same-line word bounding boxes for typed value OCR, upstream Tesseract.
 
 ## v13.134
 E0: v13.132 API and DB passed, merged; v13.133 synced to main for CI. E1: no business API change; cross-layer synthetic OCR text, recognition, raw Bank parse and match audit. E2: direct execution confirmed account/date/decimal, delayed ±1 minute, unverified notice pending, missing clock review, competition review and posted notice blocked. Static regression added, full CI pending. Test explicitly simulates verified Bank and clear image; no actual pixels, bank authorization or posting. E3–E5 pending.
+
+## v13.135
+E0: v13.134 merged; API 45562802559 and DB 45562802642 passed. E1: actual synthetic native Tesseract pixel test: 31/35 known crops exact; low-resolution full OCR misread amount, severe blur caused empty/invalid fields. Guard typed disagreement/unavailable output, retain evidence and no post. E2: direct guard contract tested; permanent static regression added; CI pending. Native not browser OCR, no real customer images, no production changes. E3–E5 pending.

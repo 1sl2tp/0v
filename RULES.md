@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.134)
+## 00. Chỉ mục rule đang có hiệu lực (v13.135)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1153,3 +1153,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-FLOW-AUDIT-03: Unverified Bank, missing clock, competing bills and posted Bank ID must not be eligible. Recognition conflicts must be resolved before a future production adapter; no implicit integration or posting in this audit.
 - BILL-FLOW-AUDIT-04: E2 synthetic cross-layer checks do not certify real OCR pixels, Bank authenticity, durable ledger or production integration. E3–E5 remain pending; do not mark entire project done.
 - BILL-FLOW-AUDIT-05: Track remaining acceptance in references/COMPONENT-API.md. No new business API, no production, no keyboard changes.
+
+## 160. BILL-PIXEL-STRESS — v13.135
+- BILL-PIXEL-STRESS-01: Evaluate actual synthetic pixels per field; distinguish native Tesseract from browser Tesseract.js, known crop from automatic geometry, and sample pass from customer corpus accuracy.
+- BILL-PIXEL-STRESS-02: Independent typed reread disagreement invalidates an agreed-review proposal; unavailable/invalid typed result downgrades agreement to partial review. Retain original proposal and typed raw evidence for diagnosis. Never replace baseline with typed value.
+- BILL-PIXEL-STRESS-03: Existing partial/conflict/unreadable baseline is never upgraded by typed result. When no typed reread was attempted, preserve baseline status. All remain verification-only, no post.
+- BILL-PIXEL-STRESS-04: Native Tesseract 5.5.0, vie+eng, 5 generated conditions and 35 known field crops measured; 31 exact after presentation whitespace normalization. Actual customer corpus, deployed browser OCR and device acceptance pending.
+- BILL-PIXEL-STRESS-05: Regression reproduces observed amount disagreement, blank/invalid typed read and no automatic override; no production, historical bills, keyboard or bank matching changes.
