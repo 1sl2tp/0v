@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.76)
+## 00. Chỉ mục rule đang có hiệu lực (v13.77)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -731,3 +731,9 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-EVIDENCE-02: Missing bill date remains explicit; matched fixture requires manual action. canAuto is always false; repeated manual transition on posted state rejected. This is in-memory fixture guard only, not durable deduplication or proof of a real bank event.
 - BILL-EVIDENCE-03: Main bill reconciliation calls inspect/manual, reads state instead of implementing its own comparison; payment and debt summary amounts derive from same fixture data. NoticeDeliveryAPI and NoticeRecoveryAPI are registered in OwnerRuntime, keep existing isolated notice labs and evidence gates; no real notice integration.
 - BILL-EVIDENCE-04: Study XState guards and Stripe/OWASP idempotency. Browser and static tests cover wrong account/amount/date, bank absent, manual review, repeated transition. No real receipt, payment, notice, DB or keyboard changes; CI before release.
+
+## 99. ORDER-NOTICE — v13.77 (phase 3c)
+- ORDER-NOTICE-01: OrderNoticeProjectionAPI creates fixture recipient rows using NoticeDeliveryAPI. Draft orders skipped for both customer/staff; delivered fixture requires separate evidence for each. Distinct recipient IDs required.
+- ORDER-NOTICE-02: Only advance the next allowed stage with proof; expired ticket requires review; missing earlier stages or repeated acceptance rejected. Complete only when all required recipients accepted. Provider acceptance is not recipient read confirmation.
+- ORDER-NOTICE-03: Main order screen displays read-only notice projection from actual fixture order status. No dispatch, no actual order mutation, no network or persistent outbox. Delivered branch is tested synthetically only.
+- ORDER-NOTICE-04: Reference AWS transactional outbox pattern; real delivery requires durable committed intent and idempotent relay, not this local projection. CI before release; no real send, production or keyboard changes.
