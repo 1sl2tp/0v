@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.116)
+## 00. Chỉ mục rule đang có hiệu lực (v13.117)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1027,3 +1027,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-ROLLING-DB-03: Same receipt and immutable posting payload replay is a no-op; conflicting owner or payload rejects. Manual receipt late Bank link locks existing row, preserves original postedAt and amount; verifiedAt separately recorded. Missing bank transaction timestamp rejected. Trusted service must validate explicit clock from evidence before calling; SQL timestamp alone cannot prove clock was present.
 - BANK-ROLLING-DB-04: Exact numeric amount, no rounding during ledger operations, atomic SQL transaction. No actual customer balance, notification, cycle closing or reminder changes. Different verified transaction IDs may share amount and timestamp. Manual copies with different bill IDs and missing canonical Bank ID still require evidence review; old independent journal data not imported.
 - BANK-ROLLING-DB-05: CI-only PostgreSQL 16 service runs serial checks, rollback and two independent concurrent sessions. Existing browser/UI CI still required, preserve keyboard v13.27. No production rollout until authoritative identity, legacy reconciliation, auth and atomic actual ledger adapter are separately verified.
+
+## 142. BANK-IDENTITY — v13.117
+- BANK-IDENTITY-01: Separate notice ID, bill/OCR ID, memo routing token, trace and authoritative provider transaction ID. Only a distinct statement attestation may resolve the synthetic key; no inference from OCR or matching content.
+- BANK-IDENTITY-02: Account fixture 123456789 only; validate raw Agribank credit notice, receiving account, exact amount, explicit time, source package, receivedAt and stored field agreement. Same provider ID and same exact statement transaction time/amount group aliases across receipt days and notice content changes. Preserve leading zeros and case; different verified IDs remain distinct.
+- BANK-IDENTITY-03: Missing authoritative mapping, inconsistent evidence or competing mappings fail closed; conflicts invalidate affected keys, not just one notice. No assumption that Agribank publishes a stable provider ID in its notifications.
+- BANK-IDENTITY-04: prepare calls existing bill match for a single candidate and rejects missing bill clock. Candidate only; full batch competition, customer assignment, persistent identity and database posting checks remain required. canPost=false; no production adapter, no real statement or authorization.
+- BANK-IDENTITY-05: Ten direct cases and static regression for aliases, distinct IDs, no proof, amount conflict, ambiguity, missing bank/bill clock, exact case-sensitive key, candidate and no-post. Preserve v13.27 keyboard and existing CI database fixture.

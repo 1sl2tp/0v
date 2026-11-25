@@ -175,3 +175,8 @@ PostgreSQL doc/src/sgml/ddl.sgml blob d78d986756ebd1fe76aa778516fc0a3246a17491: 
 - https://www.postgresql.org/docs/current/transaction-iso.html — concurrent conflict visibility in Read Committed.
 - https://github.com/supabase/supabase/blob/master/apps/docs/content/guides/database/functions.mdx — security invoker, restricted function execution.
 - https://supabase.com/docs/guides/database/postgres/row-level-security — RLS defense in depth.
+
+## v13.117 identity references
+- https://plaid.com/core-exchange/docs/reference/6.3/ — transaction IDs account-scoped and not reset per day/statement cycle.
+- https://plaid.com/docs/transactions/transactions-data/ — explicit linkage when identity changes between pending and posted states.
+These are reference models, not documentation of Agribank's actual identity format.
