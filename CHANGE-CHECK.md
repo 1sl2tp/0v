@@ -150,3 +150,6 @@ CI static/version gates passed; Chromium worker test failed because the API live
 
 ## v13.87 — ten-field OCR contract
 Align ten independent fields with existing CHAT structured schema, support printed date and clock variants, add local stored-structured adapter. Static regression added; real image and browser validation pending. Private storage remains private. No production modification, no bill rescan or keyboard change.
+
+## v13.88 — format normalization
+Prior v13.87 CI passed and merged. Added narrow shared date formats, grouped account and numeric reference marker normalization. Raw evidence retained. Static regressions, private metadata comparison in read-only session; no private data committed or production changes.

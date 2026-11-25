@@ -78,3 +78,6 @@ Decision: opt-in demo CDN only; no real customer image until self-hosted verifie
 
 ## v13.87
 Internal CHAT reference: docs/bank-bill-ocr-casebook.md (BANK-286/317), bill-amount-rules.mjs (BANK-357/358) and test_bank269_bill_literal_date_clock_20261110.mjs. Reused field semantics and conservative literal date/clock rules only; no private source examples or data copied. Tesseract.js integration unchanged.
+
+## v13.88
+Internal CHAT bill-amount-rules.mjs printed date parser supports abbreviated Vietnamese month labels. Private structured corpus analysis yielded grouped account, abbreviated date and numeric reference prefix patterns; only format categories were used, no record values copied. Existing shared ParseAPI remains date owner.
