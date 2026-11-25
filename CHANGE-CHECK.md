@@ -312,3 +312,6 @@ E0: v13.137 merged, CI API and DB passed. User screenshot review. E1: local rail
 
 ## v13.139
 E0: v13.138 merged; API 45568639720 and DB 45568639667 passed. E1: adaptive rail height and input budget, picker room ownership, pending-decode send/release gate, transactional transfer. E2: direct model contract passed; browser regression added for short viewport, long text, room switch, last image removal. Full CI pending. No native keyboard claim, production or OCR changes. E3–E5 pending.
+
+## v13.140
+E0: v13.139 merged; API 45571279386 and DB 45571279406 passed. E1: shared composer horizontal inset and expanded radius; four protected ranges unchanged. Astryx TextInput/Stack and MDN reviewed. E2: browser regression added; full CI pending. Native and publication not claimed.
