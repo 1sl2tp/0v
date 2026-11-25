@@ -255,3 +255,6 @@ E0: PR #85 merged after API 45553390224 and PostgreSQL 45553392792 passed. E1: B
 
 ## v13.120
 E0: PR #86 merged; API 45553701213 and PostgreSQL 45553701129 passed; main blob verified. E1: BANK-BACKLOG, BANK-ACCUMULATION, KB-LOCK. Derived backlog for bills, manual verification and canonical Bank groups, age and customer counts; no new ledger. E2: 13 direct assertions passed, seven classic scripts compiled and regression added. CI pending; E3–E5 not certified. Synthetic data and caller completeness only. No production, persistence, real debt, messages, reminders or keyboard changes.
+
+## v13.121
+E0: PR #87 merged; API 45554134294 and PostgreSQL 45554134526 passed; main index blob verified. E1: BANK-BACKLOG-UI, BANK-BACKLOG, KB-LOCK; reuse parent component owners and existing Bill module. E2: seven classic scripts and browser regression syntax compiled. Browser regression for 320/390/1280 added, execution pending CI; E3–E5 not certified. No real data, persistent storage, notifications, receipts, production or keyboard changes.
