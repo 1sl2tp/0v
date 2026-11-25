@@ -15,3 +15,6 @@ if [[ "$ra" == 0 && "$rb" != 0 ]]; then grep -q 'duplicate key' "$tmp/b"; elif [
 test "$(psql -X -Atc "SELECT count(*) FROM bank_fixture_v116.receipt WHERE bank_key='bank:race'")" = 1
 test "$(psql -X -Atc "SELECT sum(amount) FROM bank_fixture_v116.receipt")" = 1300001.6
 echo 'PostgreSQL fixture serial, rollback and concurrent duplicate checks passed'
+
+psql -X -v ON_ERROR_STOP=1 -f fixtures/bank-db/bill-read-test.sql
+echo '0v isolated bill-read permission and projection checks passed'
