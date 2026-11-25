@@ -206,3 +206,6 @@ ParseAPI.accountDigits(raw,{min=6,max=32}) returns digit string or null; sameAcc
 
 ## v13.92
 BankReconcileAPI.match accepts optional referenceScope='shared-transfer' only as explicit verified fixture metadata; strong distinct references can exclude cross-pairs. Results expose excludedCandidates separately. Recheck preserves scope. No automatic namespace inference or production authorization.
+
+## v13.93
+AgribankNoticeAPI.parse(raw,metadata) returns literal evidence, memo classification, exact VND and separate balance/interest, conflict flags. Always unverified, no shared reference scope or posting.

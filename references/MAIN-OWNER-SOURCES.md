@@ -93,3 +93,6 @@ CHAT bill-amount-rules.mjs account cleaning reviewed; stricter horizontal-space-
 
 ## v13.92
 CHAT bill-transfer-identity.mjs BANK-214: equal amounts do not establish identity; separate reliable references and competing credit guards. 0v adds conservative explicit shared-reference namespace gating and exclusion audit. No customer constants copied.
+
+## v13.93
+CHAT bill-app-preview.mjs bankEventTime, creditAccountFromEvent, bankMemo and wrapper formats. Aggregate private notice format analysis informed strict anchored parser; no private records or customer constants committed.
