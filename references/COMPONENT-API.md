@@ -508,3 +508,5 @@ ParseAPI.billRecipientEvidence(raw) -> suffix|full|masked|null, literal receiver
 Missing projected receipt fields display “Không có”, not “Chưa đọc được”; ordinary images have no bill table. No assertion about physical original without evidence.
 
 LIVE-BILL-06: exact full receiver; matching suffix/mask are recognition hints only. Name mismatch -> review, raw OCR preserved; missing name not fabricated. Date independent of clock. No ledger mutation.
+
+LIVE-BILL-07: BillOCRFieldAPI.parse memo evidence may include endLine; readScoped accepts bounded multi-line memo in explicit region. Geometry spans label and value lines with no misleading single-line valueRect. Live BillReceiptProjection preserves returned line breaks in shared bill pair CSS. No mutation.
