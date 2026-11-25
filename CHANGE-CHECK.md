@@ -273,3 +273,6 @@ E0: PR #91 merged; API 45559306275 and PostgreSQL 45559306282 passed. E1: user-d
 
 ## v13.126
 E0: PR #92 merged; latest API 45559960224 and PostgreSQL 45559960003 successful. E1: fixed receiver account and name, explicit role only. E2: static/browser tests added; CI pending. No real identifiers, images or production writes; E3–E5 not certified.
+
+## v13.127
+E0: PR #93 merged; API 45560360258 and DB 45560360223 passed. E1: source scope, crop preview, optional contrast, raw line and word evidence; Tesseract docs reviewed. E2: static/browser regression added; CI pending. No private media, real ledger, keyboard or production writes. E3–E5 not certified.

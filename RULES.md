@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.126)
+## 00. Chỉ mục rule đang có hiệu lực (v13.127)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1097,3 +1097,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-FIXED-RECIPIENT-03: Exact normalized name supports recognition; missing name does not reject an account-based candidate. Conflicting explicit name returns recipient-conflict; invalid name requires review. Name alone never substitutes for account evidence. Account conflict takes priority. A name match never verifies funds, never bypasses missing clock review, and never posts.
 - BILL-FIXED-RECIPIENT-04: Retain existing full 13-digit and visible 4/5/6 suffix rules. No changes to ledger, bank reconciliation, production data, keyboard or old bills. References: https://lodash.com/docs/#deburr (diacritics), https://github.com/naptha/tesseract.js/blob/master/docs/api.md (raw OCR evidence). Vietnamese normalization uses native Unicode, not a new dependency.
 - BILL-FIXED-RECIPIENT-05: Static and browser regression for fixed name, accented/case variants, missing/invalid/conflicting names, sender/memo exclusion, name-only and account conflict. Synthetic only; CI and real-image acceptance separate.
+
+## 152. BILL-OCR-SOURCE — v13.127
+- BILL-OCR-SOURCE-01: Saved bill defaults to original image; photo and journal require explicit bounded proper subregion before OCR. One image/one region; no automated guessing or collage.
+- BILL-OCR-SOURCE-02: Show original crop preview. Optional contrast runs on a new cropped canvas with same dimensions; preserve source and raw OCR, never silently replace original or enlarge geometry. Contrast capped at 12 MP. Source/method change invalidates pending OCR.
+- BILL-OCR-SOURCE-03: Retain raw lines and aligned word tokens/confidence separately from semantic fields. If block/text order differs, expose original raw lines and no inferred word mapping. Confidence is review only, never verification. No filtering text based on desired account/name.
+- BILL-OCR-SOURCE-04: Reference Tesseract quality guidance https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html (crop background/borders) and https://github.com/naptha/tesseract.js/blob/master/docs/api.md (text and blocks). No new dependencies or production change.
+- BILL-OCR-SOURCE-05: Static source scope and raw-line assertions; browser fixture for same-size contrast and retained source. Synthetic data only; actual OCR quality remains unmeasured.
