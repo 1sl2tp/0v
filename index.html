@@ -3874,7 +3874,7 @@ function measureAccessory(){
  const values={'--accessory-width':c.width,'--accessory-left':Math.max(0,c.left-f.left-parseFloat(s.paddingLeft)),'--accessory-available':Math.min(160,space)};
  for(const [key,val] of Object.entries(values)){const next=val+'px';if(accessory.style.getPropertyValue(key)!==next)accessory.style.setProperty(key,next)}
 }
-function closeAccessory(){accessoryEpoch++;if(accessoryPending)cancelAnimationFrame(accessoryPending);accessoryPending=0;accessory.hidden=true;accessoryOwner=null;mediaTrigger.setAttribute('aria-expanded','false');delete accessoryFrame.dataset.accessoryState}
+function closeAccessory(){accessoryPress=false;accessoryEpoch++;if(accessoryPending)cancelAnimationFrame(accessoryPending);accessoryPending=0;accessory.hidden=true;accessoryOwner=null;mediaTrigger.setAttribute('aria-expanded','false');delete accessoryFrame.dataset.accessoryState}
 function showAccessory(epoch){if(epoch!==accessoryEpoch||accessoryOwner!==active||app.dataset.screen!=='chat'||document.activeElement!==draft){if(epoch===accessoryEpoch)closeAccessory();return}accessoryPending=0;measureAccessory();accessory.hidden=false;accessoryFrame.dataset.accessoryState='open';mediaTrigger.setAttribute('aria-expanded','true')}
 function openAccessory(){
  if(DraftMedia.busy()||app.dataset.screen!=='chat')return;
@@ -3893,12 +3893,14 @@ function openAccessory(){
  accessoryPending=requestAnimationFrame(settle)
 }
 function preserveDraftFocus(e){if(document.activeElement===draft&&e.cancelable)e.preventDefault()}
-for(const el of [mediaTrigger,accessory]){el.addEventListener('pointerdown',preserveDraftFocus);el.addEventListener('mousedown',preserveDraftFocus)}
+let accessoryPress=false;
+for(const el of [mediaTrigger,accessory]){el.addEventListener('pointerdown',e=>{accessoryPress=true;preserveDraftFocus(e)});el.addEventListener('mousedown',preserveDraftFocus)}
+for(const event of ['pointerup','pointercancel'])document.addEventListener(event,()=>{setTimeout(()=>{accessoryPress=false},0)},{passive:true});
 mediaTrigger.addEventListener('click',()=>{if(pickerOwner!==null)finishPickerHandoff();if(accessoryOwner!==null)closeAccessory();else openAccessory()});
-accessory.addEventListener('click',e=>{const b=e.target.closest('[data-accessory-choice]');if(!b||accessoryOwner!==active||DraftMedia.busy()||pickerOwner!==null)return;const owner=accessoryOwner,camera=b.dataset.accessoryChoice==='camera';beginPickerHandoff(owner);accessoryFrame.dataset.accessoryState='picker';photoInput.multiple=!camera;if(camera)photoInput.setAttribute('capture','environment');else photoInput.removeAttribute('capture');try{photoInput.click()}catch(e){finishPickerHandoff();closeAccessory();throw e}});
+accessory.addEventListener('click',e=>{const b=e.target.closest('[data-accessory-choice]');if(!b||accessoryOwner!==active||DraftMedia.busy()||pickerOwner!==null)return;const owner=accessoryOwner,camera=b.dataset.accessoryChoice==='camera';beginPickerHandoff(owner);accessoryFrame.dataset.accessoryState='picker';photoInput.multiple=!camera;if(camera)photoInput.setAttribute('capture','environment');else photoInput.removeAttribute('capture');try{if(typeof photoInput.showPicker==='function'){try{photoInput.showPicker()}catch(e){if(e.name!=='NotSupportedError')throw e;photoInput.click()}}else photoInput.click()}catch(e){finishPickerHandoff();closeAccessory();console.error('Native image picker failed',e)}});
 document.addEventListener('pointerdown',e=>{if(pickerOwner===null&&accessoryOwner!==null&&!accessory.contains(e.target)&&!mediaTrigger.contains(e.target))closeAccessory()},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&accessoryOwner!==null&&pickerOwner===null){e.preventDefault();closeAccessory()}});
-draft.addEventListener('focusout',e=>{if(pickerOwner===null&&accessoryOwner!==null&&!accessory.contains(e.relatedTarget))closeAccessory()});
+draft.addEventListener('focusout',e=>{if(pickerOwner!==null||accessoryPress||accessoryOwner===null||accessory.contains(e.relatedTarget)||mediaTrigger.contains(e.relatedTarget))return;const epoch=accessoryEpoch;requestAnimationFrame(()=>{if(epoch===accessoryEpoch&&pickerOwner===null&&!accessoryPress&&document.activeElement!==draft&&!accessory.contains(document.activeElement)&&document.activeElement!==mediaTrigger)closeAccessory()})});
 document.addEventListener('click',e=>{if(e.target.closest('.contact,[data-go]'))closeAccessory()},true);
 new MutationObserver(()=>{if(app.dataset.screen!=='chat'||accessoryOwner!==active)closeAccessory()}).observe(app,{attributes:true,attributeFilter:['data-screen']});
 const accessoryObserver=new ResizeObserver(()=>{if(accessoryOwner!==null)measureAccessory()});accessoryObserver.observe(app);accessoryObserver.observe(draftForm);

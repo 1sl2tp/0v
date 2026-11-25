@@ -352,3 +352,5 @@ Keyboard > composer frame > Input > accessory/file anchor. Native picker is exte
 
 ## v13.143 — keyboard frame accessory
 Keyboard frame > accessory + composer siblings. Existing frame observer owns measured reserve. Focus synchronous; iOS opening transition settled read-only (120ms stable, 600ms fallback). No frozen viewport, no asynchronous refocus. Sources: pinned Astryx TextInput/Stack; https://github.com/adobe/react-spectrum/blob/main/packages/react-aria/src/utils/runAfterKeyboard.ts ; https://bugs.webkit.org/show_bug.cgi?id=195884. Native acceptance pending.
+
+Candidate repair: preserve accessory pointer activation through blur; invoke native showPicker synchronously, unsupported fallback click. No change to frame reserve/viewport owner.

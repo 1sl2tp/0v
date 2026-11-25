@@ -324,3 +324,6 @@ E0: v13.141 merged; API 45575568865 and DB 45575568838 passed, user screenshot r
 
 ## v13.143
 E0: v13.142 merged, API/DB passed; user screenshots show ongoing native picker and fall. E1: in-flow accessory sibling, synchronous focus and bounded read-only opening settle, keep menu during native handoff. All four protected ranges unchanged. E2: updated browser geometry/focus/reserve/picker tests; CI pending. No native acceptance or production claims.
+
+### v13.143 CI repair 1
+Run 45583429500: static and snapshot checks passed; browser timed out on filechooser. DB 45583429496 passed. Candidate amended: guard focusout during accessory press, native showPicker synchronous, same real filechooser test; no assertion removed. New CI pending.
