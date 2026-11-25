@@ -11,7 +11,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const errors=[];pg.on('pageerror',e=>errors.push(e.message));
  await pg.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js',r=>r.fulfill({contentType:'application/javascript',body:`
  window.calls=[];let logged=false;
- window.supabase={createClient:()=>({auth:{onAuthStateChange(){},async getSession(){return {data:{session:logged?{user:{id:'a'}}:null}}},async signInWithPassword(o){if(o.email!=='admin@taphoa.chat')throw Error('bad test login');logged=true;return {}},async signOut(){logged=false}},async rpc(name,args){if(name==='v0_admin_send_text'){window.calls.push('send');window.sent=args;return {data:{account_id:'a',conversation_id:'room',message_id:'new'}}}if(name!=='v0_admin_read')throw Error('unexpected legacy RPC');window.calls.push(args.p_kind);if(args.p_kind==='session')return {data:{account_id:'a',role:'admin'}};if(args.p_kind==='directory')return {data:{account_id:'a',contacts:[{id:'c',display_name:'Liên hệ kiểm thử',conversation_id:'room',preview_text:'Nội dung gần nhất',latest_at:'2026-11-25T18:00:00Z'}]}};if(args.p_kind==='thread'&&args.p_conversation_id==='room')return {data:{account_id:'a',messages:[{id:'m',conversation_id:'room',sender_account_id:'c',body:'Tin nhắn kiểm thử',created_at:'2026-11-25T18:00:00Z'}]}};throw Error('unexpected RPC')}})};
+ window.supabase={createClient:()=>({auth:{onAuthStateChange(){},async getSession(){return {data:{session:logged?{user:{id:'a'}}:null}}},async signInWithPassword(o){if(o.email!=='admin@taphoa.chat')throw Error('bad test login');logged=true;return {}},async signOut(){logged=false}},storage:{from(bucket){if(bucket!=='v21-media')throw Error('wrong bucket');return {async download(key){if(key!=='fixture/image.png')throw Error('wrong key');return {data:new Blob([Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aH1sAAAAASUVORK5CYII='),c=>c.charCodeAt(0))],{type:'image/png'})}}}}},async rpc(name,args){if(name==='v0_admin_media'){window.calls.push('media');return {data:{account_id:'a',assets:[{id:'asset',message_id:'m',kind:'image',mime_type:'image/png',storage_key:'fixture/image.png',width_px:1,height_px:1}]}}}if(name==='v0_admin_send_text'){window.calls.push('send');window.sent=args;return {data:{account_id:'a',conversation_id:'room',message_id:'new'}}}if(name!=='v0_admin_read')throw Error('unexpected legacy RPC');window.calls.push(args.p_kind);if(args.p_kind==='session')return {data:{account_id:'a',role:'admin'}};if(args.p_kind==='directory')return {data:{account_id:'a',contacts:[{id:'c',display_name:'Liên hệ kiểm thử',conversation_id:'room',preview_text:'Nội dung gần nhất',latest_at:'2026-11-25T18:00:00Z'}]}};if(args.p_kind==='thread'&&args.p_conversation_id==='room')return {data:{account_id:'a',messages:[{id:'m',conversation_id:'room',sender_account_id:'c',body:'Tin nhắn kiểm thử',created_at:'2026-11-25T18:00:00Z'}]}};throw Error('unexpected RPC')}})};
  `}));
  await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:require('node:fs').readFileSync('index.html','utf8')}));
  await pg.goto('https://1sl2tp.github.io/0v/');
@@ -31,13 +31,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.equal(await pg.getByText('Khách hàng mẫu',{exact:true}).count(),0);
  await pg.getByText('Liên hệ kiểm thử',{exact:true}).click();
  await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
- assert.deepEqual(await pg.evaluate(()=>window.calls),['session','directory','thread']);
+ await pg.getByAltText('Ảnh tin nhắn',{exact:true}).waitFor({state:'visible'});
+ assert((await pg.getByAltText('Ảnh tin nhắn',{exact:true}).getAttribute('src')).startsWith('blob:'));
+
+ assert.deepEqual(await pg.evaluate(()=>window.calls),['session','directory','thread','media']);
  await pg.getByLabel('Nội dung tin nhắn',{exact:true}).fill('Tin gửi kiểm thử');
  await pg.getByRole('button',{name:'Gửi tin nhắn',exact:true}).click();
- await pg.waitForFunction(()=>window.calls.filter(c=>c==='thread').length===2);
+ await pg.waitForFunction(()=>window.calls.filter(c=>c==='media').length===2);
  assert.deepEqual(await pg.evaluate(()=>({id:window.sent.p_contact_id,body:window.sent.p_body,key:window.sent.p_client_id.startsWith('0v:')})),{id:'c',body:'Tin gửi kiểm thử',key:true});
  assert.equal(await pg.getByLabel('Nội dung tin nhắn',{exact:true}).inputValue(),'');
- assert.deepEqual(await pg.evaluate(()=>window.calls),['session','directory','thread','send','directory','thread']);
+ assert.deepEqual(await pg.evaluate(()=>window.calls),['session','directory','thread','media','send','directory','thread','media']);
  await pg.getByRole('button',{name:'Đăng xuất',exact:true}).click();
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
