@@ -512,3 +512,5 @@ LIVE-BILL-06: exact full receiver; matching suffix/mask are recognition hints on
 LIVE-BILL-07: BillOCRFieldAPI.parse memo evidence may include endLine; readScoped accepts bounded multi-line memo in explicit region. Geometry spans label and value lines with no misleading single-line valueRect. Live BillReceiptProjection preserves returned line breaks in shared bill pair CSS. No mutation.
 
 LIVE-BILL-08: BillOCRFieldAPI.identify(line) exposes existing typed label routing; BillRecognitionAPI consumes it rather than maintaining a separate recipient label regex. Journal unlabelled amount + date proposals are review-only contextual evidence. No server OCR, posting or image-corpus claims.
+
+LIVE-BILL-09: ParseAPI.billRecipientEvidence returns truncated-tail for exact 12-digit target prefix ending in 4–6 nines. BillRecognitionAPI recognizes this as review-only; projection retains OCR digits and existing ledger evidence. LIVE-AVATAR-01: Avatar.publicSource(path,origin) constructs only existing public bucket object URLs, validated path; Contact and live header consume the shared owner and ChatReadAPI avatarPath. Backend directory projection required.
