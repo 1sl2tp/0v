@@ -290,3 +290,6 @@ BankTransactionIdentityAPI.resolve({configured,banks,attestations}) groups separ
 
 ## v13.118 BANK-IDENTITY-BATCH
 BankIdentityBatchAPI.plan({configured,bills,banks,attestations,assignments,priorReceipts,asOf,complete}) produces conservative whole-batch fixture proposals, grouping notice aliases by canonical key and blocking competing candidates. Prior manual links preserve postedAt and contribute zero newCredit; exact per-customer totals. No authoritative ledger snapshot, real posting or persistent SQL integration. canPost=false and canCloseCycle=false.
+
+## v13.119 BANK-ACCUMULATION
+BankAccumulationAPI.empty(configured,openedAt), append(journal,event), replay(journal,{asOf}) manage bounded synthetic event history and compute BankIdentityBatchAPI proposals. New evidence invalidates completeness; scope event requires expectedRevision. OCR version, bank receipt time, manual postedAt and verifiedAt separate. Caller snapshots only, no persistent adapter or actual posting, canPost=false.
