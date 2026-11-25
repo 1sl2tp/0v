@@ -1225,10 +1225,10 @@ const ParseAPI=(()=>{
  }
  // Receiver-field evidence only: exact 4–6 visible nines, or a 13-digit account ending in that run.
  function billRecipientEvidence(raw){
-  const digits=accountDigits(raw,{min:4,max:13});if(digits)return /^9{4,6}$/.test(digits)?'suffix':/^\d{7,9}9{4,6}$/.test(digits)&&!/\d{6}9{7}$/.test(digits)?'full':null;
+  const target='2901181999999',digits=accountDigits(raw,{min:4,max:13});if(digits)return /^9{4,6}$/.test(digits)&&target.endsWith(digits)?'suffix':digits===target?'full':null;
   if(typeof raw!=='string'||raw.length>160)return null;
   const s=raw.replace(/[ \t\u00a0\u202f\u2009]/g,''),m=s.match(/^(\d{0,9})[*•×xX]{2,24}(9{4,6})$/u);
-  return m&&m[1].length+m[2].length<13?'masked':null
+  return m&&m[1].length+m[2].length<13&&target.startsWith(m[1])&&target.endsWith(m[2])?'masked':null
  }
  return Object.freeze({amount,billDate,accountDigits,sameAccount,billRecipientEvidence});
 })();
@@ -1911,10 +1911,13 @@ const BillReceiptProjection=Object.freeze({
  const field=v=>typeof v==='string'&&v.trim()?v.trim().slice(0,1000):'Không có';
  const amount=typeof r.amount_vnd==='string'&&/^[0-9]{1,18}$/.test(r.amount_vnd)&&r.amount_vnd!=='0'?FormatAPI.decimal(r.amount_vnd)+' đ':'Không có';
  const status=r.status==='received'&&r.has_ledger===true?'Đã ghi thu':r.status==='duplicate'?'Bill trùng · Không ghi thu thêm':r.status==='review'?'Cần xác minh':r.status==='amount_read'?'Chờ đối soát':'Cần kiểm tra trạng thái thu';
- const name=BillReceiptProjection.recipientDisplay(r.receiving_name);
- return {amount,status,rows:[['Số tiền',amount],['Ngày',field(r.date_vn)],['Giờ',field(r.time_vn)],['TK nhận',field(r.receiving_account)],['Tên TK',field(name.value)],['Nội dung',field(r.transfer_content)],['Mã giao dịch',field(r.transfer_reference)],['NH chuyển',field(r.sending_bank)],['NH nhận',field(r.receiving_bank)],...(name.raw?[['Tên OCR gốc · Cần xác minh',field(name.raw)]]:[])]}
+ const name=BillReceiptProjection.recipientDisplay(r.receiving_name),observed=typeof name.value==='string'?name.value.trim().normalize('NFC').normalize('NFD').replace(/\p{M}/gu,'').replace(/đ/gi,'D').toUpperCase().replace(/\s+/g,' '):'';
+ const nameConflict=!!observed&&observed!=='BUI XUAN TUNG';
+ const displayName=nameConflict?'Cần xác minh tên nhận':observed?'BUI XUAN TUNG':null;
+ const reviewStatus=nameConflict?'Cần xác minh tên nhận'+(r.has_ledger===true?' · Có ghi thu trong sổ':''):status;
+ return {amount,status:reviewStatus,rows:[['Số tiền',amount],['Ngày',field(r.date_vn)],['Giờ',field(r.time_vn)],['TK nhận',field(r.receiving_account)],['Tên TK',field(displayName)],['Nội dung',field(r.transfer_content)],['Mã giao dịch',field(r.transfer_reference)],['NH chuyển',field(r.sending_bank)],['NH nhận',field(r.receiving_bank)],...((nameConflict||name.raw)?[['Tên OCR gốc · Cần xác minh',field(name.raw||r.receiving_name)]]:[])]}
  },
- render(receipt,media){const {pair,left,right}=CardController.billPair('Ảnh bill','Kết quả đọc bill');pair.dataset.liveBillPair='true';left.append(media);const card=CardController.create('business');CardController.header(card,'Thông tin bill',receipt.status);for(const [label,value] of receipt.rows){const row=CardController.row(card,label,value);if(value==='Không có')row.lastElementChild.classList.add('bill-missing')}right.append(card);compactBillDetails(pair);return pair}
+ render(receipt,media){const {pair,left,right}=CardController.billPair('Ảnh bill','Kết quả đọc bill');pair.dataset.liveBillPair='true';left.append(media);const card=CardController.create('business');CardController.header(card,'Thông tin bill',receipt.status);for(const [label,value] of receipt.rows){const row=CardController.row(card,label,value);if(value==='Không có'||value==='Cần xác minh tên nhận')row.lastElementChild.classList.add('bill-missing')}right.append(card);compactBillDetails(pair);return pair}
 });
 const Contact=Object.freeze({create({id,name,avatar,preview,time,selected=false}){
  return View.button({className:'contact'+(selected?' active':''),attrs:{'data-id':id},children:[
