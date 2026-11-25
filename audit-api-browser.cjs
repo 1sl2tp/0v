@@ -242,6 +242,14 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const dp=await browser.newPage({viewport:{width:390,height:844}});await dp.goto(url+'?directorylab=1');await dp.locator('.contact[data-id=nv]').evaluate(e=>e.click());await dp.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());
  const dv=dp.locator('[data-directory-viewport]'),ds=dp.locator('[data-directory-status]'),dpress=name=>dp.getByRole('button',{name,exact:true}).evaluate(e=>e.click());
  await dv.waitFor();await dp.waitForFunction(()=>Number(document.querySelector('[data-directory-viewport]')?.dataset.virtualMounted)>0);
+ // Stable range must not rewrite attributes or reattach unchanged rows.
+ await dpress('Đầu danh bạ');
+ const stableMutations=await dv.evaluate(async el=>{
+  const frames=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  await frames();const records=[];const observer=new MutationObserver(batch=>records.push(...batch));observer.observe(el,{subtree:true,attributes:true,childList:true,characterData:true});
+  el.dispatchEvent(new Event('scroll'));await frames();records.push(...observer.takeRecords());observer.disconnect();return records.map(r=>({type:r.type,attribute:r.attributeName}))
+ });assert.equal(stableMutations.length,0,JSON.stringify(stableMutations));console.log('Virtualizer stable range: 0 DOM mutations');
+
  await dpress('Giữa danh bạ');await dv.evaluate(e=>{e.scrollTop+=11});await dp.waitForFunction(()=>document.querySelector('[data-directory-viewport]')?.dataset.virtualFirst==='100');
  const da=await dv.locator('[data-virtual-key=dir-101]').elementHandle(),db2=await dv.locator('[data-virtual-key=dir-102]').elementHandle();
  const pos=handle=>handle.evaluate(e=>e.getBoundingClientRect().top-e.closest('[data-directory-viewport]').getBoundingClientRect().top);const a0=await pos(da),b0=await pos(db2);
