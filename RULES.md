@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.177)
+## 00. Chỉ mục rule đang có hiệu lực (v13.178)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1411,3 +1411,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-BILL-02: Backend projection giữ auth/ACL và phạm vi 100 tin của admin_media, thêm AAL2 riêng cho dữ liệu bill; ghép đúng asset/message/customer và thành viên room, ledger cùng khách và loại collection. Ngày/giờ cần chứng cứ in phù hợp timestamp, không dùng giờ tin nhắn hay mặc định nửa đêm. Không trả raw_read/ledger ID/hash; không cấp quyền bảng trực tiếp; SQL candidate phải qua fixture DB và review riêng trước production. Không đổi version UI khi chỉ sửa backend contract.
 
 - LIVE-BILL-03: Với tên nhận từ OCR có tiền tố chuyển khoản TỚI/TOI/ĐẾN/DEN/TO và phần sau ít nhất ba từ chữ, live projection chỉ hiển thị tên đề xuất; luôn giữ dòng OCR gốc có nhãn cần xác minh, không thay dữ liệu, trạng thái thu hay matcher. Không áp dụng sender/memo. Bill riêng dùng nút xoay 90° ở preview, MediaController.rotate từ ảnh gốc, giới hạn 24 MP, không sửa bytes lưu trữ; không suy luận hướng chữ từ EXIF hoặc kích thước. Tự nhận diện hướng chữ còn BLOCKED vì server chưa trả evidence; không gửi ảnh riêng tư tới OCR bên ngoài. KB-LOCK giữ nguyên.
+
+- LIVE-BILL-04: MediaController.printedOrientation uses local pixel-only glyph comparison at 0/90/180/270, bounded 1200 px/24 MP, minimum 12 nonambiguous votes with 70% agreement and margin. Only recognized bill preview, no network or semantic OCR, keep original when uncertain; manual rotate uses original and may override. This is a conservative heuristic, not verified OCR; no claim for all fonts or photo backgrounds. No receipt/ledger mutation. KB-LOCK unchanged.
