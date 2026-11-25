@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.100)
+## 00. Chỉ mục rule đang có hiệu lực (v13.101)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -908,3 +908,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-COMPETE-03: Display separate face-value total of bills and sum of related Bank records only when all values in that group are known; not a debt, amount collected, or confirmed credit total. No auto-assign or auto-link. Posted records remain excluded.
 - BANK-COMPETE-04: Stable sorted group IDs and shared Bank IDs; recompute from existing snapshot on changes. Use CardController and MoneyAPI; no production actions or history edits.
 - BANK-COMPETE-05: Tests 3 bills/1 record, replay, 2 records, competing clocked bill, posted exclusion, ordering, UI group; preserve keyboard v13.27 and CI gate.
+
+## 125. BANK-REPLAY — v13.101
+- BANK-REPLAY-01: Cross-ID replay diagnostic requires verified incoming official Agribank package, explicit non-own-transfer, full configured account, exact positive amount, valid printed clock, exact literal entire raw notice including balance and matching stored memo. Reuse AgribankNoticeAPI; receipt timestamp may differ, never identity.
+- BANK-REPLAY-02: Equal amount/minute alone, changed balance/body, missing source or contradictory fields never prove replay. Same ID conflict remains quarantined; preserve raw evidence and all record IDs.
+- BANK-REPLAY-03: Unposted suspected replay group remains review-only with original competing candidates. If one exact notice alias is already posted, block all its validated aliases from candidate evaluation; no automatic link or second receipt. Do not infer identity from approximate text.
+- BANK-REPLAY-04: Show unique record IDs, one notice face amount and replay warning; suppress group Bank sum when replay evidence exists. No changes to production, historical data, or delivery.
+- BANK-REPLAY-05: Regression covers different receipt days, changed balance, changed memo/clock/account/amount/source, absent raw, posted alias, review projection and browser. Keep keyboard v13.27; full CI gate.

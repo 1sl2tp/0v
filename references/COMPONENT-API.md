@@ -233,3 +233,6 @@ Each relatedCandidates entry has immutable fields [{field,billValue,bankValue,pr
 
 ## v13.100 BANK-COMPETE
 BankReviewQueueAPI.project adds immutable competitionGroups with billIds, bankIds, billCount, bankRecordCount, billFaceTotal, relatedBankRecordTotal, sharedBankIds, canPost:false. Connected components use existing candidate graph; Bank record ID is not financial identity; no posting or new matching owner.
+
+## v13.101 BANK-REPLAY
+BankRecheckController carries sourcePackage/rawNotice. BankReconcileAPI returns immutable replayGroups (bankIds, recordCount, noticeAmount, hasPosted, canPost:false), derived from exact official notice + validated fields. Unposted aliases stay competing; posted exact aliases excluded. Queue shows replayGroups and suppresses misleading related Bank sum. No production adapter or financial authorization.
