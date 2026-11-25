@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.80)
+## 00. Chỉ mục rule đang có hiệu lực (v13.81)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -758,3 +758,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-JOURNAL-03: Receipt simulation allowed only for unique eligible-fixture bill-bank pair, with posting time not earlier than bank receipt. Separate bill and bank uniqueness, identical event replay is no-op, conflicting identity rejected; no real financial posting. Later evidence changes cannot silently erase past simulated receipt; correction workflow remains separate.
 - BANK-JOURNAL-04: Test pending recovery, late bank match, receipt replay, duplicate posting and abort over actual Chromium reload. Session scope is not server durability, cross-device identity, or guaranteed recovery after browser clears storage.
 - BANK-JOURNAL-05: Reference IndexedDB transaction completion and atomicity (W3C/MDN), PostgreSQL unique constraints for future production ledger design. No actual bank adapter, database or keyboard change.
+
+## 103. BANK-QUEUE — v13.81 (phase 3g)
+- BANK-QUEUE-01: BankReviewQueueAPI projects current bill evidence, candidate reasons and journal receipts; read-only, never changes matching or posting policy. Distinguish no matched bank from confirmed amount mismatch; do not assign customers based on amounts.
+- BANK-QUEUE-02: Show all known gaps, including missing/invalid amount, account, date, time, image quality and ambiguous candidates; Vietnamese labels and next actions. No bank match does not prove bank absent. Unknown amount excluded from sum and counted separately.
+- BANK-QUEUE-03: First accepted bill-event time anchors waiting hours; OCR revision does not reset it. Clock must be explicit; negative/invalid duration remains unknown. Sort unposted first, longest wait first. Posted age stops at recorded receipt time when available.
+- BANK-QUEUE-04: Immutable snapshot exposes current fixture records and event metadata. Bill history shows its evidence events, currently linked bank events and batch-wide rechecks; not a full per-bill historical decision ledger. Restore same projection from BankJournalAPI. Posted fixture receipt distinct from actual/manual receipt.
+- BANK-QUEUE-05: Browser regression verifies reason labels, OCR update and restored receipt display. Reference TanStack Table sorting and event sourcing; no production data, financial write, real notifications, keyboard or server change.
