@@ -99,3 +99,6 @@ v13.70 PR #37 merged dc6bfe9eca9040b540746627b11f575c57bcc59f; CI 45522587547 su
 
 ## v13.72 — local performance probe phase 4
 v13.71 PR #38 merged 5398d8dcdd15ba7f3166572d7100592782bb2843; CI 45524924977 success. E1 opt-in local bounded interaction frame proxy, navigation timings, optional long tasks and lifecycle controls. MEASURE-PERF-01–05. Seven classic scripts and audit syntax compiled; percentile test passed; CI pending. No real device data, INP claim, production/keyboard change or manual deploy.
+
+## v13.73 — Main owner phase 1
+v13.72 PR #39 merged 6af775922629f8bf7857a5d65fce7bf506158a79; CI 45526405781 success. Route local sent/incoming text via Message.create, Contact owns visibility/preview/time/unread/typing. Preserve rich demo samples, scroll and keyboard. MAIN-OWNER-01–04. Classic scripts/audit syntax checked; browser assertions added; CI pending. No live stores or production integration, real send, DB or manual deploy.
