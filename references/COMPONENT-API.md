@@ -446,3 +446,13 @@ Typography: version 11/16, contact name medium 16/22, preview detail 14/20, time
 
 ## CHAT-READ — read-only integration boundary
 ChatReadAPI.create({session,readContacts,readThread}) consumes host-authorized canonical CHAT data; exposes directory/thread/dispose only. No token, network, storage or business API. Fixture Popup `?chatread=fixture`, not live. Host must clear view on auth change and validate membership each call; see CHAT-READ-01–04 and CHAT-READ-BRIDGE.md.
+
+
+## v13.172 LiveAuthAPI
+inspect(client) distinguishes guest/enroll/challenge/ready; enroll and verify use Supabase MFA; UI boot/guest/mfa/ready mutually exclusive, view scoped to authenticated account and same tab. Network failure stays boot retry, not logout. View restoration is not proof of MFA backend enforcement. CI/real-device verification pending.
+
+## Main live profile
+Main.mount({live,onSearch}) creates same shell, no fixture contacts for live, returns hidden unmounted root until caller mounts. Live adapter binds server read/send, directory selection, search, navigation, DraftMedia preview; no upload or business API. Native keyboard integration pending.
+
+## Live content projection
+Real text routes through Message.create; authenticated media parts attach before metadata; unavailable media metadata is explicit unknown, not an invented file type. See LIVE-INTEGRATION-MAP.md and LIVE-INTEGRATE-01–04 for all existing owners and missing adapters.
