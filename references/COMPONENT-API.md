@@ -340,3 +340,6 @@ Role font tokens retained; DraftMedia per-room local preview, removal, image-onl
 
 ## v13.139 — composer media state
 DraftMedia.begin/end/pending/busy isolate pending decode and protect local send/release. CSS consumes visible height without modifying viewport owner. Same-room rail scroll retained. Browser short-height and room-switch regression added; actual native keyboard acceptance pending.
+
+## v13.140 — composer geometry
+Input child inset 8px shared by text and attachment rail. Expanded radius 24px, single capsule unchanged. Surface retains paint and border; KeyboardController and resizeDraft unchanged. Sources: pinned Astryx TextInput/Stack; https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/box-sizing and https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border-radius. Native acceptance pending.
