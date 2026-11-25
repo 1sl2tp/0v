@@ -53,20 +53,23 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  let count=0;p.on('filechooser',()=>count++);const [chooser]=await Promise.all([p.waitForEvent('filechooser'),plus.tap()]);assert(chooser.isMultiple());assert.equal(count,1);assert.equal(await draft.evaluate(e=>document.activeElement===e),true);assert.equal(await form.getAttribute('data-native-picker'),'true');assert.equal(await form.locator('input[type=file]').count(),1);
  await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),'Bản nháp iOS');assert.equal(await draft.evaluate(e=>document.activeElement===e),true);await p.close();}
  
- // WebKit Gmail order: one real input.click(), then restore previously focused draft in same activation.
- for(const touch of [false,true]){
- const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:touch});
+ // v13.27 closure ownership: an outstanding native request must not block early-close.
+ // Override only the browser-reported visual viewport height to simulate delayed iOS resize;
+ // the layout viewport stays full height. Actual iOS timing is not emulated.
+ {const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 27_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1'});
  await p.goto(url+'?pickerprobe=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
- const plus=p.locator('#mediaBtn'),file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
- await draft.fill('Bản nháp giữ con trỏ');await draft.focus();await draft.evaluate(e=>e.setSelectionRange(2,7,'forward'));
- await p.setViewportSize({width:390,height:360});await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true');
- // Simulate a browser moving focus to the attachment button after pointerdown, not native iOS proof.
- await plus.evaluate(e=>e.addEventListener('pointerdown',()=>e.focus({preventScroll:true}),{once:true}));
- let count=0;p.on('filechooser',()=>count++);const [chooser]=await Promise.all([p.waitForEvent('filechooser'),touch?plus.tap():plus.click()]);
- const proof=await p.evaluate(()=>({press:window.pickerAnchorProof.press(),request:window.pickerAnchorProof.request(),after:window.pickerAnchorProof.afterFocus(),trace:window.pickerAnchorProof.trace().map(x=>({reason:x.reason,focused:x.focused})),selection:[document.querySelector('#draft').selectionStart,document.querySelector('#draft').selectionEnd]}));
- assert(proof.press?.focused&&proof.request&&!proof.request.focused&&proof.after?.focused,JSON.stringify(proof));assert(proof.trace.findIndex(x=>x.reason==='before-native-request')<proof.trace.findIndex(x=>x.reason==='after-native-focus'),JSON.stringify(proof));assert(proof.trace.some(x=>x.reason==='focusout'&&!x.focused)||proof.trace.some(x=>x.reason==='before-focus-check'&&!x.focused),JSON.stringify(proof));assert.deepEqual(proof.selection,[2,7]);assert.equal(count,1);assert.equal(await form.getAttribute('data-native-picker'),'true');
- await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await draft.inputValue(),'Bản nháp giữ con trỏ');assert.equal(await form.getAttribute('data-native-picker'),null);await p.close();
- }
+ const draft=p.locator('#draft'),plus=p.locator('#mediaBtn'),file=p.locator('[data-draft-media-picker]'),form=p.locator('#composer');
+ await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='false'&&document.querySelector('#app').getBoundingClientRect().height>800);
+ await draft.fill('Bản nháp giữ con trỏ');await draft.focus();
+ await p.evaluate(()=>{Object.defineProperty(visualViewport,'height',{configurable:true,get:()=>360});visualViewport.dispatchEvent(new Event('resize'));});
+ await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true'&&document.querySelector('#app').getBoundingClientRect().height<400);
+ let count=0;p.on('filechooser',()=>count++);const [chooser]=await Promise.all([p.waitForEvent('filechooser'),plus.tap()]);
+ assert.equal(count,1);assert.equal(await form.getAttribute('data-native-picker'),'true');
+ await draft.evaluate(e=>e.blur());
+ await p.waitForFunction(()=>document.querySelector('#app').getBoundingClientRect().height>800,{},{timeout:3000});
+ assert.equal(await form.getAttribute('data-native-picker'),'true');assert.equal(await draft.evaluate(e=>document.activeElement===e),false);
+ await p.evaluate(()=>{delete visualViewport.height;visualViewport.dispatchEvent(new Event('resize'));});
+ await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),'Bản nháp giữ con trỏ');await p.close();}
  
  // Read-only anchor diagnostic: a changing viewport must move the real + and native input together.
  {const p=await browser.newPage({viewport:{width:390,height:844}});
