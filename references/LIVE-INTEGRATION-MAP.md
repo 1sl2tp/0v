@@ -35,3 +35,5 @@ Shared runtime initialized before data branch; live swipe/input/scroll use exist
 - L06 v13.174 E2/E3: PR #146 API 45705464673, DB 45705464771, publish 45705766769, Pages 45705790630 success; device pending. L06 v13.175 E1: audio/video/file classification, missing key, retry and codec fallback; CSV/WAV fixture, upload and actual native/server media still pending. Next: validate upload contract before enabling send.
 
 - L06 v13.175 E2/E3: PR #147 API 45706068382, DB 45706068380, publish 45706390212, Pages 45706420278 success. v13.176 E1: one picker, live mixed image/document/audio drafts, retain binary in memory. Upload BLOCKED on independent authenticated ticket/commit contract; see MEDIA-SEND-CONTRACT.md. Video send blocked by canonical kind support. No device acceptance yet.
+
+- L08 v13.177 E1: shared bill pair connected to optional asset.bill_receipt (exact asset/message keys); existing backend only returns media metadata. Real C Sâm PL receipts already exist, one amount_read/no ledger, one received/ledger. API contract pending separate backend review; no claim live card available yet. No real DB writes.

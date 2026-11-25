@@ -484,3 +484,8 @@ MediaController.assetType(kind,mime), playableBlob(blob,kind,declared), audio(),
 
 ## v13.176 Media draft
 MediaController.draftKind(blob,allowFiles), draftFileMimes(), draftPreview(item) delegate MIME/size/preview; existing DraftMedia keeps Blob alongside thumbnail metadata, scoped by contact; fixture image-only. A file is not sent just because selected. liveCanSend still blocks all pending attachments. Native picker behavior and independent upload backend pending.
+
+## v13.177 live bill projection
+CardController.billPair(leftLabel,rightLabel) is shared sample/live layout. BillReceiptProjection.read(asset) accepts only a server receipt bound to asset/message, filters non_bill, produces exact amount display and explicit missing fields, no mutation. BillReceiptProjection.render reuses CardController and the existing MediaController lazy group. Backend projection pending separate review.
+
+ScrollController.followEnd/stopFollowing/userMoved: scoped navigation tail intent after Main final commit; shared content ResizeObserver watches current rows, repositions only when extent changes and user has not left target. Existing replaceMedia uses this intent, and jump re-arms it. No changes to KeyboardController; nonpinned restore stays nonpinned.
