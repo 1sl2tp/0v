@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.165)
+## 00. Chỉ mục rule đang có hiệu lực (v13.166)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1331,3 +1331,9 @@ E0: MainData receives and renders fixture messages but did not invoke Notificati
 - BUTTON-TYPE-01: Button.create textRole whitelist detail/body/caption, default detail 14/20; ButtonController register preserves explicit role. Composite contact, icon, send, media and icon-only actions exclude text role. Typography tokens own size/line. Applies after TYPE-HARMONY; no per-view font size for filter/module/bill actions.
 - BUTTON-TYPE-02: Bill text actions use detail 14/20 and medium 500 via ButtonController profile; min touch 44px and wrap preserved. Existing compact filter geometry not changed (legacy 36px minimum); no change to glyph, composer, focus or keyboard. Button weight independent of size.
 - BUTTON-TYPE-03: Test default/explicit/invalid role, icon exclusion, computed size/line/weight for filters, add contact, module and Bill action in six widths; native pending. Existing legacy diagnostic/composite exceptions are not claimed fully normalized.
+
+
+## v13.166 — TYPE-RHYTHM
+- TYPE-RHYTHM-01: Version 11/16, contact name body 16/22 medium 500 (was 600), contact preview detail 14/20 (was caption 13/18), time caption 13/18. Contact row keeps 70px; track derives from line-detail. Remove redundant local preview font. User requests direct code changes; this overrides corresponding typography values in TYPE-HARMONY-01 and PARENT-RUNTIME-02/03, not historical snapshots.
+- TYPE-RHYTHM-02: Chat font 17px, line 24px (was 26); formatted text shares chat role. Desktop thread-gap uses gap-sm 8px (was 12), mobile floating gap untouched. Keep input 17/22, 44px, protected keyboard/Surface regions; do not reduce icon touch or change data. Do not claim exact ChatGPT specs.
+- TYPE-RHYTHM-03: Test all six widths, contact token propagation, name weight/preview size, version, chat line, desktop gap and existing F5; native/visual review pending. UI tuning may be performed directly per user request but preserve CI and release gates.

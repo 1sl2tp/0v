@@ -443,3 +443,7 @@ E2/E3 v13.164: PR #134 merged 8ce7c3a992d3b3df705a32dbce8ed728f9825a51, API 4568
 
 ## v13.165 — sửa CI đỏ vòng 2
 E0: PR #135 CI 45686488277, job 139460330997, failed at checkButtonText '#messages .bill-actions > button' because test navigated to CRM before requiring rendered KH chat buttons at 320px. Static audit and snapshot pass, DB 45686488256 pass. E1: check KH chat screen and run same font/weight/touch assertion before CRM navigation; no weakened assertion. Test syntax passed; runtime blob/snapshot/version unchanged. E2 rerun pending, E3/E4/E5 pending. User screenshot shows actual v13.164; no claims v13.165 published.
+
+
+## v13.166 — P01.4 typography rhythm
+v13.165 PR #135 merged b2c7122615b5613c17f0619afc2b60175512bb01, CI 45686796901/45686783443 and DB 45686797010 success; verified release 45687089271, Pages 45687126633 success. E0 user screenshot of v13.164 shows overly heavy directory names, small preview/version and loose thread. E1 version 11/16, name 16/22 medium, preview 14/20 with corresponding layout track, chat 17/24 and desktop thread gap 8; mobile floating gap/input 17/22 unchanged. Read Astryx Text da954186ff862485cbf0e1964cb2bec15f43b9bb, Stack c56d72759ad2f6f86102228e22c3123530b32894, Radix typography 45b359c55b5d2c32a4913cd8ba0394cae0035632; semantic type and layout-owned rhythm. TYPE-RHYTHM-01–03, tests syntax pass, 4 protected ranges unchanged, snapshot/index bb01c852f75bcb07135c518cfb4b0073b5a33df6. CI/native pending, no real data/actions. ROADMAP unchanged per allowlist.
