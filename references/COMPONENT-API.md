@@ -221,3 +221,9 @@ BankMemoEnvelopeAPI.diagnoseLiteral(a,b) yields diagnostic type, shared prefix/s
 
 ## v13.97
 BankReconcileAPI candidate missingClockProof and result.verification distinguish strict date/reference/memo review from posting. BankReviewQueueAPI exposes verification and missingClockVerified count, with separately printed Bank clock. Recheck retains ownTransfer flag. No eligibility relaxation.
+
+## v13.98
+BankReconcileAPI.billClock(record) returns present, missing, invalid, conflict or unverified-date. Missing/invalid/conflict requires review even with zero Bank candidates. Queue projects clockReviewRequired and a draft verification request, never sends it.
+
+### BANK-RELATED (v13.98 revision 2)
+BankReviewQueueAPI.project exposes immutable relatedCandidates (bankId, tier, bankPrintedTime, transactionDate, receivedDate, late, competing, memoProof, canPost:false) and possiblyRelated count; derived only, no receipt authority. Existing BankReconcileAPI computes evidence; no new owner.
