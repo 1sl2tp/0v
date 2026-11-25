@@ -264,3 +264,6 @@ E0: PR #88 merged; API 45554539584 and PostgreSQL 45554539640 passed; main blob 
 
 ## v13.123
 E0: PR #89 merged; API 45555022770 and PostgreSQL 45555022710 passed; main blob verified. E1: BANK-OCR-CORRECTION, existing BillOCRFieldAPI, BANK-ACCUMULATION. E2: 13 direct assertions passed, seven scripts compiled, static/browser regression added; CI pending. E3–E5 not certified. Synthetic text evidence only, not real OCR rerun or authorization. No production, real debt, messages, reminders, storage or keyboard changes.
+
+## v13.124
+E0: PR #90 merged, API 45555440259 and PostgreSQL 45555439969 passed. E1: user single image scope, read-only CHAT aggregate audit (577 scans, 577 linked assets; private media bytes not accessed). E2: six direct assertions passed, seven scripts compiled, browser and static regressions updated; CI pending. No image pixels or customer records copied; no production changes. E3–E5 not certified.
