@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.144)
+## 00. Chỉ mục rule đang có hiệu lực (v13.145)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1225,3 +1225,8 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - PICKER-EXCLUSIVE-01: Supersedes visible menu during handoff in KEYBOARD-FRAME-ACCESSORY-03. CRM accessory is visible only before native activation. Native picker and CRM accessory must never be visible simultaneously. After trusted click (not pointerdown), make accessory paint transparent and non-hit-testable, remove its tab stops, set plus aria-expanded=false; retain in-flow size until change/cancel. Do not hide or detach actual input before default activation.
 - PICKER-EXCLUSIVE-02: During handoff, preserve measured frame; raw viewport remains sole geometry source, no frozen viewport or additional reserve writer. Native UI geometry and keyboard dismissal are OS-controlled. On change/cancel clear handoff and close accessory, no forced focus. Explicit + recovers stale session if OS omits cancel.
 - PICKER-EXCLUSIVE-03: Real Chromium test checks native chooser, menu opacity=0, no hit target in menu, unchanged frame height, cancel/reopen and actual selected fixture with draft retained. Native iPhone remains mandatory. Sources: WebKit Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm (elementRect/tap and native action sheet), MDN HTMLInputElement cancel. No business or production change.
+
+## 170. DIRECT-NATIVE-PICKER — v13.145
+- DIRECT-NATIVE-PICKER-01: Supersedes CRM accessory menu/presentation in rules 166–169. One native file input accept=image/* multiple shares the + grid cell, actual 44x44 hit area; visual face is not independently focusable or clickable. No intermediate CRM menu, no capture restriction; platform supplies available photo library/camera/file options. Desktop may only show file dialog.
+- DIRECT-NATIVE-PICKER-02: Both keyboard states use the same direct default action, capture room ownership before blur, cancel pending early-close; no programmatic focus/blur/click, no extra menu reserve or geometry writer. Clear on change/cancel or abandoned pointer; explicit fresh activation recovers stale session. Keep existing decode path and room ownership. No promise that iOS retains keyboard or places native sheet at exact offset.
+- DIRECT-NATIVE-PICKER-03: Browser test real chooser from unfocused/focused draft, exact 44px hit, no intermediate menu, unchanged frame in fixed simulated viewport, cancel/reopen and actual image selection. Physical iPhone Safari/PWA acceptance still required. Source: WebKit WKFileUploadPanel.mm native action sheet and anchor; prior pinned Astryx input geometry. No production or bill changes.
