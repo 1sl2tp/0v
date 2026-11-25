@@ -481,3 +481,6 @@ Main.finishNavigation convergence: waits for stable measured scroll extent/heigh
 
 ## v13.175 media file parent
 MediaController.assetType(kind,mime), playableBlob(blob,kind,declared), audio(), fileLink() share classification/renderer with video/gallery. Live adapter downloads only private assets by authorized key, validates scope, uses existing ScrollController; unsupported player falls back to download. No upload or public URL.
+
+## v13.176 Media draft
+MediaController.draftKind(blob,allowFiles), draftFileMimes(), draftPreview(item) delegate MIME/size/preview; existing DraftMedia keeps Blob alongside thumbnail metadata, scoped by contact; fixture image-only. A file is not sent just because selected. liveCanSend still blocks all pending attachments. Native picker behavior and independent upload backend pending.

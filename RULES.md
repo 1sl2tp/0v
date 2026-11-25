@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.175)
+## 00. Chỉ mục rule đang có hiệu lực (v13.176)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1399,3 +1399,6 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 
 ## v13.175 — MEDIA-FILE-01
 - MEDIA-FILE-01: MediaController.assetType định tuyến theo kind và MIME, hỗ trợ file/attachment có MIME audio/video; explicit kind xung đột không ép phát. Blob MIME rõ không được giả thành audio/video; generic blob dùng declared MIME hợp lệ. MediaController.audio/video/fileLink sở hữu renderer, không autoplay; tệp không có key hiển thị không khả dụng, lỗi tải cho retry, lỗi codec có link lưu. URL private chỉ theo room/session; hủy URL chưa commit khi decode/đổi vùng thất bại. Không nhúng HTML/SVG/PDF hoặc gửi tệp; không đổi KB-LOCK. Fixture kiểm thử CSV lỗi/rerun, WAV hợp lệ, MIME xung đột; native video/audio và dữ liệu thật chưa nghiệm thu.
+
+## v13.176 — MEDIA-DRAFT-01
+- MEDIA-DRAFT-01: Dùng một native picker hiện hữu, live chọn ảnh/ghi âm/tài liệu whitelist, giới hạn 8 tệp/bản nháp và 15 MiB/tệp; fixture giữ ảnh-only. MediaController.draftKind kiểm MIME/size, ảnh decode trước preview; DraftMedia giữ Blob trong RAM theo phòng, xóa object URL khi bỏ ảnh/logout; tệp không render nội dung. Không gửi khi còn bất kỳ attachment hoặc decode pending; không lưu Blob vào localStorage, không tự gửi. Video chưa nhận gửi do backend cũ không hỗ trợ kind video. KB-LOCK không đổi; iOS native source menu sau đổi accept vẫn phải nghiệm thu.
