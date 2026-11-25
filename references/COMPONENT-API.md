@@ -314,3 +314,14 @@ BillRecognitionAPI.classify(text,{configured,profile}) routes text to bill-candi
 
 ## v13.126–v13.133 — bill OCR recognition and field geometry
 BillRecognitionAPI: fixed receiver account/name, adjacent unlabelled pair, wrapped digit review. BillOCRFieldAPI: scoped field reads, unlabelled suggestions, value-only word geometry. BillOCREngineAPI: one image source plan, crop/contrast, raw lines, typed read on exact value scope. All remain review-only and cannot post. Typed name uses unaccented Latin; memo and date words unrestricted. Real image acceptance and production integration remain pending.
+
+## v13.134 — integration acceptance matrix
+| Scope | Evidence / remaining work |
+|---|---|
+| UI parent components | Existing contracts and browser fixtures; actual device matrix incomplete |
+| OCR text → recognition → Bank parse → match | Integrated synthetic text audit; verified notice explicitly simulated only |
+| Image pixels → OCR | Real customer corpus pending; no private images copied |
+| OCR → actual ledger | Adapter, authorization and authoritative identity evidence pending; no production writing |
+| Duplicate, late notice, missing time | Existing fixtures plus cross-layer regression; actual ledger replay pending |
+| Release | CI / main merge distinct from Pages and device acceptance |
+| Device and user acceptance | E3–E5 not certified |
