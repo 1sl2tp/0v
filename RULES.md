@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.79)
+## 00. Chỉ mục rule đang có hiệu lực (v13.80)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -751,3 +751,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-RECHECK-03: Validate candidate state before commit; no partial event changes if validation fails. Day watermark monotonic, previous bill and bank evidence retained. Subscribers receive immutable match snapshots; dispose prevents further events. Bounded fixture 4000 events and existing 1000 bill/bank limit; no silent eviction.
 - BANK-RECHECK-04: Bank reconciliation lab uses controller for new bank, corrected OCR, reconnect, day and reset. Recheck is not posting; missing time remains review unless independently corrected. Production event ingress, durable checkpoint, timer/scheduler, atomic ledger and provider authentication remain unimplemented.
 - BANK-RECHECK-05: Study Microsoft event sourcing/idempotent consumer and Matrix reconnect/retry. Tests verify both arrival orders, OCR revision, exact replay, ID conflict, day, reconnect, dispose and unchanged keyboard/production. No real transaction, DB or message.
+
+## 102. BANK-JOURNAL — v13.80 (phase 3f)
+- BANK-JOURNAL-01: Fixture-only versioned IndexedDB journal per session scope; replay all evidence and receipt entries through BankRecheckController. Pending bills do not expire by date. Capacity 200 entries, reject rather than silently remove. No real customer data.
+- BANK-JOURNAL-02: Read/validate/append/write in a single readwrite transaction; publish projection only after oncomplete. Abort leaves previous journal unchanged. Restore exact saved scope on same-tab F5, fail closed on invalid record.
+- BANK-JOURNAL-03: Receipt simulation allowed only for unique eligible-fixture bill-bank pair, with posting time not earlier than bank receipt. Separate bill and bank uniqueness, identical event replay is no-op, conflicting identity rejected; no real financial posting. Later evidence changes cannot silently erase past simulated receipt; correction workflow remains separate.
+- BANK-JOURNAL-04: Test pending recovery, late bank match, receipt replay, duplicate posting and abort over actual Chromium reload. Session scope is not server durability, cross-device identity, or guaranteed recovery after browser clears storage.
+- BANK-JOURNAL-05: Reference IndexedDB transaction completion and atomicity (W3C/MDN), PostgreSQL unique constraints for future production ledger design. No actual bank adapter, database or keyboard change.
