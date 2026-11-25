@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.108)
+## 00. Chỉ mục rule đang có hiệu lực (v13.109)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -964,3 +964,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-LITERAL-03: Valid alphanumeric reference/trace, names and memo are not suspicious simply for letters. Compare actual differing field raw values between OCR methods; label glyph, separator or length/spacing difference, preserve canonical equality flag. No fuzzy correction, score override or eligibility change.
 - BANK-LITERAL-04: Existing OCR text lab displays raw invalid value and position; variant UI shows differing raw values. Review only, no real OCR accuracy claim, production action or history rewrite.
 - BANK-LITERAL-05: Test O/I numeric errors, grouped account/leading zeros, profile punctuation, valid names/reference, cross-method confusable reference, separator/space differences, browser raw display. Preserve keyboard v13.27 and CI gate.
+
+## 133. BANK-MEMO-CODE — v13.109
+- BANK-MEMO-CODE-01: Distinguish literal/case/accent/whitespace/punctuation/compact memo presentation; retain raw source. Compare numeric-bearing tokens after only recognized wrapper/reference handling, preserve punctuation within tokens and leading zeros. Token grammar is a conservative diagnostic, not bank reference extraction.
+- BANK-MEMO-CODE-02: If otherwise matched memo has unequal numeric-bearing tokens, including one-sided unverified codes or altered punctuation, require memo-code-review; never silently discard unknown suffix. Existing numeric conflicts retain priority. No relaxed eligibility.
+- BANK-MEMO-CODE-03: Independently printed strong reference must not be a substring joined to an alphanumeric token by dot/underscore/slash/hyphen. Delimited reference handling remains, known wrapper handling unchanged. Do not treat a routing code as transfer identity.
+- BANK-MEMO-CODE-04: Candidate evidence and existing review UI retain both token lists, explain the reason; exclude code-conflict candidates from missing-clock related suggestions, not from review queue. No production data, history or real receipts.
+- BANK-MEMO-CODE-05: Test accents, punctuation in codes, one-sided unknown code, exact delimited reference, attached compound reference, missing-clock guard. Preserve keyboard v13.27 and CI gate.

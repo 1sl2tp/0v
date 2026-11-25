@@ -144,3 +144,6 @@ Tesseract tessdoc ImproveQuality.md blob 522d6369143d4c17cda2b4ad18d133d2f5bbf97
 
 ## v13.108
 Adobe NumberParser.ts pinned blob 66e59aff3510121ca373c0b8e39dacd3a8e1e0: explicit locale separators, reject incompatible punctuation. Tesseract.js v6.0.1 docs/api.md blob cc3f82d7d0eacd6df825b4c50ad19357fdca557c: whitelist restricts recognition output; deliberately not applied as it could hide letter/digit uncertainty. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. 0v diagnostic groups are experimental, not measured error probabilities. No upstream code or private values copied.
+
+## v13.109
+CHAT bill-app-preview.mjs blob 3fb53ea99124ed673a588281787a2e135a8a5e26: contiguousMemoContains length floor, sharedBankReference explicit boundaries, wrapper context guards. 0v retains existing parser and adds conservative numeric token punctuation and compound reference boundary; no upstream runtime or private constants copied. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a, existing review card.

@@ -216,3 +216,6 @@ E0: v13.106 PR #73 merged, CI 45548019367 success. E1: BANK-FIELD-VARIANTS, BANK
 
 ## v13.108
 E0: v13.107 PR #74 merged, CI 45548267364 success. E1: BANK-LITERAL, BANK-OCR, BANK-ACCOUNT, BANK-FIELD-VARIANTS, PARSE-API, KB-LOCK. Invalid literal provenance, numeric-only glyph warnings, profile/spacing distinctions, raw pair diagnostics without correction. Adobe NumberParser, Tesseract docs and Astryx Card reviewed. E2: direct regressions and syntax; browser raw diagnostic test added, full CI pending. No production actions, actual OCR accuracy or private corpus validation, Google Sheet not updated.
+
+## v13.109
+E0: v13.108 PR #75 merged, CI 45548658266 success. E1: BANK-MEMO-CODE, BANK-MEMO, BANK-ENVELOPE, BANK-RELATED, KB-LOCK. Preserve code punctuation, unknown numeric suffix review and compound reference boundary, existing candidate and card owner. CHAT bill-app-preview and Astryx Card source reviewed. E2: direct logic and syntax; full CI pending. No private source constants, actual receipts, messages, production or keyboard changes. Google Sheet not updated.

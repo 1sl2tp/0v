@@ -257,3 +257,6 @@ BillOCRFieldAPI.compareFieldAttempts({regionKey,field,attempts,profile}) returns
 
 ## v13.108 BANK-LITERAL
 BillOCRFieldAPI.literalDiagnostics(field,raw,profile,{valid}) returns immutable review-only glyph/presentation diagnostics at code-point positions; literalDifferences(a,b) returns literal conflict descriptions without repair. parse.evidence retains invalid raw/labelLine/diagnostics; compareFieldAttempts.differences retains per-method raw pair and canonicalEqual. Existing parser and posting rules unchanged.
+
+## v13.109 BANK-MEMO-CODE
+BankReconcileAPI.memoPresentation(a,b) -> immutable kind, billCodes, bankCodes, codeEqual, codeReview, reviewOnly. memoDetails.presentation applies after known wrapper/reference processing; reviewEvidence.memoPresentation exposes diagnostic. Unequal numeric-bearing tokens for otherwise matching memo adds memo-code-review; strong reference boundary rejects joined compound tokens. Existing review queue and posting guards retained; no production adapter.
