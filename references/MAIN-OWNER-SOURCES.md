@@ -114,3 +114,6 @@ User clarification: missing bill clock requires verification. CHAT previewBillRe
 
 ## v13.98 revision 2
 CHAT bill-app-preview.mjs blob 3fb53ea99124ed673a588281787a2e135a8a5e26, existing reference/memo and competing evidence path; reuse 0v memo residual diagnostics and review projection. No external UI dependency or private constants copied.
+
+## v13.99
+Astryx Card.tsx pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a (container owns spacing), Table.tsx 9496cdd32ce30ad6d28707eef48dada3bf2033b4 (density/wrap at parent); CHAT bill-app-preview.mjs 3fb53ea99124ed673a588281787a2e135a8a5e26 (independent evidence, competing transactions). Reuse CardController and FormatAPI; no upstream runtime copied, no customer values. No new selection or interaction state.

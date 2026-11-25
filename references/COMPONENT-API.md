@@ -227,3 +227,6 @@ BankReconcileAPI.billClock(record) returns present, missing, invalid, conflict o
 
 ### BANK-RELATED (v13.98 revision 2)
 BankReviewQueueAPI.project exposes immutable relatedCandidates (bankId, tier, bankPrintedTime, transactionDate, receivedDate, late, competing, memoProof, canPost:false) and possiblyRelated count; derived only, no receipt authority. Existing BankReconcileAPI computes evidence; no new owner.
+
+## v13.99 BANK-FIELDS
+Each relatedCandidates entry has immutable fields [{field,billValue,bankValue,proof}] derived by BankReconcileAPI; amount/date canonical, raw account/name/memo/reference, separate bank clock. No changes to receipt eligibility. CardController.business presents candidate-specific evidence.
