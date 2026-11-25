@@ -478,3 +478,6 @@ MediaController.normalizeMime, isImageMime, imageBlob: normalize supported alias
 ScrollController.finishNavigation(position): consumes epoch-validated Main position and clears prior navigation's scroll cooldown if not touching; hidden/loading scroll events do not start cooldown. Existing geometry/gesture policies otherwise remain.
 
 Main.finishNavigation convergence: waits for stable measured scroll extent/height/composer reserve and pending layout frames, commits position through ScrollController once (max 12 frames), stops for a new navigation epoch or user gesture. No new keyboard writer or continuous observer.
+
+## v13.175 media file parent
+MediaController.assetType(kind,mime), playableBlob(blob,kind,declared), audio(), fileLink() share classification/renderer with video/gallery. Live adapter downloads only private assets by authorized key, validates scope, uses existing ScrollController; unsupported player falls back to download. No upload or public URL.
