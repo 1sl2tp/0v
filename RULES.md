@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.106)
+## 00. Chỉ mục rule đang có hiệu lực (v13.107)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -950,3 +950,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-FIELD-GEOMETRY-03: fieldCropPlan validates source SHA+region key, rotation, canvas size, field and bounded integer rectangle; no cross-bill or full-image fallback. Explicit manual rectangle allowed. cropField copies only that rectangle. Geometry is review evidence, not proof of transaction or posting.
 - BANK-FIELD-GEOMETRY-04: Existing sample engine lab shows line bounds or manual-required; no interactive manual picker or automatic field reread in this phase. No real bill processing, journal, production writes or messages.
 - BANK-FIELD-GEOMETRY-05: Direct tests for blank-line alignment, next-line values, rotated coordinates, mismatch, missing field, manual rectangle and invalid/cross-source geometry; browser mock block response and pixel crop. Preserve keyboard v13.27 and CI gate.
+
+## 131. BANK-FIELD-VARIANTS — v13.107
+- BANK-FIELD-VARIANTS-01: Explicit same-source field crop only, validate decoded SHA/normalized region and field geometry. Three bounded independent inputs: original crop, grayscale contrast stretch (min spread 24), 2x scale (max 2048 dimension). Never modify source raster or infer missing pixels.
+- BANK-FIELD-VARIANTS-02: Sequential worker calls, preserve raw result and confidence per method. Compare only selected field using existing literal parser. No confidence ranking, fuzzy correction or majority vote. Agreement of all three produces review proposal only; mismatch/conflicting field blocks proposal; missing/error leaves incomplete review.
+- BANK-FIELD-VARIANTS-03: No automatic confirmation, no field overwrite, no financial authority. Existing verified lock remains. Failed worker is closed before next variant; cancel and stale results guarded.
+- BANK-FIELD-VARIANTS-04: Sample CDN engine lab exposes explicit field selection and rerun only for known bounds. Manual rectangle API exists but interactive picker not yet implemented. No AI model, private bill or production use; no uploads by application or historic changes.
+- BANK-FIELD-VARIANTS-05: Direct comparison, contrast pixel and wrong-scope regressions; mock browser crop sizes, conflict, source pixel and close lifecycle. Preserve keyboard v13.27; full CI required. Thresholds experimental, no real OCR accuracy claim.
