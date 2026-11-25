@@ -248,3 +248,6 @@ BillOCREngineAPI.createRegionBatch({factory,profile}) -> run({rows,selected,make
 
 ## v13.105 BANK-FIELD-REVISION
 BillOCRFieldAPI.createFieldReview({regionKey,text,profile,confidence}) -> snapshot(), reread({regionKey,field,text,confidence,expectedRevision}), confirm({regionKey,field,expectedRevision,source:'initial'|'proposal'}). Immutable field rows and revision history, proposal independent of current value, verified lock; no automatic authorization. Text-lab only, no physical field crop or real OCR call.
+
+## v13.106 BANK-FIELD-GEOMETRY
+BillOCRFieldAPI.fieldGeometry({region,text,parsed,blocks,width,height}) -> aligned, regionKey, rotation, dimensions, immutable fields [{field,rect,state,lines?}], canPost:false. Full ordered text alignment required; line bounds are local to rotated OCR crop. BillOCREngineAPI.run requests blocks and returns geometry when dimensions exist; fieldCropPlan({region,geometry,field,manualRect}) validates scope; cropField(canvas,plan) copies bounded rectangle. No automatic field reread or manual picker yet.

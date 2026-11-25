@@ -207,3 +207,6 @@ E0: v13.103 PR #70 merged, CI 45546422580 success. E1: BANK-REGION-OCR, BANK-REG
 
 ## v13.105
 E0: v13.104 PR #71 merged; CI 45546743837 success. E1: BANK-FIELD-REVISION, BANK-OCR, BANK-REGION-OCR, BANK-CLOCK, KB-LOCK. Separate proposed vs confirmed field values, region/revision guards, isolated reread and immutable history. Adobe NumberFieldState commit and Tesseract rectangle docs reviewed; Astryx Button source. E2: direct regression and classic syntax checks, browser text lab added; full CI pending. No actual field crop, verified real corpus, production writes or messages; Google Sheet not updated.
+
+## v13.106
+E0: v13.105 PR #72 merged; CI 45547566090 success. E1: BANK-FIELD-GEOMETRY, BANK-FIELD-REVISION, BANK-REGION-OCR, BANK-ENGINE, KB-LOCK. Explicit block output, exact ordered line alignment, bounds and manual fallback, sample UI coordinates. Tesseract v6.0.1 typings, Adobe SelectionManager, Astryx Card studied. E2: direct contract and classic syntax; browser mock pixel test added, full CI pending. No real OCR model validation, interactive manual picker, automatic field reread, production writes or messages. Google Sheet not updated.
