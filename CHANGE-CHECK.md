@@ -288,3 +288,6 @@ E0: v13.128 merged; v13.129 retargeted and synced main for CI. E1: unlabelled to
 
 ## v13.131
 E1: user example 99999 9; count all six visible digits, block premature suffix recognition on numeric line wrap. E2: static/browser regression added; CI pending. No production or ledger changes. E3–E5 not certified.
+
+## v13.132
+E1: user-defined numeric account, unaccented holder name, mixed memo, date/time grammar; value-only typed OCR in isolated worker. E2: static and browser fixture added; CI pending. No actual images or production data. E3–E5 not certified.
