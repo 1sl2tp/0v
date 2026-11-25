@@ -25,7 +25,7 @@ Trạng thái: TODO → DOING → E1 → E2 → E3 → E4 → DONE (E5 nếu c�
 - P01.1 (E2, PR #131 merged; kiểm kê ban đầu): kiểm kê tĩnh owner và đối chiếu danh mục; ghi baseline.
 - P01.2 (DOING, bản đồ source đã ghi; chưa chứng minh toàn bộ runtime): phân loại từng owner: Main trực tiếp/gián tiếp, lab-only, chưa chứng minh; dùng familyAudit/ownerAudit/apiProof, kiểm tra phạm vi thực.
 - P01.3 (E2, 24 lượt đo font/geometry mẫu đã đọc, PR #132 merged): lập ma trận token/font/gap/viền/hình học theo vùng và kích thước, phát hiện chỗ con tự ghi đè.
-- P01.4 (DOING, tách nhóm pending rendered/hidden; CI mới pending): đối chiếu active rule với lịch sử, sửa từng owner có test, nguồn upstream và bằng chứng.
+- P01.4 (DOING, sửa CI đỏ của PR #133; tách pending rendered/hidden): đối chiếu active rule với lịch sử, sửa từng owner có test, nguồn upstream và bằng chứng.
 - P01.5 (TODO): chạy audit-design, browser CI, Pages, ma trận thiết bị; ghi nhận ngoại lệ và E5 nếu cần.
 
 ## Kiểm kê tĩnh lần 1 — P01.1
@@ -55,5 +55,7 @@ Nguồn: [index.html tại baseline](https://github.com/1sl2tp/0v/blob/335ee1724
 | 26/11/2026 | P01.1–P01.3 | PR #131 merged; [API CI](https://github.com/1sl2tp/0v/actions/runs/45683556620) và [DB CI](https://github.com/1sl2tp/0v/actions/runs/45683556625) đạt. Bản đồ owner + chỉnh chỉ mục + ma trận test, CI mới pending | Đọc log, xử lý mismatch, E4 pending |
 
 | 26/11/2026 | P01.3–P01.4 | PR #132: [API PR CI](https://github.com/1sl2tp/0v/actions/runs/45684219123), [API push CI](https://github.com/1sl2tp/0v/actions/runs/45684203289), [DB CI](https://github.com/1sl2tp/0v/actions/runs/45684219109) đều thành công; merge a71a63a3537c307d96243a263ad9e783b49f4a70. 24/24 lượt đo khớp font trong mẫu; phân nhóm pending theo vùng/owner, negative control; CI mới pending | Đọc nhóm pending và xác minh từng owner; không hạ tiêu chuẩn |
+
+| 26/11/2026 | P01.4 | CI PR #133 [45684897457](https://github.com/1sl2tp/0v/actions/runs/45684897457) và push [45684881030](https://github.com/1sl2tp/0v/actions/runs/45684881030) fail; job 139454727771: ReferenceError FamilyRegistry is not defined ở pendingEvidence. DB 45684897443 success. Sửa test qua public familyAudit; chưa xác nhận CI mới | Đọc log nhóm pending sau CI xanh |
 
 Nguồn rule duy nhất vẫn là RULES.md. Tài liệu này chỉ theo dõi công việc và bằng chứng; không thay đổi hợp đồng API.

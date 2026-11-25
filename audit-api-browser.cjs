@@ -188,8 +188,24 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
     const scope='#app, #app *, dialog[data-popup-parent], dialog[data-popup-parent] *';
     const scan=()=>{
      const counts={rendered:0,hiddenOrNonBox:0},groups=new Map();
-     for(const el of document.querySelectorAll(scope)){
-      const item=FamilyRegistry.resolve(el);if(!item.study)continue;
+     // familyAudit() is public; the registry itself is private to the app closure.
+     // Associate exact audit rows with DOM nodes using temporary unique IDs only in this test.
+     // Preserve existing unique IDs (especially #app), restore before computed style/geometry.
+     const nodes=[...document.querySelectorAll(scope)],byId=new Map(),restore=[];
+     let serial=0,audit;
+     try{
+      for(const el of nodes){
+       let id=el.id;
+       if(!id||byId.has(id)){
+        do{id='p01-test-node-'+(++serial)}while(document.getElementById(id)||byId.has(id));
+        restore.push([el,el.getAttribute('id')]);el.setAttribute('id',id);
+       }
+       byId.set(id,el);
+      }
+      audit=window.familyAudit();
+     }finally{for(const [el,id] of restore)id===null?el.removeAttribute('id'):el.setAttribute('id',id)}
+     for(const item of audit.pending){
+      const el=byId.get(item.id);if(!el)throw Error('P01 audit row has no DOM node');
       const css=getComputedStyle(el),box=el.getBoundingClientRect();
       const rendered=el.getClientRects().length>0&&(box.width>0||box.height>0)&&css.visibility!=='hidden'&&css.visibility!=='collapse';
       const state=rendered?'rendered':'hiddenOrNonBox';counts[state]++;
@@ -199,12 +215,12 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
       group[state]++;const sample={tag:el.tagName.toLowerCase(),slot:el.dataset.uiSlot||null,profile:el.dataset.layoutProfile||el.dataset.geoLayout||el.dataset.cardKind||el.dataset.tableDensity||null};
       const entries=group.samples[state];if(entries.length<3&&!entries.some(x=>JSON.stringify(x)===JSON.stringify(sample)))entries.push(sample);
      }
-     return {counts,groups:[...groups.values()],registryPending:window.familyAudit().pending.length}
+     return {counts,groups:[...groups.values()],registryPending:audit.pending.length}
     };
     const baseline=scan();let control=null;
     if(label==='chat'){
      const host=document.querySelector('.conversation'),shown=document.createElement('div'),hidden=document.createElement('div');
-     for(const el of [shown,hidden]){FamilyRegistry.mark(el,'Layout');el.style.cssText='position:absolute;width:1px;height:1px;pointer-events:none';host.append(el)}
+     for(const el of [shown,hidden]){Object.assign(el.dataset,{family:'Layout',parentApi:'Layout',familyStatus:'PROVISIONAL',study:'STUDY-LAYOUT-SLOTS'});el.style.cssText='position:absolute;width:1px;height:1px;pointer-events:none';host.append(el)}
      hidden.hidden=true;
      try{const withProbes=scan();control={rendered:withProbes.counts.rendered-baseline.counts.rendered,hidden:withProbes.counts.hiddenOrNonBox-baseline.counts.hiddenOrNonBox,pending:withProbes.registryPending-baseline.registryPending}}finally{shown.remove();hidden.remove()}
      control.restored=JSON.stringify(scan())===JSON.stringify(baseline)
