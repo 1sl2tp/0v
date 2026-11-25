@@ -64,3 +64,8 @@ Decision: source digest + normalized regions, conservative dHash candidates, no 
 - https://github.com/JohannesBuchner/imagehash/blob/master/README.rst — luminance hashes vs cryptographic digests.
 - https://github.com/naptha/tesseract.js/blob/master/README.md — reusable OCR worker interface; not installed in this phase.
 Decision: local browser decode and review-only region proposals. No upstream code copied, no external dependency.
+
+## v13.85 phase 3k
+- https://github.com/naptha/tesseract.js/blob/master/docs/api.md — reusable worker, recognize and language assets. No engine installed.
+- https://github.com/PaddlePaddle/PaddleOCR/blob/main/README.md — OCR/document understanding toolkit, separation of recognition and extraction.
+Decision: deterministic text-to-field contract ahead of OCR engine; preserve provenance, no inferred payment data, no new dependency.
