@@ -281,3 +281,6 @@ BankJournalAPI.planRollingBatch({journal,openingAt,asOf,customers:[{customer,pur
 
 ## v13.115 BANK-ROLLING-PERSIST
 BankJournalAPI.persistentEmpty/persistentProof/applyPersistent and openPersistent/readPersistent/changePersistent implement one account-keyed synthetic fixture journal and immutable receipt ownership in one IndexedDB transaction. Retry exact entries and same owner is idempotent; conflicts reject; existing independent journals not migrated. Browser-only hook ?bankpersistlab=1. canPost=false; canCloseCycle=false. No production adapter or cross-device guarantee.
+
+## v13.116 BANK-ROLLING-DB
+Standalone SQL fixture at fixtures/bank-db/schema.sql; post_receipt(...) returns created/replay, link_manual(...) returns linked/replay. Account-scoped unique receipt/bill/Bank key; trusted inputs only, no browser RPC, no production migration, no real ledger or balance updates. CI test.sh uses disposable local PostgreSQL 16. Actual Bank canonical key resolver and authorization are prerequisite to integration.
