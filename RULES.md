@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.136)
+## 00. Chỉ mục rule đang có hiệu lực (v13.137)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1167,3 +1167,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-BLUR-RESCUE-03: Rescue text never upgrades state, replaces proposal, supplies missing clock, or authorizes payment. Preserve original and rescue evidence; failed read requires manual review.
 - BILL-BLUR-RESCUE-04: Limit source crop 1024×1024, output 2048×2048, preserve alpha and boundaries; no source mutation. Tesseract quality guidance https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html; no new dependency.
 - BILL-BLUR-RESCUE-05: Direct/static regression of pixel kernel, bounded input, rescue gating and unchanged review state; CI pending; no customer images or production changes.
+
+## 162. BILL-QUALITY-TRIAGE — v13.137
+- BILL-QUALITY-TRIAGE-01: Measure bounded original crop grayscale histogram (1–99 percentile range), mean and neighbor gradient. Record flags only: nearly uniform, low contrast, dark, small crop height, weak edges. Thresholds are provisional heuristics, not accuracy or blur certification.
+- BILL-QUALITY-TRIAGE-02: Label scope value vs line; recommend original plus contrast, scale or rescue according to flags. Preserve three baseline reads and existing rescue gate; no automatic choice or skipping evidence based on pixel metrics.
+- BILL-QUALITY-TRIAGE-03: Conflict requires comparing original; absent value region requires crop selection. Unreadable critical account, amount, date or clock with known value region produces an editable-purpose draft to request clearer evidence, never sends. No inference of missing values; name/memo/reference review individually.
+- BILL-QUALITY-TRIAGE-04: Tesseract quality guidance https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html reviewed; no claimed correspondence between thresholds and production accuracy. No production, customer data, ledger or keyboard changes.
+- BILL-QUALITY-TRIAGE-05: Synthetic pixel and advice tests for uniform, contrast, dark, small crop, non-mutation, conflict, missing scope, unreadable clock and no sending/posting. Actual corpus calibration pending.

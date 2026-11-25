@@ -303,3 +303,6 @@ E0: v13.134 merged; API 45562802559 and DB 45562802642 passed. E1: actual synthe
 
 ## v13.136
 E0: v13.135 merged, API 45564486573 and DB 45564486312 passed. E1: native 84 reads; severe blur 3/7 original, 4/7 combined. Bounded browser rescue kernel differs from native benchmark; only review, one extra exact value crop attempt. E2: direct kernel/gating test and static regression; full CI pending. E3–E5 not certified. No private images, production, keyboard or ledger changes.
+
+## v13.137
+E0: v13.136 merged, API 45567193269 and DB 45567193106 passed. E1: bounded original-crop quality metrics, scope, advisory preprocessing and request draft; Tesseract quality documentation reviewed. E2: direct synthetic contract passed and static regression added; CI pending. Thresholds uncalibrated, no real image accuracy measured. No production, actual messages, private images, ledger or keyboard changes. E3–E5 pending.
