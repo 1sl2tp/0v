@@ -345,3 +345,6 @@ E0: v13.144 merged; API 45586540477 and DB 45586540402 passed. User requested re
 
 ## v13.146
 E0: v13.145 merged; API 45587574401 and DB 45587574592 passed. User screenshots 25/11 show one native popup but inconsistent vertical positioning. E1: establish anchor contract and read-only opt-in probe; unchanged normal app geometry, activation and protected keyboard ranges. E2: simulated viewport-change browser regression. CI and native acceptance pending; no claim of native menu repositioning.
+
+## v13.147
+E0: v13.146 merged, both CI passed; user requests Input-owned menu independent of keyboard. E1: local menu anchored to composer top, no keyboard/viewport logic or reserve, native handoff exclusive; 4 protected ranges unchanged. E2: browser regression updated for new interaction contract, CI pending. Native second chooser possible; physical iPhone required.
