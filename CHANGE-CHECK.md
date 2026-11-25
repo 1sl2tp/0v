@@ -147,3 +147,6 @@ Based on corrected v13.85 head 6e34441d1ff4ab78c9d5f6f804b9304ca750e99e; parent 
 
 ### v13.86 CI correction and corpus-derived cases
 CI static/version gates passed; Chromium worker test failed because the API lives in the application closure. Expose only a fixture self-test callback on explicit ocrfixture lab query, not the engine or customer data. Add synthetic cases based on existing private CHAT reason categories, with no private records copied. Test missing time, mismatched account, conflicting amounts, negative amount, fee/balance, invalid date and non-bill; no actual OCR model validation. Re-run CI. No production or keyboard change.
+
+## v13.87 — ten-field OCR contract
+Align ten independent fields with existing CHAT structured schema, support printed date and clock variants, add local stored-structured adapter. Static regression added; real image and browser validation pending. Private storage remains private. No production modification, no bill rescan or keyboard change.

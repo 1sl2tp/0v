@@ -188,3 +188,6 @@ parse(text,{profile,configured,confidence}) returns immutable record, evidence (
 
 ## v13.86 BillOCREngineAPI
 create({factory,profile}) returns run([{image,region}]), close(); sequential worker recognition, per-region BillOCRFieldAPI parse, review-only result. crop(canvas,region) produces rotated region canvas. loadDemo/demoFactory configure optional Tesseract.js CDN runtime; only synthetic images, no customer data. Real engine not bundled or validated; production self-hosting and corpus validation remain separate.
+
+## v13.87 ten-field OCR
+BillOCRFieldAPI.parse now exposes ten fields, including sendingBank, receivingBank and trace. fromStored accepts the CHAT bill_fields_v1 schema and adapts printed fields into explicit local parser input. Output review-only. No storage access, no automatic repair of historic data, no posting.
