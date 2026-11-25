@@ -5,6 +5,12 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try{
+ // Local printed orientation regression (synthetic, no customer data).
+ {
+ const p=await browser.newPage();await p.goto(url+'?kbmode=light');const method=require('node:fs').readFileSync('index.html','utf8').split(' printedOrientation(source){')[1].split(' clampZoom(value){')[0];
+ const result=await p.evaluate(code=>{const owner=new Function('return ({printedOrientation(source){'+code+'})')();const c=document.createElement('canvas');c.width=660;c.height=240;const x=c.getContext('2d');x.fillStyle='white';x.fillRect(0,0,c.width,c.height);x.fillStyle='black';x.font='24px Arial';for(let i=0;i<5;i++)x.fillText('TRANSFER PAYMENT 123456789 ABCDEF',18,35+i*40);const rotate=a=>{const o=document.createElement('canvas');o.width=a%180?c.height:c.width;o.height=a%180?c.width:c.height;const g=o.getContext('2d');g.translate(o.width/2,o.height/2);g.rotate(a*Math.PI/180);g.drawImage(c,-c.width/2,-c.height/2);return o};const blank=document.createElement('canvas');blank.width=300;blank.height=200;blank.getContext('2d').fillRect(0,0,300,200);return {upright:owner.printedOrientation(c),upsideDown:owner.printedOrientation(rotate(180)),side:owner.printedOrientation(rotate(90)),sideOther:owner.printedOrientation(rotate(270)),blank:owner.printedOrientation(blank)}},method);
+ console.log('printedOrientation',result);assert.deepEqual(result,{upright:0,upsideDown:180,side:270,sideOther:90,blank:null});await p.close();
+ }
  // Live 0v page uses its own login; intercept only the pinned SDK, never production.
  {
  const pg=await browser.newPage({viewport:{width:1280,height:800}});
