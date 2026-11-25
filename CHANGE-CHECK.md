@@ -73,3 +73,7 @@ v13.62 PR #29 merged 86a14b049ec888deb26ced23c5de6afeaec0686b; CI 45514538295/45
 
 ## v13.64 — NotificationController
 v13.63 PR #30 merged 2e038ae7589e5fd768098600f0d9c8ef4b0e1990; CI 45514986108/45514970063 success; Pages 45515164805 pending at initial check. E1 pure alert policy and in-memory ledger, scoped foreground offer, confirmed-read suppression, duplicate id, exact attempt settlement, known-no-effect fallback, uncertain review, tag and permission, synthetic lab. NOTIFICATION-API-01–06, SOURCE-GATE, KB-LOCK. Read WHATWG, Element, Workbox, Adobe and Astryx. Syntax compiled. No real send, worker, permission request, provider, backend, production or keyboard/Main changes. Durable atomic cross-tab claim, timeout/reconciliation, native user-visible requirements and actual delivery proof pending. No manual deploy.
+
+
+## v13.65 — durable alert fixture
+v13.64 PR #31 merged ca070a2b58a437ed48797ba885d4c5a28340f94a; CI 45515474679/45515456751, publish 45515634470, Pages 45515657928 success. E1 refactor shared alert transitions, atomic synthetic IDB claim, owner/token lease, expiry review and MessageChannel fixture ack/timeout, two-tab and reload tests. ALERT-DURABLE-01–05, SOURCE-GATE, KB-LOCK. Compile checked; CI/Pages pending. No actual Service Worker, real Push, production, DB/keyboard/Main change; no cross-device or exactly-once guarantee. No manual deploy.
