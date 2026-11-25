@@ -212,3 +212,6 @@ AgribankNoticeAPI.parse(raw,metadata) returns literal evidence, memo classificat
 
 ## v13.94
 BankMemoEnvelopeAPI.inspect(raw,{account,transactionAt}) separates technical metadata and principal; compare(billMemo,bankMemo,context) returns diagnostic literal and principal proof types, sender binding and conflict flags. Always canPost=false; not wired to ledger or existing reconcile eligibility.
+
+## v13.95
+BankMemoEnvelopeAPI supports observed MCC prefix and short sourceIdentifier; compare adds senderMemoProof and compactLiteralProof as diagnostic flags, independent of existing eligibility. No authorization.

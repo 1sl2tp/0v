@@ -171,3 +171,6 @@ v13.92 CI passed and merged. Add independent Agribank notice parser, exact amoun
 
 ## v13.94
 v13.93 CI passed and merged. Added diagnostic bank memo envelope parser and comparison. Unknown wrappers preserve raw memo; independent account and clock checks, sender binding, no posting policy change. Static regression executed. No production modification.
+
+## v13.95
+v13.94 CI passed and merged. MCC variant grammar, sender-bound generic memo and compact literal evidence. Diagnostic only; unchanged production and fixture eligibility. Direct regression run.
