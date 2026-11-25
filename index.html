@@ -2077,7 +2077,7 @@ function mountLiveChat(root){
  photoInput.addEventListener('change',async()=>{const owner=pickerOwner;pickerOwner=null;const files=Array.from(photoInput.files);photoInput.value='';if(!owner||scope!==owner.scope||!files.length||!DraftMedia.begin(owner.id))return;attachmentRooms.add(owner.id);try{for(const file of files){if(scope!==owner.scope||DraftMedia.list(owner.id).length>=DraftMedia.limit)break;if(!/^image\/(?:png|jpeg|webp|gif|avif|heic|heif)$/i.test(file.type)||file.size>DraftMedia.maxBytes)continue;const src=URL.createObjectURL(file),img=new Image();img.src=src;try{await img.decode();if(scope!==owner.scope||!img.naturalWidth||!DraftMedia.add(owner.id,{src,width:img.naturalWidth,height:img.naturalHeight,alt:file.name}))URL.revokeObjectURL(src)}catch{URL.revokeObjectURL(src)}}}finally{DraftMedia.end(owner.id);if(scope===owner.scope&&selected===owner.id){updateComposer();setSendStatus(DraftMedia.list(owner.id).length?'Ảnh đang ở bản nháp. API gửi ảnh chưa kết nối.':'Không chọn được ảnh hỗ trợ.')}}});
  draft.addEventListener('input',()=>{if(selected)drafts.set(selected,draft.value);updateComposer()});
  draft.addEventListener('compositionend',updateComposer);
- composer.addEventListener('submit',e=>{e.preventDefault();void sendText()});
+ composer.addEventListener('submit',e=>{e.preventDefault();if(Input.isComposing(draft,e))return;void sendText()});
  show('boot');document.body.prepend(boot,loginScreen,mfa,root);thread.addEventListener('scroll',saveView,{passive:true});list.addEventListener('scroll',saveView,{passive:true});window.addEventListener('pagehide',saveView);
  const style=document.createElement('style');style.textContent='[hidden]{display:none!important}#liveBoot,#liveMfa{display:flex;flex-direction:column;gap:12px;align-items:stretch;width:min(100%,360px);margin:auto;padding:16px}#liveBoot{min-height:100dvh;justify-content:center}#liveMfa{min-height:100dvh;justify-content:center}#liveMfa img{align-self:center}#liveMfa input{min-height:44px}#liveLogin input{width:100%;min-height:44px;border:1px solid var(--line);border-radius:12px;padding:10px}';document.head.append(style);
  function clear(){epoch++;choice++;navigationEpoch++;navigationPending=false;cancelEarlyClose();cancelGeometryScroll();InputController.blur();active=null;for(const id of Object.keys(scrolls))delete scrolls[id];clearMedia();for(const id of attachmentRooms){for(const item of DraftMedia.list(id))DraftMedia.remove(id,item.key)}attachmentRooms.clear();pickerOwner=null;clearInterval(heartbeat);reader?.dispose();reader=null;scope=null;rows=[];selected=null;list.replaceChildren();thread.replaceChildren();title.textContent='Chọn hội thoại';$live('#currentRole').textContent='';Avatar.update($live('#currentAvatar'),{text:'',name:''});drafts.clear();pending.clear();draft.value='';composer.hidden=true;setSendStatus('');sending=false;resetMfa();show('boot')}
@@ -2122,19 +2122,19 @@ function mountLiveChat(root){
   return box;
  }
  async function sendText(){
-  const contact=rows.find(r=>r.id===selected),owner=scope,body=draft.value.trim();
-  if(!owner||!contact||!body||sending||isTextComposing(draft)||DraftMedia.list(contact.id).length)return;
+  const contact=rows.find(r=>r.id===selected),owner=scope,body=Input.commitMessage(draft.value).text;
+  if(!owner||!contact||!body||sending||isTextComposing(draft)||DraftMedia.pending(contact.id)||DraftMedia.list(contact.id).length)return;
   const id=contact.id,previous=pending.get(id);
   // Retain the same key after an uncertain response, never auto-retry.
   if(previous&&previous.body!==body){setSendStatus('Tin trước chưa xác nhận. Khôi phục nội dung đó để thử lại.');return}
   const key=previous?.key||'0v:'+crypto.randomUUID();pending.set(id,{key,body});
-  sending=true;send.disabled=true;setSendStatus('Đang gửi…');
+  sending=true;send.disabled=true;setSendStatus('Đang gửi…');if(root.dataset.screen==='chat')draft.focus({preventScroll:true});
   try{
    const result=await rpc('v0_admin_send_text',{p_contact_id:id,p_client_id:key,p_body:body});
    if(result?.account_id!==owner.accountId||!result.message_id||!result.conversation_id)throw Error('invalid_send_response');
    if(scope!==owner)return;
-   pending.delete(id);if((drafts.get(id)||'').trim()===body)drafts.delete(id);
-   if(selected===id&&draft.value.trim()===body)draft.value='';
+   pending.delete(id);if(Input.commitMessage(drafts.get(id)||'').text===body)drafts.delete(id);
+   if(selected===id&&Input.commitMessage(draft.value).text===body)draft.value='';
    if(selected===id)setSendStatus('Đã gửi');
    await loadDirectory();if(scope===owner&&selected===id&&root.dataset.screen==='chat'){const fresh=rows.find(r=>r.id===id);if(fresh){scrolls[id]={top:thread.scrollTop,pinned:true};await openThread(fresh)}}
   }catch{if(scope===owner&&selected===id)setSendStatus('Chưa xác nhận gửi. Giữ nguyên nội dung và bấm Gửi để thử lại.')}

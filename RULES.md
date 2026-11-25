@@ -1377,3 +1377,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 
 ## LIVE-RUNTIME-01 — v13.173
 - LIVE-RUNTIME-01: Live và fixture chạy cùng ScrollController, KeyboardController, InputController, resizeDraft và swipe-back trước nhánh dữ liệu. Không viết lại thuật toán viewport/early-close; ba vùng protected giữ nguyên so với v13.27, composer chỉ thêm điều kiện quyền gửi live (không đổi hình học). Navigation dùng beginSharedNavigation; thao tác gửi thật vẫn yêu cầu admin, ảnh chưa upload không gửi. Khi chuyển vùng giữ draft, khi restore không ghi đè vị trí đọc trong lúc tải. Test live phải kiểm tra keyboard owner, multiline, vuốt và draft. Native iOS/PWA vẫn cần nghiệm thu; không đánh dấu E4. Không sửa production/CHAT cũ.
+
+- LIVE-RUNTIME-02: Gửi text gọi Input.commitMessage và Input.isComposing chung, chặn gửi khi attachment đang xử lý; focus input ngay trong thao tác gửi, không force refocus sau response khi user đã chuyển vùng. Test target danh bạ bằng #contacts, không lẫn header; kiểm tra giữ focus sau gửi. Không thay thuật toán viewport/resize.
