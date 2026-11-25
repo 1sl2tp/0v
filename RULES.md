@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.84)
+## 00. Chỉ mục rule đang có hiệu lực (v13.85)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -786,3 +786,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-IMAGE-03: Contrast and edge-detail signals flag low contrast, low detail, small region; thresholds experimental, never authorize OCR or payment. All regions remain unconfirmed and quality review. No trained blur or bill detector.
 - BANK-IMAGE-04: Isolated ?billimagelab=1 module, local file chooser, region preview, whole-image and split buttons, rotation of hash only. No journal or production action. Superseded reads ignored; release bitmap. No new dependencies.
 - BANK-IMAGE-05: Static raster/region/rotation/bounds tests and Chromium generated PNG test. References OpenCV contour segmentation, ImageHash luminance hash, Tesseract.js OCR worker interface. OCR adapter, real bill corpus and manual region editing remain separate. Preserve keyboard v13.27.
+
+## 107. BANK-OCR — v13.85 (phase 3k)
+- BANK-OCR-01: Parse one OCR text region, preserve line provenance and original values; explicit labels or a single following value line. Do not infer unlabelled clock, account, amount, name or reference. Unclassified lines kept for review. No engine in this phase.
+- BANK-OCR-02: Parse money with explicit existing ParseAPI profile (vi-VN, agribank-en or canonical); require positive exact decimal, never substitute balances, fees or totals. Recipient STK must be digits, no silent O-to-0 fix. Names optional, preserve accents.
+- BANK-OCR-03: Use existing ParseAPI.billDate with four-digit or explicit Vietnamese year; transaction-only clocks, never use send time or device time. Missing/invalid/conflicting fields remain null; confidence below experimental 80 flags review, confidence alone never authorizes posting.
+- BANK-OCR-04: Text lab ?billocrlab=1 only; display extracted fields, line numbers and gaps. All records quality review and canPost false; no automatic evidence dispatch, actual OCR, payment or message. Multi-line memo beyond one labelled value and ambiguous templates remain unclassified.
+- BANK-OCR-05: Static and browser fixtures include text date, exact fractional Bank amount, misleading balance/send time, invalid dates, conflicting amounts, recipient ID and OCR confidence. Consult Tesseract.js/PaddleOCR. Preserve keyboard v13.27.

@@ -182,3 +182,6 @@ validate(bill), inspect(bills) returns peer conflicts Map; digest(Uint8Array) co
 
 ## v13.84 BillImageIntakeAPI
 decode(file) returns local grayscale raster, original source SHA, bounded preview and dimensions; propose(p,w,h) suggests horizontal split rectangles; inspect(p,w,h,sha,regions,turn) yields unconfirmed normalized region identities, dHash, contrast/detail metrics and warnings. sample/normalized are pure. ?billimagelab=1 local file picker and preview. No OCR, automated bill count, ledger, real messages or network. Experimental heuristics only.
+
+## v13.85 BillOCRFieldAPI
+parse(text,{profile,configured,confidence}) returns immutable record, evidence (line provenance), unknown, ignored and issues; reuse ParseAPI for money/calendar. Explicit labels and next line only; quality review, canPost false. ?billocrlab=1 simulates OCR text input, not image recognition. No dispatch into financial journal.

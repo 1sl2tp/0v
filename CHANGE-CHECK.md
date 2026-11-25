@@ -135,3 +135,9 @@ Based on PR #49 head 5b979a7f32a74a7334316d0196a276f8adb06016; CI pending when w
 
 ## v13.84 — local image intake and candidate regions
 v13.83 PR #50 merged d3152981cf9686d1bbc81bf636a568c544bbdbb7; CI 45536570509 success. Local file decode and original digest, horizontal region proposals, preview, rotation of fingerprint samples, unconfirmed quality warnings. Static raster contract added; Chromium PNG test added, CI pending. BANK-IMAGE-01–05. No real OCR, perspective recovery, real ledger/DB, messages or keyboard changes.
+
+## v13.85 — OCR text field extraction
+Based on PR #51 head cbc93a13fc824d98254658360f97c9601e8d2d01; CI pending at work start. Explicit label/next-line extraction with field provenance, date words, exact source-profile amounts, excluded balance and send clock, conflicts/missing/low confidence review. Static contract passed; browser assertions added, CI required. BANK-OCR-01–05. No actual image OCR engine, posting, production DB or keyboard changes.
+
+### v13.85 CI correction
+CI 45538091181: static and version gates passed; browser timed out on OCR lab. Root cause: DOMStringMap billOCRStatus maps to data-bill-o-c-r-status, not data-bill-ocr-status. Normalize camelCase billOcrInput/Status/Field; assert actual state with error text. Re-run full CI; do not waive test. No business or keyboard change.
