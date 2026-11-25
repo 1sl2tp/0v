@@ -47,3 +47,8 @@ Decision: isolated bounded journal for fixtures; no server/database migration or
 - https://github.com/TanStack/table — separate row projection, sorting and presentation.
 - https://learn.microsoft.com/en-us/azure/architecture/patterns/event-sourcing — derive read models from events.
 Decision: read-only projection over existing fixture API, explicit clock and multiple reasons; no new production dependency.
+
+## v13.82 phase 3h
+- https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/coding/data-modeling.md — immutable financial transfers and idempotent IDs.
+- https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/reference/transfer.md — stable financial transaction identity.
+Decision: attach verification evidence to original fixture receipt, no additional posting and no silent amount change. Production implementation separate.
