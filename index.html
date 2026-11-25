@@ -716,14 +716,15 @@ html[data-floating="1"] #app>[data-ui-slot~="conversation"]>.composer-frame>.com
 
 /* Keyboard accessory: anchored to Input, outside its grid flow. */
 #app .composer[data-input-parent=chat]{position:relative}
-#app .composer>[data-picker-anchor]{position:absolute;inset:auto auto var(--composer-edge) var(--composer-edge);width:var(--touch);height:var(--touch);opacity:0;pointer-events:none;margin:0;padding:0;border:0}
 /* Keyboard accessory participates in the measured frame, not an independent overlay. */
 #app .composer-frame{display:flex;flex-direction:column;justify-content:flex-end}
 #app .composer-frame>.composer{flex:0 0 auto}
 #app .composer-frame>[data-composer-accessory]{position:relative;flex:0 0 auto;width:min(248px,var(--accessory-width,100%));margin-inline-start:var(--accessory-left,0px);margin-bottom:var(--gap-sm);max-height:var(--accessory-available,160px);overflow-y:auto;overscroll-behavior:contain;display:grid;gap:var(--gap-zero);padding:var(--gap-sm);border:1px solid var(--surface-edge);border-radius:var(--draft-expanded-radius);background:var(--paper);box-shadow:var(--surface-glass-elevation);pointer-events:auto;transition:none;animation:none}
-#app .composer-frame>[data-composer-accessory]>button{display:flex;align-items:center;justify-content:flex-start;gap:var(--gap-md);width:100%;min-height:var(--touch);padding:0 var(--gap-md);border-radius:var(--control-radius);font-size:var(--type-body);line-height:var(--line-body);text-align:start}
-#app .composer-frame>[data-composer-accessory]>button>svg{order:-1;flex:0 0 auto;width:20px;height:20px}
-#app .composer-frame>[data-composer-accessory]>button:active{background:var(--surface-pressed)}
+#app .composer-frame>[data-composer-accessory]>[data-accessory-choice]{position:relative;display:flex;align-items:center;justify-content:flex-start;gap:var(--gap-md);width:100%;min-height:var(--touch);padding:0 var(--gap-md);border-radius:var(--control-radius);text-align:start}
+#app .composer-frame>[data-composer-accessory]>[data-accessory-choice]>svg{flex:0 0 auto;width:20px;height:20px}
+#app [data-accessory-choice]:active{background:var(--surface-pressed)}
+#app [data-accessory-choice]:focus-within{outline:2px solid var(--control-focus);outline-offset:-2px}
+#app [data-native-accessory-input]{position:absolute;inset:0;display:block;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;pointer-events:auto}
 </style>
 </head>
 <body>
@@ -3856,7 +3857,8 @@ new ResizeObserver(()=>{const width=draftForm.clientWidth;if(width&&width!==last
 draft.addEventListener('input',resizeDraft);
 $('#composer').addEventListener('submit',e=>{e.preventDefault();if(Input.isComposing(draft,e))return;const {text:t,originalText}=Input.commitMessage(draft.value);if(DraftMedia.pending(active)||(!t&&!DraftMedia.list(active).length))return;const media=DraftMedia.list(active).map(({src,width,height,alt})=>({src,width,height,alt}));const sent=MainData.append(active,{text:t,originalText,mine:true,time:clock(),date:Date.now(),media});DraftMedia.take(active);updateContact(active);draft.value='';drafts[active]='';renderDraftMedia();const row=Message.create({mine:true,day:messageDay(sent),text:t,time:sent.time,media});appendDailyMessage(row,sent);resizeDraft();draft.focus({preventScroll:true});const epoch=navigationEpoch,owner=active;requestAnimationFrame(()=>{if(epoch!==navigationEpoch||owner!==active||app.dataset.screen!=='chat')return;ScrollController.end('send');anchor={pinned:true,top:messages.scrollTop};syncJump()})});
 
-const photoInput=make('input');photoInput.type='file';photoInput.accept='image/*';photoInput.multiple=true;photoInput.tabIndex=-1;photoInput.setAttribute('aria-hidden','true');photoInput.dataset.pickerAnchor='true';draftForm.append(photoInput);
+const photoInput=make('input');photoInput.type='file';photoInput.accept='image/*';photoInput.multiple=true;photoInput.dataset.draftMediaPicker='true';
+const cameraInput=make('input');cameraInput.type='file';cameraInput.accept='image/*';cameraInput.setAttribute('capture','environment');
 let pickerOwner=null;
 function finishPickerHandoff(){const owner=pickerOwner;pickerOwner=null;delete draftForm.dataset.nativePicker;return owner}
 function beginPickerHandoff(owner){pickerOwner=owner;draftForm.dataset.nativePicker='true';cancelEarlyClose()}
@@ -3864,7 +3866,7 @@ function beginPickerHandoff(owner){pickerOwner=owner;draftForm.dataset.nativePic
 const mediaTrigger=$('#mediaBtn'),accessoryFrame=draftForm.parentElement;
 const accessory=Layout.slot({name:'composer-accessory',family:'Keyboard',attrs:{id:'composerAccessory','data-composer-accessory':'true',role:'group','aria-label':'Thêm ảnh',hidden:true}});
 const mediaChoices=[['files','Chọn ảnh hoặc tệp ảnh','photo'],['camera','Chụp ảnh','camera']];
-for(const [kind,label,icon] of mediaChoices){const b=Button.create({text:label,label,icon});b.dataset.accessoryChoice=kind;accessory.append(b)}
+for(const [kind,label,icon] of mediaChoices){const row=Layout.slot({name:'accessory-choice',attrs:{'data-accessory-choice':kind}}),input=kind==='camera'?cameraInput:photoInput;const glyph=Icon.create(icon),text=Typography.create({role:'body',text:label});input.setAttribute('aria-label',label);input.dataset.nativeAccessoryInput=kind;row.append(glyph,text,input);accessory.append(row)}
 accessoryFrame.insertBefore(accessory,draftForm);
 mediaTrigger.setAttribute('aria-controls',accessory.id);mediaTrigger.setAttribute('aria-expanded','false');
 let accessoryOwner=null,accessoryPending=0,accessoryEpoch=0;
@@ -3894,10 +3896,17 @@ function openAccessory(){
 }
 function preserveDraftFocus(e){if(document.activeElement===draft&&e.cancelable)e.preventDefault()}
 let accessoryPress=false;
-for(const el of [mediaTrigger,accessory]){el.addEventListener('pointerdown',e=>{accessoryPress=true;preserveDraftFocus(e)});el.addEventListener('mousedown',preserveDraftFocus)}
+mediaTrigger.addEventListener('pointerdown',e=>{accessoryPress=true;preserveDraftFocus(e)});mediaTrigger.addEventListener('mousedown',preserveDraftFocus);
 for(const event of ['pointerup','pointercancel'])document.addEventListener(event,()=>{setTimeout(()=>{accessoryPress=false},0)},{passive:true});
 mediaTrigger.addEventListener('click',()=>{if(pickerOwner!==null)finishPickerHandoff();if(accessoryOwner!==null)closeAccessory();else openAccessory()});
-accessory.addEventListener('click',e=>{const b=e.target.closest('[data-accessory-choice]');if(!b||accessoryOwner!==active||DraftMedia.busy()||pickerOwner!==null)return;const owner=accessoryOwner,camera=b.dataset.accessoryChoice==='camera';beginPickerHandoff(owner);accessoryFrame.dataset.accessoryState='picker';photoInput.multiple=!camera;if(camera)photoInput.setAttribute('capture','environment');else photoInput.removeAttribute('capture');try{if(typeof photoInput.showPicker==='function'){try{photoInput.showPicker()}catch(e){if(e.name!=='NotSupportedError')throw e;photoInput.click()}}else photoInput.click()}catch(e){finishPickerHandoff();closeAccessory();console.error('Native image picker failed',e)}});
+// The real file control is the hit target. No synthetic click/showPicker or nested picker button.
+let pickerPress=null;
+for(const input of [photoInput,cameraInput]){
+ input.addEventListener('pointerdown',e=>{if(accessoryOwner!==active||DraftMedia.busy()||pickerOwner!==null){e.preventDefault();return}pickerPress=input;beginPickerHandoff(accessoryOwner);accessoryFrame.dataset.accessoryState='picker'});
+ input.addEventListener('pointercancel',()=>{if(pickerPress===input){pickerPress=null;finishPickerHandoff();accessoryFrame.dataset.accessoryState='open'}});
+ input.addEventListener('click',e=>{if(accessoryOwner!==active||DraftMedia.busy()||(pickerOwner!==null&&pickerPress!==input)){e.preventDefault();return}if(pickerOwner===null)beginPickerHandoff(accessoryOwner);pickerPress=null;accessoryFrame.dataset.accessoryState='picker'});
+}
+document.addEventListener('pointerup',()=>{const pending=pickerPress;if(pending)setTimeout(()=>{if(pickerPress===pending){pickerPress=null;finishPickerHandoff();if(accessoryOwner!==null)accessoryFrame.dataset.accessoryState='open'}},0)},{passive:true});
 document.addEventListener('pointerdown',e=>{if(pickerOwner===null&&accessoryOwner!==null&&!accessory.contains(e.target)&&!mediaTrigger.contains(e.target))closeAccessory()},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&accessoryOwner!==null&&pickerOwner===null){e.preventDefault();closeAccessory()}});
 draft.addEventListener('focusout',e=>{if(pickerOwner!==null||accessoryPress||accessoryOwner===null||accessory.contains(e.relatedTarget)||mediaTrigger.contains(e.relatedTarget))return;const epoch=accessoryEpoch;requestAnimationFrame(()=>{if(epoch===accessoryEpoch&&pickerOwner===null&&!accessoryPress&&document.activeElement!==draft&&!accessory.contains(document.activeElement)&&document.activeElement!==mediaTrigger)closeAccessory()})});
@@ -3905,15 +3914,15 @@ document.addEventListener('click',e=>{if(e.target.closest('.contact,[data-go]'))
 new MutationObserver(()=>{if(app.dataset.screen!=='chat'||accessoryOwner!==active)closeAccessory()}).observe(app,{attributes:true,attributeFilter:['data-screen']});
 const accessoryObserver=new ResizeObserver(()=>{if(accessoryOwner!==null)measureAccessory()});accessoryObserver.observe(app);accessoryObserver.observe(draftForm);
 
-photoInput.addEventListener('cancel',()=>{finishPickerHandoff();closeAccessory()});
-photoInput.dataset.draftMediaPicker='true';
-photoInput.addEventListener('change',async()=>{
- const files=Array.from(photoInput.files),owner=finishPickerHandoff()??active;closeAccessory();photoInput.value='';if(!files.length||!DraftMedia.begin(owner))return;
+for(const input of [photoInput,cameraInput]){
+ input.addEventListener('cancel',()=>{pickerPress=null;finishPickerHandoff();closeAccessory()});
+ input.addEventListener('change',async()=>{
+ const files=Array.from(input.files),owner=finishPickerHandoff()??active;pickerPress=null;closeAccessory();input.value='';if(!files.length||!DraftMedia.begin(owner))return;
  if(owner===active){renderDraftMedia();resizeDraft()}
  try{for(const file of files){if(DraftMedia.list(owner).length>=DraftMedia.limit)break;if(!/^image\/(?:png|jpeg|webp|gif|avif|heic|heif)$/i.test(file.type)||file.size>DraftMedia.maxBytes)continue;
  const src=URL.createObjectURL(file),img=new Image();img.src=src;try{await img.decode();if(!img.naturalWidth||!img.naturalHeight||!DraftMedia.add(owner,{src,width:img.naturalWidth,height:img.naturalHeight,alt:file.name}))URL.revokeObjectURL(src)}catch{URL.revokeObjectURL(src)}
  } }finally{DraftMedia.end(owner);if(owner===active){renderDraftMedia();resizeDraft()}}
-});
+});}
 
 $('#addContact').addEventListener('click',()=>Popup.open({type:'form',title:'Thêm danh bạ',description:'Chức năng chưa kết nối dữ liệu.'}));
 const ScrollController={

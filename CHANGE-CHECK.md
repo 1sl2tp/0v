@@ -327,3 +327,6 @@ E0: v13.142 merged, API/DB passed; user screenshots show ongoing native picker a
 
 ### v13.143 CI repair 1
 Run 45583429500: static and snapshot checks passed; browser timed out on filechooser. DB 45583429496 passed. Candidate amended: guard focusout during accessory press, native showPicker synchronous, same real filechooser test; no assertion removed. New CI pending.
+
+### v13.143 CI repair 2
+Run 45584025796 failed again waiting for filechooser; DB 45584025870 passed. Replace synthetic activation with real file controls in accessory rows; shared change/cancel/decode and pointer handoff, actual chooser test both actions. Exact four protected ranges unchanged. CI/native pending.
