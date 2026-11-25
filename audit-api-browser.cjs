@@ -155,7 +155,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  // OCR worker contract with injected fixture engine; no external network, no real data.
  {
  const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?billenginelab=1&ocrfixture=1');await p.locator('.contact[data-id=kh]').evaluate(e=>e.click());await p.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());await p.waitForSelector('[data-bill-engine-status=idle]');
- const result=await p.evaluate(()=>window.billEngineFixtureCheck());
+ const result=await p.evaluate(()=>window.billEngineFixtureCheck());const isolated=await p.evaluate(()=>window.billRegionBatchFixtureCheck());assert.deepEqual(isolated.states,['review','error','review']);assert.deepEqual(isolated.amounts,['400000',null,'975000']);assert.deepEqual(isolated.times,['15:16',null,null]);assert.equal(isolated.calls,3);assert.equal(isolated.stops,2);assert.equal(new Set(isolated.keys).size,3);assert.equal(isolated.canPost,false);
  assert.deepEqual(result,{creates:1,reads:2,stops:1,closed:true,amount:'400000',canPost:false,time:null});await p.close()
  }
  // Layout and Typography lab coverage is separate from the normal UI.

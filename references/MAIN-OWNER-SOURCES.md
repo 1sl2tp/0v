@@ -129,3 +129,6 @@ ImageHash https://github.com/JohannesBuchner/imagehash/blob/master/imagehash/__i
 
 ## v13.103
 Adobe React Stately SelectionManager.ts pinned blob d6ff15c5b5efd7f9be685f87f46c3ed251c093f5: selected keys are separate from focused key and collection rendering. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a: existing parent layout. Reuse 0v normalized region identity and whitespace projection, not Adobe runtime. No transaction identity inferred from geometry.
+
+## v13.104
+Tesseract.js v6.0.1 src/createWorker.js blob 89b53b89b27f6579155ed2a0ef372fa8c2a8b8e6: per-image recognize job and terminate lifecycle; reuse current adapter, separate region job data, close failed worker. Astryx Button pinned blob f87eb657180a0de978fb3ba1c59c24909a9cc63d: separate interaction/loading state; no upstream code copied. No real bill samples.
