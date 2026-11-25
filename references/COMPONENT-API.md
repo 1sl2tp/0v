@@ -450,3 +450,6 @@ ChatReadAPI.create({session,readContacts,readThread}) consumes host-authorized c
 
 ## v13.172 LiveAuthAPI
 inspect(client) distinguishes guest/enroll/challenge/ready; enroll and verify use Supabase MFA; UI boot/guest/mfa/ready mutually exclusive, view scoped to authenticated account and same tab. Network failure stays boot retry, not logout. View restoration is not proof of MFA backend enforcement. CI/real-device verification pending.
+
+## Main live profile
+Main.mount({live,onSearch}) creates same shell, no fixture contacts for live, returns hidden unmounted root until caller mounts. Live adapter binds server read/send, directory selection, search, navigation, DraftMedia preview; no upload or business API. Native keyboard integration pending.

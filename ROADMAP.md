@@ -79,3 +79,6 @@ Không đánh dấu các bước TODO là hoạt động chỉ vì quyền admin
 
 ### P03-LIVE — F5 / v13.172
 E0 reproduced by user report and source; CI #728 failed RULES active version. Patch + synthetic browser regression for independent session, MFA, F5 restore, transient failure/retry. E2/E3/E4 pending; no completed milestone claimed. Media PR #141 prerequisite/superset; no production changes in this round.
+
+### P03-LIVE — shared Main shell recovery
+User reported lost directory/search/composer/media after live migration. E0 confirmed separate factory. New shared shell patch in v13.172 pending CI/Pages; live keyboard runtime, media upload, realtime and work API pending. Do not mark complete.
