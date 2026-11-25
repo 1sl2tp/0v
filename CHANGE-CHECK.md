@@ -165,3 +165,6 @@ Shared account whitespace normalization, raw evidence retained, partial evidence
 
 ## v13.92
 Batch fixture matching distinguishes explicit disproven cross-pairs from plausible competitors, preserves excluded candidates and referenceScope. Three equal-amount bill regression, out-of-order credit and replay tests. No production action, real bank namespace adapter or customer data. Parent v13.91 CI in progress at start.
+
+## v13.93
+v13.92 CI passed and merged. Add independent Agribank notice parser, exact amount and explicit direction/date/clock, memo classification and balance/overdraft separation. Direct regression tested. No production trust adapter.
