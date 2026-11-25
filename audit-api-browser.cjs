@@ -85,6 +85,15 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await mp.locator('[data-go=contacts]').first().evaluate(e=>e.click());await mp.locator('.contact[data-id=ncc]').evaluate(e=>e.click());
  assert.equal(await mp.locator('.contact[data-id=ncc] .unread-count').count(),0);assert((await mp.evaluate(()=>window.ownerAudit().parents)).includes('Contact'));const data=await mp.evaluate(()=>window.mainDataAudit());assert.equal(data.messages,12);assert.equal(data.rooms.nv.count,4);assert.equal(data.rooms.nv.latestId,'main:nv:4');assert.equal(data.rooms.ncc.count,4);assert.equal(data.rooms.ncc.latestId,'main:ncc:4');assert.equal(data.rooms.kh.count,2);assert.equal(data.rooms.nhom.count,2);assert.equal(await mp.locator('#messages .message').filter({hasText:'Tin chưa đọc thứ hai'}).count(),1);await badge.dispose();await mp.close()
  }
+ // Main business projection: common order line/total and ledger formatting in the normal fixture.
+ {
+ const bp=await browser.newPage({viewport:{width:390,height:844}});await bp.goto(url+'?apicheck=1');
+ await bp.locator('.contact[data-id=kh]').evaluate(e=>e.click());await bp.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());
+ await bp.locator('#modules button[data-module=orders]').evaluate(e=>e.click());
+ const table=bp.locator('#moduleContent table');assert.equal(await table.locator('tfoot td').last().textContent(),'350.000');assert.equal(await table.locator('tbody tr').first().locator('td').last().textContent(),'200.000');
+ await bp.locator('#modules button[data-module=balance]').evaluate(e=>e.click());assert((await bp.locator('#moduleContent').textContent()).includes('−650.000 đ'));
+ await bp.locator('#modules button[data-module=payments]').evaluate(e=>e.click());assert((await bp.locator('#moduleContent').textContent()).includes('24/11/2026 · 10:30'));await bp.close()
+ }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
  await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());
