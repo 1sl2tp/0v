@@ -455,3 +455,7 @@ E0: 0v v13.166 merged 72097c5fda95d88936b15063b25b77aac378eaa1, Pages 4568779844
 
 ## v13.167 — sửa fixture CI và thống nhất kiến trúc một DB
 E0: PR #137 CI 45688788657 job 139468384563 fails locator timeout 'Khách đọc mẫu'; fixture was outside private Main closure, where ChatReadAPI/Layout/Popup are inaccessible. Static/snapshot passed; DB 45688788737 passed. E1: move fixture into existing closure before close, add pageerror capture and wait for dialog disposal. No weakening of access guards. User confirms both projects use same existing database; migration is frontend feature-by-feature, not data replication. Same Auth/project and existing RPC/membership, no second DB, separate origin sessions only via existing approved login flow or controlled same-origin host; never copy tokens between origins. No live connection yet, no DB mutation. Snapshot/index 214a79d46f8a132099db40531dd7a18bc4a2b0ce, test syntax passed, E2 pending.
+
+
+## v13.168 — trực tiếp đọc CHAT trong 0v
+E1: thêm live mode mặc định trên Pages, đăng nhập admin tại chính 0v, dùng Supabase JS 2.57.4 như CHAT, kiểm tra role và device approval, đọc RPC hiện hữu; dùng lại ChatReadAPI, Contact, View, Layout, Input; không sửa CHAT/DB schema. Đối chiếu định nghĩa RPC live bằng SELECT pg_get_functiondef, tài liệu Supabase signInWithPassword và auth-session-store.js CHAT. Rule LIVE-READ-01; demo và keyboard giữ nguyên ngoài version. CI/Pages/thiết bị và login admin thật chưa xác nhận. Rollback về v13.167 hoặc mở ?demo=1.
