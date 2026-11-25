@@ -438,3 +438,7 @@ Chat role 17/26 plain/formatted; CardController.row both detail 14/20; TableCont
 
 ## v13.165 — Button type
 Button.create textRole detail(default 14/20), body(16/22), caption(13/18). ButtonController registration owns bill medium profile, icon/composite excluded. Geometry independent. BUTTON-TYPE-01–03; CI/native pending.
+
+
+## v13.166 — Type rhythm
+Typography: version 11/16, contact name medium 16/22, preview detail 14/20, time 13/18, chat 17/24. Layout: contact preview track derives from detail, desktop thread gap 8. Input untouched. TYPE-RHYTHM-01–03; native pending.

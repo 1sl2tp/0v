@@ -126,3 +126,7 @@ CI PR #133 [45684897457](https://github.com/1sl2tp/0v/actions/runs/45684897457) 
 
 ## P01.4 v13.164 E2/E3, v13.165 candidate
 PR #134 merged, [API CI](https://github.com/1sl2tp/0v/actions/runs/45685766944), [DB CI](https://github.com/1sl2tp/0v/actions/runs/45685766913), [Pages](https://github.com/1sl2tp/0v/actions/runs/45686150128) passed. Next candidate normalizes Button text sizes by semantic role; not removing pending status. P01 remains DOING, native pending.
+
+
+## P01.4 v13.165 E2/E3 and v13.166
+[PR #135](https://github.com/1sl2tp/0v/pull/135), [API CI](https://github.com/1sl2tp/0v/actions/runs/45686796901), [Pages](https://github.com/1sl2tp/0v/actions/runs/45687126633) passed. v13.166 candidate improves contact, version, chat rhythm and desktop gap; E2–E5 pending, P01 DOING.
