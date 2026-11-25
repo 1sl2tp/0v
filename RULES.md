@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.170)
+## 00. Chỉ mục rule đang có hiệu lực (v13.171)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1358,3 +1358,7 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 
 ## v13.170 — LIVE-ADMIN-01
 - LIVE-ADMIN-01: User quyết định 0v là CHAT CRM chính thức thay CHAT cũ, admin có đầy đủ quyền nghiệp vụ qua API theo chức năng; không giới hạn chỉ đọc. Gửi thật khi chính admin thao tác Gửi; không dùng service_role trên frontend, không cấp toàn quyền SQL, không gửi tin thử cho khách. API riêng v0_admin_send_text kiểm tra session/admin/đối tượng và nội dung; chống trùng bằng client_id, không tự retry, giữ nháp khi lỗi. Ghi đúng bảng v21_messages chung và giữ trigger hiện có; không sửa CHAT cũ. Mỗi thao tác tiếp theo phải có quyền và kiểm thử riêng. Push/bridge hiện hữu vẫn có thể xử lý tin do database phát sinh; không thay thiết lập Push cũ trong vòng này.
+
+
+## LIVE-MEDIA-01 — v13.171
+0v đọc media bằng RPC riêng và Storage bucket private, chỉ admin đang có phiên hợp lệ và thành viên hội thoại, asset/tin/contact chưa xóa hoặc khóa. Không public URL. Ảnh tải khi vào vùng nhìn, dùng MediaController; audio/video/tệp tải khi admin bấm. Object URL xóa khi đổi phòng/đăng xuất. Không ghi media, chưa gửi ảnh/tệp. Kiểm thử fixture, CI trước merge.
