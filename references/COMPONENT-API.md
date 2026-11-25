@@ -465,3 +465,16 @@ Same native picker before split. Live callbacks authorize capture/decode by sess
 
 ## Live gallery adapter
 liveMediaGroups groups ordered consecutive images within one message, up to four. mediaImageGroup decodes private blobs, passes natural sizes to MediaController.gallery, keeps successful images on partial failure, retry missing. Existing viewer supplies navigation/zoom/rotation; non-images stay in source order. No backend media guarantee or upload.
+
+## v13.174 live geometry/media
+ScrollController.replaceMedia(el,replace) owns media growth anchor; when tail and idle follow existing geometry; when entirely above visible area and idle compensate delta, otherwise preserve scroll. Live adapter accepts known image MIME under generic file/attachment and requires decoded supported image. Directory account actions use Layout grid 2 columns. Native acceptance pending.
+
+## Main navigation position
+Main.threadPosition(reason,saved): contact/send -> tail, restore/return -> saved. Main.finishNavigation(epoch,position,onDone) validates active room/screen/epoch, waits for layout and delegates scroll to ScrollController. Main is the common parent; no adapter-specific auto refresh.
+
+## Media MIME parent
+MediaController.normalizeMime, isImageMime, imageBlob: normalize supported aliases, retype only valid raster Blob without changing bytes, do not disguise explicit non-image. Decode remains mandatory before display. All live and picker image routing uses same parent.
+
+ScrollController.finishNavigation(position): consumes epoch-validated Main position and clears prior navigation's scroll cooldown if not touching; hidden/loading scroll events do not start cooldown. Existing geometry/gesture policies otherwise remain.
+
+Main.finishNavigation convergence: waits for stable measured scroll extent/height/composer reserve and pending layout frames, commits position through ScrollController once (max 12 frames), stops for a new navigation epoch or user gesture. No new keyboard writer or continuous observer.

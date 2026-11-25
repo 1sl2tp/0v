@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.173)
+## 00. Chỉ mục rule đang có hiệu lực (v13.174)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1383,3 +1383,16 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-RUNTIME-03: Dấu + ở live và fixture phải gọi đúng một native picker chung, giữ begin/finish handoff, một input co-located, synchronous click, cancel/change, không forced blur/refocus và không ghi viewport. Adapter live chỉ kiểm scope trước/sau decode, giữ ảnh draft theo room và xóa khi logout. Chưa upload: chặn send khi pending/có ảnh. Test live thực hiện một chooser, chọn hai ảnh, xóa, hủy, giữ text, không phát sinh send khi chọn ảnh. Native iOS menu vẫn cần kiểm tra. Không đổi vùng bảo vệ KB-LOCK.
 
 - LIVE-RUNTIME-04: Media thật phân loại theo kind/MIME và nhóm ảnh liền nhau cùng message, tối đa 4 theo MediaController.gallery. Giữ thứ tự, dùng kích thước decode thật (không đoán 360×360), giữ ảnh đã tải nếu một ảnh lỗi và hiện retry; không tạo viewer riêng. Private download, epoch/session guard trước/sau decode, revoke URL khi đổi phòng/logout; video dùng MediaController.video/releaseVideo. ScrollController giữ tail khi phù hợp, không tự kéo khi đang đọc tin cũ. Test nhóm ảnh dọc/ngang/vuông, chuyển ảnh và zoom. Native iOS, server media API, upload, thao tác nghiệp vụ chưa nghiệm thu; không thay keyboard.
+
+## v13.174 — LIVE-RUNTIME-05
+- Ảnh user 04:15 v13.172: vùng gõ bb mở rộng, tin cuối sau frame, tệp đính kèm, footer hai hàng. v13.173 đã phát hành; không coi ảnh cũ là lỗi tái hiện v13.173. Kiểm thử live 'bb' single, chung hàng +/send, reserve frame; không sửa protected KB-LOCK. Dùng Layout grid hai cột cho refresh/logout, status số liên hệ ở footer, không chèn dòng riêng vào đầu danh bạ. MIME ảnh được xác thực có thể đi qua gallery dù kind=file/attachment, actual blob MIME kiểm tra và decode thành công trước render. Tệp chưa rõ chỉ thử decode ảnh khi người dùng bấm và blob MIME là ảnh hỗ trợ, không đoán từ tên và không render HTML/SVG. ScrollController.replaceMedia giữ tail hoặc bù kích thước vùng nằm hoàn toàn trên viewport nếu không có gesture/navigation; không ép cuộn khi đang đọc. Không sửa DB, chưa gửi ảnh hoặc nghiệm thu iPhone.
+
+## MAIN-NAV-01 — v13.174
+- Main là cha duy nhất quyết định vị trí vào hội thoại. Bấm danh bạ (kể cả cùng contact) -> cuối mới nhất; gửi thành công -> cuối; F5/khôi phục session và quay từ Công việc -> giữ vị trí đã lưu. Main.threadPosition + Main.finishNavigation dùng ScrollController sau khi render và geometry settle; epoch/room guard, không cập nhật nếu đã chuyển vùng. Bản mẫu và live đều gọi Main; adapter chỉ lấy/render data và truyền intent. Không thêm auto refresh, timer/poll hoặc cuộn riêng. Giữ draft, KB-LOCK, user đọc cũ không bị kéo do refresh ngoài intent; test lịch sử dài, reopen, F5, fixture/live. Không sửa DB, native acceptance pending.
+
+## MEDIA-MIME-01 — v13.174
+- MIME thuộc MediaController cha: normalizeMime chuẩn hóa chữ hoa/thường, tham số; image/jpg và image/pjpeg -> image/jpeg. isImageMime và imageBlob dùng chung cho live/gallery/file fallback và picker; blob có MIME không rõ chỉ dùng declared MIME ảnh hợp lệ, MIME xung đột không giả dạng ảnh, không cho SVG/HTML/PDF thành ảnh. Phải decode thành công mới render; không đổi bytes hay DB. SQL read-only 26/11: C Sâm PL 25/11 21:51/21:52 đều image/jpg, 966×2146, có object; toàn kho 1260 image/jpg có object. Test JPEG bytes với MIME image/jpg, generic file và negative MIME. Không tự phát sinh OCR/thu tiền hay tải lại danh bạ. Native và CI pending.
+
+- MAIN-NAV-02: Khi Main hoàn tất điều hướng hợp lệ, ScrollController bỏ cooldown cuộn của vùng cũ nếu không còn gesture; scroll event trong navigationPending hoặc vùng ẩn không được đánh dấu là người dùng cuộn. Không thay đổi owner bàn phím, không thêm timer, giữ chính sách đọc cũ và F5. Kiểm tra lại tail sau media decode và quay lại danh bạ.
+
+- MAIN-NAV-03: Main.finishNavigation giữ giao dịch điều hướng trong lúc layout/resize chưa ổn định (chữ ký chiều cao vùng cuộn, nội dung, composer/reserve; 2 lần lặp ổn định, tối đa 12 frame cho một giao dịch). Chỉ chốt ScrollController một lần sau đo; gesture người dùng hoặc đổi epoch hủy quyền ép cuộn. Không poll liên tục, không timer và không sửa KB-LOCK. Giữ dung sai tail nghiêm ngặt ở test live/fixture.
