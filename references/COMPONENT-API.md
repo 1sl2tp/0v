@@ -366,3 +366,6 @@ CRM menu paints only before native activation; trusted click marks native presen
 
 ## v13.145 — direct native picker
 Keyboard frame > composer > one native file control sharing + grid cell. No accessory menu or additional reserve. Native default activation exposes OS-supported choices. Keep room handoff and ordinary keyboard baseline. Source: https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm (native action sheet, elementRect). Physical iPhone validation required.
+
+## v13.146 — picker anchor geometry
+Input/plus same 44×44 box; relative anchor follows composer/frame and visual viewport. `?pickerprobe=1` records activation and later rectangle drift, focus and viewport state locally; no geometry writes. Native popup rectangle is unavailable in DOM. Source: https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm ; native implementation may differ by installed iOS. Native acceptance pending.

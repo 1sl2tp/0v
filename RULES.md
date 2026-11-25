@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.145)
+## 00. Chỉ mục rule đang có hiệu lực (v13.146)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1230,3 +1230,8 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - DIRECT-NATIVE-PICKER-01: Supersedes CRM accessory menu/presentation in rules 166–169. One native file input accept=image/* multiple shares the + grid cell, actual 44x44 hit area; visual face is not independently focusable or clickable. No intermediate CRM menu, no capture restriction; platform supplies available photo library/camera/file options. Desktop may only show file dialog.
 - DIRECT-NATIVE-PICKER-02: Both keyboard states use the same direct default action, capture room ownership before blur, cancel pending early-close; no programmatic focus/blur/click, no extra menu reserve or geometry writer. Clear on change/cancel or abandoned pointer; explicit fresh activation recovers stale session. Keep existing decode path and room ownership. No promise that iOS retains keyboard or places native sheet at exact offset.
 - DIRECT-NATIVE-PICKER-03: Browser test real chooser from unfocused/focused draft, exact 44px hit, no intermediate menu, unchanged frame in fixed simulated viewport, cancel/reopen and actual image selection. Physical iPhone Safari/PWA acceptance still required. Source: WebKit WKFileUploadPanel.mm native action sheet and anchor; prior pinned Astryx input geometry. No production or bill changes.
+
+## 171. PICKER-ANCHOR — v13.146
+- PICKER-ANCHOR-01: The native input and visual + must share a 44×44 CSS px box, dx/dy <=1 CSS px, stay within visual viewport; frame bottom tracks viewport bottom (tolerance 1px in simulated tests). No fixed screen y or compensating keyboard-height offset. App frame, actual input and button move together.
+- PICKER-ANCHOR-02: Native popup geometry is outside DOM. WebKit WKFileUploadPanel uses element rectangle or interaction location when creating native menu; implementation/version may reposition it independently. Screenshot 25/11/2026 v13.145 shows popup remains at same screen position while composer moves between keyboard states. No unsupported CSS guarantee or extra menu.
+- PICKER-ANCHOR-03: Opt-in pickerprobe=1 is read-only; capture input/plus/frame/visual viewport rectangles, activation drift and focus/picker states; no chat text, no network, no layout/focus writer. Validate on real iPhone before deciding any behavior change. Browser regression covers changing viewport during picker, same app anchor and draft; cannot assert native popup location. Source: WebKit WKFileUploadPanel.mm (main, not necessarily shipped iOS build).

@@ -342,3 +342,6 @@ E0: v13.143 merged; CI API 45585754939 and DB 45585754803 passed. User iPhone sc
 
 ## v13.145
 E0: v13.144 merged; API 45586540477 and DB 45586540402 passed. User requested removal of duplicate CRM menu. E1: remove intermediate accessory, camera-specific input, settling loop and reserve; direct native + cell, existing picker guard and decode. Four protected ranges equal before version labels. E2: real chooser in both focus states, hit/geometry/cancel/selection regression. CI and native pending.
+
+## v13.146
+E0: v13.145 merged; API 45587574401 and DB 45587574592 passed. User screenshots 25/11 show one native popup but inconsistent vertical positioning. E1: establish anchor contract and read-only opt-in probe; unchanged normal app geometry, activation and protected keyboard ranges. E2: simulated viewport-change browser regression. CI and native acceptance pending; no claim of native menu repositioning.
