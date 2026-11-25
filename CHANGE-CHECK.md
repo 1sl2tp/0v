@@ -114,3 +114,6 @@ v13.75 PR #42 merged 7af501d0e53361f33c99d47d63dd72cb872baf83; CI 45528009392 su
 
 ## v13.77 — order notice phase 3c
 Shared OrderNoticeProjectionAPI and Main read-only order notice card. Direct tests: draft skipped, delivered two required recipients, partial then complete, repeat/skip/out-of-order blocked. Seven classic scripts and audits syntax checked. Added browser draft projection assertion; CI pending. Based on PR #43 head a7931fcc5281dbabe79ccdc9b701bda385570010; require its CI and merge before release. No real sending or production changes.
+
+## v13.78 — cross-day bank evidence and Vietnamese dates
+Extend ParseAPI.billDate; new BankReconcileAPI pure batch candidates, no day cut-off, unique bill↔bank, verified credit, exact amount, date/time ±60 seconds, memo/reference and quality gates; carry missing time to review and bank-only to pending; duplicate/conflict guard. 3-bill fixture lab. Direct tests, static bank contract and syntax passed; browser assertions added, CI pending. BANK-RECON-01–05. No production, ledger, actual customer data, real notifications or keyboard change. Based on v13.77 PR #44 head c4dd49dd547d6ccaa3520b0c23575f477adecfad; require CI and merge before release.
