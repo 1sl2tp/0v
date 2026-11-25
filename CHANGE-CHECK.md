@@ -141,3 +141,6 @@ Based on PR #51 head cbc93a13fc824d98254658360f97c9601e8d2d01; CI pending at wor
 
 ### v13.85 CI correction
 CI 45538091181: static and version gates passed; browser timed out on OCR lab. Root cause: DOMStringMap billOCRStatus maps to data-bill-o-c-r-status, not data-bill-ocr-status. Normalize camelCase billOcrInput/Status/Field; assert actual state with error text. Re-run full CI; do not waive test. No business or keyboard change.
+
+## v13.86 — OCR engine adapter and synthetic demo
+Based on corrected v13.85 head 6e34441d1ff4ab78c9d5f6f804b9304ca750e99e; parent CI pending when work started. Explicit Tesseract.js 6.0.1/CDN demo, per-region worker session, OCR text pipeline and cancel guards. Static configuration contract passed; injected worker Chromium test added; actual CDN/recognition quality not validated. BANK-ENGINE-01–05. No real data, production ledger/DB, messages or keyboard change. External assets not bundled; private bills prohibited in demo.

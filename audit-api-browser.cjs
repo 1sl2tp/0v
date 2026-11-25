@@ -152,6 +152,12 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.waitForSelector('[data-bill-ocr-status]');assert.equal(await p.locator('[data-bill-ocr-status]').getAttribute('data-bill-ocr-status'),'ready',await p.locator('[data-bill-ocr-status]').textContent());assert((await p.locator('[data-bill-ocr-field=amount]').textContent()).includes('400000'));assert((await p.locator('[data-bill-ocr-field=time]').textContent()).includes('15:16'));
  await p.locator('[data-bill-ocr-input]').fill('Số tiền: 400.000\nSố tiền: 500.000\nGiờ gửi ảnh: 08:00');await p.getByRole('button',{name:'Phân tích OCR',exact:true}).evaluate(e=>e.click());assert((await p.locator('[data-bill-ocr-status]').getAttribute('data-issues')).includes('conflict-amount'));assert((await p.locator('[data-bill-ocr-field=time]').textContent()).includes('Thiếu hoặc mâu thuẫn'));await p.close()
  }
+ // OCR worker contract with injected fixture engine; no external network, no real data.
+ {
+ const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?billenginelab=1');await p.locator('.contact[data-id=kh]').evaluate(e=>e.click());await p.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());await p.waitForSelector('[data-bill-engine-status=idle]');
+ const result=await p.evaluate(async()=>{let creates=0,reads=0,stops=0;const r={imageSha256:'a'.repeat(64),imageRegion:'0,0,10000,10000',regionHash:'0000000000000000',rotation:0,confirmed:false};const s=BillOCREngineAPI.create({factory:async()=>{creates++;return {recognize:async()=>{reads++;return {data:{text:'Số tiền: 400.000\nSTK nhận: 123456789\nNgày giao dịch: 24/11/2026',confidence:88}}},terminate:async()=>{stops++}}}});const rows=await s.run([{image:{},region:r},{image:{},region:r}]);await s.close();await s.close();let closed=false;try{await s.run([{image:{},region:r}])}catch{closed=true}return {creates,reads,stops,closed,amount:rows[0].parsed.record.amount,canPost:rows[0].canPost,time:rows[0].parsed.record.time}});
+ assert.deepEqual(result,{creates:1,reads:2,stops:1,closed:true,amount:'400000',canPost:false,time:null});await p.close()
+ }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
  await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());

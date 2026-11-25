@@ -185,3 +185,6 @@ decode(file) returns local grayscale raster, original source SHA, bounded previe
 
 ## v13.85 BillOCRFieldAPI
 parse(text,{profile,configured,confidence}) returns immutable record, evidence (line provenance), unknown, ignored and issues; reuse ParseAPI for money/calendar. Explicit labels and next line only; quality review, canPost false. ?billocrlab=1 simulates OCR text input, not image recognition. No dispatch into financial journal.
+
+## v13.86 BillOCREngineAPI
+create({factory,profile}) returns run([{image,region}]), close(); sequential worker recognition, per-region BillOCRFieldAPI parse, review-only result. crop(canvas,region) produces rotated region canvas. loadDemo/demoFactory configure optional Tesseract.js CDN runtime; only synthetic images, no customer data. Real engine not bundled or validated; production self-hosting and corpus validation remain separate.

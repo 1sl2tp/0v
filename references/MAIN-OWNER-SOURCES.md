@@ -69,3 +69,9 @@ Decision: local browser decode and review-only region proposals. No upstream cod
 - https://github.com/naptha/tesseract.js/blob/master/docs/api.md — reusable worker, recognize and language assets. No engine installed.
 - https://github.com/PaddlePaddle/PaddleOCR/blob/main/README.md — OCR/document understanding toolkit, separation of recognition and extraction.
 Decision: deterministic text-to-field contract ahead of OCR engine; preserve provenance, no inferred payment data, no new dependency.
+
+## v13.86 phase 3l
+- https://github.com/naptha/tesseract.js/blob/v6.0.1/docs/api.md — worker lifecycle, recognize, output and language options.
+- https://github.com/naptha/tesseract.js/blob/v6.0.1/src/worker-script/index.js — language download/cache behavior.
+- https://github.com/naptha/tesseract.js/blob/v6.0.1/package.json — exact version/core compatibility.
+Decision: opt-in demo CDN only; no real customer image until self-hosted verified assets. No copied upstream code, no dependency committed.

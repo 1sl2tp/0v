@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.85)
+## 00. Chỉ mục rule đang có hiệu lực (v13.86)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -793,3 +793,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-OCR-03: Use existing ParseAPI.billDate with four-digit or explicit Vietnamese year; transaction-only clocks, never use send time or device time. Missing/invalid/conflicting fields remain null; confidence below experimental 80 flags review, confidence alone never authorizes posting.
 - BANK-OCR-04: Text lab ?billocrlab=1 only; display extracted fields, line numbers and gaps. All records quality review and canPost false; no automatic evidence dispatch, actual OCR, payment or message. Multi-line memo beyond one labelled value and ambiguous templates remain unclassified.
 - BANK-OCR-05: Static and browser fixtures include text date, exact fractional Bank amount, misleading balance/send time, invalid dates, conflicting amounts, recipient ID and OCR confidence. Consult Tesseract.js/PaddleOCR. Preserve keyboard v13.27.
+
+## 108. BANK-ENGINE — v13.86 (phase 3l)
+- BANK-ENGINE-01: Explicit demo-only Tesseract.js 6.0.1 loader, worker/core versions pinned, Vietnamese+English, no eager loading, no customer images; CDN language defaults are upstream-managed. No self-hosted verified assets yet. External scripts have page privileges: production/private data use is not approved.
+- BANK-ENGINE-02: One worker per recognition session, sequential region reads, max eight regions; close once on completion/cancel, reject concurrent and closed calls, ignore stale results. Worker initialization may continue until it resolves; cancel is not a guaranteed immediate abort of download.
+- BANK-ENGINE-03: Crop and rotate preview raster using proposed normalized source regions, retain source identity and OCR confidence, route raw text to BillOCRFieldAPI. No claim of full resolution OCR, automatic image segmentation, or calibrated accuracy.
+- BANK-ENGINE-04: ?billenginelab=1 is isolated synthetic-image experiment, explicitly click to load CDN. All output review-only, no journal, uploads by application, messages or financial writes. No real customer bill until approved self-hosted asset path. No persistent OCR text cache.
+- BANK-ENGINE-05: Static engine config and injected-worker Chromium lifecycle tests; real network/model accuracy not verified by those tests. Reference Tesseract.js v6.0.1 API/source. Preserve v13.27 keyboard.
