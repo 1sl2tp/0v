@@ -153,7 +153,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&document.querySelector('#messages').scrollHeight-document.querySelector('#messages').clientHeight>300);
  const state=()=>p.evaluate(()=>{const m=document.querySelector('#messages'),j=document.querySelector('#jumpBottom');return {top:m.scrollTop,gap:m.scrollHeight-m.clientHeight-m.scrollTop,hidden:j.hidden,count:j.dataset.count||null}});
  // App controller state is private; wait for observable geometry, not lexical variables.
- await p.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight-m.scrollTop<2});
+ await p.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight-m.scrollTop<2}).catch(async e=>{console.error('fixture initial tail diagnostic',await p.evaluate(()=>{const m=document.querySelector('#messages'),f=document.querySelector('.composer-frame');return {top:m.scrollTop,extent:m.scrollHeight,height:m.clientHeight,frame:f.offsetHeight,padding:getComputedStyle(m).paddingBottom,screen:document.querySelector('#app').dataset.screen,mode:document.querySelector('#composer').dataset.mode}}));throw e});
  const draft=p.locator('#draft');await draft.fill('Bản nháp không mất');
  await p.waitForTimeout(250);
  // Use the actual wheel path at the viewport gutter, away from nested sample cards.

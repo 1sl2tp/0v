@@ -1963,12 +1963,23 @@ const Main=Object.freeze({
   const room=active,valid=()=>epoch===navigationEpoch&&room===active&&app.dataset.screen==='chat'&&!app.hidden;
   if(!valid())return Promise.resolve(false);
   scrolls[room]=position;resizeDraft();
-  return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
-   if(!valid()){resolve(false);return}
-   // A new explicit navigation supersedes the previous room's scroll cooldown.
-   ScrollController.finishNavigation(position);
-   navigationPending=false;scrolls[room]={top:messages.scrollTop,pinned:nearBottom()};syncJump();onDone();resolve(true)
-  })))
+  const gesture=navigationGesture;
+  return new Promise(resolve=>{
+   let previous='',stable=0,frames=0;
+   const done=()=>{navigationPending=false;scrolls[room]={top:messages.scrollTop,pinned:nearBottom()};syncJump();onDone();resolve(true)};
+   const settle=()=>{
+    if(!valid()){resolve(false);return}
+    if(gesture!==navigationGesture||touchingMessages){done();return}
+    const extent=messages.scrollHeight,height=messages.clientHeight;
+    const signature=[extent,height,keyboardComposer.offsetHeight,composerHeight,draftForm.dataset.mode].join('/');
+    stable=signature===previous?stable+1:0;previous=signature;frames++;
+    const ready=height>0&&!draftFrame&&!viewportFrame&&(!floatingComposer||Math.abs(composerHeight-keyboardComposer.offsetHeight)<=1);
+    // One bounded navigation transaction, no persistent retry or timer.
+    if((ready&&stable>=2)||frames>=12){ScrollController.finishNavigation(position);done();return}
+    requestAnimationFrame(settle)
+   };
+   requestAnimationFrame(settle)
+  })
  },
  mount({live=false,onSearch=null}={}){
   const version='v13.174',slot=options=>Layout.slot(options),t=options=>View.text(options),b=options=>View.button(options);
@@ -2206,7 +2217,8 @@ const app=isLive?Main.mount({live:true,onSearch:()=>liveSearch()}):Main.mount();
 if(isLive)document.body.prepend(app);
 /* END MAIN VIEW FACTORIES */
 const draft=document.getElementById('draft'),messages=document.getElementById('messages'),contactList=document.getElementById('contacts');
-let active=isLive?null:'kh',navigationEpoch=0,navigationPending=false;
+let active=isLive?null:'kh',navigationEpoch=0,navigationPending=false,navigationGesture=0;
+for(const event of ['wheel','touchstart','pointerdown'])messages.addEventListener(event,()=>{if(navigationPending)navigationGesture++},{passive:true});
 const pendingLatest={},scrolls={},$=s=>document.querySelector(s);
 const routeBack=where=>isLive?liveNavigate(where):navigate(where);
 let draftFrame=0;

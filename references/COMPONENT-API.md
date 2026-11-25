@@ -476,3 +476,5 @@ Main.threadPosition(reason,saved): contact/send -> tail, restore/return -> saved
 MediaController.normalizeMime, isImageMime, imageBlob: normalize supported aliases, retype only valid raster Blob without changing bytes, do not disguise explicit non-image. Decode remains mandatory before display. All live and picker image routing uses same parent.
 
 ScrollController.finishNavigation(position): consumes epoch-validated Main position and clears prior navigation's scroll cooldown if not touching; hidden/loading scroll events do not start cooldown. Existing geometry/gesture policies otherwise remain.
+
+Main.finishNavigation convergence: waits for stable measured scroll extent/height/composer reserve and pending layout frames, commits position through ScrollController once (max 12 frames), stops for a new navigation epoch or user gesture. No new keyboard writer or continuous observer.
