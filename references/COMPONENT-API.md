@@ -113,3 +113,6 @@ CachedSyncSession.open({db,scope,stream,now,transport,initialOnline=false,pageLi
 
 ## v13.61 DirectoryController
 DirectoryController.mount(viewport,{store,onRange,rowHeight=64}) → jump/status/dispose. ConversationStore sorted IDs, stable virtual item refs, updateMounted patch only, fixed Virtualizer anchorMode='directory', setItems(next,{anchorSkip}) retains viewport key + offset or next non-promoted key, top stays zero. Default Virtualizer and chat followEnd unchanged. ?directorylab=1 200 synthetic rooms; no main migration or real selection/native proof.
+
+## v13.62 ReadStateController
+create({messages,actorId,conversationId,head,initialReceipt}) → sample(context,{visibleIds,monotonicMs}), status(), proposal(), acknowledge(receipt), setHead(n), reset(), dispose(). Conservative contiguous read proposal, server receipt distinct, unread null if coverage incomplete. 1000ms/750ms synthetic sampling policy; no actual IntersectionObserver or backend receipt, ?readstatelab=1 mock only.

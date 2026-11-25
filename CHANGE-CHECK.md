@@ -61,3 +61,7 @@ v13.60 PR #27 merged a20dc6435884921bcb740ecbb5cd0a65ccf7cf33; CI 45512892810/45
 
 ### v13.61 vòng 2 — browser audit lexical scope
 E0 CI 45513598749/45513583663 failed before Chromium execution: duplicate const dv at audit-api-browser.cjs line 252. E1 isolate new directory test in block; all assertions retained. Add compile-only browser audit syntax gate before browser installation; both scripts compiled in connector JS without execution. DIRECTORY-API-06. Runtime, snapshot and version unchanged; no production or keyboard change. CI/Pages pending.
+
+
+## v13.62 — ReadStateController
+v13.61 PR #28 merged 8148ba11fe3ccb95f9bfcb5fdd77a7e3958a27fa; CI 45513916588/45513905998, publish 45514089948, Pages 45514118294 success. E1 scoped read proposal, synthetic dwell/context, contiguous prefix/gap, server receipt ack revision, unknown unread coverage, read-state lab. READ-API-01–05, SOURCE-GATE, KB-LOCK. Source Matrix read-receipt, Element TimelinePanel, W3C IntersectionObserver, Adobe SelectionManager, Astryx Stack. Browser test block and compile syntax checked; CI/Pages pending. No actual visibility adapter, backend receipt, production data, keyboard or notifications; no human reading proof. No manual deploy.
