@@ -161,3 +161,6 @@ inspect({configured,original,reread,bank,posted}) returns matched/missingDate/ca
 
 ## v13.77 OrderNoticeProjectionAPI
 create({orderId,commandId,orderStatus,customerId,staffId,channel}), inspect(rows,now), advance(rows,recipientId,stage,proof,now,options). Pure fixture projection over NoticeDeliveryAPI, no network or storage. Main order card displays draft skipped; delivery progression tested only in fixture.
+
+## v13.78 BankReconcileAPI / ParseAPI.billDate
+match({configured,bills,banks,postedBillIds,postedBankIds}) returns immutable candidate results and unmatched bank evidence; bill/bank IDs independent, exact amount, date/time, normalized memo or reference, ambiguity review. All unresolved bills must be supplied by caller. `eligible-fixture` does not post receipts. Date parser accepts explicit Vietnamese textual dates, numeric dates and supported number words; time null if absent. ?bankreconcilelab=1 provides 3-bill next-day fixture. Production atomic posting and actual bank adapter not implemented.
