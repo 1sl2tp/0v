@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.170)
+## 00. Chỉ mục rule đang có hiệu lực (v13.172)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1358,3 +1358,19 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 
 ## v13.170 — LIVE-ADMIN-01
 - LIVE-ADMIN-01: User quyết định 0v là CHAT CRM chính thức thay CHAT cũ, admin có đầy đủ quyền nghiệp vụ qua API theo chức năng; không giới hạn chỉ đọc. Gửi thật khi chính admin thao tác Gửi; không dùng service_role trên frontend, không cấp toàn quyền SQL, không gửi tin thử cho khách. API riêng v0_admin_send_text kiểm tra session/admin/đối tượng và nội dung; chống trùng bằng client_id, không tự retry, giữ nháp khi lỗi. Ghi đúng bảng v21_messages chung và giữ trigger hiện có; không sửa CHAT cũ. Mỗi thao tác tiếp theo phải có quyền và kiểm thử riêng. Push/bridge hiện hữu vẫn có thể xử lý tin do database phát sinh; không thay thiết lập Push cũ trong vòng này.
+
+
+## LIVE-MEDIA-01 — v13.171
+0v đọc media bằng RPC riêng và Storage bucket private, chỉ admin đang có phiên hợp lệ và thành viên hội thoại, asset/tin/contact chưa xóa hoặc khóa. Không public URL. Ảnh tải khi vào vùng nhìn, dùng MediaController; audio/video/tệp tải khi admin bấm. Object URL xóa khi đổi phòng/đăng xuất. Không ghi media, chưa gửi ảnh/tệp. Kiểm thử fixture, CI trước merge.
+
+## v13.172 — LIVE-AUTH-RESTORE-01
+- LIVE-AUTH-RESTORE-01: Supabase Auth duy nhất; boot trung tính trước khi khôi phục session và xác minh admin, AAL2/TOTP đã đăng ký; chỉ hiện login khi không có session, đăng xuất hoặc xác thực mật khẩu/quyền bị từ chối. Lỗi mạng/SDK/RPC trong khôi phục dùng màn retry, không giả là logout. Không bỏ kiểm tra admin hoặc xác thực. Không lưu OTP/secret; không nhập token từ CHAT. Sau khi xác thực thành công mới đọc danh bạ và mở contact đã lưu theo account trong sessionStorage của tab; giữ vị trí cuộn, không tự gửi tin. Nếu restore danh bạ/hội thoại lỗi, không ghi đè view cũ. Xóa view khi logout. Không đổi keyboard/DB/CHAT cũ. E2/E3/E4 cần bằng chứng riêng. MFA phía frontend không thay thế kiểm tra AAL2 phía server; kiểm tra enforcement riêng trước khi tuyên bố bảo mật MFA toàn hệ thống.
+
+## LIVE-MAIN-01 — cùng giao diện cha cho live và fixture
+- LIVE-MAIN-01: Main.mount là factory duy nhất của shell, directory/search, header/avatar, composer/frame, media trigger, work. Live không tạo giao diện thay thế và không tạo contact/tin/nghiệp vụ mẫu. Gắn adapter live sau factory; các nút nghiệp vụ chưa có API phải hiển thị giới hạn thật, không thao tác giả. Dùng role server cho filter; không suy diễn vai trò thiếu. Một native picker, ảnh local preview bằng DraftMedia/MediaController; chưa gửi media, chặn gửi text kèm ảnh chưa upload. Không thay phạm vi KB-LOCK; runtime keyboard/viewport đầy đủ của live vẫn cần chuyển qua owner chung và test thiết bị. F5 giữ boot trung tính, login chỉ khi cần, khôi phục vùng theo account. Giữ test fixture và thêm test live mobile.
+
+## LIVE-INTEGRATE — mẫu là hợp đồng, dữ liệu thật là đầu vào
+- LIVE-INTEGRATE-01: Trước mỗi kết nối, kiểm kê toàn bộ bài toán/mẫu liên quan trong COMPONENT-API, RULES, ROADMAP và test. Xác định owner đã có → shape dữ liệu → adapter → renderer → hành động → test. Không tạo UI/logic song song nếu owner có sẵn; không bỏ tính năng mẫu đã giải quyết mà không ghi blocker. Áp dụng cho Main/CRM/media/keyboard/scroll/formatting/auth/sync/OCR/đối soát.
+- LIVE-INTEGRATE-02: Tự chọn mẫu theo dữ liệu thật: text/multiline theo Message/Typography; ảnh/video/audio/file theo metadata đã xác thực và MediaController; loại nghiệp vụ theo trường/type đáng tin, không suy đoán từ tên khách hoặc chỉ từ vài chữ. Nội dung chưa rõ giữ nguyên và đánh dấu cần nhận diện; thiếu API hiển thị lỗi/giới hạn, không giả dữ liệu mẫu. Nhận diện bill là gợi ý đọc/OCR, không xác nhận thu; đối soát phải qua BankReconcile, receipt hợp lệ, chống trùng và quyền server.
+- LIVE-INTEGRATE-03: Bắt buộc parity fixture/live: kiểm tra mỗi owner trên dữ liệu mẫu tương đương shape server, cả trường thiếu, loại lạ, lỗi mạng, F5, nhiều ảnh, mobile/desktop. Ghi trạng thái CONNECTED / PARTIAL / BLOCKED / E2/E3/E4 độc lập; không tuyên bố toàn bộ chuyển xong khi CI xanh hoặc UI xuất hiện. Danh mục ban đầu ở references/LIVE-INTEGRATION-MAP.md.
+- LIVE-INTEGRATE-04: Phát hành theo allowlist hiện hành, snapshot duy nhất đúng phiên bản. SQL hoặc ROADMAP ngoài phạm vi tự phát hành phải tách và review riêng; không nới cổng chỉ để CI xanh. Ghi đường dẫn nguồn và blocker trong CHANGE-CHECK.
