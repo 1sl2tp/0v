@@ -25,3 +25,5 @@ Shared runtime initialized before data branch; live swipe/input/scroll use exist
 - v13.173 picker parity: shared native picker and DraftMedia lifecycle; live scoped decode and attachment send guard. E1, new CI and native device acceptance pending; no upload.
 
 - v13.173 gallery parity E1: ordered groups 1–4, decoded geometry, private blob lifecycle and existing viewer; real server and native acceptance pending. No upload or business changes.
+
+- v13.174 E1: live short-input and reserve regression; MIME and decoded image classification, compact footer and scroll anchor. Actual server media and device acceptance pending.

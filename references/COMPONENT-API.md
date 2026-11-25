@@ -465,3 +465,6 @@ Same native picker before split. Live callbacks authorize capture/decode by sess
 
 ## Live gallery adapter
 liveMediaGroups groups ordered consecutive images within one message, up to four. mediaImageGroup decodes private blobs, passes natural sizes to MediaController.gallery, keeps successful images on partial failure, retry missing. Existing viewer supplies navigation/zoom/rotation; non-images stay in source order. No backend media guarantee or upload.
+
+## v13.174 live geometry/media
+ScrollController.replaceMedia(el,replace) owns media growth anchor; when tail and idle follow existing geometry; when entirely above visible area and idle compensate delta, otherwise preserve scroll. Live adapter accepts known image MIME under generic file/attachment and requires decoded supported image. Directory account actions use Layout grid 2 columns. Native acceptance pending.
