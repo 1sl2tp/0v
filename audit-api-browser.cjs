@@ -11,20 +11,20 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:touch});
  const activate=locator=>touch?locator.tap():locator.click();
  await p.goto(url);assert.equal(await p.locator('#apiProofPanel').count(),0);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
- const file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
+ const plus=p.locator('#mediaBtn'),file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
  assert.equal(await p.locator('#composerAccessory,[data-composer-accessory],#inputAttachmentMenu,[data-input-attachment-menu],[data-camera-picker],[data-file-picker],[data-attachment-action]').count(),0);assert.equal(await form.locator('input[type=file]').count(),1);
  assert.equal(await p.locator('#mediaBtn').getAttribute('aria-controls'),null);assert.equal(await file.getAttribute('capture'),null);assert.equal(await file.getAttribute('accept'),'image/*');
  if(focused){await draft.fill('Bản nháp giữ nguyên');await draft.focus();await p.setViewportSize({width:390,height:360})}
  await p.waitForFunction(()=>{const f=document.querySelector('.composer-frame');return Math.abs(parseFloat(getComputedStyle(document.querySelector('#app')).getPropertyValue('--composer-reserve'))-f.getBoundingClientRect().height)<=1});
- const geometry=()=>file.evaluate(e=>{const r=e.getBoundingClientRect(),b=document.querySelector('#mediaBtn').getBoundingClientRect(),f=e.closest('.composer-frame').getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;return {w:r.width,h:r.height,dx:Math.abs(r.left-b.left),dy:Math.abs(r.top-b.top),hit:document.elementFromPoint(x,y)===e,frame:f.height,bottom:f.bottom,stack:document.elementsFromPoint(x,y).slice(0,8).map(n=>({tag:n.tagName,id:n.id,cls:n.getAttribute('class'),pointer:getComputedStyle(n).pointerEvents,z:getComputedStyle(n).zIndex}))}});
+ const geometry=()=>file.evaluate(e=>{const r=e.getBoundingClientRect(),b=document.querySelector('#mediaBtn').getBoundingClientRect(),f=e.closest('.composer-frame').getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;return {w:r.width,h:r.height,dx:Math.abs(r.left-b.left),dy:Math.abs(r.top-b.top),hit:b.contains(document.elementFromPoint(x,y)),frame:f.height,bottom:f.bottom,stack:document.elementsFromPoint(x,y).slice(0,8).map(n=>({tag:n.tagName,id:n.id,cls:n.getAttribute('class'),pointer:getComputedStyle(n).pointerEvents,z:getComputedStyle(n).zIndex}))}});
  // Wait for the real interactive target after viewport reconciliation, never force the click.
- try{await p.waitForFunction(()=>{const e=document.querySelector('[data-draft-media-picker]'),r=e.getBoundingClientRect();return r.width===44&&r.height===44&&document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e},{},{timeout:5000})}catch(err){console.error('Native picker hit failure',JSON.stringify({focused,touch,geometry:await geometry()}));throw err}
+ try{await p.waitForFunction(()=>{const e=document.querySelector('[data-draft-media-picker]'),r=e.getBoundingClientRect();return r.width===44&&r.height===44&&document.querySelector('#mediaBtn').contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))},{},{timeout:5000})}catch(err){console.error('Native picker hit failure',JSON.stringify({focused,touch,geometry:await geometry()}));throw err}
  const before=await geometry();assert(before.w===44&&before.h===44&&before.dx<=1&&before.dy<=1&&before.hit,JSON.stringify({focused,touch,before}));
- const [chooser]=await Promise.all([p.waitForEvent('filechooser'),activate(file)]);assert(chooser.isMultiple());assert.equal(await form.getAttribute('data-native-picker'),'true');
+ const [chooser]=await Promise.all([p.waitForEvent('filechooser'),activate(plus)]);assert(chooser.isMultiple());assert.equal(await form.getAttribute('data-native-picker'),'true');
  const during=await geometry();assert(Math.abs(before.frame-during.frame)<=1&&Math.abs(before.bottom-during.bottom)<=1,JSON.stringify({before,during}));assert.equal(await p.locator('#composerAccessory,#inputAttachmentMenu,[data-input-attachment-menu]').count(),0);
- if(!focused)assert.equal(await draft.evaluate(e=>document.activeElement===e),false);
+ assert.equal(await draft.evaluate(e=>document.activeElement===e),focused);
  await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),focused?'Bản nháp giữ nguyên':'');
- const [selected]=await Promise.all([p.waitForEvent('filechooser'),activate(file)]);const png=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=16;c.height=16;return c.toDataURL('image/png').split(',')[1]});await selected.setFiles({name:'handoff.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});await p.waitForFunction(()=>document.querySelector('[data-draft-media] .draft-media-item'));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),focused?'Bản nháp giữ nguyên':'');
+ const [selected]=await Promise.all([p.waitForEvent('filechooser'),activate(plus)]);const png=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=16;c.height=16;return c.toDataURL('image/png').split(',')[1]});await selected.setFiles({name:'handoff.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});await p.waitForFunction(()=>document.querySelector('[data-draft-media] .draft-media-item'));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),focused?'Bản nháp giữ nguyên':'');
  await p.close();
  }
 
@@ -46,35 +46,23 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.equal(await draft.inputValue(),'Dòng 1\nDòng 2\nDòng 3');assert.equal(trace.length,0);await p.close();
  }
  
- // iOS preflight: no native chooser while the keyboard is moving; a fresh tap after closure opens it.
+ // iOS UA touch: one source button tap with keyboard open, preserve editable focus in browser simulation.
  {const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 27_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1'});
- await p.goto(url);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
- const file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
- await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='false');
- await p.waitForFunction(()=>{const e=document.querySelector('[data-draft-media-picker]'),r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e});
- const [closedChooser]=await Promise.all([p.waitForEvent('filechooser'),file.tap()]);assert(closedChooser.isMultiple());await closedChooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));
- await draft.fill('Bản nháp iOS');await draft.focus();await p.setViewportSize({width:390,height:360});
- await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true');
- await p.waitForFunction(()=>{const e=document.querySelector('[data-draft-media-picker]'),r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e});
- let unexpected=0;const unexpectedChooser=()=>unexpected++;p.on('filechooser',unexpectedChooser);
- await file.tap();await p.waitForFunction(()=>document.querySelector('[data-draft-media-picker]').dataset.pickerPreflight==='true');
- assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.evaluate(e=>document.activeElement===e),false);
- await p.setViewportSize({width:390,height:844});await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='false');
- assert.equal(unexpected,0);p.off('filechooser',unexpectedChooser);
- await p.waitForFunction(()=>{const e=document.querySelector('[data-draft-media-picker]'),r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e});
- const [chooser]=await Promise.all([p.waitForEvent('filechooser'),file.tap()]);assert(chooser.isMultiple());assert.equal(await file.getAttribute('data-picker-preflight'),null);assert.equal(await form.getAttribute('data-native-picker'),'true');
- await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),'Bản nháp iOS');assert.equal(await form.locator('input[type=file]').count(),1);await p.close();}
+ await p.goto(url);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());const plus=p.locator('#mediaBtn'),file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
+ await draft.tap();await draft.fill('Bản nháp iOS');await p.setViewportSize({width:390,height:360});await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true');
+ let count=0;p.on('filechooser',()=>count++);const [chooser]=await Promise.all([p.waitForEvent('filechooser'),plus.tap()]);assert(chooser.isMultiple());assert.equal(count,1);assert.equal(await draft.evaluate(e=>document.activeElement===e),true);assert.equal(await form.getAttribute('data-native-picker'),'true');assert.equal(await form.locator('input[type=file]').count(),1);
+ await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),'Bản nháp iOS');assert.equal(await draft.evaluate(e=>document.activeElement===e),true);await p.close();}
  
  // Read-only anchor diagnostic: a changing viewport must move the real + and native input together.
  {const p=await browser.newPage({viewport:{width:390,height:844}});
  await p.goto(url+'?pickerprobe=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
- const file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
+ const plus=p.locator('#mediaBtn'),file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
  await p.waitForFunction(()=>window.pickerAnchorProof.read().visibleAnchor);
  const first=await p.evaluate(()=>window.pickerAnchorProof.read());assert(Math.abs(first.deltaX)<=1&&Math.abs(first.deltaY)<=1);
  await draft.fill('Neo bản nháp');await draft.focus();await p.setViewportSize({width:390,height:360});
  await p.waitForFunction(()=>{const s=window.pickerAnchorProof.read();return s.visibleAnchor&&Math.abs(s.bottomGap)<=1});
  const short=await p.evaluate(()=>window.pickerAnchorProof.read());assert(Math.abs(short.deltaY)<=1&&short.anchor.y<first.anchor.y-100);
- const [chooser]=await Promise.all([p.waitForEvent('filechooser'),file.click()]);
+ const [chooser]=await Promise.all([p.waitForEvent('filechooser'),plus.click()]);
  const act=await p.evaluate(()=>window.pickerAnchorProof.activation());assert(act&&act.picker&&act.visibleAnchor&&Math.abs(act.deltaY)<=1);
  await p.setViewportSize({width:390,height:844});
  await p.waitForFunction(()=>{const s=window.pickerAnchorProof.read();return s.visibleAnchor&&Math.abs(s.bottomGap)<=1&&s.activationDriftY>100});

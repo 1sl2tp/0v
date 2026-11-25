@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.152)
+## 00. Chỉ mục rule đang có hiệu lực (v13.153)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1263,3 +1263,6 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 
 ## 177. IOS-PICKER-PREFLIGHT — v13.152
 - SINGLE-NATIVE-PICKER-06: User screenshot v13.151 shows native Safari source menu at stale keyboard-open anchor after keyboard closure. WebKit WKFileUploadPanel.mm repositionContextMenuIfNeeded returns early on keyboard dismissal unless previously repositioned; menu bounds are not exposed. Source https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm . Candidate prevention (not native dismissal): iOS only, block native default activation while existing keyboard state is open/occluding; first tap uses existing InputController.blur, second fresh tap when closed opens sole native picker. Closed keyboard remains one tap; no synthetic click, no extra source menu, no coordinate writer, no change to protected keyboard code. Explicit exception to single-tap rule 173 only when keyboard open/closing; tradeoff requires user acceptance. Tests use Chromium touch with iPhone UA for preflight, real chooser, preserved draft, and one tap with closed keyboard; not native iOS proof. No bill or production changes.
+
+## 178. MEDIA-FOCUS-OWNER — v13.153
+- SINGLE-NATIVE-PICKER-07: User clarifies Input/Keyboard already correct; media is a child action only and should open above composer, one tap, no forced keyboard closure. Supersede v13.152 preflight rule 177. One + button calls a single co-located native file input synchronously (showPicker where supported, click fallback only if method absent). Preserve existing draft focus on button press; never force blur or focus. WebKit WKFileUploadPanel.mm main lines 2937–2948 and 3371–3378: native anchor uses input rectangle and may keep first responder if editable focused. https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm . Native OS position/dismissal is still not controllable from DOM, and upstream behavior may differ on installed iOS. No forced coordinates, no custom menu, no additional tap. Browser tests use real button clicks/taps, one chooser, draft focus, co-located anchor and ordinary input regressions. Native acceptance pending; no Keyboard API or business logic changes.
