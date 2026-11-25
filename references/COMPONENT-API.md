@@ -369,3 +369,6 @@ Keyboard frame > composer > one native file control sharing + grid cell. No acce
 
 ## v13.146 — picker anchor geometry
 Input/plus same 44×44 box; relative anchor follows composer/frame and visual viewport. `?pickerprobe=1` records activation and later rectangle drift, focus and viewport state locally; no geometry writes. Native popup rectangle is unavailable in DOM. Source: https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm ; native implementation may differ by installed iOS. Native acceptance pending.
+
+## v13.147 — Input-owned plus
+Composer > attachment menu and action rows. Menu follows parent via CSS only, 8px above top. Native picker is separate after explicit action; local menu unpainted during handoff. No keyboard-state listener or viewport writer. iOS may require native source choice after selecting image; this is a platform tradeoff for controlled local menu geometry. Physical acceptance pending.
