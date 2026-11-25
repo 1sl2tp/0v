@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CHAT CRM">
 <link rel="manifest" href="./manifest.webmanifest">
-<title>CHAT CRM — Bố cục v13.65</title>
+<title>CHAT CRM — Bố cục v13.66</title>
 <script>const layoutParams=new URLSearchParams(location.search);document.documentElement.dataset.liveglass=layoutParams.get('liveglass')==='1'?'1':'0';document.documentElement.dataset.floating=layoutParams.has('floating')?(layoutParams.get('floating')==='1'?'1':'0'):(matchMedia('(max-width:767px)').matches?'1':'0');</script>
 <style>
 :root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#e5e5e5;--soft:#f5f5f5;--paper:#fff;--font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-family:var(--font-ui);font-size:var(--type-body)}
@@ -1396,9 +1396,10 @@ const ReadStateController=(()=>{
 
 /* SyncController — ordered pull log, realtime hints only, explicit scoped transport. */
 const SyncController=(()=>{
- function create({messages,conversations,transport,stream,initialCursor=0,pageLimit=100,maxPages=20,initialOnline=true,persistPage=null}){
+ function create({messages,conversations,transport,stream,initialCursor=0,pageLimit=100,maxPages=20,initialOnline=true,persistPage=null,onReceipt=null}){
   if(!messages||!conversations||typeof transport?.pull!=='function'||typeof stream!=='string'||!stream||!Number.isSafeInteger(initialCursor)||initialCursor<0||!Number.isInteger(pageLimit)||pageLimit<1||pageLimit>1000||!Number.isInteger(maxPages)||maxPages<1||maxPages>100)throw TypeError('Invalid sync configuration');
   if(persistPage!==null&&typeof persistPage!=='function')throw TypeError('Invalid persistence adapter');
+  if(onReceipt!==null&&(typeof onReceipt!=='function'||persistPage!==null))throw TypeError('Receipt stream requires memory mode until durable receipt checkpoint exists');
   let cursor=initialCursor,state=initialOnline?'idle':'offline',error=null,online=!!initialOnline,disposed=false,generation=0,flight=null,abort=null,pending=false,applied=0,restoreRequired=false;
   const listeners=new Set();
   const status=()=>Object.freeze({stream,cursor,state,error,online,applied,busy:!!flight,disposed,restoreRequired});
@@ -1406,7 +1407,7 @@ const SyncController=(()=>{
   function subscribe(fn){if(disposed||typeof fn!=='function')throw TypeError('Invalid subscription');listeners.add(fn);return ()=>listeners.delete(fn)}
   function validate(page,after){
    if(!page||page.stream!==stream||page.after!==after||!Array.isArray(page.events)||page.events.length>pageLimit||typeof page.more!=='boolean'||(page.more&&!page.events.length))throw Error('Invalid sync page');
-   let expected=after;for(const e of page.events){if(!e||!Number.isSafeInteger(e.cursor)||e.cursor!==++expected||!['message','conversation'].includes(e.type)||!e.record||typeof e.record!=='object')throw Error('Sync cursor gap or invalid event')}
+   let expected=after;for(const e of page.events){if(!e||!Number.isSafeInteger(e.cursor)||e.cursor!==++expected||!(['message','conversation'].includes(e.type)||e.type==='receipt'&&onReceipt!==null)||!e.record||typeof e.record!=='object')throw Error('Sync cursor gap or invalid event')}
    if(page.nextCursor!==expected)throw Error('Invalid next cursor');
   }
   function applyEvent(e){
@@ -1414,7 +1415,7 @@ const SyncController=(()=>{
     // A pending summary must never resolve to a message from another conversation.
     for(const id of conversations.ids()){const r=conversations.get(id);if(r.latestMessageId===e.record.id&&id!==e.record.conversationId)throw Error('Sync latest pointer mismatch')}
     messages.apply([e.record]);
-   }else conversations.apply([e.record]);
+   }else if(e.type==='conversation')conversations.apply([e.record]);else onReceipt(e.record);
    cursor=e.cursor;applied++;
   }
   function wake(){
@@ -1453,6 +1454,40 @@ const SyncController=(()=>{
   return Object.freeze({wake,setOnline,subscribe,status,dispose});
  }
  return Object.freeze({create});
+})();
+
+/* MultiDeviceController — independent device stores, one scoped authoritative fixture log. */
+const MultiDeviceController=(()=>{
+ const key=s=>typeof s==='string'&&s.length>0&&s.length<=128,seq=n=>Number.isSafeInteger(n)&&n>=0;
+ function fixture({actorId,conversationId,stream}){
+  if(![actorId,conversationId,stream].every(key))throw Error('Invalid fixture scope');
+  const log=[],commands=new Map(),listeners=new Set();let head=0,confirmed=0,revision=0,disposed=false;
+  const ensure=()=>{if(disposed)throw Error('Fixture disposed')};
+  const receipt=()=>({actorId,conversationId,sequence:confirmed,revision,head});
+  function event(type,record){log.push(Object.freeze({cursor:log.length+1,type,record:Object.freeze(record)}))}
+  function signal(){for(const fn of [...listeners])try{fn()}catch(e){console.error('Fixture hint',e)}}
+  function append(senderId,text){ensure();if(!key(senderId)||typeof text!=='string'||!text.trim()||text.length>1000||head>=300)throw Error('Invalid fixture message');const sequence=++head,id='multi-'+sequence;
+   event('message',{id,conversationId,senderId,sequence,revision:1,text,deleted:false});
+   event('conversation',{id:conversationId,name:'Hội thoại mẫu',group:'KH',revision:sequence,activityOrder:sequence,latestMessageId:id});
+   event('receipt',receipt());return id
+  }
+  function incoming(text){const id=append('fixture-other',text);signal();return id}
+  function send({actorId:actor,deviceId,commandId,text}){ensure();if(actor!==actorId||!key(deviceId)||!key(commandId))throw Error('Invalid command scope');const k=JSON.stringify([actor,deviceId,commandId]),old=commands.get(k);if(old){if(old.text!==text)throw Error('Command payload conflict');return old.id}const id=append(actor,text);commands.set(k,{id,text});signal();return id}
+  function read({actorId:actor,conversationId:room,sequence}){ensure();if(actor!==actorId||room!==conversationId||!seq(sequence)||sequence>head)throw Error('Invalid receipt proposal');if(sequence>confirmed){confirmed=sequence;revision++;event('receipt',receipt());signal()}return Object.freeze(receipt())}
+  const transport={async pull({stream:requested,after,limit,signal}){ensure();if(requested!==stream||!seq(after)||after>log.length||signal.aborted)throw Error('Invalid pull');const events=log.slice(after,after+limit);return {stream,after,events,nextCursor:after+events.length,more:after+events.length<log.length}}};
+  return Object.freeze({incoming,send,read,transport,subscribe(fn){ensure();listeners.add(fn);return ()=>listeners.delete(fn)},status:()=>({head,confirmed,revision,cursor:log.length}),dispose(){disposed=true;listeners.clear()}})
+ }
+ function connect({actorId,conversationId,stream,server,initialOnline=true}){
+  const messages=MessageStore.create(),conversations=ConversationStore.create(messages),read=ReadStateController.create({messages,actorId,conversationId,head:0});
+  const sync=SyncController.create({messages,conversations,stream,transport:server.transport,initialOnline,pageLimit:3,onReceipt:r=>{
+   const s=read.status();if(r.actorId!==actorId||r.conversationId!==conversationId||!seq(r.head)||r.head<s.head||!seq(r.sequence)||r.sequence>r.head||!seq(r.revision)||r.revision<s.revision||r.sequence<s.confirmed||r.revision===s.revision&&r.sequence!==s.confirmed)throw Error('Invalid receipt event');
+   read.setHead(r.head);read.acknowledge(r)
+  }});
+  const un=server.subscribe(()=>sync.wake());
+  function submitRead(){if(!sync.status().online)return false;const p=read.proposal();if(!p)return false;server.read(p);return true}
+  return Object.freeze({messages,conversations,read,sync,submitRead,dispose(){un();sync.dispose();read.dispose();conversations.dispose();messages.dispose()}})
+ }
+ return Object.freeze({fixture,connect});
 })();
 
 /* NoticeDeliveryAPI — read-only evidence per recipient/channel; no transport. */
@@ -1669,7 +1704,7 @@ const Message=Object.freeze({create({text,time,mine=false,day}){
 }});
 const Main=Object.freeze({
  mount(){
-  const version='v13.65',slot=options=>Layout.slot(options),t=options=>View.text(options),b=options=>View.button(options);
+  const version='v13.66',slot=options=>Layout.slot(options),t=options=>View.text(options),b=options=>View.button(options);
   const ver=(name='label-version')=>t({role:'version',name,text:version,attrs:name.includes('chat-version')?{'aria-label':'Phiên bản '+version}:{}});
   const nav=(go,label,icon,extra={})=>b({icon,label,attrs:{'data-go':go,...extra.attrs},kind:extra.kind||'text',className:extra.className||'',glass:extra.glass});
   const header=children=>slot({tag:'header',name:'panel-head',children});
@@ -1924,7 +1959,7 @@ function renderGeometryLab(panel){
 }
 function renderTypographyLab(panel){
  const lab=Layout.create({tag:'section',className:'type-lab',kind:'column',gap:'md'});
- const samples=[['version','Phiên bản','v13.65'],['caption','Chú thích / thời gian','24/11/2026 · 14:30'],['label','Nhãn','Số lượng'],['detail','Chi tiết nghiệp vụ','Sữa tươi · 2 thùng'],['note','Ghi chú','Đã kiểm tra hàng, còn thiếu 2 thùng.'],['body','Văn bản','Nguyễn Thị Đặng Hồng – tiếng Việt đầy đủ dấu.'],['title','Tiêu đề','Đơn hàng hôm nay'],['chat','Nội dung chat','Chị kiểm tra lại giúp em nhé…'],['number','Số','100 · 1.000 · 10.000'],['money','Số tiền','1.250.000 đ']];
+ const samples=[['version','Phiên bản','v13.66'],['caption','Chú thích / thời gian','24/11/2026 · 14:30'],['label','Nhãn','Số lượng'],['detail','Chi tiết nghiệp vụ','Sữa tươi · 2 thùng'],['note','Ghi chú','Đã kiểm tra hàng, còn thiếu 2 thùng.'],['body','Văn bản','Nguyễn Thị Đặng Hồng – tiếng Việt đầy đủ dấu.'],['title','Tiêu đề','Đơn hàng hôm nay'],['chat','Nội dung chat','Chị kiểm tra lại giúp em nhé…'],['number','Số','100 · 1.000 · 10.000'],['money','Số tiền','1.250.000 đ']];
  for(const [role,label,value] of samples){const row=make('div','type-lab-row');row.append(Typography.create({role:'caption',text:label+' · '+role}),Typography.create({role,text:value}));lab.append(row)}
  const variations=make('div','type-lab-row');for(const weight of Typography.weights)variations.append(Typography.create({role:'body',weight,text:'Tiếng Việt · '+weight}));for(const decoration of Typography.decorations)variations.append(Typography.create({role:'body',decoration,text:'Nội dung · '+decoration}));lab.append(variations);
  const field=make('div','type-lab-row');field.append(Typography.create({role:'caption',text:'Input — 17/22, sử dụng API Input'}),Input.create({type:'text',label:'Mẫu chữ nhập',value:'Tiếng Việt có dấu…'}));lab.append(field);panel.append(lab)
@@ -1978,6 +2013,28 @@ function renderMediaLab(panel){
 
 
 function readRuntimeContext(){return RuntimeContextAPI.read({app,selectedConversationId:active,moduleId:document.querySelector('#modules button.active')?.dataset.module||null})}
+function renderMultiDeviceLab(panel){
+ const actorId='fixture-account',conversationId='fixture-room',stream='fixture-multi',server=MultiDeviceController.fixture({actorId,conversationId,stream});server.incoming('Tin đến mẫu 1');
+ const devices={web:MultiDeviceController.connect({actorId,conversationId,stream,server}),pwa:MultiDeviceController.connect({actorId,conversationId,stream,server})};
+ const output=Layout.create({kind:'column',gap:'xs'}),nodes={},status=Typography.create({role:'caption',text:''});status.dataset.multiStatus='true';let closed=false,serial=1,lastCommand=null;
+ for(const id of Object.keys(devices)){const title=Typography.create({role:'body',text:''}),preview=Typography.create({role:'caption',text:''});const row=Layout.create({kind:'column',gap:'zero',children:[title,preview]});row.dataset.multiDevice=id;nodes[id]={row,title,preview};output.append(row)}
+ function show(){if(closed)return;const sv=server.status();Object.assign(status.dataset,{head:String(sv.head),confirmed:String(sv.confirmed),cursor:String(sv.cursor)});status.textContent='Máy chủ mẫu · '+sv.head+' tin · đã đọc '+sv.confirmed;
+ for(const [id,d] of Object.entries(devices)){const s=d.sync.status(),r=d.read.status(),n=nodes[id];Object.assign(n.row.dataset,{state:s.state,cursor:String(s.cursor),count:String(d.messages.status().count),confirmed:String(r.confirmed),unread:r.unread===null?'unknown':String(r.unread)});n.title.textContent=id.toUpperCase()+' · '+s.state+' · '+(r.unread??'?')+' chưa đọc';n.preview.textContent=d.conversations.project(conversationId)?.preview||'Chưa có dữ liệu'}}
+ const un=Object.values(devices).map(d=>d.sync.subscribe(show));
+ function send(){if(!devices.pwa.sync.status().online)return;lastCommand={actorId,deviceId:'pwa',commandId:'command-'+(++serial),text:'Tin gửi mẫu '+serial};server.send(lastCommand);show()}
+ function readWeb(){const d=devices.web,c=RuntimeContextAPI.derive({screen:'chat',selectedConversationId:conversationId,visibleRegions:['chat'],visibility:'visible',focused:true,online:d.sync.status().online});d.read.reset();for(let t=0;t<=1000;t+=500)d.read.sample(c,{visibleIds:d.messages.ids(conversationId),monotonicMs:t});d.submitRead();show()}
+ const controls=Layout.create({kind:'row',gap:'xs',wrap:true,children:[
+  Button.create({text:'Tin đến mẫu',onClick:()=>{server.incoming('Tin đến mẫu '+(++serial));show()}}),
+  Button.create({text:'PWA gửi tin mẫu',onClick:send}),
+  Button.create({text:'Lặp lệnh gửi PWA',onClick:()=>{if(lastCommand){server.send(lastCommand);show()}}}),
+  Button.create({text:'Web đọc tin mẫu',onClick:readWeb}),
+  Button.create({text:'Receipt cũ đến muộn',onClick:()=>{server.read({actorId,conversationId,sequence:0});show()}}),
+  Button.create({text:'PWA mất mạng',onClick:()=>devices.pwa.sync.setOnline(false)}),
+  Button.create({text:'PWA kết nối lại',onClick:()=>devices.pwa.sync.setOnline(true)})
+ ]});
+ const card=CardController.panel({title:'MultiDevice · Web và PWA mô phỏng',children:[controls,status,output]});card.dataset.systemLesson='multi-device';panel.append(card);card.addEventListener('lab-dispose',()=>{closed=true;for(const fn of un)fn();for(const d of Object.values(devices))d.dispose();server.dispose();card.dataset.multiDisposed='true'},{once:true});show();for(const d of Object.values(devices))d.sync.wake()
+}
+
 function renderDurableAlertLab(panel){
  const actorId='fixture-actor',installationId='fixture-installation',owner=crypto.randomUUID(),room='fixture-room';let serial=1,tick=0,db=null,closed=false,busy=false,row=null,owned=false;
  const now=()=>new Date(Date.parse('2026-11-25T00:00:00Z')+tick).toISOString();
@@ -2391,6 +2448,7 @@ function renderSystemsLab(panel){
 }
 function showModule(label){
 const panel=$('#moduleContent');panel.querySelectorAll('[data-system-lesson],[data-virtual-lab]').forEach(el=>el.dispatchEvent(new Event('lab-dispose')));panel.replaceChildren(Typography.create({role:'title',tag:'h3',text:label}),Typography.create({role:'detail',tag:'p',text:people[active].name+' · Dữ liệu minh họa'}));
+if(new URLSearchParams(location.search).get('multidevicelab')==='1'){renderMultiDeviceLab(panel);return}
 if(new URLSearchParams(location.search).get('durablealertlab')==='1'){renderDurableAlertLab(panel);return}
 if(new URLSearchParams(location.search).get('notificationlab')==='1'){renderNotificationLab(panel);return}
 if(new URLSearchParams(location.search).get('presencelab')==='1'){renderPresenceLab(panel);return}
@@ -2656,7 +2714,7 @@ function sample(now){raf=0;const v=window.visualViewport,top=v?.offsetTop||0,bot
 count++;const visibleBottom=screen==='chat'&&c.height?Math.max(r.bottom,c.bottom,m.bottom):r.bottom;const overflow=Math.max(0,top-r.top,visibleBottom-bottom,left-r.left,r.right-right);maxOverflow=Math.max(maxOverflow,overflow);
 if(screen==='chat'&&c.height){maxGap=Math.max(maxGap,Math.abs(bottom-c.bottom));maxOverlap=Math.max(maxOverlap,floatingComposer?Math.max(Math.abs(m.bottom-c.bottom),Math.max(0,c.height+12-parseFloat(getComputedStyle(messages).paddingBottom))):Math.max(0,m.bottom-c.top));const dh=draft.getBoundingClientRect().height;if(lastScreen===screen&&lastDraftHeight&&Math.abs(dh-lastDraftHeight)>1)draftChanges++;lastDraftHeight=dh}
 const key=[screen,r.top,r.height,c.top,c.height].map(x=>typeof x==='number'?Math.round(x):x).join('/');if(last&&key!==last)changes++;last=key;lastScreen=screen;
-output.textContent='v13.65 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nSai hợp đồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
+output.textContent='v13.66 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nSai hợp đồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
 if(now<until)raf=requestAnimationFrame(sample)}
 function schedule(){until=performance.now()+600;if(!raf)raf=requestAnimationFrame(sample)}
 reset.onclick=()=>{count=changes=draftChanges=maxOverflow=maxGap=maxOverlap=lastDraftHeight=0;last=lastScreen='';schedule()};
@@ -2689,7 +2747,7 @@ if(new URLSearchParams(location.search).get('perf')==='1'){
 const panel=make('div','perf-panel');const output=make('pre');const reset=make('button','','Đo lại');panel.append(output,reset);document.body.append(panel);
 let frames=0,slow=0,total=0,max=0,restores=0,resizes=0,last=0,until=0,raf=0,reportAt=0;
 const sizes=new WeakMap();const observer=new ResizeObserver(entries=>{for(const e of entries){const key=e.contentRect.width.toFixed(1)+'/'+e.contentRect.height.toFixed(1);if(sizes.has(e.target)&&sizes.get(e.target)!==key)resizes++;sizes.set(e.target,key)}});
-function report(){output.textContent='v13.65 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
+function report(){output.textContent='v13.66 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
 function tick(t){raf=0;if(last){const dt=t-last;frames++;total+=dt;max=Math.max(max,dt);if(dt>25)slow++}last=t;if(t-reportAt>500){reportAt=t;report()}if(t<until)raf=requestAnimationFrame(tick);else{last=0;report()}}
 messages.addEventListener('scroll',()=>{until=performance.now()+180;if(!raf){last=0;raf=requestAnimationFrame(tick)}},{passive:true});
 reset.onclick=()=>{frames=slow=total=max=restores=resizes=0;last=0;report()};
@@ -2701,7 +2759,7 @@ if(new URLSearchParams(location.search).get('keyboardtest')==='1'){
  let frame=0,until=0,start=0,phase='idle',rows=[],last=null,eventCount=0,maxStep=0,maxError=0,maxInputStep=0,firstRaw=null,firstFrame=null,report='';
  const fmt=n=>Math.round(n*10)/10;
  function finish(){
-  report=['v13.65 | '+phase+' | '+(matchMedia('(display-mode:standalone)').matches?'PWA':'Web'),
+  report=['v13.66 | '+phase+' | '+(matchMedia('(display-mode:standalone)').matches?'PWA':'Web'),
    'Mẫu: '+rows.length+' | sự kiện viewport: '+eventCount,
    'Raw bước lớn nhất: '+fmt(maxStep)+' px',
    'Input bước lớn nhất: '+fmt(maxInputStep)+' px',
@@ -2728,14 +2786,14 @@ if(new URLSearchParams(location.search).get('keyboardtest')==='1'){
   if(t<until)frame=requestAnimationFrame(sample);else finish();
  }
  function begin(name){
-  if(frame)cancelAnimationFrame(frame);frame=0;start=performance.now();until=start+1000;phase=name;rows=[];last=null;eventCount=maxStep=maxError=maxInputStep=0;firstRaw=firstFrame=null;output.textContent='v13.65 · Đang đo '+name;
+  if(frame)cancelAnimationFrame(frame);frame=0;start=performance.now();until=start+1000;phase=name;rows=[];last=null;eventCount=maxStep=maxError=maxInputStep=0;firstRaw=firstFrame=null;output.textContent='v13.66 · Đang đo '+name;
   sample(start);
  }
  function signal(){if(!frame)begin('viewport');eventCount++;until=Math.max(until,performance.now()+350)}
  draft.addEventListener('focus',()=>begin('mở'));draft.addEventListener('blur',()=>begin('đóng'));
  window.visualViewport?.addEventListener('resize',signal,{passive:true});window.visualViewport?.addEventListener('scroll',signal,{passive:true});
  copy.onclick=async()=>{try{await navigator.clipboard.writeText(report+'\n'+JSON.stringify(rows));copy.textContent='Đã sao chép'}catch{copy.textContent='Không sao chép được'}};
- output.textContent='v13.65 · Mở rồi đóng bàn phím để đo';
+ output.textContent='v13.66 · Mở rồi đóng bàn phím để đo';
 }
 if(new URLSearchParams(location.search).get('guides')==='1'){
 const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.id='geometryGuides';document.body.append(svg);const toggle=make('button','','Ẩn đường kẻ');toggle.id='geometryToggle';document.body.append(toggle);let enabled=true,frame=0;
@@ -2793,7 +2851,7 @@ if(innerWidth<768&&shown(frame)&&shown(c)){
  check('G107 Composer không transform',style.transform==='none'?0:2,0);
  check('G108 Shell đỉnh = rect hiệu lực',root.top,v.top);
 }
-const bad=results.filter(r=>!Number.isFinite(r.delta)||r.delta>1);window.crmGeometry={version:'v13.65',screen:app.dataset.screen,viewport:{width:window.visualViewport?.width||innerWidth,height:window.visualViewport?.height||innerHeight},checks:results,issues:bad};report.textContent='Viewport '+Math.round(window.visualViewport?.width||innerWidth)+' × '+Math.round(window.visualViewport?.height||innerHeight)+' · '+app.dataset.screen+'\nHình học · '+(results.length-bad.length)+'/'+results.length+' đạt (≤1px)\n'+(bad.length?bad.sort((a,b)=>b.delta-a.delta).slice(0,10).map(r=>r.name+': '+r.delta.toFixed(1)+'px').join('\n'):'Không thấy lệch ở các mục đã đo');}
+const bad=results.filter(r=>!Number.isFinite(r.delta)||r.delta>1);window.crmGeometry={version:'v13.66',screen:app.dataset.screen,viewport:{width:window.visualViewport?.width||innerWidth,height:window.visualViewport?.height||innerHeight},checks:results,issues:bad};report.textContent='Viewport '+Math.round(window.visualViewport?.width||innerWidth)+' × '+Math.round(window.visualViewport?.height||innerHeight)+' · '+app.dataset.screen+'\nHình học · '+(results.length-bad.length)+'/'+results.length+' đạt (≤1px)\n'+(bad.length?bad.sort((a,b)=>b.delta-a.delta).slice(0,10).map(r=>r.name+': '+r.delta.toFixed(1)+'px').join('\n'):'Không thấy lệch ở các mục đã đo');}
 function draw(){frame=0;svg.replaceChildren();report.hidden=!enabled;if(!enabled)return;audit();
 const visible=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight};
 function bounds(e){const r=e.getBoundingClientRect();line(r.left,r.top,r.right,r.top,'#999');line(r.left,r.bottom,r.right,r.bottom,'#999');line(r.left,r.top,r.left,r.bottom,'#d14b42');line(r.right,r.top,r.right,r.bottom,'#d14b42')}
@@ -2811,7 +2869,7 @@ for(const el of document.querySelectorAll('[data-parent-api=KeyboardController]'
 applyViewport();render();window.scrollPerf?.observe();
 if(new URLSearchParams(location.search).get('scenario')==='1'){
 const panel=document.createElement('section');panel.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;max-width:420px;max-height:42vh;overflow:auto;z-index:10001;background:white;color:#202124;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px/1.5 system-ui';
-const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='v13.65 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
+const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='v13.66 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
 const wait=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 run.onclick=async()=>{run.disabled=true;const results=[];const check=(name,ok)=>{results.push({name,ok});out.textContent=results.map(x=>(x.ok?'ĐẠT':'LỖI')+' · '+x.name).join('\n')};const original=active,originalScreen=app.dataset.screen,originalDraft=draft.value,originalSearch=searchInput.value,originalOpen=directory.dataset.searchOpen==='true';const ids=Object.keys(people);try{
 navigate('contacts');await wait();check('S01 Mở danh bạ',app.dataset.screen==='contacts');
@@ -2842,14 +2900,14 @@ if(other){const count=messages.childElementCount;receiveDemo(other,'QA nhận ti
 }finally{for(const [id,s] of Object.entries(snapshot)){texts[id].length=s.length;incomingCounts[id]=s.unread;pendingLatest[id]=s.pending;updateContact(id);const row=contactList.querySelector('[data-id="'+id+'"]');row.querySelector('.identity small').textContent=s.preview;row.querySelector('.time').textContent=s.time}render();await wait();messages.scrollTop=oldTop;syncJump()}
 
 }finally{drafts[testId]=savedDraft;if(active===testId){draft.value=savedDraft;resizeDraft()}}
-}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='v13.65 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
+}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='v13.66 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
 };
 }
 
 /* QA hub: one entry point, isolated diagnostic modes to avoid competing overlays. */
 if(new URLSearchParams(location.search).get('verify')==='1'){
 const hub=document.createElement('details');hub.style.cssText='position:fixed;z-index:10002;right:8px;top:calc(env(safe-area-inset-top) + 8px);max-width:calc(100vw - 16px);width:280px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font:13px/1.5 system-ui;box-shadow:0 2px 12px #0002';
-const title=document.createElement('summary');title.textContent='QA · v13.65';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
+const title=document.createElement('summary');title.textContent='QA · v13.66';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
 const modes=[['','Giao diện bình thường','Không bật bộ đo'],['scenario','Kịch bản tự chạy','Kiểm tra thao tác trên demo'],['qa','UI / UX','Kiểm tra trạng thái và kích thước'],['guides','Hình học tĩnh','G01–G108, đường kẻ và kết quả đo'],['dynamic','Hình học động','Viewport và vùng gõ'],['perf','Hiệu năng','Khung hình và cuộn'],['keyboardtest','Bàn phím','Thời gian và độ ổn định']];
 const params=new URLSearchParams(location.search);const activeMode=modes.find(([k])=>k&&params.get(k)==='1')?.[0]||'';
 for(const [key,label,desc] of modes){const a=document.createElement('a');const url=new URL(location.href);for(const [k] of modes)if(k)url.searchParams.delete(k);url.searchParams.set('verify','1');if(key)url.searchParams.set(key,'1');a.href=url.href;a.style.cssText='display:block;padding:8px;border-radius:8px;min-height:44px;text-decoration:none;color:inherit;background:'+(key===activeMode?'var(--surface-selected)':'transparent');if(key===activeMode)a.setAttribute('aria-current','page');const b=document.createElement('strong');b.textContent=label;const small=document.createElement('small');small.style.cssText='display:block;color:var(--muted)';small.textContent=desc;a.append(b,small);hub.append(a)}
@@ -2878,7 +2936,7 @@ if(visible(composer)){const expanded=composer.dataset.mode==='expanded',plus=com
 add('A08 Cuộn / nút về cuối',visible(messages)?jump.hidden===nearBottom():null);
 add('A09 Công việc / module được chọn',visible($('#modules'))?$('#modules').querySelectorAll('.active').length===1:null);
 add('A10 Popup / giới hạn màn hình',document.querySelector('dialog[open]')?(()=>{const d=r(document.querySelector('dialog[open]')),v=window.visualViewport,x=v?.offsetLeft||0,y=v?.offsetTop||0;return d.left>=x-1&&d.top>=y-1&&d.right<=x+(v?.width||innerWidth)+1&&d.bottom<=y+(v?.height||innerHeight)+1})():null);
-const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='v13.65 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
+const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='v13.66 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
 let timer;function schedule(){clearTimeout(timer);timer=setTimeout(test,250)}run.onclick=test;for(const event of ['click','input','focusin','focusout'])document.addEventListener(event,schedule);messages.addEventListener('scroll',schedule,{passive:true});window.visualViewport?.addEventListener('resize',schedule,{passive:true});window.addEventListener('resize',schedule);schedule();
 }
 for(const t of contactList.querySelectorAll('.time'))t.textContent=shortDay()+' '+t.textContent;
@@ -2936,10 +2994,10 @@ if(apiProofEnabled){
  function report(){
   const roles=[...document.querySelectorAll('#app [data-type-role],dialog[open] [data-type-role]')].filter(visible),inputs=[...document.querySelectorAll('#app .input-child,dialog[open] .input-child')].filter(visible),buttons=[...document.querySelectorAll('#app button,dialog[open] button')].filter(visible),icons=buttons.flatMap(b=>[...b.querySelectorAll('svg[viewBox="0 0 24 24"]')].filter(visible)),popups=[...document.querySelectorAll('dialog[open][data-popup-parent]')],rows=[...document.querySelectorAll('.contact')].filter(visible),geometry=rows.map(row=>({inside:Geometry.inside(row,row.querySelector('.avatar')),overlap:Geometry.overlap(row.querySelector('.identity b'),row.querySelector('.time'))}));
   const fonts=[...roles,...inputs].map(describe);
-  return {family:FamilyRegistry.audit(),version:'v13.65',screen:app.dataset.screen,viewport:{width:innerWidth,height:innerHeight},font:{total:fonts.length,matched:fonts.filter(x=>x.fontOK).length,issues:fonts.filter(x=>x.fontOK===false)},input:{visible:inputs.length,profiles:inputs.map(x=>x.dataset.inputKind)},button:{visible:buttons.length,registered:buttons.filter(b=>b.dataset.buttonParent==='true').length},icon:{visible:icons.length,registered:icons.filter(x=>x.dataset.iconParent==='true').length,registry:icons.filter(x=>x.dataset.apiIcon).length},popup:{open:popups.length,profiles:popups.map(x=>x.dataset.popupType)},layout:{generic:[...document.querySelectorAll('#app [data-geo-layout]')].filter(visible).length,special:[...document.querySelectorAll('#app [data-layout]')].filter(visible).length,contactGeometry:geometry},keyboard:{nativeDevice:'PENDING',baseline:'v13.27'}};
+  return {family:FamilyRegistry.audit(),version:'v13.66',screen:app.dataset.screen,viewport:{width:innerWidth,height:innerHeight},font:{total:fonts.length,matched:fonts.filter(x=>x.fontOK).length,issues:fonts.filter(x=>x.fontOK===false)},input:{visible:inputs.length,profiles:inputs.map(x=>x.dataset.inputKind)},button:{visible:buttons.length,registered:buttons.filter(b=>b.dataset.buttonParent==='true').length},icon:{visible:icons.length,registered:icons.filter(x=>x.dataset.iconParent==='true').length,registry:icons.filter(x=>x.dataset.apiIcon).length},popup:{open:popups.length,profiles:popups.map(x=>x.dataset.popupType)},layout:{generic:[...document.querySelectorAll('#app [data-geo-layout]')].filter(visible).length,special:[...document.querySelectorAll('#app [data-layout]')].filter(visible).length,contactGeometry:geometry},keyboard:{nativeDevice:'PENDING',baseline:'v13.27'}};
  }
  const box=document.createElement('aside');box.id='apiProofPanel';box.style.cssText='position:fixed;z-index:10030;right:8px;top:calc(env(safe-area-inset-top) + 60px);width:min(340px,calc(100vw - 16px));max-height:45vh;overflow:auto;background:#fff;color:#222;border:1px solid #bbb;border-radius:12px;padding:8px;font:12px/1.4 system-ui;box-shadow:0 4px 16px #0002';
- const title=document.createElement('strong');title.textContent='API 1–7 · v13.65';const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0;font:inherit';out.setAttribute('aria-live','polite');
+ const title=document.createElement('strong');title.textContent='API 1–7 · v13.66';const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0;font:inherit';out.setAttribute('aria-live','polite');
  let picking=false;
  const show=()=>{picking=false;pick.textContent='Chọn thành phần';const x=report();out.textContent=['Font/Input: '+x.font.matched+'/'+x.font.total+' đúng size/line/weight','Button: '+x.button.registered+'/'+x.button.visible+' đăng ký','Icon: '+x.icon.registered+'/'+x.icon.visible+' đăng ký; '+x.icon.registry+' glyph registry','Popup: '+(x.popup.profiles.join(', ')||'chưa mở'),'Layout: '+x.layout.generic+' generic / '+x.layout.special+' vùng riêng','Family: '+x.family.classified+'/'+x.family.total+' · '+x.family.issues.length+' cần phân loại; '+x.family.pending.length+' cần học thêm',...x.family.issues.slice(0,6).map(v=>v.tag+'.'+v.className+' · '+v.status),'Keyboard: thiết bị PENDING',...x.font.issues.slice(0,8).map(v=>v.element+' '+JSON.stringify(v.computed))].join('\n')};
  const pick=Button.create({text:'Chọn thành phần',onClick:()=>{picking=!picking;pick.textContent=picking?'Hủy chọn':'Chọn thành phần';if(picking)out.textContent='Chạm một thành phần ngoài bảng này. Lần chạm đó chỉ đo, không thực hiện thao tác.';else show()}});
@@ -2963,7 +3021,7 @@ const chat=messages.getBoundingClientRect(),root=app.getBoundingClientRect();
 const gap=vTop+vHeight-box.bottom;
 if(box.height){minGap=Math.min(minGap,gap);maxGap=Math.max(maxGap,gap)}
 const n=x=>Math.round(x);
-const audit=auditGeometry();out.textContent=['v13.65 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Keyboard occluding: '+keyboardOccluding+' / motion: single viewport shell','Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
+const audit=auditGeometry();out.textContent=['v13.66 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Keyboard occluding: '+keyboardOccluding+' / motion: single viewport shell','Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
 }
 let frame=0;function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;measure()})}
 window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);window.addEventListener('resize',schedule);document.addEventListener('focusin',()=>{minGap=Infinity;maxGap=-Infinity;schedule()});document.addEventListener('focusout',schedule);new ResizeObserver(schedule).observe(app);new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
@@ -2980,7 +3038,7 @@ const ReleaseUpdater=(()=>{
  const parts=v=>/^v\d{1,6}\.\d{1,6}$/.test(v||'')?v.slice(1).split('.').map(Number):null;
  function newer(v,old){const a=parts(v),b=parts(old);return !!a&&!!b&&(a[0]>b[0]||a[0]===b[0]&&a[1]>b[1])}
  const live=location.protocol==='https:'&&location.hostname==='1sl2tp.github.io'&&['/0v/','/0v/index.html'].includes(location.pathname);
- const permitted=new Set(['v','r','floating','liveglass','durablealertlab','notificationlab','presencelab','readstatelab','directorylab','cachedsynclab','cachelab','recoverylab','noticelab','synclab','contextlab','foundationlab','conversationlab','messagelab','dynamiclab','virtuallab','collectionlab','systemslab','medialab','avatarlab','surfacelab','geolab','typolab','popuplab','inputlab','apicheck']);
+ const permitted=new Set(['v','r','floating','liveglass','multidevicelab','durablealertlab','notificationlab','presencelab','readstatelab','directorylab','cachedsynclab','cachelab','recoverylab','noticelab','synclab','contextlab','foundationlab','conversationlab','messagelab','dynamiclab','virtuallab','collectionlab','systemslab','medialab','avatarlab','surfacelab','geolab','typolab','popuplab','inputlab','apicheck']);
  const enabled=live&&[...new URLSearchParams(location.search).keys()].every(k=>permitted.has(k));
  let state='disabled',pending=null,busy=false,dirty=false,lastActivity=Date.now(),lastAttempt=0,lastTarget=null,lastError=null,retryTimer=0;
  const status=()=>({current,pending,state,dirty,lastError,blockers:blockers()});
@@ -3034,7 +3092,7 @@ if(new URLSearchParams(location.search).has('kbmode')){
 const p=document.createElement('div');p.style.cssText='position:fixed;top:env(safe-area-inset-top);right:4px;z-index:9999;background:#fff;color:#222;border:1px solid #aaa;border-radius:8px;padding:4px;font:11px system-ui';for(const [mode,label] of [['current','A'],['light','C']]){const a=document.createElement('a');a.href='?kbmode='+mode;a.textContent=label;a.style.cssText='display:inline-block;padding:8px;color:inherit';if(document.documentElement.dataset.kbMode===mode)a.style.fontWeight='bold';p.append(a)}document.body.append(p)}
 </script><script>
 if(new URLSearchParams(location.search).has('glasscheck')){
-const p=document.createElement('section');p.style.cssText='position:fixed;inset:12px 12px auto;z-index:9999;background:white;color:#111;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px system-ui;max-height:60vh;overflow:auto';const title=document.createElement('strong');title.textContent='Glass check v13.65';p.append(title);for(const sel of ['.composer','.panel-head button.icon','.search-zone input','button[data-button-kind=outline]']){const el=document.querySelector(sel);if(!el)continue;const c=getComputedStyle(el),line=document.createElement('p');line.textContent=sel+' | profile '+c.getPropertyValue('--paint-profile').trim()+' | radius '+c.borderRadius+' | border '+c.borderTopWidth+' '+c.borderTopColor+' | outline '+c.outlineStyle+' | blur '+(c.backdropFilter||c.webkitBackdropFilter||'none')+' | rim '+getComputedStyle(el,'::after').content;p.append(line)}const b=document.createElement('button');b.textContent='Đóng';b.onclick=()=>p.remove();p.append(b);document.body.append(p)}
+const p=document.createElement('section');p.style.cssText='position:fixed;inset:12px 12px auto;z-index:9999;background:white;color:#111;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px system-ui;max-height:60vh;overflow:auto';const title=document.createElement('strong');title.textContent='Glass check v13.66';p.append(title);for(const sel of ['.composer','.panel-head button.icon','.search-zone input','button[data-button-kind=outline]']){const el=document.querySelector(sel);if(!el)continue;const c=getComputedStyle(el),line=document.createElement('p');line.textContent=sel+' | profile '+c.getPropertyValue('--paint-profile').trim()+' | radius '+c.borderRadius+' | border '+c.borderTopWidth+' '+c.borderTopColor+' | outline '+c.outlineStyle+' | blur '+(c.backdropFilter||c.webkitBackdropFilter||'none')+' | rim '+getComputedStyle(el,'::after').content;p.append(line)}const b=document.createElement('button');b.textContent='Đóng';b.onclick=()=>p.remove();p.append(b);document.body.append(p)}
 </script><script>
 if(new URLSearchParams(location.search).get('glasslab')==='1'){
 const d=document.createElement('dialog');d.style.cssText='width:min(94vw,420px);max-height:85vh;padding:12px;background:white;color:#111;border:1px solid #ddd;border-radius:20px;overflow:auto';d.innerHTML='<h3>Glass Lab · upstream 6.0.0</h3><p id="glStatus">Đang tải thư viện gốc…</p><div style="position:relative;height:230px;overflow:hidden"><div id="glBackdrop" style="position:absolute;inset:0;background:#f8f8f8;padding:8px;line-height:24px">Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa<br>Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa</div><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="22" style="position:absolute;top:30px;left:12px;width:44px;height:44px;display:grid;place-items:center">‹</liquid-glass><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="29" style="position:absolute;bottom:35px;left:12px;right:12px;height:58px;display:grid;place-items:center">＋　Nhập tin nhắn mẫu　↑</liquid-glass></div><p>Chỉ mẫu thử, không thay composer thật.</p><button type="button">Đóng</button>';document.body.append(d);d.showModal();d.querySelector('button').onclick=()=>d.close();d.addEventListener('close',()=>d.remove());const s=document.createElement('script');s.type='module';s.src='https://cdn.jsdelivr.net/npm/simple-liquid-glass@6.0.0/web-component';s.onload=()=>{if(customElements.get('liquid-glass'))d.querySelector('#glStatus').textContent='Đã tải Web Component; khúc xạ cần nghiệm thu.'};s.onerror=()=>d.querySelector('#glStatus').textContent='Không tải được bản 6.0.0 từ CDN.';document.head.append(s);
@@ -3064,7 +3122,7 @@ if(new URLSearchParams(location.search).get('edgecheck')==='1'){
  const box=document.createElement('aside');box.style.cssText='position:fixed;z-index:10020;left:max(8px,env(safe-area-inset-left));top:calc(env(safe-area-inset-top) + 60px);max-width:calc(100vw - 16px);background:#fff;color:#222;border:1px solid #aaa;border-radius:10px;padding:8px;font:12px/1.45 system-ui';
  const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;margin:0';const close=document.createElement('button');close.textContent='Ẩn số đo';box.append(out,close);document.body.append(box);
  let frame=0;const vv=window.visualViewport;
- function measure(){frame=0;const cs=getComputedStyle(probe),r=document.querySelector('#app').getBoundingClientRect(),n=x=>Math.round(x),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;out.textContent=['v13.65 · '+(standalone?'PWA standalone':'Safari / browser'),'Screen CSS: '+screen.width+' × '+screen.height,'Window: '+innerWidth+' × '+innerHeight,'VisualViewport: '+n(vv?.width||innerWidth)+' × '+n(vv?.height||innerHeight)+' / top '+n(vv?.offsetTop||0),'Safe area T/R/B/L: '+[cs.paddingTop,cs.paddingRight,cs.paddingBottom,cs.paddingLeft].join(' / '),'Safe used T/R/B/L: '+['top','right','bottom','left'].map(k=>document.querySelector('#app').style.getPropertyValue('--safe-visible-'+k)||'—').join(' / '),'App: top '+n(r.top)+' / bottom '+n(r.bottom)+' / height '+n(r.height),'Screen − innerHeight: '+n(screen.height-innerHeight)+'px (chỉ tham khảo; đo lúc đóng bàn phím)'].join('\n')}
+ function measure(){frame=0;const cs=getComputedStyle(probe),r=document.querySelector('#app').getBoundingClientRect(),n=x=>Math.round(x),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;out.textContent=['v13.66 · '+(standalone?'PWA standalone':'Safari / browser'),'Screen CSS: '+screen.width+' × '+screen.height,'Window: '+innerWidth+' × '+innerHeight,'VisualViewport: '+n(vv?.width||innerWidth)+' × '+n(vv?.height||innerHeight)+' / top '+n(vv?.offsetTop||0),'Safe area T/R/B/L: '+[cs.paddingTop,cs.paddingRight,cs.paddingBottom,cs.paddingLeft].join(' / '),'Safe used T/R/B/L: '+['top','right','bottom','left'].map(k=>document.querySelector('#app').style.getPropertyValue('--safe-visible-'+k)||'—').join(' / '),'App: top '+n(r.top)+' / bottom '+n(r.bottom)+' / height '+n(r.height),'Screen − innerHeight: '+n(screen.height-innerHeight)+'px (chỉ tham khảo; đo lúc đóng bàn phím)'].join('\n')}
  function schedule(){if(!frame)frame=requestAnimationFrame(measure)}
  window.addEventListener('resize',schedule);vv?.addEventListener('resize',schedule);vv?.addEventListener('scroll',schedule);const ro=new ResizeObserver(schedule);ro.observe(document.querySelector('#app'));
  close.onclick=()=>{window.removeEventListener('resize',schedule);vv?.removeEventListener('resize',schedule);vv?.removeEventListener('scroll',schedule);ro.disconnect();if(frame)cancelAnimationFrame(frame);box.remove();probe.remove()};
