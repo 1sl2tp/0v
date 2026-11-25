@@ -1392,3 +1392,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 
 ## MEDIA-MIME-01 — v13.174
 - MIME thuộc MediaController cha: normalizeMime chuẩn hóa chữ hoa/thường, tham số; image/jpg và image/pjpeg -> image/jpeg. isImageMime và imageBlob dùng chung cho live/gallery/file fallback và picker; blob có MIME không rõ chỉ dùng declared MIME ảnh hợp lệ, MIME xung đột không giả dạng ảnh, không cho SVG/HTML/PDF thành ảnh. Phải decode thành công mới render; không đổi bytes hay DB. SQL read-only 26/11: C Sâm PL 25/11 21:51/21:52 đều image/jpg, 966×2146, có object; toàn kho 1260 image/jpg có object. Test JPEG bytes với MIME image/jpg, generic file và negative MIME. Không tự phát sinh OCR/thu tiền hay tải lại danh bạ. Native và CI pending.
+
+- MAIN-NAV-02: Khi Main hoàn tất điều hướng hợp lệ, ScrollController bỏ cooldown cuộn của vùng cũ nếu không còn gesture; scroll event trong navigationPending hoặc vùng ẩn không được đánh dấu là người dùng cuộn. Không thay đổi owner bàn phím, không thêm timer, giữ chính sách đọc cũ và F5. Kiểm tra lại tail sau media decode và quay lại danh bạ.

@@ -1965,7 +1965,8 @@ const Main=Object.freeze({
   scrolls[room]=position;resizeDraft();
   return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
    if(!valid()){resolve(false);return}
-   if(position.pinned)ScrollController.end('navigation');else ScrollController.write(position.top,'navigation');
+   // A new explicit navigation supersedes the previous room's scroll cooldown.
+   ScrollController.finishNavigation(position);
    navigationPending=false;scrolls[room]={top:messages.scrollTop,pinned:nearBottom()};syncJump();onDone();resolve(true)
   })))
  },
@@ -2254,11 +2255,12 @@ const ScrollController={
  replaceMedia(el,replace){const pinned=nearBottom(),top=messages.scrollTop,before=el.getBoundingClientRect(),head=app.querySelector('.conversation>.panel-head'),visibleTop=Math.max(messages.getBoundingClientRect().top,head?.getBoundingClientRect().bottom||0);replace();if(pinned){this.geometry(true);return}if(!navigationPending&&!touchingMessages&&performance.now()>scrollingUntil&&before.bottom<=visibleTop+1){const delta=el.getBoundingClientRect().height-before.height;if(delta)this.write(top+delta,'media-anchor')}},
  write(top,reason){if(!messages.clientHeight)return;geometryScrollUntil=performance.now()+100;messages.scrollTop=top;syncJump()},
  end(reason){this.write(messages.scrollHeight,reason)},
+ finishNavigation(position){if(!touchingMessages)scrollingUntil=0;if(position.pinned)this.end('navigation');else this.write(position.top,'navigation')},
  geometry(pinned){if(!pinned||navigationPending||touchingMessages||performance.now()<=scrollingUntil)return false;this.end('geometry');return true}
 };
 function appShellActive(){return floatingComposer&&matchMedia('(max-width:767px)').matches}
 function nearBottom(){return messages.scrollHeight-messages.clientHeight-messages.scrollTop<48}
-const jump=document.getElementById('jumpBottom');function syncJump(){const height=messages.clientHeight,top=messages.scrollTop,bottom=height>0&&messages.scrollHeight-height-top<48;if(bottom&&!navigationPending)pendingLatest[active]=0;const n=pendingLatest[active]||0,hidden=bottom||height===0;if(jump.hidden!==hidden)jump.hidden=hidden;if(n){if(jump.dataset.count!==String(n))jump.dataset.count=String(n)}else if(jump.hasAttribute('data-count'))delete jump.dataset.count}jump.addEventListener('click',()=>{cancelGeometryScroll();ScrollController.end('jump')});let jumpFrame=0;function scheduleJump(){if(!jumpFrame)jumpFrame=requestAnimationFrame(()=>{jumpFrame=0;if(!navigationPending&&messages.clientHeight)scrolls[active]={top:messages.scrollTop,pinned:nearBottom()};syncJump()})}messages.addEventListener('scroll',()=>{if(performance.now()>geometryScrollUntil)scrollingUntil=performance.now()+180;scheduleJump()},{passive:true});new ResizeObserver(scheduleJump).observe(messages);
+const jump=document.getElementById('jumpBottom');function syncJump(){const height=messages.clientHeight,top=messages.scrollTop,bottom=height>0&&messages.scrollHeight-height-top<48;if(bottom&&!navigationPending)pendingLatest[active]=0;const n=pendingLatest[active]||0,hidden=bottom||height===0;if(jump.hidden!==hidden)jump.hidden=hidden;if(n){if(jump.dataset.count!==String(n))jump.dataset.count=String(n)}else if(jump.hasAttribute('data-count'))delete jump.dataset.count}jump.addEventListener('click',()=>{cancelGeometryScroll();ScrollController.end('jump')});let jumpFrame=0;function scheduleJump(){if(!jumpFrame)jumpFrame=requestAnimationFrame(()=>{jumpFrame=0;if(!navigationPending&&messages.clientHeight)scrolls[active]={top:messages.scrollTop,pinned:nearBottom()};syncJump()})}messages.addEventListener('scroll',()=>{if(!navigationPending&&app.dataset.screen==='chat'&&messages.clientHeight&&performance.now()>geometryScrollUntil)scrollingUntil=performance.now()+180;scheduleJump()},{passive:true});new ResizeObserver(scheduleJump).observe(messages);
 
 // KeyboardController: one viewport owner, one layout/scroll transaction per frame.
 let viewportFrame=0,previousRect='',anchor=null,scrollingUntil=0,geometryScrollUntil=0;
