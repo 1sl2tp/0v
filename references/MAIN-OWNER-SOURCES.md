@@ -120,3 +120,6 @@ Astryx Card.tsx pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a (container 
 
 ## v13.100
 CHAT bill-transfer-identity.mjs blob 72a8bed404e47aa137d7a83df982b914d74620fc: equal amount is not transfer identity and distinct bills may compete for one credit. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a: parent container owns spacing. Reuse existing candidate edges and CardController; no new financial authority or source code copied.
+
+## v13.101
+CHAT credit-duplicate-identity.mjs blob 2b9f7c4231ba762dfdb80ad3e1bf7e2cb9b0d536: exact entire official body including final balance, independent printed minute, verified source/amount/account; received timestamp is transport metadata. 0v requires explicit non-own flag and independent parsed memo consistency; preserves competing unposted aliases. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a, parent geometry. No upstream runtime or customer constants copied.
