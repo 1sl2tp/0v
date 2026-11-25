@@ -272,3 +272,9 @@ BankJournalAPI.planAllocations({journal,obligations,plans}) replays fixture jour
 
 ## v13.113 BANK-CYCLE
 BankJournalAPI.planCycles({journal,obligations,plans,cycles}) calls planAllocations; cycles require customerId,cycleId,revision,complete,orderIds. Returns immutable per-order contributions and per-cycle exact opening/allocated/remaining, receipt IDs/counts, status; global unallocated separate. canPost=false, canCloseCycle=false, caller completeness only. Existing ?bankallocationlab=1 extends two receipt example.
+
+## v13.113 correction — BANK-ROLLING
+BankJournalAPI.planRollingDebt({journal,customer,openingAt,asOf,purchases,receiptIds}) is primary rolling debt fixture projection; signed balance = opening minus delivered purchases plus explicitly assigned replayed receipts. Exact debt/credit, per-event balance, projected cycle transitions, separate bank-backed and unlinked manual totals. No order allocation required; planAllocations/planCycles optional only. No actual authorization, persistence, global assignment or cycle closure.
+
+## v13.114 BANK-ROLLING-BATCH
+BankJournalAPI.planRollingBatch({journal,openingAt,asOf,customers:[{customer,purchases}],assignments:[{customerId,receiptId,expectedRevision}]}) reuses rollingProjection after one replay. Reject repeated receipt or known Bank alias across customers and repeated purchase IDs. Exact separate debt, credit, bankReceived, manualUnlinked and unassigned receipt totals. Read-only fixture, no persistent allocation lock. Manual linkage after asOf does not count as Bank-backed at earlier cutoff.

@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.113)
+## 00. Chỉ mục rule đang có hiệu lực (v13.114)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -999,3 +999,17 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-CYCLE-03: State unpaid/partial-plan/covered-plan/no-opening-debt/incomplete-scope; incomplete cannot claim covered even if zero. All results canPost=false and canCloseCycle=false. Pending/unlinked bill or manual receipt is not bank-backed allocation; no actual debt settlement or cycle reset.
 - BANK-CYCLE-04: Existing allocation fixture lab extends to two receipts, editable amounts and cycle remaining/status. No live customer/obligation data, cycle cadence inference, messages or production adapter.
 - BANK-CYCLE-05: Test partial, covered, two receipts to one order, shared receipt, fractional residual, incomplete scope, wrong customer, duplicate receipt and unassigned order; browser verifies ready/partial/rejected. Preserve keyboard v13.27 and full CI gate.
+
+## 138. BANK-ROLLING — v13.113 correction (user-confirmed model)
+- BANK-ROLLING-01: Main business model is rolling customer debt (nợ đuổi, thu gạch). Delivered purchases subtract, explicitly assigned verified/posted fixture receipts add to customer signed balance. No required invoice/order allocation; BANK-ALLOC and BANK-CYCLE remain optional isolated diagnostics, not main flow. Draft orders not counted.
+- BANK-ROLLING-02: Explicit customer ID, opening balance, snapshot revision, period and assigned receipt IDs; no inference from names or memo. Replay journal for amount, count receipt once, linked manual+bank once, unlinked manual separately. Reject wrong known customer, repeated receipt/bank/known alias. Receipt assignment is fixture input, not authorization or global cross-customer lock.
+- BANK-ROLLING-03: Use exact DecimalAPI and chronological effective posting timestamps, Vietnam business date; reject ambiguous same-time events within fixture. Negative balance is debt, zero clean, positive credit. Cycle stays open while negative; a transition to >=0 is a projected closure; subsequent negative starts new cycle. Unknown opening start stays unknown; incomplete scope cannot claim settlement. No actual closing, automatic reminder change or real posting.
+- BANK-ROLLING-04: ?bankrollinglab=1 primary model demonstration; optional allocation lab is not mandatory. Do not rewrite production history or change existing debt rules/cadence; no production connector.
+- BANK-ROLLING-05: Test purchases after opening, partial payment, zero, positive credit, subsequent purchase, incomplete scope, duplicate receipts and wrong customer/draft. Browser test debt/zero/credit; full CI gate. Preserve keyboard v13.27.
+
+## 139. BANK-ROLLING-BATCH — v13.114
+- BANK-ROLLING-BATCH-01: Restore unmerged v13.113 rolling correction into main-bound release; nợ đuổi/thu gạch is primary, optional invoice allocation is not required. Explicit batch scope, one customer snapshot per ID; no production change.
+- BANK-ROLLING-BATCH-02: One receipt assignment per batch across all customers, explicit customer ID/revision, reject duplicate receipt/bank/known replay alias and duplicate purchase ID; no inferred assignment or split. Reuse single rolling projection and one replay; unassigned receipts remain separate. Assignment is proposed fixture input, not persistent/global lock across independent requests.
+- BANK-ROLLING-BATCH-03: Manual receipt linked to Bank stays one receipt at original postedAt. As-of projection before verifiedAt counts it as unlinked manual, after link as Bank-backed; do not add second payment. Exact separate debt and credit totals, no offset across customers. Caller snapshot completeness only.
+- BANK-ROLLING-BATCH-04: Existing rolling lab uses batch API; no live customer or ledger adapter, no changes to reminder cadence, history or actual settlement. Full journal integrity replay remains required; not an independently reconstructed historical ledger.
+- BANK-ROLLING-BATCH-05: Test cross-customer duplicate, stale revision, unknown customer, unassigned receipt, manual then Bank link and earlier as-of classification, exact residual. Restore previous browser debt/zero/credit regression; CI gate and verify actual merged main blob. Preserve v13.27 keyboard.
