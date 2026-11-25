@@ -236,3 +236,6 @@ BankReviewQueueAPI.project adds immutable competitionGroups with billIds, bankId
 
 ## v13.101 BANK-REPLAY
 BankRecheckController carries sourcePackage/rawNotice. BankReconcileAPI returns immutable replayGroups (bankIds, recordCount, noticeAmount, hasPosted, canPost:false), derived from exact official notice + validated fields. Unposted aliases stay competing; posted exact aliases excluded. Queue shows replayGroups and suppresses misleading related Bank sum. No production adapter or financial authorization.
+
+## v13.102 BANK-CROP
+BillImageIntakeAPI.inspect adds cropHashes (null or comma-separated unique up to 3 inset dHashes). BillDuplicateAPI.validate/fields preserves this bounded immutable evidence; inspect emits possible-cropped-image-duplicate only with independent matching fields. Existing near-image hint suppressed on known distinct clock. No receipt or auto-merge authority.

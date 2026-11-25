@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.101)
+## 00. Chỉ mục rule đang có hiệu lực (v13.102)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -915,3 +915,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-REPLAY-03: Unposted suspected replay group remains review-only with original competing candidates. If one exact notice alias is already posted, block all its validated aliases from candidate evaluation; no automatic link or second receipt. Do not infer identity from approximate text.
 - BANK-REPLAY-04: Show unique record IDs, one notice face amount and replay warning; suppress group Bank sum when replay evidence exists. No changes to production, historical data, or delivery.
 - BANK-REPLAY-05: Regression covers different receipt days, changed balance, changed memo/clock/account/amount/source, absent raw, posted alias, review projection and browser. Keep keyboard v13.27; full CI gate.
+
+## 126. BANK-CROP — v13.102
+- BANK-CROP-01: Retain exact SHA and original region identity; add bounded 5/10/15% symmetric inset dHash variants from the current raster, with same chosen rotation. No image upload or inference of missing pixels. Store at most three unique hashes in immutable cropHashes.
+- BANK-CROP-02: New crop hint requires distinct source hashes, full matching account, exact amount, same printed day, substantive equal normalized memo (>=12 characters), no contradictory known name, distinct reference or known clock difference >60 seconds. Non-informative all/mostly flat dHashes excluded from new crop hint. One full-to-inset distance <=3 is experimental review evidence only.
+- BANK-CROP-03: Known clock difference >60 seconds also suppresses existing near-image hint, but never exact overlapping source or same explicit reference conflict. No automatic merge or receipt; preserve previous posted ledger and all bill IDs. Missing time remains mandatory review.
+- BANK-CROP-04: Display crop fingerprints in existing local intake. Limits: symmetric modest border crop only, no perspective or arbitrary recapture guarantee; synthetic fixture is not real-bank accuracy. No production data or history edits.
+- BANK-CROP-05: Test synthetic 10% crop, independent fields, conflicting clock/reference, invalid hash, review guard and browser label. Preserve keyboard v13.27; CI required.
