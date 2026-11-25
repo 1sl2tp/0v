@@ -240,3 +240,6 @@ E0: PR #80 CI 45550868991 passed for original head 9468c3ac; main merge 4c5d8e59
 
 ## v13.115
 E0: v13.114 PR #81 merged; CI 45551432181 success; main blob verified. E1: BANK-ROLLING-PERSIST, BANK-JOURNAL, KB-LOCK. MDN IndexedDB overlapping write transaction and PostgreSQL uniqueness reviewed. E2: seven direct synthetic contracts passed; concurrent tabs, rollback, F5/reopen browser regression added; full CI pending. Local synthetic account only; no server lock, production ledger, actual bill, reminder, keyboard, history or Google Sheet changes.
+
+## v13.116
+E0: PR #82 merged, CI 45551969249 success; main index blob matches version manifest. E1: BANK-ROLLING-DB, BANK-ROLLING-PERSIST, KB-LOCK; PostgreSQL unique index/transaction isolation and Supabase invoker/RLS references. E2: seven classic scripts compiled; PostgreSQL 16 serial/rollback/concurrency workflow added, execution pending. No local PostgreSQL runtime available. E3–E5: not certified; no production DB, migration, data, message, reminders or keyboard edits. No authoritative Bank key adapter or actual ledger integration.
