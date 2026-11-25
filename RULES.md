@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.69)
+## 00. Chỉ mục rule đang có hiệu lực (v13.70)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01–03, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05, HISTORY-API-01–04, MESSAGE-API-01–05, CONVERSATION-API-01–05, TIME-API-01–04, DECIMAL-API-01–03, MONEY-API-01–04, FORMAT-API-01–02, PARSE-API-01–03, CALENDAR-API-01–02, SCHEDULE-API-01–03, CONTEXT-API-01–06, SYNC-API-01–05, NOTICE-API-01–06, RECOVERY-API-01–05, CACHE-API-01–05, CACHE-SYNC-01–05, DIRECTORY-API-01–06, READ-API-01–05, PRESENCE-API-01–05, NOTIFICATION-API-01–06, ALERT-DURABLE-01–05, MULTI-API-01–05, OFFLINE-API-01–05, RELOAD-API-01–04, PERF-API-01–05 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01–03, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05, HISTORY-API-01–04, MESSAGE-API-01–05, CONVERSATION-API-01–05, TIME-API-01–04, DECIMAL-API-01–03, MONEY-API-01–04, FORMAT-API-01–02, PARSE-API-01–03, CALENDAR-API-01–02, SCHEDULE-API-01–03, CONTEXT-API-01–06, SYNC-API-01–05, NOTICE-API-01–06, RECOVERY-API-01–05, CACHE-API-01–05, CACHE-SYNC-01–05, DIRECTORY-API-01–06, READ-API-01–05, PRESENCE-API-01–05, NOTIFICATION-API-01–06, ALERT-DURABLE-01–05, MULTI-API-01–05, OFFLINE-API-01–05, RELOAD-API-01–04, PERF-API-01–05, VIRTUAL-PERF-01–04 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -688,3 +688,9 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - PERF-API-03: metrics() returns snapshots of comparison/branch counts, sort counts, and projection recomputations. Deterministic test 10,000 messages then one append: one ordering comparison; 1,000 rooms metadata edit: zero new sorts. Test ties/late events, stable refs, conflict rejection. Array copying still O(n); counters are not latency benchmarks.
 - PERF-API-04: No change to keyboard/scroll/virtualizer/Main, real network, production or DB. Next measure UI interaction and DOM work separately, not claim device FPS from synthetic counters.
 - PERF-API-05: Study Redux Toolkit normalized sorted entities, Reselect reference stability, TanStack Virtual measurement cache/benchmark. Preserve existing SOURCE-GATE and KB-LOCK; CI before release.
+
+## 92. VIRTUAL-PERF — v13.70, bài toán 32 (phase 2)
+- VIRTUAL-PERF-01: Virtualizer owns all list DOM updates. Compare top, index, aria and viewport metadata before writing. Stable visible range with unchanged rows produces no redundant DOM attribute writes.
+- VIRTUAL-PERF-02: Reconcile by stable key and item identity; insert only when position differs, remove only departed rows, preserve overlapping nodes. Retain dynamic measurement, history anchor, follow-end and directory anchor rules. Avoid previous-item Map for fixed-height lists.
+- VIRTUAL-PERF-03: metrics() reports paints, stableFrames, created/removed/moves, attributeWrites/styleWrites. Browser regression observes DOM mutations on stable range and existing anchor/late resize/dispose tests. Counts are not latency, FPS or proof on real device.
+- VIRTUAL-PERF-04: Study TanStack Virtual core memoized ranges, stable item keys and measurement cache. Preserve KB-LOCK v13.27, no Main or production change. CI before release. Next scoped sync indexing and Main integration separately.

@@ -137,3 +137,6 @@ openFixtureServer({db,scope,conversationId,stream}) → send/transport/subscribe
 
 ## v13.69 Store performance
 MessageStore.metrics() → comparisons/appendBatches/prependBatches/mergeBatches. ConversationStore.metrics() → sorts/comparisons/projections. Existing APIs unchanged; projection refs reused while input refs unchanged. Deterministic work counters not millisecond latency. No Main migration or virtualizer changes.
+
+## v13.70 Virtualizer performance
+Virtualizer.mount(...).metrics() returns immutable counters: paints, stableFrames, created, removed, moves, attributeWrites, styleWrites. Stable DOM writes guarded; keyed overlapping rows retained. Existing range/anchor/resize/dispose API unchanged. Counters count Virtualizer writes only, not browser paint time or arbitrary consumer DOM changes.
