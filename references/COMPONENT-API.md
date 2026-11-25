@@ -200,3 +200,6 @@ BillOCRFieldAPI.parse returns accountPartial (visible prefix/suffix only, no rec
 
 ## v13.90 memo evidence
 BankReconcileAPI.memoDetails(billMemo,bankMemo,{billReference,bankReference}) returns normalized comparison forms, proof kind, embedded reference, digit conflict and known markers. Compact match is review-only. Original memo retained; no arbitrary code stripping.
+
+## v13.91
+ParseAPI.accountDigits(raw,{min=6,max=32}) returns digit string or null; sameAccount compares valid full identifiers. OCR, bank, duplicate, manual fixture and journal share this owner.

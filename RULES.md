@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.90)
+## 00. Chỉ mục rule đang có hiệu lực (v13.91)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -831,3 +831,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-MEMO-03: Independently printed bill reference (>=8 chars, >=6 consecutive digits) must be delimited in bank memo. Strip only exact known trailing reference, preserve embedded reference and marker evidence. Never infer a reference from arbitrary digits; distinct explicit references block.
 - BANK-MEMO-04: Raw memo preserved in bank-event identity, changing bank memo on same ID quarantines conflict. Full bank account, amount, valid transaction time, clear image, unique candidate and duplicate/ledger guards unchanged. Missing time stays review.
 - BANK-MEMO-05: Test punctuation/accents/spacing, anchored wrappers, attached reference, substring collision, number conflict, generic phrase and late bank; source CHAT bank-app-preview, no private constants. Preserve v13.27 keyboard. No production write.
+
+## 114. BANK-ACCOUNT — v13.91
+- BANK-ACCOUNT-01: ParseAPI.accountDigits owns string account normalization. Remove horizontal presentation spaces (ordinary, NBSP, narrow NBSP, thin space, tab), preserve all digits and leading zeros. Reject numbers, newlines, punctuation, masks and letters.
+- BANK-ACCOUNT-02: Full account 6–32 digits, explicit suffix exactly five digits, prefix 1–20. Four-digit examples show formatting only. Never pad or invent missing digits.
+- BANK-ACCOUNT-03: OCR, configured destination, bank account, duplicate reference, manual fixture and journal use same canonical comparison. Partial evidence remains review. Preserve raw OCR evidence.
+- BANK-ACCOUNT-04: Canonicalize account presentation in bank ID fingerprint; other conflicts unchanged. No production or historic receipt changes.
+- BANK-ACCOUNT-05: Regression covers grouped full/suffix, leading zeros, wrong digits, unsupported symbols, duplicate and journal. Reviewed CHAT bill-amount-rules.mjs; stricter than broad non-digit removal. Preserve keyboard v13.27.

@@ -87,3 +87,6 @@ Internal CHAT bill-app-preview.mjs and bill-transfer-identity.mjs: full bank des
 
 ## v13.90
 CHAT supabase/functions/v21-bank-bill-event/bill-app-preview.mjs: bank-side QR/IBFT/MB envelopes, exact delimited sharedBankReference, contiguous memo containment; retained independent proof guards, no customer constants copied. Compact matching restricted to review in 0v.
+
+## v13.91
+CHAT bill-amount-rules.mjs account cleaning reviewed; stricter horizontal-space-only removal adopted. No customer constants copied.
