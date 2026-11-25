@@ -213,3 +213,6 @@ E0: v13.105 PR #72 merged; CI 45547566090 success. E1: BANK-FIELD-GEOMETRY, BANK
 
 ## v13.107
 E0: v13.106 PR #73 merged, CI 45548019367 success. E1: BANK-FIELD-VARIANTS, BANK-FIELD-GEOMETRY, BANK-FIELD-REVISION, BANK-ENGINE, KB-LOCK. Bounded original/contrast/scale2 variants, literal per-field comparison, no majority/confidence override. Tesseract tessdoc ImproveQuality and Astryx Card reviewed. E2: direct logic/syntax and browser mock regression added; full CI pending. Real OCR, AI model and private corpus not tested; no production data, messages or keyboard changes. Google Sheet not updated.
+
+## v13.108
+E0: v13.107 PR #74 merged, CI 45548267364 success. E1: BANK-LITERAL, BANK-OCR, BANK-ACCOUNT, BANK-FIELD-VARIANTS, PARSE-API, KB-LOCK. Invalid literal provenance, numeric-only glyph warnings, profile/spacing distinctions, raw pair diagnostics without correction. Adobe NumberParser, Tesseract docs and Astryx Card reviewed. E2: direct regressions and syntax; browser raw diagnostic test added, full CI pending. No production actions, actual OCR accuracy or private corpus validation, Google Sheet not updated.

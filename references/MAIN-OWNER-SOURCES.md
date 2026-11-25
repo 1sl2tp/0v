@@ -141,3 +141,6 @@ Tesseract.js v6.0.1 src/index.d.ts blob 1f5a9c8094fe4de7983467f9efb43bdb4de535f2
 
 ## v13.107
 Tesseract tessdoc ImproveQuality.md blob 522d6369143d4c17cda2b4ad18d133d2f5bbf975: rescaling, binarisation and preprocessing may help or hurt recognition; compare variants instead of claiming improved accuracy. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a: reuse existing card layout. Existing Tesseract adapter and field parser reused; no upstream code or private data copied.
+
+## v13.108
+Adobe NumberParser.ts pinned blob 66e59aff3510121ca373c0b8e39dacd3a8e1e0: explicit locale separators, reject incompatible punctuation. Tesseract.js v6.0.1 docs/api.md blob cc3f82d7d0eacd6df825b4c50ad19357fdca557c: whitelist restricts recognition output; deliberately not applied as it could hide letter/digit uncertainty. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. 0v diagnostic groups are experimental, not measured error probabilities. No upstream code or private values copied.
