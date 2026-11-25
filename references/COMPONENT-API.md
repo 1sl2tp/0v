@@ -287,3 +287,6 @@ Standalone SQL fixture at fixtures/bank-db/schema.sql; post_receipt(...) returns
 
 ## v13.117 BANK-IDENTITY
 BankTransactionIdentityAPI.resolve({configured,banks,attestations}) groups separate verified fixture statement provider IDs; inspectNotice revalidates raw Agribank evidence and explicit clock. prepare({configured,bill,banks,attestations,bankId}) produces single-candidate diagnostic only, canPost=false. Existing bank replay, full-batch competition, DB keys and ledger integration remain separate. No real authority adapter.
+
+## v13.118 BANK-IDENTITY-BATCH
+BankIdentityBatchAPI.plan({configured,bills,banks,attestations,assignments,priorReceipts,asOf,complete}) produces conservative whole-batch fixture proposals, grouping notice aliases by canonical key and blocking competing candidates. Prior manual links preserve postedAt and contribute zero newCredit; exact per-customer totals. No authoritative ledger snapshot, real posting or persistent SQL integration. canPost=false and canCloseCycle=false.
