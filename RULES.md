@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.120)
+## 00. Chỉ mục rule đang có hiệu lực (v13.121)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1055,3 +1055,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-BACKLOG-03: Group by explicitly assigned customer, unknown owner separate; count open, manual, review, ready and waiting. No sum of unverified bill face amounts as debt. NewCreditPlan and manualLinkPlan separate, no actual posting.
 - BANK-BACKLOG-04: Group Bank notices only by canonical attested identity; distinguish candidate, no-bill, already-collected and unresolved/conflicting notices. No-bill amount is sum of distinct resolved candidate-free keys in supplied scope, not actual unallocated balance; unresolved amounts not included. Reserve prior linked keys even when original bill absent. canPost=false, canSend=false.
 - BANK-BACKLOG-05: Regression for 3-day aging, two customers, missing clock, waiting Bank, manual linkage, canonical aliases, no-bill Bank, unresolved identity, exact separate amounts and historical cutoff. No persistent adapter, messages, reminders, production data or keyboard changes; full CI required.
+
+## 146. BANK-BACKLOG-UI — v13.121
+- BANK-BACKLOG-UI-01: Bill module includes read-only synthetic backlog, also available via bankbackloglab=1; use existing Layout, Typography, Button and Card owners. No separate UI CSS system or keyboard edits.
+- BANK-BACKLOG-UI-02: Filters for open, missing clock, manual unverified, Bank, closed. Display counts, customer, exact source-derived status, waiting days and next action; separate new-credit plan from manual verification and candidate-free Bank totals. No inference from bill face amounts into debt.
+- BANK-BACKLOG-UI-03: Details expand on demand, aria-expanded/controls, pressed filter state and status announcement. Show distinct bill arrival, OCR revision time, Bank transaction and arrival time, canonical identity and notice aliases. No fake real financial action.
+- BANK-BACKLOG-UI-04: Explicitly labeled fixture-only manual verification uses BankAccumulationAPI snapshot and scope revision, zero additional credit. Reset returns to synthetic initial state; no message transport, durable storage or production writes. Keep existing Bill cards and keyboard v13.27.
+- BANK-BACKLOG-UI-05: Browser regression at 320/390/1280 for filters, details, manual linkage, zero credit, reset, narrow width and no page errors. Existing application and PostgreSQL CI required before merge.
