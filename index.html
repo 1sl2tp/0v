@@ -2035,11 +2035,11 @@ const BankReconcileAPI=(()=>{
    const bm=memo(bill.memo),km=memo(bank.memo),refMatch=key(bill.reference)&&bill.reference===bank.reference;
    if(key(bill.reference)&&key(bank.reference)&&bill.reference!==bank.reference)reasons.push('reference-conflict');
    if(!refMatch&&!(bm.length>=6&&km.length>=6&&(bm.includes(km)||km.includes(bm))))reasons.push('memo-insufficient');
-   const late=k?TimeAPI.businessDate(instant(bank.receivedAt))>k.date:false;
+   const received=instant(bank.receivedAt);if(k&&(k.instant?Date.parse(received)<Date.parse(k.instant):TimeAPI.businessDate(received)<k.date))reasons.push('bank-received-before-transaction');const late=k?TimeAPI.businessDate(received)>k.date:false;
    edges.push({billId:bill.id,bankId:bank.id,reasons,late,transactionDate:k?.date||null,receivedDate:TimeAPI.businessDate(instant(bank.receivedAt))})
   }}
-  const billCount=new Map(),bankCount=new Map();for(const e of edges){billCount.set(e.billId,(billCount.get(e.billId)||0)+1);bankCount.set(e.bankId,(bankCount.get(e.bankId)||0)+1)}
-  const results=bills.map(b=>{const es=edges.filter(e=>e.billId===b.id);if(usedBills.has(b.id))return {billId:b.id,state:'posted',reason:'already-posted',candidates:[]};if(!es.length)return {billId:b.id,state:'pending',reason:!amount(b.amount)?'bill-amount':b.account!=null&&b.account!==configured?'bill-account':'bank-not-matched',candidates:[]};const e=es[0],ambiguous=es.length!==1||bankCount.get(e.bankId)!==1;return {billId:b.id,state:ambiguous||e.reasons.length?'review':'eligible-fixture',reason:ambiguous?'ambiguous':e.reasons[0]||null,candidates:es}});
+  const byBill=new Map(),bankCount=new Map();for(const e of edges){if(!byBill.has(e.billId))byBill.set(e.billId,[]);byBill.get(e.billId).push(e);bankCount.set(e.bankId,(bankCount.get(e.bankId)||0)+1)}
+  const results=bills.map(b=>{const es=byBill.get(b.id)||[];if(usedBills.has(b.id))return {billId:b.id,state:'posted',reason:'already-posted',candidates:[]};if(!es.length)return {billId:b.id,state:'pending',reason:!amount(b.amount)?'bill-amount':b.account!=null&&b.account!==configured?'bill-account':'bank-not-matched',candidates:[]};const e=es[0],ambiguous=es.length!==1||bankCount.get(e.bankId)!==1;return {billId:b.id,state:ambiguous||e.reasons.length?'review':'eligible-fixture',reason:ambiguous?'ambiguous':e.reasons[0]||null,candidates:es}});
   for(const b of available)if(!bankCount.has(b.id))unmatchedBanks.push({id:b.id,state:'pending',reason:'no-bill'});
   return Object.freeze({results:Object.freeze(results.map(r=>Object.freeze({...r,candidates:Object.freeze(r.candidates.map(e=>Object.freeze({...e,reasons:Object.freeze(e.reasons)})))}))),unmatchedBanks:Object.freeze(unmatchedBanks.map(Object.freeze))})
  }
