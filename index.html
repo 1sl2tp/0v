@@ -2003,7 +2003,7 @@ const Main=Object.freeze({
     stable=signature===previous?stable+1:0;previous=signature;frames++;
     const ready=height>0&&!draftFrame&&!viewportFrame&&(!floatingComposer||Math.abs(composerHeight-keyboardComposer.offsetHeight)<=1);
     // One bounded navigation transaction, no persistent retry or timer.
-    if((ready&&stable>=2)||frames>=12){ScrollController.finishNavigation(position);done();return}
+    if((ready&&stable>=2)||frames>=12){ScrollController.finishNavigation(position);navigationPending=false;if(position.pinned)ScrollController.followEnd();done();return}
     requestAnimationFrame(settle)
    };
    requestAnimationFrame(settle)
@@ -2258,7 +2258,7 @@ if(isLive)document.body.prepend(app);
 /* END MAIN VIEW FACTORIES */
 const draft=document.getElementById('draft'),messages=document.getElementById('messages'),contactList=document.getElementById('contacts');
 let active=isLive?null:'kh',navigationEpoch=0,navigationPending=false,navigationGesture=0;
-for(const event of ['wheel','touchstart','pointerdown'])messages.addEventListener(event,()=>{if(navigationPending)navigationGesture++},{passive:true});
+for(const event of ['wheel','touchstart','pointerdown'])messages.addEventListener(event,()=>{ScrollController.stopFollowing();if(navigationPending)navigationGesture++},{passive:true});
 const pendingLatest={},scrolls={},$=s=>document.querySelector(s);
 const routeBack=where=>isLive?liveNavigate(where):navigate(where);
 let draftFrame=0;
@@ -2300,19 +2300,24 @@ let lastDraftFormWidth=0;
 new ResizeObserver(()=>{const width=draftForm.clientWidth;if(width&&width!==lastDraftFormWidth){lastDraftFormWidth=width;resizeDraft()}}).observe(draftForm);
 draft.addEventListener('input',resizeDraft);
 const ScrollController={
+ tail:null,tailObserver:null,
+ stopFollowing(){this.tail=null;this.tailObserver?.disconnect()},
+ following(){const t=this.tail;return !!t&&t.epoch===navigationEpoch&&t.room===active&&app.dataset.screen==='chat'&&!app.hidden&&!navigationPending},
+ userMoved(){if(this.following()){const top=messages.scrollTop,limit=Math.max(0,messages.scrollHeight-messages.clientHeight);if(Math.abs(top-Math.min(this.tail.top,limit))>2&&limit-top>2)this.stopFollowing()}},
+ followEnd(){this.stopFollowing();if(!messages.clientHeight||app.hidden||touchingMessages)return;this.tail={epoch:navigationEpoch,room:active,top:messages.scrollTop};if(!this.tailObserver)this.tailObserver=new ResizeObserver(()=>{if(!this.following()){this.stopFollowing();return}this.userMoved();if(this.following()&&!touchingMessages&&messages.scrollHeight-messages.clientHeight-messages.scrollTop>2)this.end('content-resize')});this.tailObserver.observe(messages);for(const row of messages.children)this.tailObserver.observe(row)},
  writeLocal(el,top){el.scrollTop=Math.max(0,Math.min(Number(top)||0,Math.max(0,el.scrollHeight-el.clientHeight)));return el.scrollTop},
  snapshot(el){return {top:el.scrollTop,pinned:el.scrollHeight-el.clientHeight-el.scrollTop<=2}},
  restore(el,state){el.scrollTop=state.pinned?el.scrollHeight:state.top;return el.scrollTop},
  append(el,children){const state=this.snapshot(el);el.append(...children);this.restore(el,state);return state},
- replaceMedia(el,replace){const pinned=nearBottom(),top=messages.scrollTop,before=el.getBoundingClientRect(),head=app.querySelector('.conversation>.panel-head'),visibleTop=Math.max(messages.getBoundingClientRect().top,head?.getBoundingClientRect().bottom||0);replace();if(pinned){this.geometry(true);return}if(!navigationPending&&!touchingMessages&&performance.now()>scrollingUntil&&before.bottom<=visibleTop+1){const delta=el.getBoundingClientRect().height-before.height;if(delta)this.write(top+delta,'media-anchor')}},
- write(top,reason){if(!messages.clientHeight)return;geometryScrollUntil=performance.now()+100;messages.scrollTop=top;syncJump()},
+ replaceMedia(el,replace){this.userMoved();const follow=this.following(),pinned=nearBottom(),top=messages.scrollTop,before=el.getBoundingClientRect(),head=app.querySelector('.conversation>.panel-head'),visibleTop=Math.max(messages.getBoundingClientRect().top,head?.getBoundingClientRect().bottom||0);replace();if(follow&&!touchingMessages){this.end('media-follow');return}if(pinned){this.geometry(true);return}if(!navigationPending&&!touchingMessages&&performance.now()>scrollingUntil&&before.bottom<=visibleTop+1){const delta=el.getBoundingClientRect().height-before.height;if(delta)this.write(top+delta,'media-anchor')}},
+ write(top,reason){if(!messages.clientHeight)return;geometryScrollUntil=performance.now()+100;messages.scrollTop=top;if(this.following())this.tail.top=messages.scrollTop;syncJump()},
  end(reason){this.write(messages.scrollHeight,reason)},
  finishNavigation(position){if(!touchingMessages)scrollingUntil=0;if(position.pinned)this.end('navigation');else this.write(position.top,'navigation')},
  geometry(pinned){if(!pinned||navigationPending||touchingMessages||performance.now()<=scrollingUntil)return false;this.end('geometry');return true}
 };
 function appShellActive(){return floatingComposer&&matchMedia('(max-width:767px)').matches}
 function nearBottom(){return messages.scrollHeight-messages.clientHeight-messages.scrollTop<48}
-const jump=document.getElementById('jumpBottom');function syncJump(){const height=messages.clientHeight,top=messages.scrollTop,bottom=height>0&&messages.scrollHeight-height-top<48;if(bottom&&!navigationPending)pendingLatest[active]=0;const n=pendingLatest[active]||0,hidden=bottom||height===0;if(jump.hidden!==hidden)jump.hidden=hidden;if(n){if(jump.dataset.count!==String(n))jump.dataset.count=String(n)}else if(jump.hasAttribute('data-count'))delete jump.dataset.count}jump.addEventListener('click',()=>{cancelGeometryScroll();ScrollController.end('jump')});let jumpFrame=0;function scheduleJump(){if(!jumpFrame)jumpFrame=requestAnimationFrame(()=>{jumpFrame=0;if(!navigationPending&&messages.clientHeight)scrolls[active]={top:messages.scrollTop,pinned:nearBottom()};syncJump()})}messages.addEventListener('scroll',()=>{if(!navigationPending&&app.dataset.screen==='chat'&&messages.clientHeight&&performance.now()>geometryScrollUntil)scrollingUntil=performance.now()+180;scheduleJump()},{passive:true});new ResizeObserver(scheduleJump).observe(messages);
+const jump=document.getElementById('jumpBottom');function syncJump(){const height=messages.clientHeight,top=messages.scrollTop,bottom=height>0&&messages.scrollHeight-height-top<48;if(bottom&&!navigationPending)pendingLatest[active]=0;const n=pendingLatest[active]||0,hidden=bottom||height===0;if(jump.hidden!==hidden)jump.hidden=hidden;if(n){if(jump.dataset.count!==String(n))jump.dataset.count=String(n)}else if(jump.hasAttribute('data-count'))delete jump.dataset.count}jump.addEventListener('click',()=>{cancelGeometryScroll();ScrollController.end('jump');ScrollController.followEnd()});let jumpFrame=0;function scheduleJump(){if(!jumpFrame)jumpFrame=requestAnimationFrame(()=>{jumpFrame=0;if(!navigationPending&&messages.clientHeight)scrolls[active]={top:messages.scrollTop,pinned:nearBottom()};syncJump()})}messages.addEventListener('scroll',()=>{ScrollController.userMoved();if(!navigationPending&&app.dataset.screen==='chat'&&messages.clientHeight&&performance.now()>geometryScrollUntil)scrollingUntil=performance.now()+180;scheduleJump()},{passive:true});new ResizeObserver(scheduleJump).observe(messages);
 
 // KeyboardController: one viewport owner, one layout/scroll transaction per frame.
 let viewportFrame=0,previousRect='',anchor=null,scrollingUntil=0,geometryScrollUntil=0;
@@ -2491,7 +2496,7 @@ app.addEventListener('touchend',e=>{const s=backSwipe;backSwipe=null;if(!s||!s.l
 app.addEventListener('touchcancel',()=>{backSwipe=null},{passive:true});
 
 function beginSharedNavigation(where,save,switching=false){
- cancelEarlyClose();previousRect='';appliedChatLimit=null;updateViewport();const epoch=++navigationEpoch;
+ ScrollController.stopFollowing();cancelEarlyClose();previousRect='';appliedChatLimit=null;updateViewport();const epoch=++navigationEpoch;
  if(!switching)save();navigationPending=where==='chat';const saved=scrolls[active];InputController.blur();anchor=null;preFocusAnchor=null;app.dataset.screen=where;app.classList.toggle('with-crm',where==='crm');return {epoch,saved}
 }
 // One native picker. The + button owns activation; the co-located file input is its native anchor.
