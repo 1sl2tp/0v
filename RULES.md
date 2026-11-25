@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.112)
+## 00. Chỉ mục rule đang có hiệu lực (v13.113)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -992,3 +992,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-ALLOC-03: Preserve exact received, allocated and unallocated totals using DecimalAPI; residual is not automatically customer credit. Count distinct bank records, orders per receipt and customer IDs separately; no claim of bank identity beyond existing replay evidence. All projections canPost=false; no journal mutation.
 - BANK-ALLOC-04: New fixture lab uses existing Card/Input/Button, three obligations across two customers, editable proposed amounts; no live directory, order lookup, authorization or ledger adapter. Snapshot revision is local test evidence, not server concurrency protection.
 - BANK-ALLOC-05: Test fractional residual, multi-order/multi-customer, two receipts against cumulative outstanding, duplicate receipt/order, stale or wrong customer, overpayment and negative amount, missing receipt. Preserve keyboard v13.27 and CI gate.
+
+## 137. BANK-CYCLE — v13.113
+- BANK-CYCLE-01: Reuse BankJournalAPI.planAllocations; group only explicitly provided customer/cycle ID/revision and order IDs. Require each obligation assigned once, correct customer, no duplicate cycle scope; do not infer cycles from dates or names. Complete flag is caller-supplied fixture scope, not verified server completeness.
+- BANK-CYCLE-02: Sum exact opening outstanding, allocated and remaining per order and cycle; keep per-receipt contributions and distinct bank/receipt IDs. Counts per cycle are nonadditive across shared receipts; global counts stay in allocation result. Unallocated residual remains global, never customer credit.
+- BANK-CYCLE-03: State unpaid/partial-plan/covered-plan/no-opening-debt/incomplete-scope; incomplete cannot claim covered even if zero. All results canPost=false and canCloseCycle=false. Pending/unlinked bill or manual receipt is not bank-backed allocation; no actual debt settlement or cycle reset.
+- BANK-CYCLE-04: Existing allocation fixture lab extends to two receipts, editable amounts and cycle remaining/status. No live customer/obligation data, cycle cadence inference, messages or production adapter.
+- BANK-CYCLE-05: Test partial, covered, two receipts to one order, shared receipt, fractional residual, incomplete scope, wrong customer, duplicate receipt and unassigned order; browser verifies ready/partial/rejected. Preserve keyboard v13.27 and full CI gate.

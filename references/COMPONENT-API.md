@@ -269,3 +269,6 @@ BillOCRFieldAPI record now eleven fields (senderName explicit, name remains reci
 
 ## v13.112 BANK-ALLOC
 BankJournalAPI.planAllocations({journal,obligations,plans}) replays fixture journal, validates unique linked bank receipts, explicit order/customer/revision, exact amounts and cumulative outstanding. Returns immutable plans, obligations with remaining amounts, received/allocated/unallocated, receiptCount/bankRecordCount, canPost=false. No persistence or real allocation. ?bankallocationlab=1 fixture input UI.
+
+## v13.113 BANK-CYCLE
+BankJournalAPI.planCycles({journal,obligations,plans,cycles}) calls planAllocations; cycles require customerId,cycleId,revision,complete,orderIds. Returns immutable per-order contributions and per-cycle exact opening/allocated/remaining, receipt IDs/counts, status; global unallocated separate. canPost=false, canCloseCycle=false, caller completeness only. Existing ?bankallocationlab=1 extends two receipt example.

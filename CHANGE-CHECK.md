@@ -228,3 +228,6 @@ E0: v13.110 PR #77 merged; CI 45549225862 success. E1: BANK-PAYER, BANK-OCR, BAN
 
 ## v13.112
 E0: v13.111 PR #78 merged; CI 45549980158 success. E1: BANK-ALLOC, BANK-JOURNAL, BANK-PAYER, DECIMAL-API, KB-LOCK. Read-only bank-backed receipt allocation plan, cumulative limits and exact residual, fixture UI. ERPNext payment entry and Astryx Card studied. E2: direct regression and classic syntax; full CI pending, new interactive lab not separately browser-tested. No live obligations, authorization, production changes, messages, old records or keyboard changes. Google Sheet not updated.
+
+## v13.113
+E0: v13.112 PR #79 merged, CI 45550280456 success. E1: BANK-CYCLE, BANK-ALLOC, BANK-JOURNAL, DECIMAL-API, KB-LOCK. Explicit cycle scope, per-order contributions, exact partial/covered plan states; two receipt lab and browser regression. ERPNext payment entry and Astryx Card reviewed. E2: direct logic and syntax; browser test added, full CI pending. No actual cycle closure, current debt data, cadence inference, production writes, messages or keyboard changes. Google Sheet not updated.
