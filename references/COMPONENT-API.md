@@ -296,3 +296,6 @@ BankAccumulationAPI.empty(configured,openedAt), append(journal,event), replay(jo
 
 ## v13.120 BANK-BACKLOG
 BankBacklogAPI.project(journal,{asOf}) derives immutable bill/customer/Bank queues from BankAccumulationAPI. Exposes ageHours, daysWaiting, clockReviewRequired, open and manual counts, resolved no-bill Bank amount and separate new-credit/manual-link plans. No duplicate aliases counted as multiple resolved transactions; unresolved notices excluded from no-bill total. No UI, durable storage, sending or posting adapter.
+
+## v13.121 BANK-BACKLOG-UI
+renderBankBacklogLab(panel) in Bill module or ?bankbackloglab=1. Uses BankBacklogAPI.project and BankAccumulationAPI only with fixed synthetic sample, filter buttons, status, expandable detail and simulated manual verification; reset is local. No transport or storage; new credit remains zero. Uses existing Card, Button, Layout and Typography APIs.
