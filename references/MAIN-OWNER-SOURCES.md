@@ -156,3 +156,6 @@ CHAT bill-app-preview.mjs blob 3fb53ea99124ed673a588281787a2e135a8a5e26: explici
 
 ## v13.112
 ERPNext erpnext/accounts/doctype/payment_entry/payment_entry.py blob 57dd7c862089e9342b43db6da0d426eb3c2dade4: allocated/unallocated totals, latest outstanding check and aggregate reference allocation. 0v uses existing exact DecimalAPI, not ERPNext float arithmetic. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. Existing BankJournal owner, no upstream runtime/private values copied.
+
+## v13.113
+ERPNext payment_entry.py blob 57dd7c862089e9342b43db6da0d426eb3c2dade4: latest outstanding and cumulative allocated reference validation. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. Reuse 0v BankJournal allocation and DecimalAPI; cycle grouping is local explicit fixture policy, not copied ERPNext workflow.
