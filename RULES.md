@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.168)
+## 00. Chỉ mục rule đang có hiệu lực (v13.169)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1350,3 +1350,7 @@ E0: MainData receives and renders fixture messages but did not invoke Notificati
 
 ## LIVE-READ-01 — 0v độc lập đọc CHAT
 Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin riêng, reuse Supabase Auth và v21_auth_bootstrap, v21_contacts_sidebar, v21_sync_snapshot; phiên riêng theo origin, giữ nguyên phê duyệt thiết bị; không service key, không public hóa quyền, không ghi tin/đơn/thu. Demo/lab tách bằng query, không lẫn dữ liệu thật. Đọc tối đa 100 tin gần nhất mỗi phòng; chưa triển khai media/lịch sử phân trang. Ngoại lệ GOV-03/05 chỉ cho đọc thật và quản lý phiên đăng nhập đã được người dùng yêu cầu, không thay keyboard demo.
+
+
+## v13.169 — LIVE-READ-02: 0v xác thực độc lập
+- LIVE-READ-02: Theo yêu cầu trực tiếp 26/11, 0v chỉ cần đăng nhập admin bằng tài khoản Supabase; bỏ yêu cầu phê duyệt thiết bị cho 0v, thay phần tương ứng LIVE-READ-01/CHAT-READ-05. Không cấp phiên v21, không gọi API device approval/Push/heartbeat/logout cũ. RPC v0_admin_read chỉ đọc, kiểm tra auth.uid, auth.sessions, role admin và tài khoản chưa khóa/xóa trên mỗi lần gọi; hội thoại phải thuộc admin đó. Không mở quyền ghi, không sửa bảng/chính sách hoặc chức năng CHAT cũ. SQL riêng references/0v-admin-read.sql; rollback xóa riêng API/schema 0v và frontend về v13.168. Chưa hỗ trợ gửi, media, phân trang lịch sử.
