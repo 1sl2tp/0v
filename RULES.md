@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.130)
+## 00. Chỉ mục rule đang có hiệu lực (v13.131)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1125,3 +1125,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-UNLABELLED-03: Multiple same-field proposals or existing labelled field are marked ambiguous. Suggestions never change record, verify funds, post or replace existing field review. Date words already handled by parent parser.
 - BILL-UNLABELLED-04: No new dependencies, no production or bank matching changes. Synthetic fixed account only; no real identifiers or customer data.
 - BILL-UNLABELLED-05: Static and browser regression for money/date/time/account/reference suggestions, ambiguity, exclusion and unchanged parsed records; actual OCR accuracy not certified.
+
+## 156. BILL-ACCOUNT-SPACING — v13.131
+- BILL-ACCOUNT-SPACING-01: Remove presentation whitespace within a single numeric account line using ParseAPI.accountDigits; count every visible digit, including final isolated digit. 99999 9 is six digits, not five. Preserve leading zeros and raw text.
+- BILL-ACCOUNT-SPACING-02: A wrong final digit is a conflict for explicit recipient evidence; never fall back to matching a shorter prefix or silently drop digits. Masked suffix recognition uses all visible suffix digits.
+- BILL-ACCOUNT-SPACING-03: Adjacent numeric physical lines that may represent a wrapped account are review-only; suppress premature partial recognition on the first fragment, retain both raw lines and count; never silently join or post. Explicit recipient scope or matching combined candidate required.
+- BILL-ACCOUNT-SPACING-04: No changes to amount, date, bank reconciliation, ledger, old bills or production. Synthetic configured account only.
+- BILL-ACCOUNT-SPACING-05: Regression for spaces at every boundary, wrong final digit, masked six-digit suffix, physical wrap and no posting. CI and actual OCR separate.
