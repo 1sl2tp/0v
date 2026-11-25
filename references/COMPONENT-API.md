@@ -501,3 +501,6 @@ Message.create sets data-content-party A/B from existing mine flag. ContentAPI.l
 
 ## v13.180 CONTENT-FLOW
 Message.flow(previous,row) is presentation-only, marks adjacent text rows with same known party/day/HH:mm. The prior row keeps metadata in DOM and aria-label but CSS visually hides its duplicate time. New minute, party, date, media, unknown, or card stops grouping. Live and fixture initial/append use same parent. No data mutation, business inference or keyboard changes.
+
+## v13.181 LIVE-BILL-05
+ParseAPI.billRecipientEvidence(raw) -> suffix|full|masked|null, literal receiver field with four to six nines; no arbitrary substring or cross-line assembly. BillReceiptProjection.read requires this and transaction evidence (positive amount or date/time shaped value), otherwise null -> standard media. Existing receipt/ledger state remains unchanged; no backend authority.
