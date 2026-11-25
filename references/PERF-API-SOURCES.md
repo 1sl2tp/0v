@@ -14,3 +14,10 @@ Decision: preserve existing parent Virtualizer and guard DOM writes, reconcile k
 - https://redux.js.org/toolkit/api/createEntityAdapter — normalized lookup and ordered IDs.
 - https://github.com/matrix-org/matrix-js-sdk/blob/develop/src/models/event-timeline-set.ts — room-scoped event timelines and gap handling.
 Decision: reverse index owned by ConversationStore, shared validation for sync and cache, preserve mismatch rejection. No vendored code.
+
+## v13.72 phase 4
+- https://github.com/GoogleChrome/web-vitals/blob/main/README.md — standardized Core Web Vitals and timing limits.
+- https://github.com/GoogleChrome/web-vitals/blob/main/src/onINP.ts — Event Timing and visibility lifecycle.
+- https://github.com/GoogleChrome/modern-web-guidance/blob/main/skills/modern-web-guidance/guides/performance/interaction-paint-timing.md/ — distinguish interaction paint from asynchronous route completion.
+- https://github.com/microsoft/playwright/blob/main/docs/src/api/class-tracing.md — browser evidence.
+Decision: local two-frame diagnostic proxy, explicitly not INP; no dependency or telemetry. Measure baseline on representative devices before numeric latency gates.
