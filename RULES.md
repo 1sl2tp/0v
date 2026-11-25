@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.117)
+## 00. Chỉ mục rule đang có hiệu lực (v13.118)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1034,3 +1034,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-IDENTITY-03: Missing authoritative mapping, inconsistent evidence or competing mappings fail closed; conflicts invalidate affected keys, not just one notice. No assumption that Agribank publishes a stable provider ID in its notifications.
 - BANK-IDENTITY-04: prepare calls existing bill match for a single candidate and rejects missing bill clock. Candidate only; full batch competition, customer assignment, persistent identity and database posting checks remain required. canPost=false; no production adapter, no real statement or authorization.
 - BANK-IDENTITY-05: Ten direct cases and static regression for aliases, distinct IDs, no proof, amount conflict, ambiguity, missing bank/bill clock, exact case-sensitive key, candidate and no-post. Preserve v13.27 keyboard and existing CI database fixture.
+
+## 143. BANK-IDENTITY-BATCH — v13.118
+- BANK-IDENTITY-BATCH-01: Whole supplied fixture batch uses BankTransactionIdentityAPI and BankReconcileAPI; collapse edges only by explicitly resolved canonical Bank key, never by amount or date. Include unresolved candidates in competition; no day cutoff; reject future notice relative to explicit asOf.
+- BANK-IDENTITY-BATCH-02: Require complete scope assertion and explicit synthetic customer assignment or prior receipt owner; no inference from payer/name/memo. Customer-allocation-review alone may be satisfied by explicit fixture assignment, never by matching name. Other evidence gaps, missing clock, duplicates and competing bills/keys block proposals.
+- BANK-IDENTITY-BATCH-03: Prior receipt snapshot validates unique receipt/bill/canonical key, immutable owner and positive exact amount. Prior linked receipt remains collected; reserve used keys even if its original bill is absent. Manual unlinked receipt with exact matching amount proposes verification only, newCredit=0, original postedAt retained.
+- BANK-IDENTITY-BATCH-04: Separate new-receipt-plan, manual-link-plan, already-collected, manual-await-bank, review and pending. Per-customer and global exact new credit and manual link totals; no actual posting, balance or cycle mutation. Complete flag is caller assertion, not authoritative database completeness; no cross-session lock integration.
+- BANK-IDENTITY-BATCH-05: Regression for two customers across days, notice aliases, manual-link totals, competing bills, unresolved alias, missing clock, already-collected, prior key used elsewhere, incomplete scope and no owner; preserve v13.27 keyboard and existing CI. No real messages or data.
