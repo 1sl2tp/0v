@@ -284,3 +284,6 @@ BankJournalAPI.persistentEmpty/persistentProof/applyPersistent and openPersisten
 
 ## v13.116 BANK-ROLLING-DB
 Standalone SQL fixture at fixtures/bank-db/schema.sql; post_receipt(...) returns created/replay, link_manual(...) returns linked/replay. Account-scoped unique receipt/bill/Bank key; trusted inputs only, no browser RPC, no production migration, no real ledger or balance updates. CI test.sh uses disposable local PostgreSQL 16. Actual Bank canonical key resolver and authorization are prerequisite to integration.
+
+## v13.117 BANK-IDENTITY
+BankTransactionIdentityAPI.resolve({configured,banks,attestations}) groups separate verified fixture statement provider IDs; inspectNotice revalidates raw Agribank evidence and explicit clock. prepare({configured,bill,banks,attestations,bankId}) produces single-candidate diagnostic only, canPost=false. Existing bank replay, full-batch competition, DB keys and ledger integration remain separate. No real authority adapter.
