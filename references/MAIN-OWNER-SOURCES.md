@@ -135,3 +135,6 @@ Tesseract.js v6.0.1 src/createWorker.js blob 89b53b89b27f6579155ed2a0ef372fa8c2a
 
 ## v13.105
 Adobe react-stately useNumberFieldState.ts pinned blob eed17a1d22715cf92ece7156c661c026deb53acc: draft input distinct from commit/validation. Tesseract.js v6.0.1 docs/api.md blob cc3f82d7d0eacd6df825b4c50ad19357fdca557c: recognize supports rectangle; not used until field bounding geometry exists. Astryx Button pinned blob f87eb657180a0de978fb3ba1c59c24909a9cc63d. Reuse 0v parse and Card/Button; no upstream code or private values copied.
+
+## v13.106
+Tesseract.js v6.0.1 src/index.d.ts blob 1f5a9c8094fe4de7983467f9efb43bdb4de535f2: OutputFormats.blocks, Page.blocks, Block.paragraphs, Paragraph.lines, Line.text/bbox. Adobe SelectionManager pinned blob d6ff15c5b5efd7f9be685f87f46c3ed251c093f5: stable selection identity; Astryx Card blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. Reuse parser provenance and crop geometry, no upstream code copied or private values.

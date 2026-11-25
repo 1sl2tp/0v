@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.105)
+## 00. Chỉ mục rule đang có hiệu lực (v13.106)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -943,3 +943,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-FIELD-REVISION-03: Confirm only a valid literal candidate with evidence. Lock verified field against reread or further confirmation in current review session. Reject stale/wrong region, unknown field; bounded immutable history. No automatic ledger authorization or overwrite of historic receipt.
 - BANK-FIELD-REVISION-04: Text-only sample lab exposes reread and explicit simulated confirmation; physical field crop requires independent coordinates and remains future work. No actual OCR model or customer images, no journal, messages, production changes.
 - BANK-FIELD-REVISION-05: Test isolated time reread, unrelated fields unchanged, verified lock, stale/wrong region, missing proposal, immutable history and browser confirmation. Keep keyboard v13.27; full CI required.
+
+## 130. BANK-FIELD-GEOMETRY — v13.106
+- BANK-FIELD-GEOMETRY-01: Request Tesseract blocks explicitly, preserve same-region rotated OCR canvas dimensions. Map nonblank text lines to block/paragraph/line output only when normalized full ordered sequence matches exactly; otherwise all field bounds unknown. Never guess line alignment.
+- BANK-FIELD-GEOMETRY-02: Derive bounds only from one valid candidate with label/value line provenance, union both lines when needed. Coordinates local to rotated crop (not original source). Conflicts, missing fields, invalid bounds or ambiguous lines require manual selection. Line bounds are not exact word bounds.
+- BANK-FIELD-GEOMETRY-03: fieldCropPlan validates source SHA+region key, rotation, canvas size, field and bounded integer rectangle; no cross-bill or full-image fallback. Explicit manual rectangle allowed. cropField copies only that rectangle. Geometry is review evidence, not proof of transaction or posting.
+- BANK-FIELD-GEOMETRY-04: Existing sample engine lab shows line bounds or manual-required; no interactive manual picker or automatic field reread in this phase. No real bill processing, journal, production writes or messages.
+- BANK-FIELD-GEOMETRY-05: Direct tests for blank-line alignment, next-line values, rotated coordinates, mismatch, missing field, manual rectangle and invalid/cross-source geometry; browser mock block response and pixel crop. Preserve keyboard v13.27 and CI gate.
