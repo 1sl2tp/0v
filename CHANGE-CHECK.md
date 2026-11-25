@@ -198,3 +198,6 @@ E0: v13.100 PR #67 merged, CI run 45545501755 success. E1: BANK-REPLAY, BANK-NOT
 
 ## v13.102
 E0: v13.101 PR #68 merged, CI run 45545760586 success. E1: BANK-CROP, BANK-DUP, BANK-IMAGE, BANK-CLOCK, KB-LOCK. Bounded inset hash variants, substantive memo and known clock/name/reference checks, existing intake and review owner. ImageHash segment matching concept and Astryx Card reviewed; no upstream code copied. E2: direct logic and syntax, full CI pending. Synthetic only; no actual bill corpus or arbitrary recapture accuracy. No production data, actual messages or keyboard changes. Google Sheet log not updated.
+
+## v13.103
+E0: v13.102 PR #69 merged; CI 45545998605 success. E1: BANK-REGION, BANK-IMAGE, BANK-DUP, BANK-CROP, KB-LOCK. Two-axis whitespace proposals, explicit row/column modes, stable source+region keys, selection and overlap diagnostics. Adobe SelectionManager and Astryx Card pinned sources reviewed. E2: direct regression and syntax checks, browser selection/reset added, full CI pending. No actual OCR job, real bill corpus, production changes, historic writes or keyboard change. Google Sheet log not updated.

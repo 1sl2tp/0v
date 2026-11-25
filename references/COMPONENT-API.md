@@ -239,3 +239,6 @@ BankRecheckController carries sourcePackage/rawNotice. BankReconcileAPI returns 
 
 ## v13.102 BANK-CROP
 BillImageIntakeAPI.inspect adds cropHashes (null or comma-separated unique up to 3 inset dHashes). BillDuplicateAPI.validate/fields preserves this bounded immutable evidence; inspect emits possible-cropped-image-duplicate only with independent matching fields. Existing near-image hint suppressed on known distinct clock. No receipt or auto-merge authority.
+
+## v13.103 BANK-REGION
+BillImageIntakeAPI.propose(p,w,h,mode='auto') supports row/column/grid whitespace proposals (<=4). regionPlan(rows,selectedKeys) returns immutable sourceCount, regionCount, selectedCount, overlapCount and per-region stable key/selected/overlap/canRead/canPost=false. canRead means selected scope only, no actual OCR execution. Existing image lab resets selection on geometry/rotation changes.

@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.102)
+## 00. Chỉ mục rule đang có hiệu lực (v13.103)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -922,3 +922,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-CROP-03: Known clock difference >60 seconds also suppresses existing near-image hint, but never exact overlapping source or same explicit reference conflict. No automatic merge or receipt; preserve previous posted ledger and all bill IDs. Missing time remains mandatory review.
 - BANK-CROP-04: Display crop fingerprints in existing local intake. Limits: symmetric modest border crop only, no perspective or arbitrary recapture guarantee; synthetic fixture is not real-bank accuracy. No production data or history edits.
 - BANK-CROP-05: Test synthetic 10% crop, independent fields, conflicting clock/reference, invalid hash, review guard and browser label. Preserve keyboard v13.27; CI required.
+
+## 127. BANK-REGION — v13.103
+- BANK-REGION-01: Extend BANK-IMAGE-02 with row and column whitespace projection, bounded at four auto-proposed regions; grid when both axes have accepted gaps and product <=4. Otherwise retain one axis. Explicit row/column/full controls; never assume proposal count is transaction count.
+- BANK-REGION-02: Region plan identity = original SHA-256 + normalized rectangle. Unique keys, valid known selection, stable under reorder; one source can contain multiple regions. Distinct sources remain separate, not automatically merged.
+- BANK-REGION-03: Reject repeated identical region keys; flag overlapping rectangles of same source and block their read-plan eligibility. Selected distinct regions only mark requested OCR scope, not confirmed OCR, transfer or receipt. No payment authority.
+- BANK-REGION-04: Reset region selection on new image, split mode or rotation. Existing local image module only, no actual OCR job, upload, journal or production changes. Whitespace projection cannot reliably segment touching/overlapping/complex collage; manual geometry editing remains future work.
+- BANK-REGION-05: Test synthetic 2x2 grid, row/column modes, stable selection, overlap, duplicate and unknown keys, distinct sources, browser selection/reset. Preserve keyboard v13.27 and CI gate.
