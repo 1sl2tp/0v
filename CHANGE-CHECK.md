@@ -419,3 +419,7 @@ E0: MainData receives and renders fixture messages but did not invoke Notificati
 
 ## Tiến trình hoàn thiện — P01.1 (tài liệu, giữ v13.163)
 E0 một phần: kiểm kê tĩnh 66 khai báo tên owner theo mẫu trong index blob 71461d93541241b9fa8b3aa365056582ee3c4c18; đối chiếu AGENTS/RULES/COMPONENT-API và baseline release/Pages. Thêm ROADMAP.md, RULE ROADMAP-01–04 và chỉ dẫn AGENTS. Không thay đổi runtime, keyboard, snapshot hoặc version; không dữ liệu thật. Chưa chạy audit tại máy local, CI PR pending, chưa nghiệm thu native. Bước kế P01.2 phân loại owner Main/lab và kiểm tra diagnostic. Source study mới áp dụng khi sửa API/UI, vòng này chỉ quản trị tài liệu.
+
+
+## P01.2–P01.4 — owner map và ma trận đo (không đổi version)
+PR #131 CI API 45683556620, DB 45683556625 success, merge 35c868078dc19921813c47ae3dca698daa734371. Đọc AGENTS/RULES/COMPONENT-API, index, browser audit, Astryx Stack và Adobe useTable pinned. E0: active Typography index vẫn dẫn trị số lịch sử dù PARENT-RUNTIME-02 đã thay; KB index thiếu KB-LOCK-06. E1: chỉnh chỉ mục, ROADMAP-05; tạo bản đồ owner và bổ sung log đọc-only trên sáu widths, directory/chat/CRM order/bill; test syntax compiled via new Function, không chạy Chromium tại connector. Không thay index, snapshot, keyboard, version, dữ liệu hay nghiệp vụ. CI mới pending, E4/E5 chưa đạt. Không claim mọi owner đã xác minh. Next read actual log, prioritize concrete mismatches.
