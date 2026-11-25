@@ -471,3 +471,6 @@ ScrollController.replaceMedia(el,replace) owns media growth anchor; when tail an
 
 ## Main navigation position
 Main.threadPosition(reason,saved): contact/send -> tail, restore/return -> saved. Main.finishNavigation(epoch,position,onDone) validates active room/screen/epoch, waits for layout and delegates scroll to ScrollController. Main is the common parent; no adapter-specific auto refresh.
+
+## Media MIME parent
+MediaController.normalizeMime, isImageMime, imageBlob: normalize supported aliases, retype only valid raster Blob without changing bytes, do not disguise explicit non-image. Decode remains mandatory before display. All live and picker image routing uses same parent.

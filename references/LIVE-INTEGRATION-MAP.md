@@ -29,3 +29,5 @@ Shared runtime initialized before data branch; live swipe/input/scroll use exist
 - v13.174 E1: live short-input and reserve regression; MIME and decoded image classification, compact footer and scroll anchor. Actual server media and device acceptance pending.
 
 - MAIN-NAV-01: shared Main navigation intent, explicit contact always latest, F5/return preserve. E1; long-history fixture/live browser regression pending.
+
+- MEDIA-MIME-01: read-only metadata evidence image/jpg (1260 objects), alias normalization at parent; synthetic JPEG regression, CI/device pending.
