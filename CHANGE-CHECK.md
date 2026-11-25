@@ -189,3 +189,6 @@ E0: CI run 45544344099 failed audit-api-browser.cjs:110 (expected 3 pending, act
 
 ## v13.99
 E0: v13.98 PR #65 merged, CI run 45544697846 success. E1: BANK-FIELDS, BANK-RELATED, BANK-CLOCK, BANK-QUEUE, BANK-RESIDUAL, KB-LOCK; compare seven fields per candidate, show independent cards and no arbitrary first-candidate clock/date, display current revision amount. E2: 24 direct regression contracts passed; full CI pending. Astryx Card/Table pinned source and CHAT preview reviewed. No production, historic data or keyboard changes. Google Sheet log not updated in this commit.
+
+## v13.100
+E0: v13.99 PR #66 CI 45545067510 passed and merged. E1: BANK-COMPETE, BANK-BATCH, BANK-RELATED, BANK-FIELDS, BANK-CLOCK, KB-LOCK. Group existing candidate edges, count unique records separately from bill face values, never infer financial identity from IDs. Astryx Card and CHAT bill-transfer-identity reviewed. E2: direct bill/bank regressions and classic script syntax; full CI pending. No production writes, keyboard changes or actual messages. Google Sheet log not updated.

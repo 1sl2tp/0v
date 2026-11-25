@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.99)
+## 00. Chỉ mục rule đang có hiệu lực (v13.100)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -901,3 +901,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-FIELDS-03: Each competing candidate gets its own comparison card; no default candidate date/time at bill level when multiple exist. Reuse CardController and FormatAPI. No auto-select or receipt authority.
 - BANK-FIELDS-04: Recompute from current OCR revision and Bank evidence; clear related projection on corrected clock. Preserve prior rules, keyboard baseline and historical receipts. No production writes or actual messages.
 - BANK-FIELDS-05: Test original values, null clock, one-letter residual, multiple candidates, ordering, corrected OCR and browser render/removal. Full CI required.
+
+## 124. BANK-COMPETE — v13.100
+- BANK-COMPETE-01: Build connected bill/Bank candidate groups seeded by related missing-clock bills; include every existing non-excluded competing edge for open bills, even lower-evidence contenders. Never change matching or receipt eligibility.
+- BANK-COMPETE-02: Count unique bill IDs and unique Bank record IDs separately; repeated same-ID notification is counted once. Distinct record IDs are not proven distinct financial transfers. Never add candidate edges as received money.
+- BANK-COMPETE-03: Display separate face-value total of bills and sum of related Bank records only when all values in that group are known; not a debt, amount collected, or confirmed credit total. No auto-assign or auto-link. Posted records remain excluded.
+- BANK-COMPETE-04: Stable sorted group IDs and shared Bank IDs; recompute from existing snapshot on changes. Use CardController and MoneyAPI; no production actions or history edits.
+- BANK-COMPETE-05: Tests 3 bills/1 record, replay, 2 records, competing clocked bill, posted exclusion, ordering, UI group; preserve keyboard v13.27 and CI gate.

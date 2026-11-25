@@ -117,3 +117,6 @@ CHAT bill-app-preview.mjs blob 3fb53ea99124ed673a588281787a2e135a8a5e26, existin
 
 ## v13.99
 Astryx Card.tsx pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a (container owns spacing), Table.tsx 9496cdd32ce30ad6d28707eef48dada3bf2033b4 (density/wrap at parent); CHAT bill-app-preview.mjs 3fb53ea99124ed673a588281787a2e135a8a5e26 (independent evidence, competing transactions). Reuse CardController and FormatAPI; no upstream runtime copied, no customer values. No new selection or interaction state.
+
+## v13.100
+CHAT bill-transfer-identity.mjs blob 72a8bed404e47aa137d7a83df982b914d74620fc: equal amount is not transfer identity and distinct bills may compete for one credit. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a: parent container owns spacing. Reuse existing candidate edges and CardController; no new financial authority or source code copied.
