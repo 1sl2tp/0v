@@ -65,11 +65,11 @@ Nguồn rule duy nhất vẫn là RULES.md. Tài liệu này chỉ theo dõi cô
 | Bước | Chức năng live | Trạng thái |
 |---|---|---|
 | L01 | Admin login độc lập, danh bạ thật | E4: ảnh user v13.169, 148 liên hệ |
-| L02 | Mở hội thoại và đọc nội dung | E2 fixture v13.169; thiết bị chưa xác nhận nội dung |
-| L03 | Gửi tin text thật, mở phòng mới, chống gửi trùng | E1 v13.170 |
+| L02 | Mở hội thoại và đọc nội dung | E4: ảnh user xác nhận text thật v13.169 |
+| L03 | Gửi tin text thật, mở phòng mới, chống gửi trùng | E2: PR #140 merged, chưa xác minh gửi thực tế |
 | L04 | Nhận tin realtime, đọc/đã đọc, phân trang lịch sử, offline | TODO |
 | L05 | Sửa/thu hồi/trả lời/chuyển tiếp tin | TODO |
-| L06 | Ảnh, video, tệp, ghi âm, camera, xem media | TODO |
+| L06 | Ảnh, video, tệp, ghi âm, camera, xem media | E1 phần xem/tải media v13.171; gửi media TODO |
 | L07 | Push 0v độc lập, không phụ thuộc UI/phiên CHAT cũ | TODO |
 | L08 | OCR bill, đối soát, đơn, hàng, công nợ, báo giá, báo cáo | TODO |
 | L09 | Nghiệm thu thay thế hoàn toàn, giữ khả năng rollback | TODO |
