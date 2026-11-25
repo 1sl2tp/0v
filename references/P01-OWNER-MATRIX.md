@@ -108,3 +108,10 @@ CI hiện có tại 320/375/390/430/768/1280: contact 4 dòng, popup, NV chat, i
 - Astryx pinned Stack.tsx blob c56d72759ad2f6f86102228e22c3123530b32894: layout root sở hữu hướng, trục, gap, padding, overflow.
 - Adobe pinned useTable.ts blob 6b9108e81fd8bce49ae22fcb5d374331b8a62e49: hành vi và layout delegate tách riêng; không lấy scroll/geometry làm bằng chứng nghiệp vụ.
 - Chỉ dùng nguyên lý phân loại và kiểm thử; không nhập code hoặc dependency.
+
+
+## P01.4 — bằng chứng sau PR #132
+PR #132: [API PR CI](https://github.com/1sl2tp/0v/actions/runs/45684219123), [API push CI](https://github.com/1sl2tp/0v/actions/runs/45684203289), [DB CI](https://github.com/1sl2tp/0v/actions/runs/45684219109) đều thành công; merge a71a63a3537c307d96243a263ad9e783b49f4a70.
+- Đọc 24 bản ghi P01 matrix từ job 139452352906: 6 viewport × directory/NV chat/KH order/KH Bill. Mọi font role/input đã đo khớp size/line/weight; không selector được đo có scrollWidth-clientWidth >1px; button/icon registration đều khớp. Không phải toàn bộ DOM đã nghiệm thu.
+- Chat header floating 320px overflow dọc 18px phù hợp ::before gradient inset bottom -18px (index L430–439); không sửa dựa trên chỉ số này. Bill cuộn dọc là chủ ý.
+- Pending 1.307 ở Bill gồm node ẩn và visible; không coi là lỗi. P01 pending groups phân nhóm region/family/parent/status/study, tối đa 3 mẫu tag/slot/profile mỗi loại, không text/ảnh khách; rendered box không đồng nghĩa nằm trong viewport (có thể ngoài vùng cuộn). Hidden/non-box vẫn trong audit tổng. Negative control visible+hidden, phục hồi nguyên trạng; CI mới pending. Không thay runtime hoặc nhãn PROVISIONAL.
