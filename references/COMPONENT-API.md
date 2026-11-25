@@ -308,3 +308,6 @@ BankOCRCorrectionAPI.propose/apply(journal,command) uses existing field review A
 
 ## v13.124 BILL-SINGLE-IMAGE
 BillImageIntakeAPI.single(p,w,h,sha,{kind,crop,rotation}) returns exactly one review-only region, source kind saved/photo/journal. Engine accepts only one selected region and manual crop coordinates; legacy partition helpers retained for regression, no collage UI. No automatic background segmentation or actual customer image OCR validation.
+
+## v13.125 BILL-RECOGNITION
+BillRecognitionAPI.classify(text,{configured,profile}) routes text to bill-candidate/account-review/account-conflict/not-recognized. Configured 13-digit receiver, full or matching 4–6 digit suffix with context, separate explicit and unlabelled evidence. Uses existing parser for context; does not authorize payment or change existing Bank match policy. Text lab uses synthetic receiver.
