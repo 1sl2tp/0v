@@ -6,13 +6,13 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | ROADMAP-01–04, GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01–03, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05, HISTORY-API-01–04, MESSAGE-API-01–05, CONVERSATION-API-01–05, TIME-API-01–04, DECIMAL-API-01–03, MONEY-API-01–04, FORMAT-API-01–02, PARSE-API-01–03, CALENDAR-API-01–02, SCHEDULE-API-01–03, CONTEXT-API-01–06, SYNC-API-01–05, NOTICE-API-01–06, RECOVERY-API-01–05, CACHE-API-01–05, CACHE-SYNC-01–05, DIRECTORY-API-01–06, READ-API-01–06, PRESENCE-API-01–05, NOTIFICATION-API-01–07, ALERT-DURABLE-01–05, MULTI-API-01–05, OFFLINE-API-01–05, RELOAD-API-01–04, PERF-API-01–05, VIRTUAL-PERF-01–04, SYNC-PERF-01–04, MEASURE-PERF-01–05, MAIN-OWNER-01–04, MAIN-DATA-01–06, MAIN-BIZ-01–04, BILL-EVIDENCE-01–04 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | ROADMAP-01–05, GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01–03, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05, HISTORY-API-01–04, MESSAGE-API-01–05, CONVERSATION-API-01–05, TIME-API-01–04, DECIMAL-API-01–03, MONEY-API-01–04, FORMAT-API-01–02, PARSE-API-01–03, CALENDAR-API-01–02, SCHEDULE-API-01–03, CONTEXT-API-01–06, SYNC-API-01–05, NOTICE-API-01–06, RECOVERY-API-01–05, CACHE-API-01–05, CACHE-SYNC-01–05, DIRECTORY-API-01–06, READ-API-01–06, PRESENCE-API-01–05, NOTIFICATION-API-01–07, ALERT-DURABLE-01–05, MULTI-API-01–05, OFFLINE-API-01–05, RELOAD-API-01–04, PERF-API-01–05, VIRTUAL-PERF-01–04, SYNC-PERF-01–04, MEASURE-PERF-01–05, MAIN-OWNER-01–04, MAIN-DATA-01–06, MAIN-BIZ-01–04, BILL-EVIDENCE-01–04 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
-| Typography | TYPE-01–03, TYPE-API-01–06 | số liệu font trong UI-07 cũ, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
+| Typography | PARENT-RUNTIME-02 (trị số đang dùng), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
-| Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–05, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
+| Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
 | Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung), SURFACE-API-01–05 | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
@@ -1309,3 +1309,7 @@ E0: MainData receives and renders fixture messages but did not invoke Notificati
 - ROADMAP-02: Ưu tiên hoàn thiện owner đã có; chỉ chọn bước khác nếu dependency hoặc blocker được ghi rõ. Không tạo API trùng, không thay baseline KB-LOCK.
 - ROADMAP-03: E0–E5 có bằng chứng riêng; không đánh dấu DONE dựa trên CI/Pages nếu còn nghiệm thu thiết bị hoặc chấp nhận bắt buộc. Điểm tiến trình chỉ tính giai đoạn đã đóng.
 - ROADMAP-04: Giữ cổng review/CI/release hiện hành, không phát hành thủ công; thay đổi chỉ tài liệu giữ version app. Không gửi tin, ghi thu, sửa production hoặc repo khác. Không tự bật lịch nền.
+
+
+## P01 — làm rõ chỉ mục và bằng chứng
+- ROADMAP-05: Ma trận P01 trong references/P01-OWNER-MATRIX.md là bằng chứng kiểm kê, không là nguồn rule mới. Trị số typography hiện hành theo PARENT-RUNTIME-02 (v13.37), CSS token và test; không áp số cũ TYPE-01/TYPE-API-03. KB-LOCK-06 ưu tiên bảo vệ focus owner. Log P01 chỉ đọc, không chứng nhận native hoặc owner chưa đo.
