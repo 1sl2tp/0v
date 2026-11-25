@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.121)
+## 00. Chỉ mục rule đang có hiệu lực (v13.122)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1062,3 +1062,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-BACKLOG-UI-03: Details expand on demand, aria-expanded/controls, pressed filter state and status announcement. Show distinct bill arrival, OCR revision time, Bank transaction and arrival time, canonical identity and notice aliases. No fake real financial action.
 - BANK-BACKLOG-UI-04: Explicitly labeled fixture-only manual verification uses BankAccumulationAPI snapshot and scope revision, zero additional credit. Reset returns to synthetic initial state; no message transport, durable storage or production writes. Keep existing Bill cards and keyboard v13.27.
 - BANK-BACKLOG-UI-05: Browser regression at 320/390/1280 for filters, details, manual linkage, zero credit, reset, narrow width and no page errors. Existing application and PostgreSQL CI required before merge.
+
+## 147. BANK-FIELD-COMPARE — v13.122
+- BANK-FIELD-COMPARE-01: BankFieldCompareAPI.compare and project are read-only synthetic diagnostics; preserve literal Bill and Bank values. Compare exact decimal amount, normalized receiving account, recipient/sender separately, transaction date, clock, memo, reference, canonical identity and source. Never use field counts as posting authority.
+- BANK-FIELD-COMPARE-02: Explicit statuses match, near, missing, conflict, review. Clock difference up to 60 seconds is near; invalid/missing clock remains review, never filled from Bank. Keep original memo and flag numeric/code/spacing conflicts; do not infer missing names or a canonical identity from a memo.
+- BANK-FIELD-COMPARE-03: Project only candidate notices or prior linked canonical aliases from the accumulated evidence scope. Multiple notices require explicit display selection; selecting one never assigns a transaction or enables posting. No Bank means no fabricated comparison.
+- BANK-FIELD-COMPARE-04: Expandable Bill backlog details show each field with both source values, status and reason; reuse Layout, Card, Button, Typography. No actual editing, sending, ledger mutation or persistent storage. Preserve v13.27 keyboard.
+- BANK-FIELD-COMPARE-05: Twelve direct assertions for exact/near/conflicting/missing evidence and no-post; browser regression for multiple Bank selection, missing clock and unchanged new-credit total. Both CI workflows required before merge.
