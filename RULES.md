@@ -1,12 +1,12 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.66)
+## 00. Chỉ mục rule đang có hiệu lực (v13.67)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
-| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01–03, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05, HISTORY-API-01–04, MESSAGE-API-01–05, CONVERSATION-API-01–05, TIME-API-01–04, DECIMAL-API-01–03, MONEY-API-01–04, FORMAT-API-01–02, PARSE-API-01–03, CALENDAR-API-01–02, SCHEDULE-API-01–03, CONTEXT-API-01–06, SYNC-API-01–05, NOTICE-API-01–06, RECOVERY-API-01–05, CACHE-API-01–05, CACHE-SYNC-01–05, DIRECTORY-API-01–06, READ-API-01–05, PRESENCE-API-01–05, NOTIFICATION-API-01–06, ALERT-DURABLE-01–05, MULTI-API-01–05 | không bỏ qua RULE khi sửa nhỏ |
+| Quản trị bắt buộc | GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01–03, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05, HISTORY-API-01–04, MESSAGE-API-01–05, CONVERSATION-API-01–05, TIME-API-01–04, DECIMAL-API-01–03, MONEY-API-01–04, FORMAT-API-01–02, PARSE-API-01–03, CALENDAR-API-01–02, SCHEDULE-API-01–03, CONTEXT-API-01–06, SYNC-API-01–05, NOTICE-API-01–06, RECOVERY-API-01–05, CACHE-API-01–05, CACHE-SYNC-01–05, DIRECTORY-API-01–06, READ-API-01–05, PRESENCE-API-01–05, NOTIFICATION-API-01–06, ALERT-DURABLE-01–05, MULTI-API-01–05, OFFLINE-API-01–05 | không bỏ qua RULE khi sửa nhỏ |
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
@@ -668,3 +668,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - MULTI-API-03: Offline thiết bị không tự ack hoặc gửi thật; reconnect pull phần thiếu đúng cursor. Receipt cũ không hạ mốc đọc. Unread từ ReadState, không reset vì online. Cache receipt persistence, cross-device alert reconciliation, actual visible observer, network timeout và server transport pending.
 - MULTI-API-04: ?multidevicelab=1 hai store độc lập, một server fixture trong cùng trang, tin đến, gửi lặp, đọc Web cập nhật PWA, offline catchup, stale receipt. No real account/network/device/Push, no reload persistence, no production changes. Fixture max 300 messages; not benchmark.
 - MULTI-API-05: Read Matrix read-receipt, sync.ts, client.ts transaction ID, Adobe useAsyncList and Astryx Stack. Reuse parent Sync/Read/Message/Conversation. Compile and Chromium scoped test, SOURCE-GATE, KB-LOCK. Next durable sync receipt, offline command recovery and late events.
+
+## 89. OFFLINE-API — v13.67, bài toán 31
+- OFFLINE-API-01: Command outbox scoped actor/device/run, persist before dispatch, immutable commandId and payload, retry same ID. Acknowledged only on matching server ACK after durable local commit. Timeout/network error remains queued, never success by connectivity alone.
+- OFFLINE-API-02: One in-flight dispatch per controller; offline/dispose increments generation, cancels wait, ignores late ACK. Reconnect retries same key. Server fixture reuses MultiDeviceController idempotency; server-side durable unique constraint, actual auth and transport pending.
+- OFFLINE-API-03: SyncController remains sole ordered pull owner; no direct projection from ACK. Receipt persistence still blocked; no real backend, SW or production writes.
+- OFFLINE-API-04: ?offlinecommandlab=1 synthetic IndexedDB, max 100 rows per run, restore controller within same page, lost ACK, offline retry, late ACK. Run scope unique per mount; page reload recovery, durable server ledger, cross-tab worker arbitration, retention and media pending. Do not replay business transactions.
+- OFFLINE-API-05: Study Matrix transaction IDs and scheduler, Google Workbox durable queue. CI must verify contract and browser lab; preserve KB-LOCK v13.27. No manual deploy.
