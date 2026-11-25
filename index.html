@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CHAT CRM">
 <link rel="manifest" href="./manifest.webmanifest">
-<title>CHAT CRM — Bố cục v13.68</title>
+<title>CHAT CRM — Bố cục v13.69</title>
 <script>const layoutParams=new URLSearchParams(location.search);document.documentElement.dataset.liveglass=layoutParams.get('liveglass')==='1'?'1':'0';document.documentElement.dataset.floating=layoutParams.has('floating')?(layoutParams.get('floating')==='1'?'1':'0'):(matchMedia('(max-width:767px)').matches?'1':'0');</script>
 <style>
 :root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#e5e5e5;--soft:#f5f5f5;--paper:#fff;--font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-family:var(--font-ui);font-size:var(--type-body)}
@@ -1275,7 +1275,8 @@ const MessageStore=(()=>{
  const compare=(a,b)=>a.sequence-b.sequence||(a.id<b.id?-1:a.id>b.id?1:0);
  const label=row=>!row?'':row.deleted?'Tin nhắn đã xóa':row.text;
  function create(){
-  const entities=new Map(),byConversation=new Map(),listeners=new Map(),entityListeners=new Map();let version=0,disposed=false,notifying=false;
+  const entities=new Map(),byConversation=new Map(),listeners=new Map(),entityListeners=new Map();let version=0,disposed=false,notifying=false;const perf={comparisons:0,appendBatches:0,prependBatches:0,mergeBatches:0};
+  const compareIds=(a,b)=>{perf.comparisons++;return compare(get(a),get(b))};
   const get=id=>entities.get(id)||null,ids=conversationId=>byConversation.get(conversationId)||empty;
   const latest=conversationId=>{const list=ids(conversationId);return list.length?get(list.at(-1)):null};
   function subscribe(map,key,fn){if(disposed||!validKey(key)||typeof fn!=='function')throw new TypeError('Invalid subscription');let set=map.get(key);if(!set){set=new Set();map.set(key,set)}set.add(fn);let live=true;return ()=>{if(!live)return;live=false;set.delete(fn);if(!set.size&&map.get(key)===set)map.delete(key)}}
@@ -1299,7 +1300,14 @@ const MessageStore=(()=>{
    for(const [id,row] of staged){if(!touched.has(row.conversationId))touched.set(row.conversationId,[]);touched.get(row.conversationId).push(id);if(!entities.has(id)){if(!additions.has(row.conversationId))additions.set(row.conversationId,[]);additions.get(row.conversationId).push(id)}}
    // Commit only after validation of the entire batch. Edits retain the same ordered ID array.
    for(const [id,row] of staged)entities.set(id,row);
-   for(const [cid,added] of additions){const ordered=[...ids(cid),...added];ordered.sort((a,b)=>compare(get(a),get(b)));byConversation.set(cid,Object.freeze(ordered))}
+   for(const [cid,added] of additions){
+    const prior=ids(cid);if(added.length>1)added.sort(compareIds);
+    let ordered;
+    if(!prior.length||compareIds(prior.at(-1),added[0])<0){ordered=[...prior,...added];perf.appendBatches++}
+    else if(compareIds(added.at(-1),prior[0])<0){ordered=[...added,...prior];perf.prependBatches++}
+    else{ordered=[];let i=0,j=0;while(i<prior.length&&j<added.length)ordered.push(compareIds(prior[i],added[j])<=0?prior[i++]:added[j++]);while(i<prior.length)ordered.push(prior[i++]);while(j<added.length)ordered.push(added[j++]);perf.mergeBatches++}
+    byConversation.set(cid,Object.freeze(ordered))
+   }
    const event=Object.freeze({version:++version,changedIds:Object.freeze([...staged.keys()]),conversationIds:Object.freeze([...touched.keys()])});
    notifying=true;try{
     for(const id of event.changedIds)notify(entityListeners.get(id),Object.freeze({version,id,message:get(id)}));
@@ -1308,7 +1316,7 @@ const MessageStore=(()=>{
    return event;
   }
   function dispose(){disposed=true;listeners.clear();entityListeners.clear();entities.clear();byConversation.clear()}
-  return Object.freeze({apply,get,ids,latest,subscribeMessage:(id,fn)=>subscribe(entityListeners,id,fn),subscribeConversation:(id,fn)=>subscribe(listeners,id,fn),status:()=>Object.freeze({version,count:entities.size,conversations:byConversation.size,disposed}),dispose});
+  return Object.freeze({apply,get,ids,latest,subscribeMessage:(id,fn)=>subscribe(entityListeners,id,fn),subscribeConversation:(id,fn)=>subscribe(listeners,id,fn),metrics:()=>Object.freeze({...perf}),status:()=>Object.freeze({version,count:entities.size,conversations:byConversation.size,disposed}),dispose});
  }
  return Object.freeze({create,label});
 })();
@@ -1323,11 +1331,11 @@ const ConversationStore=(()=>{
  const equal=(a,b)=>a.name===b.name&&a.group===b.group&&a.activityOrder===b.activityOrder&&a.latestMessageId===b.latestMessageId;
  function create(messages){
   if(!messages||typeof messages.get!=='function'||typeof messages.subscribeConversation!=='function')throw new TypeError('MessageStore required');
-  const rows=new Map(),rowListeners=new Map(),listListeners=new Set(),subscriptions=new Map(),lastRefs=new Map();
+  const rows=new Map(),rowListeners=new Map(),listListeners=new Set(),subscriptions=new Map(),lastRefs=new Map(),projections=new Map();const perf={sorts:0,comparisons:0,projections:0};
   let ordered=empty,version=0,disposed=false,notifying=false;
   const get=id=>rows.get(id)||null;
   function message(id){const r=get(id),m=r?.latestMessageId?messages.get(r.latestMessageId):null;return m?.conversationId===id?m:null}
-  function project(id){const r=get(id);if(!r)return null;const m=message(id);return Object.freeze({conversation:r,message:m,preview:r.latestMessageId===null?'Chưa có tin nhắn':m?MessageStore.label(m):'Đang đồng bộ tin nhắn',missing:!!r.latestMessageId&&!m})}
+  function project(id){const r=get(id);if(!r)return null;const m=message(id),old=projections.get(id);if(old?.conversation===r&&old.message===m)return old;const next=Object.freeze({conversation:r,message:m,preview:r.latestMessageId===null?'Chưa có tin nhắn':m?MessageStore.label(m):'Đang đồng bộ tin nhắn',missing:!!r.latestMessageId&&!m});projections.set(id,next);perf.projections++;return next}
   function notify(set,event){for(const fn of [...(set||[])])try{fn(event)}catch(e){console.error('ConversationStore subscriber',e)}}
   function emitRow(id){notify(rowListeners.get(id),project(id))}
   function watch(id){if(subscriptions.has(id))return;subscriptions.set(id,messages.subscribeConversation(id,()=>{if(disposed)return;const m=message(id);if(lastRefs.get(id)===m)return;lastRefs.set(id,m);notifying=true;try{emitRow(id)}finally{notifying=false}}))}
@@ -1343,16 +1351,15 @@ const ConversationStore=(()=>{
     staged.set(n.id,n);
    }
    if(!staged.size)return false;
-   for(const [id,row] of staged){rows.set(id,row);lastRefs.set(id,message(id));watch(id)}
-   const next=[...rows.keys()].sort((a,b)=>get(b).activityOrder-get(a).activityOrder||(a<b?-1:a>b?1:0));
-   const reordered=next.length!==ordered.length||next.some((id,i)=>id!==ordered[i]);if(reordered)ordered=Object.freeze(next);
+   let rankChanged=false;for(const [id,row] of staged){const old=get(id);rankChanged||=!old||old.activityOrder!==row.activityOrder;rows.set(id,row);lastRefs.set(id,message(id));watch(id)}
+   let reordered=false;if(rankChanged){perf.sorts++;const next=[...rows.keys()].sort((a,b)=>{perf.comparisons++;return get(b).activityOrder-get(a).activityOrder||(a<b?-1:a>b?1:0)});reordered=next.length!==ordered.length||next.some((id,i)=>id!==ordered[i]);if(reordered)ordered=Object.freeze(next)}
    version++;notifying=true;try{for(const id of staged.keys())emitRow(id);if(reordered)notify(listListeners,ordered)}finally{notifying=false}
    return true;
   }
   function subscribeRow(id,fn){if(disposed||!key(id)||typeof fn!=='function')throw new TypeError('Invalid row subscription');let set=rowListeners.get(id);if(!set){set=new Set();rowListeners.set(id,set)}set.add(fn);return ()=>{set.delete(fn);if(!set.size&&rowListeners.get(id)===set)rowListeners.delete(id)}}
   function subscribeList(fn){if(disposed||typeof fn!=='function')throw new TypeError('Invalid list subscription');listListeners.add(fn);return ()=>listListeners.delete(fn)}
-  function dispose(){if(notifying)throw Error('ConversationStore unavailable');if(disposed)return;disposed=true;for(const un of subscriptions.values())un();subscriptions.clear();lastRefs.clear();rowListeners.clear();listListeners.clear();rows.clear();ordered=empty}
-  return Object.freeze({apply,get,project,ids:()=>ordered,subscribeRow,subscribeList,status:()=>Object.freeze({version,count:rows.size,disposed}),dispose});
+  function dispose(){if(notifying)throw Error('ConversationStore unavailable');if(disposed)return;disposed=true;for(const un of subscriptions.values())un();subscriptions.clear();lastRefs.clear();projections.clear();rowListeners.clear();listListeners.clear();rows.clear();ordered=empty}
+  return Object.freeze({apply,get,project,ids:()=>ordered,subscribeRow,subscribeList,metrics:()=>Object.freeze({...perf}),status:()=>Object.freeze({version,count:rows.size,disposed}),dispose});
  }
  return Object.freeze({create});
 })();
@@ -1756,7 +1763,7 @@ const Message=Object.freeze({create({text,time,mine=false,day}){
 }});
 const Main=Object.freeze({
  mount(){
-  const version='v13.68',slot=options=>Layout.slot(options),t=options=>View.text(options),b=options=>View.button(options);
+  const version='v13.69',slot=options=>Layout.slot(options),t=options=>View.text(options),b=options=>View.button(options);
   const ver=(name='label-version')=>t({role:'version',name,text:version,attrs:name.includes('chat-version')?{'aria-label':'Phiên bản '+version}:{}});
   const nav=(go,label,icon,extra={})=>b({icon,label,attrs:{'data-go':go,...extra.attrs},kind:extra.kind||'text',className:extra.className||'',glass:extra.glass});
   const header=children=>slot({tag:'header',name:'panel-head',children});
@@ -2011,7 +2018,7 @@ function renderGeometryLab(panel){
 }
 function renderTypographyLab(panel){
  const lab=Layout.create({tag:'section',className:'type-lab',kind:'column',gap:'md'});
- const samples=[['version','Phiên bản','v13.68'],['caption','Chú thích / thời gian','24/11/2026 · 14:30'],['label','Nhãn','Số lượng'],['detail','Chi tiết nghiệp vụ','Sữa tươi · 2 thùng'],['note','Ghi chú','Đã kiểm tra hàng, còn thiếu 2 thùng.'],['body','Văn bản','Nguyễn Thị Đặng Hồng – tiếng Việt đầy đủ dấu.'],['title','Tiêu đề','Đơn hàng hôm nay'],['chat','Nội dung chat','Chị kiểm tra lại giúp em nhé…'],['number','Số','100 · 1.000 · 10.000'],['money','Số tiền','1.250.000 đ']];
+ const samples=[['version','Phiên bản','v13.69'],['caption','Chú thích / thời gian','24/11/2026 · 14:30'],['label','Nhãn','Số lượng'],['detail','Chi tiết nghiệp vụ','Sữa tươi · 2 thùng'],['note','Ghi chú','Đã kiểm tra hàng, còn thiếu 2 thùng.'],['body','Văn bản','Nguyễn Thị Đặng Hồng – tiếng Việt đầy đủ dấu.'],['title','Tiêu đề','Đơn hàng hôm nay'],['chat','Nội dung chat','Chị kiểm tra lại giúp em nhé…'],['number','Số','100 · 1.000 · 10.000'],['money','Số tiền','1.250.000 đ']];
  for(const [role,label,value] of samples){const row=make('div','type-lab-row');row.append(Typography.create({role:'caption',text:label+' · '+role}),Typography.create({role,text:value}));lab.append(row)}
  const variations=make('div','type-lab-row');for(const weight of Typography.weights)variations.append(Typography.create({role:'body',weight,text:'Tiếng Việt · '+weight}));for(const decoration of Typography.decorations)variations.append(Typography.create({role:'body',decoration,text:'Nội dung · '+decoration}));lab.append(variations);
  const field=make('div','type-lab-row');field.append(Typography.create({role:'caption',text:'Input — 17/22, sử dụng API Input'}),Input.create({type:'text',label:'Mẫu chữ nhập',value:'Tiếng Việt có dấu…'}));lab.append(field);panel.append(lab)
@@ -2804,7 +2811,7 @@ function sample(now){raf=0;const v=window.visualViewport,top=v?.offsetTop||0,bot
 count++;const visibleBottom=screen==='chat'&&c.height?Math.max(r.bottom,c.bottom,m.bottom):r.bottom;const overflow=Math.max(0,top-r.top,visibleBottom-bottom,left-r.left,r.right-right);maxOverflow=Math.max(maxOverflow,overflow);
 if(screen==='chat'&&c.height){maxGap=Math.max(maxGap,Math.abs(bottom-c.bottom));maxOverlap=Math.max(maxOverlap,floatingComposer?Math.max(Math.abs(m.bottom-c.bottom),Math.max(0,c.height+12-parseFloat(getComputedStyle(messages).paddingBottom))):Math.max(0,m.bottom-c.top));const dh=draft.getBoundingClientRect().height;if(lastScreen===screen&&lastDraftHeight&&Math.abs(dh-lastDraftHeight)>1)draftChanges++;lastDraftHeight=dh}
 const key=[screen,r.top,r.height,c.top,c.height].map(x=>typeof x==='number'?Math.round(x):x).join('/');if(last&&key!==last)changes++;last=key;lastScreen=screen;
-output.textContent='v13.68 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nSai hợp đồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
+output.textContent='v13.69 · '+screen+' · '+(app.dataset.keyboard==='true'?'Bàn phím mở':'Bàn phím đóng')+'\nMẫu: '+count+' | Đổi hình học: '+changes+'\nTràn viewport max: '+maxOverflow.toFixed(1)+'px\nHở đáy max: '+maxGap.toFixed(1)+'px\nSai hợp đồng nội dung/gõ max: '+maxOverlap.toFixed(1)+'px\nĐổi chiều cao ô nhập: '+draftChanges+'\n';
 if(now<until)raf=requestAnimationFrame(sample)}
 function schedule(){until=performance.now()+600;if(!raf)raf=requestAnimationFrame(sample)}
 reset.onclick=()=>{count=changes=draftChanges=maxOverflow=maxGap=maxOverlap=lastDraftHeight=0;last=lastScreen='';schedule()};
@@ -2837,7 +2844,7 @@ if(new URLSearchParams(location.search).get('perf')==='1'){
 const panel=make('div','perf-panel');const output=make('pre');const reset=make('button','','Đo lại');panel.append(output,reset);document.body.append(panel);
 let frames=0,slow=0,total=0,max=0,restores=0,resizes=0,last=0,until=0,raf=0,reportAt=0;
 const sizes=new WeakMap();const observer=new ResizeObserver(entries=>{for(const e of entries){const key=e.contentRect.width.toFixed(1)+'/'+e.contentRect.height.toFixed(1);if(sizes.has(e.target)&&sizes.get(e.target)!==key)resizes++;sizes.set(e.target,key)}});
-function report(){output.textContent='v13.68 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
+function report(){output.textContent='v13.69 · Đo cuộn\nFPS TB: '+(total?Math.round(frames*1000/total):'—')+'\nKhung > 25ms: '+slow+'/'+frames+'\nKhung lâu nhất: '+max.toFixed(1)+' ms\nViewport kéo cuộn: '+restores+'\nKhung ảnh đổi cỡ: '+resizes}
 function tick(t){raf=0;if(last){const dt=t-last;frames++;total+=dt;max=Math.max(max,dt);if(dt>25)slow++}last=t;if(t-reportAt>500){reportAt=t;report()}if(t<until)raf=requestAnimationFrame(tick);else{last=0;report()}}
 messages.addEventListener('scroll',()=>{until=performance.now()+180;if(!raf){last=0;raf=requestAnimationFrame(tick)}},{passive:true});
 reset.onclick=()=>{frames=slow=total=max=restores=resizes=0;last=0;report()};
@@ -2849,7 +2856,7 @@ if(new URLSearchParams(location.search).get('keyboardtest')==='1'){
  let frame=0,until=0,start=0,phase='idle',rows=[],last=null,eventCount=0,maxStep=0,maxError=0,maxInputStep=0,firstRaw=null,firstFrame=null,report='';
  const fmt=n=>Math.round(n*10)/10;
  function finish(){
-  report=['v13.68 | '+phase+' | '+(matchMedia('(display-mode:standalone)').matches?'PWA':'Web'),
+  report=['v13.69 | '+phase+' | '+(matchMedia('(display-mode:standalone)').matches?'PWA':'Web'),
    'Mẫu: '+rows.length+' | sự kiện viewport: '+eventCount,
    'Raw bước lớn nhất: '+fmt(maxStep)+' px',
    'Input bước lớn nhất: '+fmt(maxInputStep)+' px',
@@ -2876,14 +2883,14 @@ if(new URLSearchParams(location.search).get('keyboardtest')==='1'){
   if(t<until)frame=requestAnimationFrame(sample);else finish();
  }
  function begin(name){
-  if(frame)cancelAnimationFrame(frame);frame=0;start=performance.now();until=start+1000;phase=name;rows=[];last=null;eventCount=maxStep=maxError=maxInputStep=0;firstRaw=firstFrame=null;output.textContent='v13.68 · Đang đo '+name;
+  if(frame)cancelAnimationFrame(frame);frame=0;start=performance.now();until=start+1000;phase=name;rows=[];last=null;eventCount=maxStep=maxError=maxInputStep=0;firstRaw=firstFrame=null;output.textContent='v13.69 · Đang đo '+name;
   sample(start);
  }
  function signal(){if(!frame)begin('viewport');eventCount++;until=Math.max(until,performance.now()+350)}
  draft.addEventListener('focus',()=>begin('mở'));draft.addEventListener('blur',()=>begin('đóng'));
  window.visualViewport?.addEventListener('resize',signal,{passive:true});window.visualViewport?.addEventListener('scroll',signal,{passive:true});
  copy.onclick=async()=>{try{await navigator.clipboard.writeText(report+'\n'+JSON.stringify(rows));copy.textContent='Đã sao chép'}catch{copy.textContent='Không sao chép được'}};
- output.textContent='v13.68 · Mở rồi đóng bàn phím để đo';
+ output.textContent='v13.69 · Mở rồi đóng bàn phím để đo';
 }
 if(new URLSearchParams(location.search).get('guides')==='1'){
 const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.id='geometryGuides';document.body.append(svg);const toggle=make('button','','Ẩn đường kẻ');toggle.id='geometryToggle';document.body.append(toggle);let enabled=true,frame=0;
@@ -2941,7 +2948,7 @@ if(innerWidth<768&&shown(frame)&&shown(c)){
  check('G107 Composer không transform',style.transform==='none'?0:2,0);
  check('G108 Shell đỉnh = rect hiệu lực',root.top,v.top);
 }
-const bad=results.filter(r=>!Number.isFinite(r.delta)||r.delta>1);window.crmGeometry={version:'v13.68',screen:app.dataset.screen,viewport:{width:window.visualViewport?.width||innerWidth,height:window.visualViewport?.height||innerHeight},checks:results,issues:bad};report.textContent='Viewport '+Math.round(window.visualViewport?.width||innerWidth)+' × '+Math.round(window.visualViewport?.height||innerHeight)+' · '+app.dataset.screen+'\nHình học · '+(results.length-bad.length)+'/'+results.length+' đạt (≤1px)\n'+(bad.length?bad.sort((a,b)=>b.delta-a.delta).slice(0,10).map(r=>r.name+': '+r.delta.toFixed(1)+'px').join('\n'):'Không thấy lệch ở các mục đã đo');}
+const bad=results.filter(r=>!Number.isFinite(r.delta)||r.delta>1);window.crmGeometry={version:'v13.69',screen:app.dataset.screen,viewport:{width:window.visualViewport?.width||innerWidth,height:window.visualViewport?.height||innerHeight},checks:results,issues:bad};report.textContent='Viewport '+Math.round(window.visualViewport?.width||innerWidth)+' × '+Math.round(window.visualViewport?.height||innerHeight)+' · '+app.dataset.screen+'\nHình học · '+(results.length-bad.length)+'/'+results.length+' đạt (≤1px)\n'+(bad.length?bad.sort((a,b)=>b.delta-a.delta).slice(0,10).map(r=>r.name+': '+r.delta.toFixed(1)+'px').join('\n'):'Không thấy lệch ở các mục đã đo');}
 function draw(){frame=0;svg.replaceChildren();report.hidden=!enabled;if(!enabled)return;audit();
 const visible=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight};
 function bounds(e){const r=e.getBoundingClientRect();line(r.left,r.top,r.right,r.top,'#999');line(r.left,r.bottom,r.right,r.bottom,'#999');line(r.left,r.top,r.left,r.bottom,'#d14b42');line(r.right,r.top,r.right,r.bottom,'#d14b42')}
@@ -2959,7 +2966,7 @@ for(const el of document.querySelectorAll('[data-parent-api=KeyboardController]'
 applyViewport();render();window.scrollPerf?.observe();
 if(new URLSearchParams(location.search).get('scenario')==='1'){
 const panel=document.createElement('section');panel.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;max-width:420px;max-height:42vh;overflow:auto;z-index:10001;background:white;color:#202124;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px/1.5 system-ui';
-const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='v13.68 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
+const out=document.createElement('pre');out.style.whiteSpace='pre-wrap';out.textContent='v13.69 · Sẵn sàng. Chỉ dùng dữ liệu demo.';const run=document.createElement('button');run.textContent='Chạy kịch bản';panel.append(out,run);document.body.append(panel);
 const wait=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 run.onclick=async()=>{run.disabled=true;const results=[];const check=(name,ok)=>{results.push({name,ok});out.textContent=results.map(x=>(x.ok?'ĐẠT':'LỖI')+' · '+x.name).join('\n')};const original=active,originalScreen=app.dataset.screen,originalDraft=draft.value,originalSearch=searchInput.value,originalOpen=directory.dataset.searchOpen==='true';const ids=Object.keys(people);try{
 navigate('contacts');await wait();check('S01 Mở danh bạ',app.dataset.screen==='contacts');
@@ -2990,14 +2997,14 @@ if(other){const count=messages.childElementCount;receiveDemo(other,'QA nhận ti
 }finally{for(const [id,s] of Object.entries(snapshot)){texts[id].length=s.length;incomingCounts[id]=s.unread;pendingLatest[id]=s.pending;updateContact(id);const row=contactList.querySelector('[data-id="'+id+'"]');row.querySelector('.identity small').textContent=s.preview;row.querySelector('.time').textContent=s.time}render();await wait();messages.scrollTop=oldTop;syncJump()}
 
 }finally{drafts[testId]=savedDraft;if(active===testId){draft.value=savedDraft;resizeDraft()}}
-}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='v13.68 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
+}catch(e){check('Ngoại lệ: '+e.message,false)}finally{const b=[...contactList.querySelectorAll('.contact')].find(e=>e.dataset.id===original);if(b&&active!==original)b.click();draft.value=originalDraft;drafts[original]=originalDraft;resizeDraft();navigate(originalScreen);setSearchOpen(originalOpen);searchInput.value=originalSearch;showPeople();run.disabled=false;out.textContent='v13.69 · '+results.filter(x=>x.ok).length+'/'+results.length+' đạt\n'+out.textContent;window.crmScenario=results;}
 };
 }
 
 /* QA hub: one entry point, isolated diagnostic modes to avoid competing overlays. */
 if(new URLSearchParams(location.search).get('verify')==='1'){
 const hub=document.createElement('details');hub.style.cssText='position:fixed;z-index:10002;right:8px;top:calc(env(safe-area-inset-top) + 8px);max-width:calc(100vw - 16px);width:280px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font:13px/1.5 system-ui;box-shadow:0 2px 12px #0002';
-const title=document.createElement('summary');title.textContent='QA · v13.68';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
+const title=document.createElement('summary');title.textContent='QA · v13.69';title.style.cssText='min-height:32px;cursor:pointer';hub.append(title);
 const modes=[['','Giao diện bình thường','Không bật bộ đo'],['scenario','Kịch bản tự chạy','Kiểm tra thao tác trên demo'],['qa','UI / UX','Kiểm tra trạng thái và kích thước'],['guides','Hình học tĩnh','G01–G108, đường kẻ và kết quả đo'],['dynamic','Hình học động','Viewport và vùng gõ'],['perf','Hiệu năng','Khung hình và cuộn'],['keyboardtest','Bàn phím','Thời gian và độ ổn định']];
 const params=new URLSearchParams(location.search);const activeMode=modes.find(([k])=>k&&params.get(k)==='1')?.[0]||'';
 for(const [key,label,desc] of modes){const a=document.createElement('a');const url=new URL(location.href);for(const [k] of modes)if(k)url.searchParams.delete(k);url.searchParams.set('verify','1');if(key)url.searchParams.set(key,'1');a.href=url.href;a.style.cssText='display:block;padding:8px;border-radius:8px;min-height:44px;text-decoration:none;color:inherit;background:'+(key===activeMode?'var(--surface-selected)':'transparent');if(key===activeMode)a.setAttribute('aria-current','page');const b=document.createElement('strong');b.textContent=label;const small=document.createElement('small');small.style.cssText='display:block;color:var(--muted)';small.textContent=desc;a.append(b,small);hub.append(a)}
@@ -3026,7 +3033,7 @@ if(visible(composer)){const expanded=composer.dataset.mode==='expanded',plus=com
 add('A08 Cuộn / nút về cuối',visible(messages)?jump.hidden===nearBottom():null);
 add('A09 Công việc / module được chọn',visible($('#modules'))?$('#modules').querySelectorAll('.active').length===1:null);
 add('A10 Popup / giới hạn màn hình',document.querySelector('dialog[open]')?(()=>{const d=r(document.querySelector('dialog[open]')),v=window.visualViewport,x=v?.offsetLeft||0,y=v?.offsetTop||0;return d.left>=x-1&&d.top>=y-1&&d.right<=x+(v?.width||innerWidth)+1&&d.bottom<=y+(v?.height||innerHeight)+1})():null);
-const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='v13.68 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
+const passed=results.filter(x=>x.status==='ĐẠT').length,failed=results.filter(x=>x.status==='LỖI').length;out.textContent='v13.69 · '+screen+'\n'+passed+' đạt / '+failed+' lỗi / '+(results.length-passed-failed)+' chưa đo\n'+results.map(x=>x.status+' · '+x.name).join('\n');window.crmQA=results;}
 let timer;function schedule(){clearTimeout(timer);timer=setTimeout(test,250)}run.onclick=test;for(const event of ['click','input','focusin','focusout'])document.addEventListener(event,schedule);messages.addEventListener('scroll',schedule,{passive:true});window.visualViewport?.addEventListener('resize',schedule,{passive:true});window.addEventListener('resize',schedule);schedule();
 }
 for(const t of contactList.querySelectorAll('.time'))t.textContent=shortDay()+' '+t.textContent;
@@ -3084,10 +3091,10 @@ if(apiProofEnabled){
  function report(){
   const roles=[...document.querySelectorAll('#app [data-type-role],dialog[open] [data-type-role]')].filter(visible),inputs=[...document.querySelectorAll('#app .input-child,dialog[open] .input-child')].filter(visible),buttons=[...document.querySelectorAll('#app button,dialog[open] button')].filter(visible),icons=buttons.flatMap(b=>[...b.querySelectorAll('svg[viewBox="0 0 24 24"]')].filter(visible)),popups=[...document.querySelectorAll('dialog[open][data-popup-parent]')],rows=[...document.querySelectorAll('.contact')].filter(visible),geometry=rows.map(row=>({inside:Geometry.inside(row,row.querySelector('.avatar')),overlap:Geometry.overlap(row.querySelector('.identity b'),row.querySelector('.time'))}));
   const fonts=[...roles,...inputs].map(describe);
-  return {family:FamilyRegistry.audit(),version:'v13.68',screen:app.dataset.screen,viewport:{width:innerWidth,height:innerHeight},font:{total:fonts.length,matched:fonts.filter(x=>x.fontOK).length,issues:fonts.filter(x=>x.fontOK===false)},input:{visible:inputs.length,profiles:inputs.map(x=>x.dataset.inputKind)},button:{visible:buttons.length,registered:buttons.filter(b=>b.dataset.buttonParent==='true').length},icon:{visible:icons.length,registered:icons.filter(x=>x.dataset.iconParent==='true').length,registry:icons.filter(x=>x.dataset.apiIcon).length},popup:{open:popups.length,profiles:popups.map(x=>x.dataset.popupType)},layout:{generic:[...document.querySelectorAll('#app [data-geo-layout]')].filter(visible).length,special:[...document.querySelectorAll('#app [data-layout]')].filter(visible).length,contactGeometry:geometry},keyboard:{nativeDevice:'PENDING',baseline:'v13.27'}};
+  return {family:FamilyRegistry.audit(),version:'v13.69',screen:app.dataset.screen,viewport:{width:innerWidth,height:innerHeight},font:{total:fonts.length,matched:fonts.filter(x=>x.fontOK).length,issues:fonts.filter(x=>x.fontOK===false)},input:{visible:inputs.length,profiles:inputs.map(x=>x.dataset.inputKind)},button:{visible:buttons.length,registered:buttons.filter(b=>b.dataset.buttonParent==='true').length},icon:{visible:icons.length,registered:icons.filter(x=>x.dataset.iconParent==='true').length,registry:icons.filter(x=>x.dataset.apiIcon).length},popup:{open:popups.length,profiles:popups.map(x=>x.dataset.popupType)},layout:{generic:[...document.querySelectorAll('#app [data-geo-layout]')].filter(visible).length,special:[...document.querySelectorAll('#app [data-layout]')].filter(visible).length,contactGeometry:geometry},keyboard:{nativeDevice:'PENDING',baseline:'v13.27'}};
  }
  const box=document.createElement('aside');box.id='apiProofPanel';box.style.cssText='position:fixed;z-index:10030;right:8px;top:calc(env(safe-area-inset-top) + 60px);width:min(340px,calc(100vw - 16px));max-height:45vh;overflow:auto;background:#fff;color:#222;border:1px solid #bbb;border-radius:12px;padding:8px;font:12px/1.4 system-ui;box-shadow:0 4px 16px #0002';
- const title=document.createElement('strong');title.textContent='API 1–7 · v13.68';const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0;font:inherit';out.setAttribute('aria-live','polite');
+ const title=document.createElement('strong');title.textContent='API 1–7 · v13.69';const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0;font:inherit';out.setAttribute('aria-live','polite');
  let picking=false;
  const show=()=>{picking=false;pick.textContent='Chọn thành phần';const x=report();out.textContent=['Font/Input: '+x.font.matched+'/'+x.font.total+' đúng size/line/weight','Button: '+x.button.registered+'/'+x.button.visible+' đăng ký','Icon: '+x.icon.registered+'/'+x.icon.visible+' đăng ký; '+x.icon.registry+' glyph registry','Popup: '+(x.popup.profiles.join(', ')||'chưa mở'),'Layout: '+x.layout.generic+' generic / '+x.layout.special+' vùng riêng','Family: '+x.family.classified+'/'+x.family.total+' · '+x.family.issues.length+' cần phân loại; '+x.family.pending.length+' cần học thêm',...x.family.issues.slice(0,6).map(v=>v.tag+'.'+v.className+' · '+v.status),'Keyboard: thiết bị PENDING',...x.font.issues.slice(0,8).map(v=>v.element+' '+JSON.stringify(v.computed))].join('\n')};
  const pick=Button.create({text:'Chọn thành phần',onClick:()=>{picking=!picking;pick.textContent=picking?'Hủy chọn':'Chọn thành phần';if(picking)out.textContent='Chạm một thành phần ngoài bảng này. Lần chạm đó chỉ đo, không thực hiện thao tác.';else show()}});
@@ -3111,7 +3118,7 @@ const chat=messages.getBoundingClientRect(),root=app.getBoundingClientRect();
 const gap=vTop+vHeight-box.bottom;
 if(box.height){minGap=Math.min(minGap,gap);maxGap=Math.max(maxGap,gap)}
 const n=x=>Math.round(x);
-const audit=auditGeometry();out.textContent=['v13.68 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Keyboard occluding: '+keyboardOccluding+' / motion: single viewport shell','Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
+const audit=auditGeometry();out.textContent=['v13.69 · '+(matchMedia('(display-mode: standalone)').matches?'PWA':'Web'),'Viewport: '+n(vHeight)+' / top '+n(vTop),'Root: '+n(root.height)+' / top '+n(root.top),'Chat: '+n(chat.height),'Composer: '+n(box.height),'Bottom gap: '+(box.height?n(gap):'—'),'Gap min/max: '+(isFinite(minGap)?n(minGap)+' / '+n(maxGap):'—'),'Focus: '+(document.activeElement===draft?'chat':'other'),'Keyboard occluding: '+keyboardOccluding+' / motion: single viewport shell','Audit: '+(audit.checks.length-audit.issues.length)+'/'+audit.checks.length+' đạt',...audit.issues.slice(0,5).map(x=>x.code+' '+x.label+': '+x.detail)].join('\n');
 }
 let frame=0;function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;measure()})}
 window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);window.addEventListener('resize',schedule);document.addEventListener('focusin',()=>{minGap=Infinity;maxGap=-Infinity;schedule()});document.addEventListener('focusout',schedule);new ResizeObserver(schedule).observe(app);new ResizeObserver(schedule).observe(document.querySelector('.composer-frame'));schedule();
@@ -3182,7 +3189,7 @@ if(new URLSearchParams(location.search).has('kbmode')){
 const p=document.createElement('div');p.style.cssText='position:fixed;top:env(safe-area-inset-top);right:4px;z-index:9999;background:#fff;color:#222;border:1px solid #aaa;border-radius:8px;padding:4px;font:11px system-ui';for(const [mode,label] of [['current','A'],['light','C']]){const a=document.createElement('a');a.href='?kbmode='+mode;a.textContent=label;a.style.cssText='display:inline-block;padding:8px;color:inherit';if(document.documentElement.dataset.kbMode===mode)a.style.fontWeight='bold';p.append(a)}document.body.append(p)}
 </script><script>
 if(new URLSearchParams(location.search).has('glasscheck')){
-const p=document.createElement('section');p.style.cssText='position:fixed;inset:12px 12px auto;z-index:9999;background:white;color:#111;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px system-ui;max-height:60vh;overflow:auto';const title=document.createElement('strong');title.textContent='Glass check v13.68';p.append(title);for(const sel of ['.composer','.panel-head button.icon','.search-zone input','button[data-button-kind=outline]']){const el=document.querySelector(sel);if(!el)continue;const c=getComputedStyle(el),line=document.createElement('p');line.textContent=sel+' | profile '+c.getPropertyValue('--paint-profile').trim()+' | radius '+c.borderRadius+' | border '+c.borderTopWidth+' '+c.borderTopColor+' | outline '+c.outlineStyle+' | blur '+(c.backdropFilter||c.webkitBackdropFilter||'none')+' | rim '+getComputedStyle(el,'::after').content;p.append(line)}const b=document.createElement('button');b.textContent='Đóng';b.onclick=()=>p.remove();p.append(b);document.body.append(p)}
+const p=document.createElement('section');p.style.cssText='position:fixed;inset:12px 12px auto;z-index:9999;background:white;color:#111;border:1px solid #aaa;border-radius:12px;padding:12px;font:12px system-ui;max-height:60vh;overflow:auto';const title=document.createElement('strong');title.textContent='Glass check v13.69';p.append(title);for(const sel of ['.composer','.panel-head button.icon','.search-zone input','button[data-button-kind=outline]']){const el=document.querySelector(sel);if(!el)continue;const c=getComputedStyle(el),line=document.createElement('p');line.textContent=sel+' | profile '+c.getPropertyValue('--paint-profile').trim()+' | radius '+c.borderRadius+' | border '+c.borderTopWidth+' '+c.borderTopColor+' | outline '+c.outlineStyle+' | blur '+(c.backdropFilter||c.webkitBackdropFilter||'none')+' | rim '+getComputedStyle(el,'::after').content;p.append(line)}const b=document.createElement('button');b.textContent='Đóng';b.onclick=()=>p.remove();p.append(b);document.body.append(p)}
 </script><script>
 if(new URLSearchParams(location.search).get('glasslab')==='1'){
 const d=document.createElement('dialog');d.style.cssText='width:min(94vw,420px);max-height:85vh;padding:12px;background:white;color:#111;border:1px solid #ddd;border-radius:20px;overflow:auto';d.innerHTML='<h3>Glass Lab · upstream 6.0.0</h3><p id="glStatus">Đang tải thư viện gốc…</p><div style="position:relative;height:230px;overflow:hidden"><div id="glBackdrop" style="position:absolute;inset:0;background:#f8f8f8;padding:8px;line-height:24px">Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa<br>Nội dung hội thoại mẫu<br>Khách hàng · Đơn hàng<br>Thông tin chuyển khoản<br>Kiểm tra hàng hóa</div><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="22" style="position:absolute;top:30px;left:12px;width:44px;height:44px;display:grid;place-items:center">‹</liquid-glass><liquid-glass backdrop-selector="#glBackdrop" renderer="webgl" lens-profile="player" strength="0.16" radius="29" style="position:absolute;bottom:35px;left:12px;right:12px;height:58px;display:grid;place-items:center">＋　Nhập tin nhắn mẫu　↑</liquid-glass></div><p>Chỉ mẫu thử, không thay composer thật.</p><button type="button">Đóng</button>';document.body.append(d);d.showModal();d.querySelector('button').onclick=()=>d.close();d.addEventListener('close',()=>d.remove());const s=document.createElement('script');s.type='module';s.src='https://cdn.jsdelivr.net/npm/simple-liquid-glass@6.0.0/web-component';s.onload=()=>{if(customElements.get('liquid-glass'))d.querySelector('#glStatus').textContent='Đã tải Web Component; khúc xạ cần nghiệm thu.'};s.onerror=()=>d.querySelector('#glStatus').textContent='Không tải được bản 6.0.0 từ CDN.';document.head.append(s);
@@ -3212,7 +3219,7 @@ if(new URLSearchParams(location.search).get('edgecheck')==='1'){
  const box=document.createElement('aside');box.style.cssText='position:fixed;z-index:10020;left:max(8px,env(safe-area-inset-left));top:calc(env(safe-area-inset-top) + 60px);max-width:calc(100vw - 16px);background:#fff;color:#222;border:1px solid #aaa;border-radius:10px;padding:8px;font:12px/1.45 system-ui';
  const out=document.createElement('pre');out.style.cssText='white-space:pre-wrap;margin:0';const close=document.createElement('button');close.textContent='Ẩn số đo';box.append(out,close);document.body.append(box);
  let frame=0;const vv=window.visualViewport;
- function measure(){frame=0;const cs=getComputedStyle(probe),r=document.querySelector('#app').getBoundingClientRect(),n=x=>Math.round(x),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;out.textContent=['v13.68 · '+(standalone?'PWA standalone':'Safari / browser'),'Screen CSS: '+screen.width+' × '+screen.height,'Window: '+innerWidth+' × '+innerHeight,'VisualViewport: '+n(vv?.width||innerWidth)+' × '+n(vv?.height||innerHeight)+' / top '+n(vv?.offsetTop||0),'Safe area T/R/B/L: '+[cs.paddingTop,cs.paddingRight,cs.paddingBottom,cs.paddingLeft].join(' / '),'Safe used T/R/B/L: '+['top','right','bottom','left'].map(k=>document.querySelector('#app').style.getPropertyValue('--safe-visible-'+k)||'—').join(' / '),'App: top '+n(r.top)+' / bottom '+n(r.bottom)+' / height '+n(r.height),'Screen − innerHeight: '+n(screen.height-innerHeight)+'px (chỉ tham khảo; đo lúc đóng bàn phím)'].join('\n')}
+ function measure(){frame=0;const cs=getComputedStyle(probe),r=document.querySelector('#app').getBoundingClientRect(),n=x=>Math.round(x),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;out.textContent=['v13.69 · '+(standalone?'PWA standalone':'Safari / browser'),'Screen CSS: '+screen.width+' × '+screen.height,'Window: '+innerWidth+' × '+innerHeight,'VisualViewport: '+n(vv?.width||innerWidth)+' × '+n(vv?.height||innerHeight)+' / top '+n(vv?.offsetTop||0),'Safe area T/R/B/L: '+[cs.paddingTop,cs.paddingRight,cs.paddingBottom,cs.paddingLeft].join(' / '),'Safe used T/R/B/L: '+['top','right','bottom','left'].map(k=>document.querySelector('#app').style.getPropertyValue('--safe-visible-'+k)||'—').join(' / '),'App: top '+n(r.top)+' / bottom '+n(r.bottom)+' / height '+n(r.height),'Screen − innerHeight: '+n(screen.height-innerHeight)+'px (chỉ tham khảo; đo lúc đóng bàn phím)'].join('\n')}
  function schedule(){if(!frame)frame=requestAnimationFrame(measure)}
  window.addEventListener('resize',schedule);vv?.addEventListener('resize',schedule);vv?.addEventListener('scroll',schedule);const ro=new ResizeObserver(schedule);ro.observe(document.querySelector('#app'));
  close.onclick=()=>{window.removeEventListener('resize',schedule);vv?.removeEventListener('resize',schedule);vv?.removeEventListener('scroll',schedule);ro.disconnect();if(frame)cancelAnimationFrame(frame);box.remove();probe.remove()};
