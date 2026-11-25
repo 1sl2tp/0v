@@ -159,3 +159,6 @@ ERPNext erpnext/accounts/doctype/payment_entry/payment_entry.py blob 57dd7c86208
 
 ## v13.113
 ERPNext payment_entry.py blob 57dd7c862089e9342b43db6da0d426eb3c2dade4: latest outstanding and cumulative allocated reference validation. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. Reuse 0v BankJournal allocation and DecimalAPI; cycle grouping is local explicit fixture policy, not copied ERPNext workflow.
+
+## v13.113 correction
+ERPNext accounts_receivable.py blob 8698a69d27c80015364faf2211174174e0b594a8: party subtotal and balance projection; local rolling signed-balance/cycle policy follows user's clarified business model, no upstream code or float arithmetic copied. Existing Astryx Card and 0v DecimalAPI used.
