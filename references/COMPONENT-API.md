@@ -191,3 +191,6 @@ create({factory,profile}) returns run([{image,region}]), close(); sequential wor
 
 ## v13.87 ten-field OCR
 BillOCRFieldAPI.parse now exposes ten fields, including sendingBank, receivingBank and trace. fromStored accepts the CHAT bill_fields_v1 schema and adapts printed fields into explicit local parser input. Output review-only. No storage access, no automatic repair of historic data, no posting.
+
+## v13.88 format normalization
+Shared ParseAPI.billDate accepts Vietnamese abbreviated numeric month tokens with explicit year. BillOCRFieldAPI accepts digit-only groups with spaces, and numeric reference prefix #; raw line evidence retained. Review-only, no missing digit inference.
