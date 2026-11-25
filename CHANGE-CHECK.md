@@ -463,3 +463,7 @@ E1: thêm live mode mặc định trên Pages, đăng nhập admin tại chính 
 
 ## v13.169 — admin 0v không cần duyệt thiết bị
 User xác nhận bỏ duyệt thiết bị riêng 0v, không sửa CHAT cũ. Đọc AGENTS/RULES, ChatReadAPI, SQL v21_private.open_session/require_active_account/can_access_conversation, platform_account_context, policies/auth.sessions và Supabase database function security docs. E1: private read-only RPC + public invoker, explicit grant authenticated, deny anon, account/session/member check, chỉ select; không phát sinh v21 app-session, không thông qua Push. UI reuse cùng Login, ChatReadAPI và parents, bỏ nút duyệt. Kiểm thử fixture đổi sang API session/directory/thread, không legacy RPC. CI, Pages, real admin pending; không claim đã nghiệm thu.
+
+
+## v13.170 — CHAT chính thức, gửi tin thật
+E1: thêm API v0_admin_send_text và composer live; dùng Input/Contact/Layout/Button/ChatReadAPI hiện có, idempotency, nháp, giới hạn 8000 ký tự, từ chối non-admin/contact ngoài phạm vi. Đã kiểm tra định nghĩa v21_message_send, v21_conversation_open và trigger v21_messages thực: sync, push enqueue, Zalo outbound, customer summary. Chỉ admin bấm Gửi mới ghi thật; kiểm thử dùng fixture không gửi khách. Không thay schema bảng hiện hữu/CHAT repo. Chưa triển khai nhận realtime/sửa/xóa/media/CRM trong vòng này. CI/Pages/thiết bị pending.
