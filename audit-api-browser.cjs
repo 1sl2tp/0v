@@ -17,6 +17,20 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await search.fill('zzzzqa-no-match');await search.fill('');assert.equal(await empty.textContent(),'');await p.close();
  }
 
+ // Same-room navigation retains rendered DOM; changed data or different room still rebuilds.
+ {const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url);
+ const room=id=>p.locator('.contact[data-id='+id+']'),back=p.locator('.conversation .panel-head button[data-go=contacts]'),draft=p.locator('#draft');
+ await p.evaluate(()=>document.querySelector('[data-go=contacts]').click());await room('kh').click();
+ await p.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&document.querySelector('#messages').children.length>0);
+ await draft.fill('Bản nháp giữ nguyên');await p.evaluate(()=>{window.__reopenNode=document.querySelector('#messages').firstElementChild;window.__reopenModule=document.querySelector('#moduleContent').firstElementChild});
+ await back.click();await room('kh').click();
+ assert.equal(await p.evaluate(()=>window.__reopenNode===document.querySelector('#messages').firstElementChild&&window.__reopenModule===document.querySelector('#moduleContent').firstElementChild),true);
+ assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');
+ await back.click();await p.evaluate(()=>receiveDemo('kh','Tin mẫu khi danh bạ đang mở'));await room('kh').click();
+ assert.equal(await p.evaluate(()=>window.__reopenNode===document.querySelector('#messages').firstElementChild),false);
+ assert(await p.locator('#messages').innerText().then(t=>t.includes('Tin mẫu khi danh bạ đang mở')));
+ await back.click();await room('nv').click();assert.equal(await draft.inputValue(),'');await back.click();await room('kh').click();assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');await p.close();}
+ 
  // Direct real file picker: normal UI, no diagnostic overlay and no intermediate menu.
  for(const [focused,touch] of [[false,false],[true,false],[false,true],[true,true]]){
  const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:touch});
