@@ -222,3 +222,6 @@ E0: v13.108 PR #75 merged, CI 45548658266 success. E1: BANK-MEMO-CODE, BANK-MEMO
 
 ## v13.110
 E0: v13.109 PR #76 merged, CI 45548947279 success. E1: BANK-MEMO-SPAN, BANK-RESIDUAL, BANK-MEMO-CODE, BANK-RELATED, KB-LOCK. Extend existing diagnostics, unique alignment and code-review guard; existing Card owner. CHAT bill-app-preview, Google diff-match-patch common prefix/suffix and Astryx Card studied. E2: direct logic and syntax, full CI pending. No real bill corpus, production changes, actual messages, historical repair or keyboard changes. Google Sheet not updated.
+
+## v13.111
+E0: v13.110 PR #77 merged; CI 45549225862 success. E1: BANK-PAYER, BANK-OCR, BANK-RELATED, BANK-ACCOUNT, KB-LOCK. Explicit sender field, separate role evidence, customer-context lock and review-only customer allocation. CHAT bill-app-preview, ERPNext payment entry and Astryx Card reviewed. E2: direct contracts and syntax, browser labelled sender fixture added; full CI pending. No directory linkage, real bill corpus, production changes, messages or historical repair. Google Sheet not updated.

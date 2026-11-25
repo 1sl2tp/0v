@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.110)
+## 00. Chỉ mục rule đang có hiệu lực (v13.111)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -978,3 +978,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-MEMO-SPAN-03: Keep all previous financial gates; for missing-clock residual suggestions require unique alignment and no numeric token codeReview even when memo kind is none. No expanded matching or posting authorization.
 - BANK-MEMO-SPAN-04: Expose diagnostic per candidate in existing review evidence and related cards; normalized spans are not original image coordinates and cannot prove bank truncation. No real records, messages or historical repair.
 - BANK-MEMO-SPAN-05: Test both containment directions, internal gap, one-letter, repeated substring, digit/code conflict, immutable spans and review-only related candidate. Preserve keyboard v13.27; full CI required.
+
+## 135. BANK-PAYER — v13.111
+- BANK-PAYER-01: Extend OCR field set from ten to eleven with explicit senderName; legacy name remains recipient only. Only explicit sender labels or stored sender_name accepted. No name inference from memo or sender account. Preserve literal evidence and parser review-only output.
+- BANK-PAYER-02: BankReconcileAPI.payerRoles separates bill/bank sender, bill/bank recipient, explicit customer ID/name and memo mentions. Same-name or memo mention is not a customer identity; differing names indicate possible third-party, not proof. All role diagnostics canAssignCustomer=false, canPost=false.
+- BANK-PAYER-03: Known sender mismatch adds sender-name-conflict and blocks related suggestions. Explicit customer context requires separate allocation review even when names match; no new customer posting path. Legacy unscoped fixture matching remains unchanged. Bank duplicate ID fingerprint includes normalized sender.
+- BANK-PAYER-04: Carry role evidence through recheck and review card. Existing customer context cannot be replaced or introduced by OCR revision; no real directory binding, customer receipt allocation, message or production action. Historical simulated journal is not a customer ledger.
+- BANK-PAYER-05: Test labelled roles, stored adaptation, no memo inference, third-party/same-name review, sender conflict, missing-clock gate, OCR context lock and browser labels. Update ten-field historical contract count intentionally; preserve v13.27 keyboard and full CI gate.

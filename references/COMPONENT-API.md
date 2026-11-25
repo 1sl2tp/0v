@@ -263,3 +263,6 @@ BankReconcileAPI.memoPresentation(a,b) -> immutable kind, billCodes, bankCodes, 
 
 ## v13.110 BANK-MEMO-SPAN
 BankMemoEnvelopeAPI.diagnoseLiteral adds alignment {state,segments:[{type,bill,bank}],reviewOnly}. Unique normalized compact match/containment/gap/letter spans only; ambiguous positions return no segments. BankReconcileAPI.reviewEvidence.memoDiagnostic and BankReviewQueueAPI.relatedCandidates.memoDiagnostic expose per-candidate diagnostics. Residual suggestions tightened for code conflicts and ambiguous alignment; no new posting eligibility.
+
+## v13.111 BANK-PAYER
+BillOCRFieldAPI record now eleven fields (senderName explicit, name remains recipient); fromStored adapts sender_name. BankReconcileAPI.payerRoles(bill,bank) returns immutable role evidence and possible-third-party/same-name-unverified; canAssignCustomer=false, canPost=false. Sender mismatch and customer-scoped allocation review add reasons. BankRecheckController carries senderName/customerId/customerName, locks customer context across OCR revisions. No actual customer allocation adapter.
