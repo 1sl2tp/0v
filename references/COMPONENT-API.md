@@ -149,3 +149,6 @@ mount({root,doc,clock}) → report/reset/dispose; summarize(samples) nearest-ran
 
 ## v13.73 Main owner phase 1
 Contact.visibility(row,{visible,selected}), Contact.update(row,{preview,time,unread,typing}), Contact.typingLabel(label,typing,fallback). Message.create is common plain-text factory for initial/local sent/synthetic incoming messages. Main keeps fixture arrays; store/transport adoption not yet complete. Existing child Layout/Typography/Button owners unchanged.
+
+## v13.74 MainDataController
+create(people,seeds) → append/list/latest/checkpoint/restore/status. Local fixture-only normalized text records, original text/date/time metadata and conversation latest pointer. Existing seed projection and directory display remain unchanged; no live transport, cache, receipts or DB. Checkpoints restore isolated QA state only. Main no writable texts array.
