@@ -90,7 +90,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const bp=await browser.newPage({viewport:{width:390,height:844}});await bp.goto(url+'?apicheck=1');
  await bp.locator('.contact[data-id=kh]').evaluate(e=>e.click());await bp.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());
  await bp.locator('#modules button[data-module=orders]').evaluate(e=>e.click());
- const table=bp.locator('#moduleContent table');assert.equal(await table.locator('tfoot td').last().textContent(),'350.000');assert.equal(await table.locator('tbody tr').first().locator('td').last().textContent(),'200.000');
+ const table=bp.locator('#moduleContent table');assert.equal(await table.locator('tfoot td').last().textContent(),'350.000');assert.equal(await table.locator('tbody tr').first().locator('td').last().textContent(),'200.000');const notice=bp.locator('[data-order-notice-state]');assert.equal(await notice.getAttribute('data-order-notice-state'),'skipped');assert.equal(await notice.getAttribute('data-order-notice-required'),'0');assert.equal(await notice.getAttribute('data-order-notice-accepted'),'0');assert((await notice.textContent()).includes('Không gửi · Đơn tạm'));
  await bp.locator('#modules button[data-module=balance]').evaluate(e=>e.click());assert((await bp.locator('#moduleContent').textContent()).includes('−650.000 đ'));
  await bp.locator('#modules button[data-module=payments]').evaluate(e=>e.click());assert((await bp.locator('#moduleContent').textContent()).includes('24/11/2026 · 10:30'));await bp.close()
  }
