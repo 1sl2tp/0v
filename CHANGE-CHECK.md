@@ -243,3 +243,6 @@ E0: v13.114 PR #81 merged; CI 45551432181 success; main blob verified. E1: BANK-
 
 ## v13.116
 E0: PR #82 merged, CI 45551969249 success; main index blob matches version manifest. E1: BANK-ROLLING-DB, BANK-ROLLING-PERSIST, KB-LOCK; PostgreSQL unique index/transaction isolation and Supabase invoker/RLS references. E2: seven classic scripts compiled; PostgreSQL 16 serial/rollback/concurrency workflow added, execution pending. No local PostgreSQL runtime available. E3–E5: not certified; no production DB, migration, data, message, reminders or keyboard edits. No authoritative Bank key adapter or actual ledger integration.
+
+## v13.117
+E0: v13.116 PR #83 merged after API and PostgreSQL workflows 45552657294/45552657301 passed; main blob verified. E1: BANK-IDENTITY, BANK-ROLLING-DB; Plaid account-scoped stable transaction identity and pending/posted distinctions reviewed as external design references, not Agribank evidence. E2: 10 direct identity tests passed, seven classic scripts compiled, static regression added; full CI pending. E3–E5 not certified. Synthetic attestation only, no actual bank identity proof, no production posting, messages, reminders, keyboard or historical edits.
