@@ -69,3 +69,7 @@ v13.61 PR #28 merged 8148ba11fe3ccb95f9bfcb5fdd77a7e3958a27fa; CI 45513916588/45
 
 ## v13.63 — PresenceController
 v13.62 PR #29 merged 86a14b049ec888deb26ced23c5de6afeaec0686b; CI 45514538295/45514520417 success, Pages 45514709020 success. E1 scoped synthetic lease registry, context projection, stale generation/sequence, expiry unknown, explicit leave, two session lab. PRESENCE-API-01–05; SOURCE-GATE, KB-LOCK. Read Phoenix, Supabase realtime handler, MDN, Adobe and Astryx. Syntax compiled before commit. No actual presence transport, auth, notification, production, DB, keyboard or Main change. CI/Pages pending. Candidate is not read or suppression proof. No manual deploy.
+
+
+## v13.64 — NotificationController
+v13.63 PR #30 merged 2e038ae7589e5fd768098600f0d9c8ef4b0e1990; CI 45514986108/45514970063 success; Pages 45515164805 pending at initial check. E1 pure alert policy and in-memory ledger, scoped foreground offer, confirmed-read suppression, duplicate id, exact attempt settlement, known-no-effect fallback, uncertain review, tag and permission, synthetic lab. NOTIFICATION-API-01–06, SOURCE-GATE, KB-LOCK. Read WHATWG, Element, Workbox, Adobe and Astryx. Syntax compiled. No real send, worker, permission request, provider, backend, production or keyboard/Main changes. Durable atomic cross-tab claim, timeout/reconciliation, native user-visible requirements and actual delivery proof pending. No manual deploy.

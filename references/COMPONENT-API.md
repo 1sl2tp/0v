@@ -119,3 +119,6 @@ create({messages,actorId,conversationId,head,initialReceipt}) → sample(context
 
 ## v13.63 PresenceController
 create({actorId,ttlMs=45000}) → register({actorId,sessionId,generation},now), heartbeat({actorId,sessionId,generation,sequence,context},now), leave(...), status(now), candidates(room,now), dispose(). project(context) minimizes RuntimeContext data. Server-time fixture lease, stale generation and sequence rejected; expiry unknown vs explicit disconnect. Candidate is not read/suppression proof. ?presencelab=1 synthetic registry only; actual authorization, rate/heartbeat/transport and multi-device integration pending.
+
+## v13.64 NotificationController
+plan({actorId,installationId,message,origin,read,presence,sessionIds,permission,enabled,muted,allowForeground}) chooses none/thread/in-app/push/unavailable. create({actorId,installationId}) → offer(input), settle({id,attempt,surface,sessionId,generation,kind,proof}), get/status/dispose. In-memory intent dedupe; foreground offer not delivery evidence, known no-effect fallback, uncertain review, stable tag. No actual notification, durable ledger, auth or worker. ?notificationlab=1 synthetic only.
