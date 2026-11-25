@@ -6,37 +6,41 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const browser=await chromium.launch({headless:true});
  try{
 
- // Input-owned menu follows its parent without keyboard state or reserve changes.
+ // Direct real file picker: normal UI, no diagnostic overlay and no intermediate menu.
  for(const [focused,touch] of [[false,false],[true,false],[false,true],[true,true]]){
  const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:touch});
  const activate=locator=>touch?locator.tap():locator.click();
- await p.goto(url);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
- const plus=p.locator('#mediaBtn'),menu=p.locator('#inputAttachmentMenu'),file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
- if(focused){await draft.fill('Bản nháp giữ nguyên');await draft.focus();await p.setViewportSize({width:390,height:360});await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true')}
- await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard!==undefined);
- const geometry=()=>menu.evaluate(e=>{const m=e.getBoundingClientRect(),c=e.parentElement.getBoundingClientRect(),f=c=>c.getBoundingClientRect(),frame=f(e.closest('.composer-frame'));return {parent:e.parentElement.id,gap:c.top-m.bottom,left:m.left-c.left,frame:frame.height,bottom:frame.bottom,top:m.top,opacity:getComputedStyle(e).opacity}});
- const base=await p.locator('.composer-frame').evaluate(e=>e.getBoundingClientRect().height);
- await activate(plus);await menu.waitFor({state:'visible'});assert.deepEqual(await menu.locator('[data-attachment-action]').evaluateAll(rows=>rows.map(r=>r.querySelector('input').getAttribute('aria-label'))),['Thư viện ảnh','Chụp ảnh','Chọn tệp']);assert.equal(await menu.locator('input[type=file]').count(),3);const g=await geometry();assert(g.parent==='composer'&&Math.abs(g.gap-8)<=2&&Math.abs(g.left)<=2&&Math.abs(g.frame-base)<=1,JSON.stringify(g));assert.equal(await draft.evaluate(e=>document.activeElement===e),focused);
- if(focused){
- // A moving open keyboard keeps the local menu anchored. A closed keyboard dismisses it.
- await p.setViewportSize({width:390,height:400});
- await p.waitForFunction(old=>{const m=document.querySelector('#inputAttachmentMenu'),r=m.getBoundingClientRect(),c=document.querySelector('#composer').getBoundingClientRect();return document.querySelector('#app').dataset.keyboard==='true'&&!m.hidden&&r.top>old+20&&Math.abs(c.top-r.bottom-8)<=2},g.top);
+ await p.goto(url);assert.equal(await p.locator('#apiProofPanel').count(),0);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
+ const file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
+ assert.equal(await p.locator('#composerAccessory,[data-composer-accessory],#inputAttachmentMenu,[data-input-attachment-menu],[data-camera-picker],[data-file-picker],[data-attachment-action]').count(),0);assert.equal(await form.locator('input[type=file]').count(),1);
+ assert.equal(await p.locator('#mediaBtn').getAttribute('aria-controls'),null);assert.equal(await file.getAttribute('capture'),null);assert.equal(await file.getAttribute('accept'),'image/*');
+ if(focused){await draft.fill('Bản nháp giữ nguyên');await draft.focus();await p.setViewportSize({width:390,height:360})}
+ await p.waitForFunction(()=>{const f=document.querySelector('.composer-frame');return Math.abs(parseFloat(getComputedStyle(document.querySelector('#app')).getPropertyValue('--composer-reserve'))-f.getBoundingClientRect().height)<=1});
+ const geometry=()=>file.evaluate(e=>{const r=e.getBoundingClientRect(),b=document.querySelector('#mediaBtn').getBoundingClientRect(),f=e.closest('.composer-frame').getBoundingClientRect();return {w:r.width,h:r.height,dx:Math.abs(r.left-b.left),dy:Math.abs(r.top-b.top),hit:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e,frame:f.height,bottom:f.bottom}});
+ const before=await geometry();assert(before.w===44&&before.h===44&&before.dx<=1&&before.dy<=1&&before.hit,JSON.stringify(before));
+ const [chooser]=await Promise.all([p.waitForEvent('filechooser'),activate(file)]);assert(chooser.isMultiple());assert.equal(await form.getAttribute('data-native-picker'),'true');
+ const during=await geometry();assert(Math.abs(before.frame-during.frame)<=1&&Math.abs(before.bottom-during.bottom)<=1,JSON.stringify({before,during}));assert.equal(await p.locator('#composerAccessory,#inputAttachmentMenu,[data-input-attachment-menu]').count(),0);
+ if(!focused)assert.equal(await draft.evaluate(e=>document.activeElement===e),false);
+ await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),focused?'Bản nháp giữ nguyên':'');
+ const [selected]=await Promise.all([p.waitForEvent('filechooser'),activate(file)]);const png=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=16;c.height=16;return c.toDataURL('image/png').split(',')[1]});await selected.setFiles({name:'handoff.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});await p.waitForFunction(()=>document.querySelector('[data-draft-media] .draft-media-item'));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),focused?'Bản nháp giữ nguyên':'');
+ await p.close();
+ }
+
+ // Read-only anchor diagnostic: a changing viewport must move the real + and native input together.
+ {const p=await browser.newPage({viewport:{width:390,height:844}});
+ await p.goto(url+'?pickerprobe=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
+ const file=p.locator('[data-draft-media-picker]'),draft=p.locator('#draft'),form=p.locator('#composer');
+ await p.waitForFunction(()=>window.pickerAnchorProof.read().visibleAnchor);
+ const first=await p.evaluate(()=>window.pickerAnchorProof.read());assert(Math.abs(first.deltaX)<=1&&Math.abs(first.deltaY)<=1);
+ await draft.fill('Neo bản nháp');await draft.focus();await p.setViewportSize({width:390,height:360});
+ await p.waitForFunction(()=>{const s=window.pickerAnchorProof.read();return s.visibleAnchor&&Math.abs(s.bottomGap)<=1});
+ const short=await p.evaluate(()=>window.pickerAnchorProof.read());assert(Math.abs(short.deltaY)<=1&&short.anchor.y<first.anchor.y-100);
+ const [chooser]=await Promise.all([p.waitForEvent('filechooser'),file.click()]);
+ const act=await p.evaluate(()=>window.pickerAnchorProof.activation());assert(act&&act.picker&&act.visibleAnchor&&Math.abs(act.deltaY)<=1);
  await p.setViewportSize({width:390,height:844});
- await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='false');
- await menu.waitFor({state:'hidden'});assert.equal(await plus.getAttribute('aria-expanded'),'false');assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');
- // Reopen in the keyboard-open state for the real chooser tests, not while closing.
- await draft.focus();await p.setViewportSize({width:390,height:400});await p.waitForFunction(()=>document.querySelector('#app').dataset.keyboard==='true');
- await activate(plus);await menu.waitFor({state:'visible'});assert.equal(await draft.evaluate(e=>document.activeElement===e),true);
- }
- const before=await geometry();const hit=await file.evaluate(e=>{const r=e.getBoundingClientRect(),t=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {w:r.width,h:r.height,hit:t===e,target:t?.tagName,cls:t?.className}});assert(hit.w>100&&hit.h>=44&&hit.hit,JSON.stringify({focused,hit,before,keyboard:await p.locator('#app').getAttribute('data-keyboard')}));
- const trace=[];await p.exposeFunction('attachmentTestEvent',s=>trace.push(s));await p.evaluate(()=>{for(const type of ['pointerdown','pointerup','pointercancel','mousedown','click','focusout'])document.addEventListener(type,e=>{if(e.target.closest?.('#composer'))window.attachmentTestEvent({type,target:e.target.tagName,action:e.target.closest('[data-attachment-action]')?.dataset.attachmentAction,prevented:e.defaultPrevented,session:document.querySelector('#composer').dataset.nativePicker,menu:document.querySelector('#inputAttachmentMenu').dataset.handoff})})});
- let chooser;try{[chooser]=await Promise.all([p.waitForEvent('filechooser'),activate(file)])}catch(e){console.log('Attachment activation failure',JSON.stringify({focused,hit,trace}));throw e};assert(chooser.isMultiple());assert.equal(await form.getAttribute('data-native-picker'),'true');await p.waitForFunction(()=>getComputedStyle(document.querySelector('#inputAttachmentMenu')).opacity==='0');const during=await geometry();assert.equal(during.opacity,'0');assert(Math.abs(during.frame-before.frame)<=1);assert.equal(await plus.getAttribute('aria-expanded'),'false');
- await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));await menu.waitFor({state:'hidden'});assert.equal(await form.getAttribute('data-native-picker'),null);
- await activate(plus);await menu.waitFor({state:'visible'});const [selected]=await Promise.all([p.waitForEvent('filechooser'),activate(file)]);const png=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=16;c.height=16;return c.toDataURL('image/png').split(',')[1]});await selected.setFiles({name:'handoff.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});await p.waitForFunction(()=>document.querySelector('[data-draft-media] .draft-media-item'));await menu.waitFor({state:'hidden'});assert.equal(await draft.inputValue(),focused?'Bản nháp giữ nguyên':'');
- await activate(plus);await menu.waitFor({state:'visible'});const camera=p.locator('[data-camera-picker]');assert.equal(await camera.getAttribute('capture'),'environment');const [cam]=await Promise.all([p.waitForEvent('filechooser'),activate(camera)]);assert(!cam.isMultiple());await p.waitForFunction(()=>getComputedStyle(document.querySelector('#inputAttachmentMenu')).opacity==='0');assert.equal((await geometry()).opacity,'0');await cam.setFiles([]);await camera.evaluate(e=>e.dispatchEvent(new Event('cancel')));await menu.waitFor({state:'hidden'});
- await activate(plus);await menu.waitFor({state:'visible'});const files=p.locator('[data-file-picker]');assert.equal(await files.getAttribute('accept'),null);const [docChooser]=await Promise.all([p.waitForEvent('filechooser'),activate(files)]);assert(docChooser.isMultiple());await p.waitForFunction(()=>getComputedStyle(document.querySelector('#inputAttachmentMenu')).opacity==='0');assert.equal((await geometry()).opacity,'0');await docChooser.setFiles({name:'local.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});await p.waitForFunction(()=>document.querySelectorAll('[data-draft-media] .draft-media-item').length===2);await menu.waitFor({state:'hidden'});
- await activate(plus);await menu.waitFor({state:'visible'});await p.keyboard.press('Escape');await menu.waitFor({state:'hidden'});await p.close();
- }
+ await p.waitForFunction(()=>{const s=window.pickerAnchorProof.read();return s.visibleAnchor&&Math.abs(s.bottomGap)<=1&&s.activationDriftY>100});
+ const after=await p.evaluate(()=>window.pickerAnchorProof.read());assert(Math.abs(after.deltaX)<=1&&Math.abs(after.deltaY)<=1);assert.equal(await p.locator('#pickerAnchorProbe').evaluate(e=>getComputedStyle(e).pointerEvents),'none');
+ await chooser.setFiles([]);await file.evaluate(e=>e.dispatchEvent(new Event('cancel')));assert.equal(await form.getAttribute('data-native-picker'),null);assert.equal(await draft.inputValue(),'Neo bản nháp');await p.close();}
 
  for(const width of [320,390,768]){
   const p=await browser.newPage({viewport:{width,height:844}});
