@@ -260,3 +260,6 @@ BillOCRFieldAPI.literalDiagnostics(field,raw,profile,{valid}) returns immutable 
 
 ## v13.109 BANK-MEMO-CODE
 BankReconcileAPI.memoPresentation(a,b) -> immutable kind, billCodes, bankCodes, codeEqual, codeReview, reviewOnly. memoDetails.presentation applies after known wrapper/reference processing; reviewEvidence.memoPresentation exposes diagnostic. Unequal numeric-bearing tokens for otherwise matching memo adds memo-code-review; strong reference boundary rejects joined compound tokens. Existing review queue and posting guards retained; no production adapter.
+
+## v13.110 BANK-MEMO-SPAN
+BankMemoEnvelopeAPI.diagnoseLiteral adds alignment {state,segments:[{type,bill,bank}],reviewOnly}. Unique normalized compact match/containment/gap/letter spans only; ambiguous positions return no segments. BankReconcileAPI.reviewEvidence.memoDiagnostic and BankReviewQueueAPI.relatedCandidates.memoDiagnostic expose per-candidate diagnostics. Residual suggestions tightened for code conflicts and ambiguous alignment; no new posting eligibility.
