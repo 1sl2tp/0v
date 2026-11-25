@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.129)
+## 00. Chỉ mục rule đang có hiệu lực (v13.130)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1118,3 +1118,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BILL-RECIPIENT-PAIR-03: Explicit recipient name/account and contradictions take precedence. Adjacent pair is review evidence only; no mutation of parsed fields or bank verification, no posting or retroactive processing.
 - BILL-RECIPIENT-PAIR-04: Expose original line numbers and pair evidence class; preserve original OCR. Synthetic configuration only. No changes to bank, ledger or production.
 - BILL-RECIPIENT-PAIR-05: Regression for both orders, suffix, accents, wrong name, sender/memo, nonadjacent lines, explicit conflict, no context, and no posting. CI and real-image accuracy separate.
+
+## 155. BILL-UNLABELLED — v13.130
+- BILL-UNLABELLED-01: Only unclassified original OCR lines are evaluated for suggestions. Currency marker, strict calendar/clock shapes, fixed account and explicit reference prefix are candidate evidence; no arbitrary numeric or free-text memo inference.
+- BILL-UNLABELLED-02: Exclude labelled/ignored fields and adjacent sender/balance/fee/memo/reference boundaries; do not guess phone clock or missing transaction clock. Preserve original line, raw value and candidate reason.
+- BILL-UNLABELLED-03: Multiple same-field proposals or existing labelled field are marked ambiguous. Suggestions never change record, verify funds, post or replace existing field review. Date words already handled by parent parser.
+- BILL-UNLABELLED-04: No new dependencies, no production or bank matching changes. Synthetic fixed account only; no real identifiers or customer data.
+- BILL-UNLABELLED-05: Static and browser regression for money/date/time/account/reference suggestions, ambiguity, exclusion and unchanged parsed records; actual OCR accuracy not certified.
