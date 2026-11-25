@@ -266,3 +266,6 @@ BankMemoEnvelopeAPI.diagnoseLiteral adds alignment {state,segments:[{type,bill,b
 
 ## v13.111 BANK-PAYER
 BillOCRFieldAPI record now eleven fields (senderName explicit, name remains recipient); fromStored adapts sender_name. BankReconcileAPI.payerRoles(bill,bank) returns immutable role evidence and possible-third-party/same-name-unverified; canAssignCustomer=false, canPost=false. Sender mismatch and customer-scoped allocation review add reasons. BankRecheckController carries senderName/customerId/customerName, locks customer context across OCR revisions. No actual customer allocation adapter.
+
+## v13.112 BANK-ALLOC
+BankJournalAPI.planAllocations({journal,obligations,plans}) replays fixture journal, validates unique linked bank receipts, explicit order/customer/revision, exact amounts and cumulative outstanding. Returns immutable plans, obligations with remaining amounts, received/allocated/unallocated, receiptCount/bankRecordCount, canPost=false. No persistence or real allocation. ?bankallocationlab=1 fixture input UI.
