@@ -328,3 +328,6 @@ BillRecognitionAPI: fixed receiver account/name, adjacent unlabelled pair, wrapp
 
 ## v13.135 — native pixel stress and independent typed evidence
 See [BILL-OCR-PIXEL-STRESS.md](BILL-OCR-PIXEL-STRESS.md). BillOCREngineAPI.combineTypedEvidence preserves baseline raw evidence; typed mismatch invalidates proposal, unavailable typed result downgrades agreement; no automatic override. Native test 31/35 known crops; customer and browser OCR pending.
+
+## v13.136 — blur rescue
+BillOCREngineAPI.sharpenPixels/rescueImage/rescueNeeded/attachRescue add bounded optional extra typed read without changing state or proposal. Exact value region only. Native benchmark and browser kernel are distinct; browser actual OCR accuracy pending. See [BILL-OCR-BLUR-RESCUE.md](BILL-OCR-BLUR-RESCUE.md).

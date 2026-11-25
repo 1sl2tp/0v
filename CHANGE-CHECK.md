@@ -300,3 +300,6 @@ E0: v13.132 API and DB passed, merged; v13.133 synced to main for CI. E1: no bus
 
 ## v13.135
 E0: v13.134 merged; API 45562802559 and DB 45562802642 passed. E1: actual synthetic native Tesseract pixel test: 31/35 known crops exact; low-resolution full OCR misread amount, severe blur caused empty/invalid fields. Guard typed disagreement/unavailable output, retain evidence and no post. E2: direct guard contract tested; permanent static regression added; CI pending. Native not browser OCR, no real customer images, no production changes. E3–E5 pending.
+
+## v13.136
+E0: v13.135 merged, API 45564486573 and DB 45564486312 passed. E1: native 84 reads; severe blur 3/7 original, 4/7 combined. Bounded browser rescue kernel differs from native benchmark; only review, one extra exact value crop attempt. E2: direct kernel/gating test and static regression; full CI pending. E3–E5 not certified. No private images, production, keyboard or ledger changes.
