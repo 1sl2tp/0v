@@ -90,3 +90,6 @@ CHAT supabase/functions/v21-bank-bill-event/bill-app-preview.mjs: bank-side QR/I
 
 ## v13.91
 CHAT bill-amount-rules.mjs account cleaning reviewed; stricter horizontal-space-only removal adopted. No customer constants copied.
+
+## v13.92
+CHAT bill-transfer-identity.mjs BANK-214: equal amounts do not establish identity; separate reliable references and competing credit guards. 0v adds conservative explicit shared-reference namespace gating and exclusion audit. No customer constants copied.
