@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.88)
+## 00. Chỉ mục rule đang có hiệu lực (v13.89)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -817,3 +817,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-FORMAT-03: Numeric transaction reference with one leading # may drop the marker for comparison; retain raw evidence; never copy it to trace. No broad punctuation cleanup.
 - BANK-FORMAT-04: Read-only private CHAT structured metadata informed formats, no private values in public repo. No financial authorization or old record rewrite.
 - BANK-FORMAT-05: Test grouped/leading-zero accounts, abbreviation variants, invalid calendar, missing year, masked account, raw reference and canonical equivalence. Preserve keyboard v13.27.
+
+## 112. BANK-EVIDENCE — v13.89
+- BANK-EVIDENCE-01: Explicit masked recipient account may expose a five-digit suffix and optional visible prefix; preserve raw evidence, never reconstruct full STK. Contradicting masks or full account conflict fail closed. Missing/partial account is not full proof.
+- BANK-EVIDENCE-02: Reconcile only verified credit to configured full bank account and exact amount. Explicit partial evidence is separate, mismatched prefix/suffix blocks matching; compatible partial evidence remains review, never automatic receipt or automatic manual link.
+- BANK-EVIDENCE-03: Memo equality or containment must use complete normalized tokens, not arbitrary substring; generic transfer text alone is insufficient. No fuzzy OCR correction. Existing amount/clock, reference/name conflict, duplicate and competing credit gates retained.
+- BANK-EVIDENCE-04: Candidate exposes account, memo, reference and time proof independently; date-only same day remains review, late arrival flag compares transaction date to receipt day, no fabricated time. Recheck events preserve partial fields. No production write or old bill repair.
+- BANK-EVIDENCE-05: Tests cover masked/contradicting account, partial candidate, missing clock, late bank, wrong suffix, substring collision, generic memo and full proof regression. Consult CHAT bill-app-preview and bill-transfer-identity; do not copy customer-specific constants. Preserve keyboard v13.27.
