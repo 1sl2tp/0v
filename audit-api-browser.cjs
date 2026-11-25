@@ -66,6 +66,23 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pp.evaluate(()=>window.crmPerf.reset());assert.equal(await pp.evaluate(()=>Object.values(window.crmPerf.report().actions).reduce((n,s)=>n+s.count,0)),0);
  await pp.evaluate(()=>window.crmPerf.dispose());await pp.locator('[data-filter="Tất cả"]').evaluate(e=>e.click());await pp.waitForTimeout(100);assert.equal(await pp.evaluate(()=>window.crmPerf.report().actions.filter.count),0);assert(await pp.evaluate(()=>window.crmPerf.report().disposed));await pp.close()
  }
+ // Main owner migration: initial, outgoing and incoming text share Message factory.
+ {
+ const mp=await browser.newPage({viewport:{width:390,height:844}});await mp.goto(url+'?apicheck=1');
+ await mp.locator('.contact[data-id=nv]').evaluate(e=>e.click());
+ const profile=el=>({layout:el.dataset.layoutProfile,bubble:el.querySelector('.bubble')?.dataset.typeRole,meta:el.querySelector('.meta')?.dataset.typeRole});
+ const initial=await mp.locator('#messages .message').first().evaluate(profile);
+ assert.equal(initial.layout,'message');assert.equal(initial.bubble,'chat');assert.equal(initial.meta,'caption');
+ await mp.locator('#draft').fill('Tin mẫu kiểm thử cha');await mp.locator('#composer').evaluate(e=>e.requestSubmit());
+ const sent=mp.locator('#messages .message.mine').filter({hasText:'Tin mẫu kiểm thử cha'});assert.deepEqual(await sent.evaluate(profile),initial);
+ await mp.evaluate(()=>window.receiveDemo('nv','Tin đến kiểm thử cha'));
+ const received=mp.locator('#messages .message').filter({hasText:'Tin đến kiểm thử cha'});assert.deepEqual(await received.evaluate(profile),initial);
+ await mp.evaluate(()=>window.receiveDemo('ncc','Tin chưa đọc thứ nhất'));
+ const badge=await mp.locator('.contact[data-id=ncc] .unread-count').elementHandle();assert.equal(await badge.textContent(),'1');
+ await mp.evaluate(()=>window.receiveDemo('ncc','Tin chưa đọc thứ hai'));assert.equal(await badge.textContent(),'2');assert(await badge.evaluate(e=>e.isConnected&&e===document.querySelector('.contact[data-id=ncc] .unread-count')));
+ await mp.locator('[data-go=contacts]').first().evaluate(e=>e.click());await mp.locator('.contact[data-id=ncc]').evaluate(e=>e.click());
+ assert.equal(await mp.locator('.contact[data-id=ncc] .unread-count').count(),0);assert((await mp.evaluate(()=>window.ownerAudit().parents)).includes('Contact'));await badge.dispose();await mp.close()
+ }
  // Layout and Typography lab coverage is separate from the normal UI.
  const page=await browser.newPage({viewport:{width:390,height:844}});await page.goto(url+'?geolab=1');
  await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());
