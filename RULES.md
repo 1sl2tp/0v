@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.180)
+## 00. Chỉ mục rule đang có hiệu lực (v13.181)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1421,5 +1421,19 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 
 ## CONTENT-FLOW — v13.180 (bước 1 trình bày hội thoại)
 - CONTENT-FLOW-01: Giữ mốc ngày và giờ VN, thời gian là metadata nhỏ căn cuối dòng; không làm tiêu đề thời gian cho từng tin. Message.flow chỉ nối hai tin văn bản liền kề cùng A/B, cùng ngày, cùng HH:mm hợp lệ. Giờ trùng chỉ hiện một lần cuối nhóm; giờ từng tin vẫn giữ trong DOM và aria-label. Khác phút/ngày/bên, media, bill, placeholder, mẫu không rõ giờ, hoặc thẻ nghiệp vụ thì ngắt nhóm. Không gộp ID hay thay thứ tự, không sửa thời gian giao dịch bill. Dùng token hiện có, không đổi keyboard/input/scroll owner. Không phân tích ý định hoặc tự tạo đơn ở bước 1.
+
+## LIVE-BILL-05 — v13.181
+- Status duplicate/review/received/amount_read không đủ để phân loại ảnh. BillReceiptProjection.read chỉ dùng trường receiving_account đã được chiếu đúng asset/message, ParseAPI.billRecipientEvidence nhận 9999–999999 (4–6 chữ số 9, khoảng trắng ngang cho phép), 13 chữ số có đuôi 4–6 số 9, hoặc mask có đuôi hợp lệ. Không tìm chuỗi trong memo, tên, ảnh hàng, số bất kỳ hay ghép qua dòng. Cần thêm ít nhất số tiền dương hoặc ngày/giờ có định dạng hợp lệ. Thiếu evidence thì ảnh thường, không nhãn bill trùng, không đổi receipt/ledger. Đây là gate hiển thị, không chứng minh tiền về hay danh tính người nhận; đối soát backend vẫn cần sửa riêng. Không sửa KB-LOCK.
+
+- LIVE-BILL-05 clarification: Ảnh hàng hóa không phải bill; hiển thị ảnh thường, không dựng bảng rỗng. Với bill đã có bằng chứng, trường null/trống trong projection hiện “Không có” (không có dữ liệu trả về; chưa kết luận trường đó có được in trên ảnh gốc hay không). Không gọi thiếu dữ liệu là lỗi OCR; chỉ dùng nhãn lỗi đọc khi có chứng cứ OCR riêng. Không thay trạng thái sổ.
+
+- LIVE-BILL-06: Receiver is fixed 2901181999999; exact full account only; 4–6 nines or compatible masked suffix is recognition hint, not confirmation. Never accept another full account simply ending in nines. Normalize printed recipient BUI XUAN TUNG (diacritics/case/spacing and known transfer prefix); other name is conflict, show review and retain raw evidence, do not silently substitute expected name or alter ledger. Date and time independent; valid printed date remains displayed with time missing, never use chat time. Missing projection does not establish absence on image; backend date-only evidence repair tracked separately.
+
+- LIVE-BILL-07 / BILL-MEMO-REGION: nội dung chuyển khoản là vùng chữ nhiều dòng. BillOCRFieldAPI giữ toàn bộ dòng liền kề trong vùng nhãn memo, dừng ở nhãn khác, dòng trống hoặc dấu hiệu trường riêng; vùng bare chỉ khi người đọc chọn rõ memo. Không ghép STK/ngày/giờ/tiền từ dòng memo. Evidence endLine; hình học nhiều dòng dùng bao vùng, không giả valueRect một dòng; review-only. Bill pair hiển thị newline bằng pre-wrap, không đổi matcher/ledger. Backend phải trả đủ memo; dữ liệu thiếu không tự bịa.
+
+- LIVE-BILL-08: Một bộ nhãn STK nhận/gửi do BillOCRFieldAPI.identify sở hữu; các nhãn thụ hưởng và gửi vào STK đều cùng role nhận, các nhãn nguồn/người gửi/chuyển bị loại. Không xem số 9 ở ngay sau vùng người gửi/loại trừ là STK nhận. Chỉ tên/nội dung không đủ ngữ cảnh bill; cần số tiền, ngày, giờ hoặc tiêu đề giao dịch. Nhật ký không nhãn chỉ dùng cặp đề xuất số tiền có đơn vị và ngày hợp lệ độc lập, không mâu thuẫn; số đuôi STK vẫn cần xác minh. Không dùng số tiền, nội dung hay tài khoản gửi làm bằng chứng nhận. Live gate kiểm tra ngày lịch thực, tiền dương; không thay đổi nghiệp vụ ghi thu, không tự bổ sung số 9/giờ/tên bị thiếu.
+
+- LIVE-BILL-09: STK OCR 12 chữ số đúng tiền tố tài khoản cấu hình 13 số, thiếu đúng một số 9 cuối và còn 4–6 số 9 liền nhau, là ứng viên cần xác minh, không tự điền số thiếu. Tài khoản đầy đủ khác hoặc tiền tố sai không được coi là hợp lệ. Bảng bill giữ giá trị OCR, hiển thị cần xác minh STK; chỉ ghi chú có ghi thu nếu ledger đã tồn tại. Không đổi matcher/ledger.
+- LIVE-AVATAR-01: Danh bạ và header hội thoại nhận avatar_path từ directory API, dùng Avatar.publicSource và Avatar.create/update hiện có, chỉ đường dẫn đối tượng tương đối an toàn trong bucket v21-avatars đã có; không tải URL tùy ý, không suy diễn từ tên. Khi không có hoặc tải lỗi giữ chữ viết tắt. Không sửa keyboard/geometry. Backend projection phải được nghiệm thu riêng.
 
 - LIVE-DATA-PROJECTION-01: directory API returns bounded existing avatar_path only for already-authorized directory rows; reject unsafe path; no new grant. Bill date projection may use independent printed date and matching canonical calendar date when timestamp is null; reject conflict/invalid and never infer clock. Existing AAL2 receipt scope, joins, status and ledger untouched. Backend-only review; no production deployment from this PR.

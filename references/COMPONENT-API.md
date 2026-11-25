@@ -502,4 +502,17 @@ Message.create sets data-content-party A/B from existing mine flag. ContentAPI.l
 ## v13.180 CONTENT-FLOW
 Message.flow(previous,row) is presentation-only, marks adjacent text rows with same known party/day/HH:mm. The prior row keeps metadata in DOM and aria-label but CSS visually hides its duplicate time. New minute, party, date, media, unknown, or card stops grouping. Live and fixture initial/append use same parent. No data mutation, business inference or keyboard changes.
 
+## v13.181 LIVE-BILL-05
+ParseAPI.billRecipientEvidence(raw) -> suffix|full|masked|null, literal receiver field with four to six nines; no arbitrary substring or cross-line assembly. BillReceiptProjection.read requires this and transaction evidence (positive amount or date/time shaped value), otherwise null -> standard media. Existing receipt/ledger state remains unchanged; no backend authority.
+
+Missing projected receipt fields display “Không có”, not “Chưa đọc được”; ordinary images have no bill table. No assertion about physical original without evidence.
+
+LIVE-BILL-06: exact full receiver; matching suffix/mask are recognition hints only. Name mismatch -> review, raw OCR preserved; missing name not fabricated. Date independent of clock. No ledger mutation.
+
+LIVE-BILL-07: BillOCRFieldAPI.parse memo evidence may include endLine; readScoped accepts bounded multi-line memo in explicit region. Geometry spans label and value lines with no misleading single-line valueRect. Live BillReceiptProjection preserves returned line breaks in shared bill pair CSS. No mutation.
+
+LIVE-BILL-08: BillOCRFieldAPI.identify(line) exposes existing typed label routing; BillRecognitionAPI consumes it rather than maintaining a separate recipient label regex. Journal unlabelled amount + date proposals are review-only contextual evidence. No server OCR, posting or image-corpus claims.
+
+LIVE-BILL-09: ParseAPI.billRecipientEvidence returns truncated-tail for exact 12-digit target prefix ending in 4–6 nines. BillRecognitionAPI recognizes this as review-only; projection retains OCR digits and existing ledger evidence. LIVE-AVATAR-01: Avatar.publicSource(path,origin) constructs only existing public bucket object URLs, validated path; Contact and live header consume the shared owner and ChatReadAPI avatarPath. Backend directory projection required.
+
 LIVE-DATA-PROJECTION-01: directory contact adds nullable avatar_path; existing private media projection can return date_vn with no transaction timestamp only when printed numeric date matches a valid normalized calendar date. No change to scope, clock, ledger or financial mutation.
