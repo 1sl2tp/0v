@@ -2098,25 +2098,63 @@ function mountLiveChat(root){
  }
  async function loadDirectory(){if(!reader)return;const owner=scope;count.textContent='Đang đọc danh bạ…';try{const result=await reader.directory();if(scope!==owner)return;rows=result;renderDirectory();count.textContent=rows.length+' liên hệ · Dữ liệu thật';if(selected&&!rows.some(r=>r.id===selected)){selected=null;active=null;clearMedia();thread.replaceChildren();title.textContent='Chọn hội thoại';composer.hidden=true}}catch(error){if(scope===owner){count.textContent='Không đọc được danh bạ. Bấm làm mới.';if(restoring)throw error}}}
  function renderDirectory(){const key=Collection.searchKey||Input.searchKey,q=key(search.value.trim()),top=list.scrollTop;list.replaceChildren();let n=0;for(const row of rows){if((q&&!key(row.name).includes(q))||(filter!=='Tất cả'&&roleGroup(row.role)!==filter))continue;n++;const b=Contact.create({id:row.id,name:row.name,avatar:Avatar.initials(row.name),preview:row.preview,time:row.time,selected:row.id===selected});Contact.update(b,{unread:row.unread?1:0});b.addEventListener('click',()=>void openThread(row));list.append(b)}empty.textContent=n?'': 'Không tìm thấy danh bạ phù hợp.';list.append(empty);ScrollController.writeLocal(list,top)}
- async function openThread(row,restore=null){if(!reader)return;const owner=scope,n=++choice;clearMedia();if(selected&&selected!==row.id){saveView();drafts.set(selected,draft.value)}const same=selected===row.id&&root.dataset.screen==='chat';selected=row.id;active=row.id;draft.value=drafts.get(row.id)||'';composer.hidden=false;updateComposer();setSendStatus(DraftMedia.list(selected).length?'Ảnh đang ở bản nháp. API gửi ảnh chưa kết nối.':'');renderDirectory();title.textContent=row.name;Avatar.update($live('#currentAvatar'),{text:Avatar.initials(row.name),name:row.name});$live('#currentRole').textContent=roleGroup(row.role)||'Hội thoại';if(!same)navigateLive('chat',true);else navigationPending=true;thread.replaceChildren(text('caption','Đang đọc tin nhắn…','p'));try{const msgs=await reader.thread(row.id);if(scope!==owner||choice!==n)return;let assets=[],mediaKnown=!row.conversationId;if(row.conversationId){try{const data=await rpc('v0_admin_media',{p_conversation_id:row.conversationId});if(data?.account_id===owner.accountId&&Array.isArray(data.assets)){assets=data.assets;mediaKnown=true}}catch{}}if(scope!==owner||choice!==n)return;thread.replaceChildren();let day='';for(const msg of msgs){const date=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}).format(msg.date);if(day!==date){day=date;thread.append(View.text({role:'caption',name:'day',text:day}))}const parts=assets.filter(x=>x.message_id===msg.id);const fallback=parts.length?'':mediaKnown?'Nội dung trống hoặc tệp không còn khả dụng':'Chưa xác minh được tệp đính kèm';const node=Message.create({text:msg.text||fallback,time:msg.time,mine:msg.mine,day:date});node.dataset.liveMessageId=msg.id;node.dataset.liveContent=parts.length?(msg.text?'mixed':'media'):msg.text?'text':mediaKnown?'empty':'unknown';for(const asset of parts)node.insertBefore(mediaPart(asset,owner,n),node.lastElementChild);thread.append(node)}if(!msgs.length)thread.append(text('caption','Chưa có tin nhắn','p'));const saved=restore?{top:Number(restore.scroll)||0,pinned:!!restore.bottom}:scrolls[row.id];navigationPending=false;if(root.dataset.screen==='chat'){ScrollController.write(!saved||saved.pinned?thread.scrollHeight:saved.top,'navigation');resizeDraft();syncJump()}saveView()}catch(error){if(scope===owner&&choice===n){navigationPending=false;thread.replaceChildren(text('caption','Không đọc được hội thoại. Chọn lại danh bạ.','p'));if(restoring)throw error}}}
- function clearMedia(){mediaObserver?.disconnect();mediaObserver=null;for(const dialog of document.querySelectorAll('dialog[open]'))if(dialog.querySelector('[data-media-viewer-stage]'))dialog.close();for(const url of mediaUrls)URL.revokeObjectURL(url);mediaUrls.clear()}
+ async function openThread(row,restore=null){if(!reader)return;const owner=scope,n=++choice;clearMedia();if(selected&&selected!==row.id){saveView();drafts.set(selected,draft.value)}const same=selected===row.id&&root.dataset.screen==='chat';selected=row.id;active=row.id;draft.value=drafts.get(row.id)||'';composer.hidden=false;updateComposer();setSendStatus(DraftMedia.list(selected).length?'Ảnh đang ở bản nháp. API gửi ảnh chưa kết nối.':'');renderDirectory();title.textContent=row.name;Avatar.update($live('#currentAvatar'),{text:Avatar.initials(row.name),name:row.name});$live('#currentRole').textContent=roleGroup(row.role)||'Hội thoại';if(!same)navigateLive('chat',true);else navigationPending=true;thread.replaceChildren(text('caption','Đang đọc tin nhắn…','p'));try{const msgs=await reader.thread(row.id);if(scope!==owner||choice!==n)return;let assets=[],mediaKnown=!row.conversationId;if(row.conversationId){try{const data=await rpc('v0_admin_media',{p_conversation_id:row.conversationId});if(data?.account_id===owner.accountId&&Array.isArray(data.assets)){assets=data.assets;mediaKnown=true}}catch{}}if(scope!==owner||choice!==n)return;thread.replaceChildren();let day='';for(const msg of msgs){const date=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}).format(msg.date);if(day!==date){day=date;thread.append(View.text({role:'caption',name:'day',text:day}))}const parts=assets.filter(x=>x.message_id===msg.id);const fallback=parts.length?'':mediaKnown?'Nội dung trống hoặc tệp không còn khả dụng':'Chưa xác minh được tệp đính kèm';const node=Message.create({text:msg.text||fallback,time:msg.time,mine:msg.mine,day:date});node.dataset.liveMessageId=msg.id;node.dataset.liveContent=parts.length?(msg.text?'mixed':'media'):msg.text?'text':mediaKnown?'empty':'unknown';for(const part of liveMediaGroups(parts))node.insertBefore(part.images?mediaImageGroup(part.images,owner,n):mediaPart(part.asset,owner,n),node.lastElementChild);thread.append(node)}if(!msgs.length)thread.append(text('caption','Chưa có tin nhắn','p'));const saved=restore?{top:Number(restore.scroll)||0,pinned:!!restore.bottom}:scrolls[row.id];navigationPending=false;if(root.dataset.screen==='chat'){ScrollController.write(!saved||saved.pinned?thread.scrollHeight:saved.top,'navigation');resizeDraft();syncJump()}saveView()}catch(error){if(scope===owner&&choice===n){navigationPending=false;thread.replaceChildren(text('caption','Không đọc được hội thoại. Chọn lại danh bạ.','p'));if(restoring)throw error}}}
+ function clearMedia(){mediaObserver?.disconnect();mediaObserver=null;for(const v of thread.querySelectorAll('video[data-media-part=video]'))MediaController.releaseVideo(v);for(const a of thread.querySelectorAll('audio')){a.pause();a.removeAttribute('src');a.load()}for(const dialog of document.querySelectorAll('dialog[open]'))if(dialog.querySelector('[data-media-viewer-stage]'))dialog.close();for(const url of mediaUrls)URL.revokeObjectURL(url);mediaUrls.clear()}
+ function isLiveImage(asset){return asset?.kind==='image'&&/^image\/(jpeg|png|webp|gif|avif|heic|heif)$/.test(String(asset.mime_type||'').toLowerCase())}
+ function liveMediaGroups(parts){
+  const groups=[];let images=[];
+  const flush=()=>{if(images.length){groups.push({images});images=[]}};
+  for(const asset of parts){if(isLiveImage(asset)){images.push(asset);if(images.length===4)flush()}else{flush();groups.push({asset})}}flush();return groups
+ }
+ function observeLiveMedia(box,load){
+  if(!('IntersectionObserver' in window))return;
+  if(!mediaObserver)mediaObserver=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){mediaObserver?.unobserve(entry.target);entry.target.dispatchEvent(new Event('0v-load-media'))}},{root:thread,rootMargin:'120px'});
+  box.addEventListener('0v-load-media',()=>void load(),{once:true});mediaObserver.observe(box)
+ }
+ function mediaImageGroup(assets,owner,n){
+  const box=Layout.slot({name:'live-media',children:[]});box.dataset.liveImageGroup=String(assets.length);
+  const items=new Array(assets.length).fill(null);let busy=false;
+  const valid=()=>scope===owner&&choice===n&&box.isConnected;
+  const button=Button.create({kind:'outline',text:assets.length===1?'Tải ảnh':'Tải '+assets.length+' ảnh',onClick:()=>void load()});box.append(button);
+  async function load(){
+   if(busy||!valid())return;busy=true;button.disabled=true;button.textContent='Đang tải…';
+   try{
+    await Promise.all(assets.map(async(asset,i)=>{
+     if(items[i]||!valid()||typeof asset.storage_key!=='string'||!asset.storage_key)return;
+     let url=null;
+     try{
+      const {data,error}=await client.storage.from('v21-media').download(asset.storage_key);
+      if(error||!(data instanceof Blob)||!valid())return;
+      if(!/^image\/(jpeg|png|webp|gif|avif|heic|heif)$/i.test(data.type||asset.mime_type))return;
+      url=URL.createObjectURL(data);const img=new Image();img.src=url;await img.decode();
+      if(!valid()||!img.naturalWidth||!img.naturalHeight)return;
+      mediaUrls.add(url);items[i]={src:url,width:img.naturalWidth,height:img.naturalHeight,alt:assets.length===1?'Ảnh tin nhắn':'Ảnh tin nhắn '+(i+1)};url=null;
+     }catch{}finally{if(url)URL.revokeObjectURL(url)}
+    }));
+    if(!valid())return;
+    const pinned=nearBottom(),ready=items.filter(Boolean),missing=items.length-ready.length;
+    box.replaceChildren();if(ready.length)box.append(MediaController.gallery(ready));
+    if(missing){button.disabled=false;button.textContent='Chưa tải được '+missing+' ảnh · Thử lại';box.append(button)}
+    ScrollController.geometry(pinned)
+   }finally{busy=false}
+  }
+  observeLiveMedia(box,load);return box
+ }
  function mediaPart(asset,owner,n){
   const box=Layout.slot({name:'live-media',children:[]});
   const mime=String(asset.mime_type||'').toLowerCase(),name=String(asset.file_name||'Tệp đính kèm').slice(0,200),key=asset.storage_key;
-  const image=asset.kind==='image'&&/^image\/(jpeg|png|webp|gif|avif|heic|heif)$/.test(mime);
   const audio=asset.kind==='audio'&&/^audio\//.test(mime),video=asset.kind==='video'&&/^video\//.test(mime);
   let busy=false,loaded=false;
-  const button=Button.create({kind:'outline',text:image?'Tải ảnh':audio?'Tải ghi âm':video?'Tải video':name,onClick:()=>void load()});box.append(button);
+  const button=Button.create({kind:'outline',text:audio?'Tải ghi âm':video?'Tải video':name,onClick:()=>void load()});box.append(button);
   async function load(){if(busy||loaded||scope!==owner||choice!==n||typeof key!=='string'||!key)return;busy=true;button.disabled=true;button.textContent='Đang tải…';try{
    const {data,error}=await client.storage.from('v21-media').download(key);if(error||!(data instanceof Blob))throw Error('media_unavailable');
    if(scope!==owner||choice!==n||!box.isConnected)return;
    const url=URL.createObjectURL(data);mediaUrls.add(url);
-   if(image){const w=Number(asset.width_px)||360,h=Number(asset.height_px)||360;box.replaceChildren(MediaController.gallery([{src:url,width:w,height:h,alt:'Ảnh tin nhắn'}]))}
-   else if(audio||video){const el=document.createElement(audio?'audio':'video');el.controls=true;el.preload='metadata';el.playsInline=true;el.src=url;el.style.maxWidth='100%';box.replaceChildren(el)}
+   if(audio||video){const el=video?MediaController.video({src:url,label:name}):document.createElement('audio');el.controls=true;el.preload='metadata';el.playsInline=true;el.src=url;el.style.maxWidth='100%';box.replaceChildren(el)}
    else{const link=document.createElement('a');link.href=url;link.download=name;link.textContent='Lưu '+name;box.replaceChildren(link)}
    loaded=true;
   }catch{if(scope===owner&&choice===n){button.textContent='Không tải được · Thử lại';button.disabled=false}}finally{busy=false}}
-  if(image&&'IntersectionObserver' in window){if(!mediaObserver)mediaObserver=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){mediaObserver?.unobserve(entry.target);entry.target.dispatchEvent(new Event('0v-load-media'))}},{root:thread,rootMargin:'120px'});box.addEventListener('0v-load-media',()=>void load(),{once:true});mediaObserver.observe(box)}
+  
   return box;
  }
  async function sendText(){

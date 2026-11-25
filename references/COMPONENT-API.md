@@ -462,3 +462,6 @@ ScrollController, KeyboardController, InputController, resizeDraft, swipe and be
 
 ## Shared picker live/fixture
 Same native picker before split. Live callbacks authorize capture/decode by session, track room cleanup and status only. Existing DraftMedia and composer geometry unchanged; upload unavailable, native OS menu acceptance pending.
+
+## Live gallery adapter
+liveMediaGroups groups ordered consecutive images within one message, up to four. mediaImageGroup decodes private blobs, passes natural sizes to MediaController.gallery, keeps successful images on partial failure, retry missing. Existing viewer supplies navigation/zoom/rotation; non-images stay in source order. No backend media guarantee or upload.

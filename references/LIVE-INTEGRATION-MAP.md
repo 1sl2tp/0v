@@ -23,3 +23,5 @@ Prior PR #143 CI success, publish #678 blocked by file allowlist. This candidate
 Shared runtime initialized before data branch; live swipe/input/scroll use existing owners. E1 only; synthetic browser and native acceptance pending. Media upload, business, realtime and server MFA still pending.
 
 - v13.173 picker parity: shared native picker and DraftMedia lifecycle; live scoped decode and attachment send guard. E1, new CI and native device acceptance pending; no upload.
+
+- v13.173 gallery parity E1: ordered groups 1–4, decoded geometry, private blob lifecycle and existing viewer; real server and native acceptance pending. No upload or business changes.
