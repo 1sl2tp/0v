@@ -36,13 +36,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.evaluate(()=>document.querySelector('.contact[data-id=kh]').click());
  await p.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&document.querySelector('#messages').scrollHeight-document.querySelector('#messages').clientHeight>300);
  const state=()=>p.evaluate(()=>{const m=document.querySelector('#messages'),j=document.querySelector('#jumpBottom');return {top:m.scrollTop,gap:m.scrollHeight-m.clientHeight-m.scrollTop,hidden:j.hidden,count:j.dataset.count||null}});
- await p.waitForFunction(()=>!navigationPending&&nearBottom());
+ // App controller state is private; wait for observable geometry, not lexical variables.
+ await p.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight-m.scrollTop<2});
  const draft=p.locator('#draft');await draft.fill('Bản nháp không mất');
- await p.waitForFunction(()=>!navigationPending&&!draftFrame&&!viewportFrame&&!viewportScrollFrame);
- // Use the actual wheel path so the existing scroll owner cancels pending geometry anchoring.
- const messageViewport=p.locator('#messages');await messageViewport.hover();await p.mouse.wheel(0,-100000);
- await p.waitForFunction(()=>messages.scrollTop<=1&&messages.scrollHeight-messages.clientHeight-messages.scrollTop>300&&performance.now()>scrollingUntil&&!viewportScrollFrame&&!navigationPending);
- const before=await state();assert(before.gap>300,JSON.stringify(before));
+ await p.waitForTimeout(250);
+ // Use the actual wheel path at the viewport gutter, away from nested sample cards.
+ const messageViewport=p.locator('#messages'),box=await messageViewport.boundingBox();assert(box);
+ await p.mouse.move(box.x+5,box.y+box.height/2);await p.mouse.wheel(0,-100000);
+ await p.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollTop<=1&&m.scrollHeight-m.clientHeight-m.scrollTop>300});
+ await p.waitForTimeout(250);
+ const before=await state();assert(before.top<=1&&before.gap>300,JSON.stringify(before));
  await p.evaluate(()=>receiveDemo('kh','Tin mẫu khi đang đọc cũ '.repeat(15)));const away=await state();assert(Math.abs(away.top-before.top)<=1&&away.gap>48&&!away.hidden&&away.count==='1',JSON.stringify({before,away}));
  assert.equal(await draft.inputValue(),'Bản nháp không mất');await p.evaluate(()=>receiveDemo('ncc','Tin mẫu khách khác'));const other=await state();assert(Math.abs(other.top-away.top)<=1&&other.count===away.count);
  await p.locator('#jumpBottom').evaluate(e=>e.click());await p.waitForTimeout(250);const tail=await state();assert(tail.gap<2&&tail.hidden&&tail.count===null,JSON.stringify(tail));
