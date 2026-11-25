@@ -459,3 +459,7 @@ E0: PR #137 CI 45688788657 job 139468384563 fails locator timeout 'Khách đọc
 
 ## v13.168 — trực tiếp đọc CHAT trong 0v
 E1: thêm live mode mặc định trên Pages, đăng nhập admin tại chính 0v, dùng Supabase JS 2.57.4 như CHAT, kiểm tra role và device approval, đọc RPC hiện hữu; dùng lại ChatReadAPI, Contact, View, Layout, Input; không sửa CHAT/DB schema. Đối chiếu định nghĩa RPC live bằng SELECT pg_get_functiondef, tài liệu Supabase signInWithPassword và auth-session-store.js CHAT. Rule LIVE-READ-01; demo và keyboard giữ nguyên ngoài version. CI/Pages/thiết bị và login admin thật chưa xác nhận. Rollback về v13.167 hoặc mở ?demo=1.
+
+
+## v13.169 — admin 0v không cần duyệt thiết bị
+User xác nhận bỏ duyệt thiết bị riêng 0v, không sửa CHAT cũ. Đọc AGENTS/RULES, ChatReadAPI, SQL v21_private.open_session/require_active_account/can_access_conversation, platform_account_context, policies/auth.sessions và Supabase database function security docs. E1: private read-only RPC + public invoker, explicit grant authenticated, deny anon, account/session/member check, chỉ select; không phát sinh v21 app-session, không thông qua Push. UI reuse cùng Login, ChatReadAPI và parents, bỏ nút duyệt. Kiểm thử fixture đổi sang API session/directory/thread, không legacy RPC. CI, Pages, real admin pending; không claim đã nghiệm thu.
