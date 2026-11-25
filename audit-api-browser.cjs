@@ -31,6 +31,17 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert(await p.locator('#messages').innerText().then(t=>t.includes('Tin mẫu khi danh bạ đang mở')));
  await back.click();await room('nv').click();assert.equal(await draft.inputValue(),'');await back.click();await room('kh').click();assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');await p.close();}
  
+ // Incoming scroll policy: idle tail follows, reader away stays, jump clears, other room untouched.
+ {const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url);
+ await p.evaluate(()=>document.querySelector('.contact[data-id=kh]').click());
+ await p.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&document.querySelector('#messages').scrollHeight-document.querySelector('#messages').clientHeight>300);
+ const state=()=>p.evaluate(()=>{const m=document.querySelector('#messages'),j=document.querySelector('#jumpBottom');return {top:m.scrollTop,gap:m.scrollHeight-m.clientHeight-m.scrollTop,hidden:j.hidden,count:j.dataset.count||null}});
+ await p.evaluate(()=>{const m=document.querySelector('#messages');m.scrollTop=0});await p.waitForTimeout(250);const before=await state();assert(before.gap>300);
+ const draft=p.locator('#draft');await draft.fill('Bản nháp không mất');await p.evaluate(()=>receiveDemo('kh','Tin mẫu khi đang đọc cũ '.repeat(15)));const away=await state();assert(Math.abs(away.top-before.top)<=1&&away.gap>48&&!away.hidden&&away.count==='1',JSON.stringify({before,away}));
+ assert.equal(await draft.inputValue(),'Bản nháp không mất');await p.evaluate(()=>receiveDemo('ncc','Tin mẫu khách khác'));const other=await state();assert(Math.abs(other.top-away.top)<=1&&other.count===away.count);
+ await p.locator('#jumpBottom').evaluate(e=>e.click());await p.waitForTimeout(250);const tail=await state();assert(tail.gap<2&&tail.hidden&&tail.count===null,JSON.stringify(tail));
+ await p.evaluate(()=>receiveDemo('kh','Tin mẫu khi đang ở cuối '.repeat(20)));const after=await state();assert(after.gap<2&&after.hidden&&after.count===null,JSON.stringify(after));assert.equal(await draft.inputValue(),'Bản nháp không mất');await p.close();}
+ 
  // Direct real file picker: normal UI, no diagnostic overlay and no intermediate menu.
  for(const [focused,touch] of [[false,false],[true,false],[false,true],[true,true]]){
  const p=await browser.newPage({viewport:{width:390,height:844},hasTouch:touch});
