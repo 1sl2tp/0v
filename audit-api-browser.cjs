@@ -7,7 +7,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  try{
 
  {const p=await browser.newPage({viewport:{width:390,height:844}});
- await p.goto(url+'?apicheck=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
+ // Real interaction test uses the normal application, without the opt-in diagnostic overlay.
+ await p.goto(url);assert.equal(await p.locator('#apiProofPanel').count(),0);await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
  const plus=p.locator('#mediaBtn'),menu=p.locator('#composerAccessory'),draft=p.locator('#draft');
  const geom=()=>menu.evaluate(e=>{const m=e.getBoundingClientRect(),c=document.querySelector('#composer').getBoundingClientRect(),f=e.parentElement.getBoundingClientRect(),h=document.querySelector('.conversation>.panel-head').getBoundingClientRect();return {gap:c.top-m.bottom,left:m.left-c.left,top:m.top,head:h.bottom,frame:f.height,parent:e.parentElement.classList.contains('composer-frame'),position:getComputedStyle(e).position,reserve:parseFloat(getComputedStyle(document.querySelector('#app')).getPropertyValue('--composer-reserve'))}});
  const base=await p.locator('.composer-frame').evaluate(e=>e.getBoundingClientRect().height);

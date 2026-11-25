@@ -333,3 +333,6 @@ Run 45584025796 failed again waiting for filechooser; DB 45584025870 passed. Rep
 
 ### v13.143 CI repair 3
 Run 45585154404 failed at native input hit geometry assertion, before chooser; DB 45585154427 passed. Correct input interaction boundary and row hit stacking, add exact diagnostic output and scroll row into view before measuring; keep all assertions and chooser tests. Four protected ranges unchanged. CI/native pending.
+
+### v13.143 CI repair 4
+Run 45585524052 failed on hit target PRE. Native row/input rect exactly matched 230x44, offsets 0, pointer auto. Inspected apiProofPanel fixed z-index 10030 and pre report. Separate real interaction test from opt-in diagnostic UI by normal URL and assert panel absent. All geometry/chooser assertions retained; application and snapshot unchanged. DB 45585523949 success. New CI pending.

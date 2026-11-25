@@ -358,3 +358,5 @@ Candidate repair: preserve accessory pointer activation through blur; invoke nat
 Candidate repair 2: actual native file input overlays each visible action row; no showPicker or programmatic click, native default activation, handoff before focus loss, shared room-owned decode. Prior + anchor superseded by actual selected action. Browser and physical iPhone acceptance pending.
 
 Candidate repair 3: accessory declares input interaction boundary for the existing capture handler. Native file hit layer above non-interactive text/icon, min row 44px and constrained grid. Browser diagnostic logs actual rect and hit target; no changes to viewport code.
+
+Test isolation: real accessory interaction must use normal URL. Opt-in apiProofPanel is a deliberate interactive diagnostic overlay, not normal UI. Keep separate API diagnostic coverage and actual hit/chooser assertions; no force click.
