@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.91)
+## 00. Chỉ mục rule đang có hiệu lực (v13.92)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -838,3 +838,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-ACCOUNT-03: OCR, configured destination, bank account, duplicate reference, manual fixture and journal use same canonical comparison. Partial evidence remains review. Preserve raw OCR evidence.
 - BANK-ACCOUNT-04: Canonicalize account presentation in bank ID fingerprint; other conflicts unchanged. No production or historic receipt changes.
 - BANK-ACCOUNT-05: Regression covers grouped full/suffix, leading zeros, wrong digits, unsupported symbols, duplicate and journal. Reviewed CHAT bill-amount-rules.mjs; stricter than broad non-digit removal. Preserve keyboard v13.27.
+
+## 115. BANK-BATCH — v13.92
+- BANK-BATCH-01: Distinct explicit references may exclude a cross-pair only when both sources explicitly declare the same shared-transfer reference namespace, both references are strong (>=8 chars, >=6 consecutive digits), bill is clear, full account matches and both clocks exist. No namespace inference from OCR or arbitrary bank routing codes. Embedded contrary evidence blocks exclusion.
+- BANK-BATCH-02: Keep excluded cross-pairs separately for audit; count every remaining plausible pair including incomplete evidence. Unique bill and bank required; no greedy assignment or amount-only match. Unmatched third bill remains pending when all cross-pairs are proven distinct.
+- BANK-BATCH-03: Missing/weak reference, missing namespace, unclear image or conflicting evidence stays competing. Duplicate bill/reference/image and consumed bank protections remain. No bank reuse.
+- BANK-BATCH-04: Recheck carries referenceScope and bank fingerprint protects changes; fixture journal supports out-of-order late arrivals. Real bank namespace verification and production adapter remain unimplemented.
+- BANK-BATCH-05: Regression covers three bills/two bank credits, reverse order, missing reference/scope, blurry competitor, duplicate credits, consumed IDs and late third credit. CHAT bill-transfer-identity reference; no private records or financial writes. Preserve v13.27.

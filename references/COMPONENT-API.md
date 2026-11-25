@@ -203,3 +203,6 @@ BankReconcileAPI.memoDetails(billMemo,bankMemo,{billReference,bankReference}) re
 
 ## v13.91
 ParseAPI.accountDigits(raw,{min=6,max=32}) returns digit string or null; sameAccount compares valid full identifiers. OCR, bank, duplicate, manual fixture and journal share this owner.
+
+## v13.92
+BankReconcileAPI.match accepts optional referenceScope='shared-transfer' only as explicit verified fixture metadata; strong distinct references can exclude cross-pairs. Results expose excludedCandidates separately. Recheck preserves scope. No automatic namespace inference or production authorization.

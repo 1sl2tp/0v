@@ -162,3 +162,6 @@ Prior v13.89 CI passed and merged. Added explicit comparison forms, bounded know
 
 ## v13.91
 Shared account whitespace normalization, raw evidence retained, partial evidence still review. Existing image fixture now imports ParseAPI dependency. Direct regression suite run; no production changes.
+
+## v13.92
+Batch fixture matching distinguishes explicit disproven cross-pairs from plausible competitors, preserves excluded candidates and referenceScope. Three equal-amount bill regression, out-of-order credit and replay tests. No production action, real bank namespace adapter or customer data. Parent v13.91 CI in progress at start.
