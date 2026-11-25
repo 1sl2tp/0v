@@ -315,3 +315,6 @@ E0: v13.138 merged; API 45568639720 and DB 45568639667 passed. E1: adaptive rail
 
 ## v13.140
 E0: v13.139 merged; API 45571279386 and DB 45571279406 passed. E1: shared composer horizontal inset and expanded radius; four protected ranges unchanged. Astryx TextInput/Stack and MDN reviewed. E2: browser regression added; full CI pending. Native and publication not claimed.
+
+## v13.141
+E0: v13.140 merged after API 45575196885 and DB 45575196880 passed. E1: app-owned keyboard accessory above composer, focus-preserving pointer interaction and explicit native picker selection. Four protected ranges equal. E2: browser test added; CI pending. Native iPhone/PWA and actual picker not claimed.

@@ -6,6 +6,17 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const browser=await chromium.launch({headless:true});
  try{
 
+ {const p=await browser.newPage({viewport:{width:390,height:844}});
+ await p.goto(url+'?apicheck=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());
+ const plus=p.locator('#mediaBtn'),menu=p.locator('#composerAccessory'),draft=p.locator('#draft');
+ const geom=()=>menu.evaluate(e=>{const m=e.getBoundingClientRect(),c=e.parentElement.getBoundingClientRect(),h=document.querySelector('.conversation>.panel-head').getBoundingClientRect();return {gap:c.top-m.bottom,left:m.left-c.left,top:m.top,head:h.bottom}});
+ await plus.click();await menu.waitFor({state:'visible'});assert.equal(await plus.getAttribute('aria-expanded'),'true');assert.equal(await draft.evaluate(e=>document.activeElement===e),false);const a=await geom();assert(Math.abs(a.gap-9)<=2&&Math.abs(a.left)<=2&&a.top>=a.head-1);
+ await plus.click();await menu.waitFor({state:'hidden'});await draft.fill('Bản nháp giữ nguyên');await draft.focus();await plus.click();await menu.waitFor({state:'visible'});assert(await draft.evaluate(e=>document.activeElement===e));assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');
+ await p.setViewportSize({width:390,height:360});await p.waitForFunction(()=>{const e=document.querySelector('#composerAccessory'),m=e.getBoundingClientRect(),c=e.parentElement.getBoundingClientRect(),h=document.querySelector('.conversation>.panel-head').getBoundingClientRect();return m.height>0&&Math.abs(c.top-m.bottom-9)<=2&&m.top>=h.bottom-1});
+ await p.keyboard.press('Escape');await menu.waitFor({state:'hidden'});assert(await draft.evaluate(e=>document.activeElement===e));
+ await plus.click();await menu.waitFor({state:'visible'});const picker=p.waitForEvent('filechooser');await menu.locator('[data-accessory-choice=files]').click();const chooser=await picker;assert(chooser.isMultiple());await chooser.setFiles([]);await menu.waitFor({state:'hidden'});assert.equal(await draft.inputValue(),'Bản nháp giữ nguyên');
+ await plus.click();await menu.waitFor({state:'visible'});await p.locator('#messages').click({position:{x:10,y:10}});await menu.waitFor({state:'hidden'});await p.close();}
+
  for(const width of [320,390,768]){
   const p=await browser.newPage({viewport:{width,height:844}});
   await p.goto(url+'?apicheck=1');await p.locator('.contact[data-id=nv]').evaluate(e=>e.click());

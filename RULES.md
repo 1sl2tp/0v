@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.140)
+## 00. Chỉ mục rule đang có hiệu lực (v13.141)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1194,3 +1194,9 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - COMPOSER-GEOMETRY-02: Single capsule unchanged; expanded 24px with or without attachments. Width and keyboard reserve unchanged; Surface owns 1px border and material.
 - COMPOSER-GEOMETRY-03: Browser regression checks 320/390/768px, single/expanded/media, child alignment, radius, border and collapse. Native acceptance pending.
 - COMPOSER-GEOMETRY-04: Studied pinned Astryx TextInput/Stack and MDN box-sizing/border-radius. 8/24px are local choices, not upstream prescriptions. No new dependencies, keyboard/viewport/scroll writer, bill or production change.
+
+## 166. KEYBOARD-ACCESSORY — v13.141
+- KEYBOARD-ACCESSORY-01: + opens one app-owned accessory anchored 8px above composer. Same element and geometry contract whether textarea focused or not; outside normal grid flow. Does not call native picker until explicit option.
+- KEYBOARD-ACCESSORY-02: Preserve existing draft focus on pointer/mouse down; never force keyboard open/closed when toggling; no viewport/scroll writer. Size clipped to room above composer/header, scrollable if needed. Escape, outside pointer, navigation and second + dismiss.
+- KEYBOARD-ACCESSORY-03: Device choice opens native file picker with image filter and multiple; camera requests capture=environment and single. OS controls native UI and can fall back; no claim of separate photo-library/file routing on Safari. Existing room ownership and decode guard unchanged.
+- KEYBOARD-ACCESSORY-04: Browser regression checks focus/no-focus, anchor after resize, dismissal, picker invocation and unchanged draft. Native iPhone keyboard and system picker still require acceptance. Sources: pinned Astryx TextInput/Stack; MDN input/file, capture and Pointer Events. No production or bill changes.
