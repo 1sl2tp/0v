@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.119)
+## 00. Chỉ mục rule đang có hiệu lực (v13.120)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1048,3 +1048,10 @@ Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu kh�
 - BANK-ACCUMULATION-03: Explicit fixture customer assignment and receipt snapshot; no inference from name. Preserve prior receipt ID, customer, amount, method and postedAt; late manual Bank linkage preserves original credit and records verifiedAt separately. No actual receipt creation or historical mutation.
 - BANK-ACCUMULATION-04: Every new evidence event invalidates completeness; explicit scope assertion with expected revision required before new proposals. Replay as of a historical cutoff excludes later evidence; entire journal is bounded to 400 events and not a persistent store. Existing BankIdentityBatchAPI remains the proposal owner. No production data, automatic sends or actual debt changes.
 - BANK-ACCUMULATION-05: Regression for bill-first and Bank-first, late notice, missing clock, OCR correction, manual link, historical cutoff, retry/conflict, backwards time, revision conflict and completeness gate. Preserve keyboard v13.27; both CI workflows required.
+
+## 145. BANK-BACKLOG — v13.120
+- BANK-BACKLOG-01: Derive read-only queue from BankAccumulationAPI historical replay; preserve bill firstSeenAt and OCR lastChangedAt, age in elapsed hours and Vietnam calendar days. No midnight expiry, no new payment ledger.
+- BANK-BACKLOG-02: Separate waiting-bank, review, ready-plan, manual-unverified and closed; missing clock explicitly prioritized even when scope incomplete. Manual receipt stays in verification queue until linked; closed rows retained but excluded from open counts.
+- BANK-BACKLOG-03: Group by explicitly assigned customer, unknown owner separate; count open, manual, review, ready and waiting. No sum of unverified bill face amounts as debt. NewCreditPlan and manualLinkPlan separate, no actual posting.
+- BANK-BACKLOG-04: Group Bank notices only by canonical attested identity; distinguish candidate, no-bill, already-collected and unresolved/conflicting notices. No-bill amount is sum of distinct resolved candidate-free keys in supplied scope, not actual unallocated balance; unresolved amounts not included. Reserve prior linked keys even when original bill absent. canPost=false, canSend=false.
+- BANK-BACKLOG-05: Regression for 3-day aging, two customers, missing clock, waiting Bank, manual linkage, canonical aliases, no-bill Bank, unresolved identity, exact separate amounts and historical cutoff. No persistent adapter, messages, reminders, production data or keyboard changes; full CI required.
