@@ -87,3 +87,6 @@ v13.66 PR #33 merged 736c0ed0d0d183106af4561d60dd8675a064897f. E1 durable synthe
 
 ## v13.68 — offline reload fixture
 v13.67 PR #34 merged 897bed90906e7f332128bba94c3832582ebe68c4; PR CI 45520236044 success. E1 stable lab session across reload, separate durable synthetic server journal, original command and message IDs, ordered replay and ACK-generation fence inside transaction. RELOAD-API-01–04; classic scripts/browser audit compiled; CI pending. Same-tab F5 only, no production/real message or keyboard change. No manual deploy.
+
+## v13.69 — store performance phase 1
+v13.68 PR #35 merged 49dd024bf88e2fd4ab7d8f04b2853ccf4ff4df6f; CI 45521541365 success. E1 incremental message ordering, metadata-only directory no sort, stable projection references. Measured synthetic 10,000-message append: one comparison; 1,000-room rename: zero sorts; late merge correct. PERF-API-01–05; classic scripts and audit syntax checked; CI pending. No Main/keyboard/production changes; no physical-device latency claim.
