@@ -439,3 +439,7 @@ E0: PR #133 merged ca997da7da8cfc38c1ee5d045b0d0552c2a04bda, API CI 45685194614 
 
 ## v13.165 — P01.4 Button typography
 E2/E3 v13.164: PR #134 merged 8ce7c3a992d3b3df705a32dbce8ed728f9825a51, API 45685766944/45685751606 and DB 45685766913 passed; verified release 45686124391 and Pages 45686150128 success. E0 button default body 16/22 vs filter/module detail 14/20 vs bill CSS caption 13/18. E1 BUTTON-TYPE-01–03: default detail role, explicit whitelist, bill medium via existing controller, remove local font overrides; preserve icon/composite, geometry, min 44 for bill, existing compact filter exception. Astryx Button.tsx f87eb657180a0de978fb3ba1c59c24909a9cc63d (label size/leading independent of control height) and Radix typography.css 45b359c55b5d2c32a4913cd8ba0394cae0035632 read. Test syntax passed; four KB-LOCK ranges unchanged; snapshot/index blob e9b99a4b9be94c1287574f74a1e3b5c3f4216e9b. Full CI, release and native pending. No real actions/production. ROADMAP unchanged in release allowlist; P01 DOING.
+
+
+## v13.165 — sửa CI đỏ vòng 2
+E0: PR #135 CI 45686488277, job 139460330997, failed at checkButtonText '#messages .bill-actions > button' because test navigated to CRM before requiring rendered KH chat buttons at 320px. Static audit and snapshot pass, DB 45686488256 pass. E1: check KH chat screen and run same font/weight/touch assertion before CRM navigation; no weakened assertion. Test syntax passed; runtime blob/snapshot/version unchanged. E2 rerun pending, E3/E4/E5 pending. User screenshot shows actual v13.164; no claims v13.165 published.
