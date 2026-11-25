@@ -348,3 +348,6 @@ E0: v13.145 merged; API 45587574401 and DB 45587574592 passed. User screenshots 
 
 ## v13.147
 E0: v13.146 merged, both CI passed; user requests Input-owned menu independent of keyboard. E1: local menu anchored to composer top, no keyboard/viewport logic or reserve, native handoff exclusive; 4 protected ranges unchanged. E2: browser regression updated for new interaction contract, CI pending. Native second chooser possible; physical iPhone required.
+
+## v13.148
+E0: v13.147 merged and CI passed; two screenshots at 16:54 show sequential CRM and native source menus. User rejects duplicate steps. E1: restore v13.146 app/browser suite, version bump and stronger single-menu assertions; verified all four protected ranges equal to v13.147. E2: CI pending. Native placement and dismissal remain unresolved; no bill or production changes.
