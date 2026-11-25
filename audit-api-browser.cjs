@@ -5,6 +5,28 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try{
+ // Live 0v page uses its own login; intercept only the pinned SDK, never production.
+ {
+ const pg=await browser.newPage({viewport:{width:1280,height:800}});
+ const errors=[];pg.on('pageerror',e=>errors.push(e.message));
+ await pg.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js',r=>r.fulfill({contentType:'application/javascript',body:`
+ window.calls=[];let logged=false;
+ window.supabase={createClient:()=>({auth:{onAuthStateChange(){},async getSession(){return {data:{session:logged?{user:{id:'a'}}:null}}},async signInWithPassword(o){if(o.email!=='admin@taphoa.chat')throw Error('bad test login');logged=true;return {}},async signOut(){logged=false}},async rpc(name,args){window.calls.push(name);if(name==='v21_auth_bootstrap')return {data:{account:{id:'a',role:'admin'},session:{app_session_id:'fixture-session'}}};if(name==='v21_contacts_sidebar')return {data:[{id:'c',display_name:'Liên hệ kiểm thử',conversation_id:'room',preview_text:'Nội dung gần nhất',latest_at:'2026-11-25T18:00:00Z'}]};if(name==='v21_sync_snapshot'&&args.p_conversation_id==='room')return {data:{account_id:'a',messages:[{id:'m',conversation_id:'room',sender_account_id:'c',body:'Tin nhắn kiểm thử',created_at:'2026-11-25T18:00:00Z'}]}};if(name==='v21_auth_logout')return {data:true};throw Error('unexpected RPC')}})};
+ `}));
+ await pg.goto(url+'?live=1');
+ await pg.getByLabel('Tài khoản CHAT',{exact:true}).fill('admin');
+ await pg.getByLabel('Mật khẩu',{exact:true}).fill('fixture-password');
+ await pg.getByRole('button',{name:'Đăng nhập admin',exact:true}).click();
+ await pg.getByText('Liên hệ kiểm thử',{exact:true}).waitFor({state:'visible'});
+ assert.equal(await pg.getByText('Khách hàng mẫu',{exact:true}).count(),0);
+ await pg.getByText('Liên hệ kiểm thử',{exact:true}).click();
+ await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
+ assert.deepEqual(await pg.evaluate(()=>window.calls),['v21_auth_bootstrap','v21_contacts_sidebar','v21_sync_snapshot']);
+ await pg.getByRole('button',{name:'Đăng xuất',exact:true}).click();
+ await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
+ assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
+ assert.deepEqual(errors,[]);await pg.close();console.log('0v live login, directory, messages and logout passed (synthetic only)');
+ }
  // CHAT read boundary: test actual source via injected synthetic host, never network.
  {
  const html=require('node:fs').readFileSync('index.html','utf8'),start=html.indexOf('const ChatReadAPI=(()=>{'),end=html.indexOf('/* MainDataController',start);
