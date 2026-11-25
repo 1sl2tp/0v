@@ -131,3 +131,6 @@ fixture({actorId,conversationId,stream}) → incoming/send/read/transport/subscr
 
 ## v13.67 OfflineCommandController
 open(), create({db,scope,send,initialOnline,timeoutMs}) → enqueue(text), rows(), flush(), setOnline(), status(), dispose(). One scoped durable synthetic IndexedDB record; stable command IDs, explicit one-command flush, uncertain/timeout remains queued, generation fence. ?offlinecommandlab=1 uses existing MultiDevice fixture. No full page reload recovery, durable server ledger, cross-tab arbitration, backend, media or production integration.
+
+## v13.68 OfflineCommandController reload
+openFixtureServer({db,scope,conversationId,stream}) → send/transport/subscribe/status/dispose. Separate synthetic server journal in IndexedDB, atomic unique command lookup/append, replay through MultiDevice fixture; stable same-tab run in sessionStorage. Reload does not auto-send. No real server, durable real receipts, cross-tab coordination or closed-session recovery guarantee.
