@@ -165,3 +165,7 @@ ERPNext accounts_receivable.py blob 8698a69d27c80015364faf2211174174e0b594a8: pa
 
 ## v13.114
 PostgreSQL doc/src/sgml/ddl.sgml blob d78d986756ebd1fe76aa778516fc0a3246a17491: uniqueness across rows, eventual server constraint not implemented. ERPNext accounts_receivable.py blob 8698a69d27c80015364faf2211174174e0b594a8: party subtotals kept separate. Astryx Card pinned blob 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a. Reuse existing owner, no upstream code or private values copied.
+
+## v13.115 persistent fixture references
+- [MDN IndexedDB basic terminology](https://github.com/mdn/content/blob/main/files/en-us/web/api/indexeddb_api/basic_terminology/index.md): overlapping readwrite scopes cannot run concurrently.
+- [PostgreSQL unique index checks](https://www.postgresql.org/docs/current/index-unique-checks.html): server-side unique index needed for real cross-device guarantees; not implemented in this fixture.
