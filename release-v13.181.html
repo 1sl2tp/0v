@@ -1907,13 +1907,14 @@ const BillReceiptProjection=Object.freeze({
  const dateEvidence=typeof r.date_vn==='string'&&/^\d{2}\/\d{2}\/\d{4}$/.test(r.date_vn);
  const timeEvidence=typeof r.time_vn==='string'&&/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/.test(r.time_vn);
  if(!accountEvidence||!(amountEvidence||dateEvidence||timeEvidence))return null;
- const field=v=>typeof v==='string'&&v.trim()?v.trim().slice(0,1000):'Chưa đọc được';
- const amount=typeof r.amount_vnd==='string'&&/^[0-9]{1,18}$/.test(r.amount_vnd)&&r.amount_vnd!=='0'?FormatAPI.decimal(r.amount_vnd)+' đ':'Chưa đọc được';
+ // Missing projection field means no returned information; never claim a failed OCR read.
+ const field=v=>typeof v==='string'&&v.trim()?v.trim().slice(0,1000):'Không có';
+ const amount=typeof r.amount_vnd==='string'&&/^[0-9]{1,18}$/.test(r.amount_vnd)&&r.amount_vnd!=='0'?FormatAPI.decimal(r.amount_vnd)+' đ':'Không có';
  const status=r.status==='received'&&r.has_ledger===true?'Đã ghi thu':r.status==='duplicate'?'Bill trùng · Không ghi thu thêm':r.status==='review'?'Cần xác minh':r.status==='amount_read'?'Chờ đối soát':'Cần kiểm tra trạng thái thu';
  const name=BillReceiptProjection.recipientDisplay(r.receiving_name);
  return {amount,status,rows:[['Số tiền',amount],['Ngày',field(r.date_vn)],['Giờ',field(r.time_vn)],['TK nhận',field(r.receiving_account)],['Tên TK',field(name.value)],['Nội dung',field(r.transfer_content)],['Mã giao dịch',field(r.transfer_reference)],['NH chuyển',field(r.sending_bank)],['NH nhận',field(r.receiving_bank)],...(name.raw?[['Tên OCR gốc · Cần xác minh',field(name.raw)]]:[])]}
  },
- render(receipt,media){const {pair,left,right}=CardController.billPair('Ảnh bill','Kết quả đọc bill');pair.dataset.liveBillPair='true';left.append(media);const card=CardController.create('business');CardController.header(card,'Thông tin bill',receipt.status);for(const [label,value] of receipt.rows){const row=CardController.row(card,label,value);if(value==='Chưa đọc được')row.lastElementChild.classList.add('bill-missing')}right.append(card);compactBillDetails(pair);return pair}
+ render(receipt,media){const {pair,left,right}=CardController.billPair('Ảnh bill','Kết quả đọc bill');pair.dataset.liveBillPair='true';left.append(media);const card=CardController.create('business');CardController.header(card,'Thông tin bill',receipt.status);for(const [label,value] of receipt.rows){const row=CardController.row(card,label,value);if(value==='Không có')row.lastElementChild.classList.add('bill-missing')}right.append(card);compactBillDetails(pair);return pair}
 });
 const Contact=Object.freeze({create({id,name,avatar,preview,time,selected=false}){
  return View.button({className:'contact'+(selected?' active':''),attrs:{'data-id':id},children:[
