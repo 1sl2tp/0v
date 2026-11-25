@@ -146,3 +146,6 @@ ConversationStore.validateMessageScope(record) → boolean; metrics().pointerLoo
 
 ## v13.72 PerformanceProbe
 mount({root,doc,clock}) → report/reset/dispose; summarize(samples) nearest-rank p50/p95/max. ?perfcheck=1 exposes window.crmPerf and a local report panel. Fixed action labels, 100 samples/action, hidden cancellation, optional long task support. Approximate two-frame proxy only, no upload or normal-mode listener attachment. No Main migration.
+
+## v13.73 Main owner phase 1
+Contact.visibility(row,{visible,selected}), Contact.update(row,{preview,time,unread,typing}), Contact.typingLabel(label,typing,fallback). Message.create is common plain-text factory for initial/local sent/synthetic incoming messages. Main keeps fixture arrays; store/transport adoption not yet complete. Existing child Layout/Typography/Button owners unchanged.
