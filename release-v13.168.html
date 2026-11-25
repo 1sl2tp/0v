@@ -2048,7 +2048,7 @@ function mountLiveChat(){
  void connect(false);
 }
 const liveParams=new URLSearchParams(location.search);
-const isLive=liveParams.get('live')==='1'||(location.hostname==='1sl2tp.github.io'&&!Array.from(liveParams.keys()).some(k=>k!=='r'&&k!=='__build'));
+const isLive=liveParams.get('live')==='1'||(location.hostname==='1sl2tp.github.io'&&!Array.from(liveParams.keys()).some(k=>k!=='v'&&k!=='r'&&k!=='__build'));
 if(isLive){mountLiveChat();return}
 Main.mount();
 /* END MAIN VIEW FACTORIES */
@@ -4551,7 +4551,7 @@ const ReleaseUpdater=(()=>{
  const parts=v=>/^v\d{1,6}\.\d{1,6}$/.test(v||'')?v.slice(1).split('.').map(Number):null;
  function newer(v,old){const a=parts(v),b=parts(old);return !!a&&!!b&&(a[0]>b[0]||a[0]===b[0]&&a[1]>b[1])}
  const live=location.protocol==='https:'&&location.hostname==='1sl2tp.github.io'&&['/0v/','/0v/index.html'].includes(location.pathname);
- const permitted=new Set(['v','r','floating','liveglass','offlinecommandlab','multidevicelab','durablealertlab','notificationlab','presencelab','readstatelab','directorylab','cachedsynclab','cachelab','recoverylab','noticelab','synclab','contextlab','foundationlab','conversationlab','messagelab','dynamiclab','virtuallab','collectionlab','systemslab','medialab','avatarlab','surfacelab','geolab','typolab','popuplab','inputlab','apicheck']);
+ const permitted=new Set(['demo','v','r','floating','liveglass','offlinecommandlab','multidevicelab','durablealertlab','notificationlab','presencelab','readstatelab','directorylab','cachedsynclab','cachelab','recoverylab','noticelab','synclab','contextlab','foundationlab','conversationlab','messagelab','dynamiclab','virtuallab','collectionlab','systemslab','medialab','avatarlab','surfacelab','geolab','typolab','popuplab','inputlab','apicheck']);
  const enabled=live&&[...new URLSearchParams(location.search).keys()].every(k=>permitted.has(k));
  let state='disabled',pending=null,busy=false,dirty=false,lastActivity=Date.now(),lastAttempt=0,lastTarget=null,lastError=null,retryTimer=0;
  const status=()=>({current,pending,state,dirty,lastError,blockers:blockers()});
