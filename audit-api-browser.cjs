@@ -182,7 +182,58 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
   const inspect=selector=>page.locator(selector).first().evaluate(el=>window.apiProof.describe(el));
   const fonts=async list=>{for(const [sel,size,line,weight] of list){const x=await inspect(sel);assert.equal(x.computed.size,size,sel);assert.equal(x.computed.line,line,sel);assert.equal(x.computed.weight,weight,sel);assert.equal(x.fontOK,true,sel)}};
   const read=()=>page.evaluate(()=>window.apiProof.report());
-  const matrix=async(label,selectors)=>{const result=await page.evaluate(({label,selectors})=>{const proof=window.apiProof.report(),rows=selectors.map(sel=>{const e=document.querySelector(sel);if(!e||!e.getClientRects().length)return {selector:sel,visible:false};const s=getComputedStyle(e),r=e.getBoundingClientRect();return {selector:sel,visible:true,owner:e.dataset.parentApi||null,slot:e.dataset.uiSlot||null,font:s.fontSize,line:s.lineHeight,weight:s.fontWeight,width:Math.round(r.width*10)/10,height:Math.round(r.height*10)/10,gap:s.gap,radius:s.borderTopLeftRadius,border:s.borderTopWidth,padding:s.padding,overflow:[e.scrollWidth-e.clientWidth,e.scrollHeight-e.clientHeight]}});return {label,screen:proof.screen,viewport:proof.viewport,font:{total:proof.font.total,matched:proof.font.matched,issues:proof.font.issues.map(x=>({element:x.element,role:x.role,expected:x.expected,computed:x.computed}))},button:proof.button,icon:proof.icon,family:proof.family.counts,pending:proof.family.pending.length,rows}},{label,selectors});assert(result.rows.some(r=>r.visible),label);console.log('P01 matrix',JSON.stringify(result));return result};
+  // P01: inspect existing registry without changing runtime, distinguish rendered boxes from hidden/non-box nodes.
+  const pendingEvidence=async(label)=>{
+   const result=await page.evaluate(label=>{
+    const scope='#app, #app *, dialog[data-popup-parent], dialog[data-popup-parent] *';
+    const scan=()=>{
+     const counts={rendered:0,hiddenOrNonBox:0},groups=new Map();
+     // familyAudit() is public; the registry itself is private to the app closure.
+     // Associate exact audit rows with DOM nodes using temporary unique IDs only in this test.
+     // Preserve existing unique IDs (especially #app), restore before computed style/geometry.
+     const nodes=[...document.querySelectorAll(scope)],byId=new Map(),restore=[];
+     let serial=0,audit;
+     try{
+      for(const el of nodes){
+       let id=el.id;
+       if(!id||byId.has(id)){
+        do{id='p01-test-node-'+(++serial)}while(document.getElementById(id)||byId.has(id));
+        restore.push([el,el.getAttribute('id')]);el.setAttribute('id',id);
+       }
+       byId.set(id,el);
+      }
+      audit=window.familyAudit();
+     }finally{for(const [el,id] of restore)id===null?el.removeAttribute('id'):el.setAttribute('id',id)}
+     for(const item of audit.pending){
+      const el=byId.get(item.id);if(!el)throw Error('P01 audit row has no DOM node');
+      const css=getComputedStyle(el),box=el.getBoundingClientRect();
+      const rendered=el.getClientRects().length>0&&(box.width>0||box.height>0)&&css.visibility!=='hidden'&&css.visibility!=='collapse';
+      const state=rendered?'rendered':'hiddenOrNonBox';counts[state]++;
+      const region=el.closest('dialog[data-popup-parent]')?'dialog':el.closest('[data-ui-slot~="directory"]')?'directory':el.closest('[data-ui-slot~="conversation"]')?'chat':el.closest('[data-ui-slot~="crm"]')?'work':el.closest('[data-ui-slot~="rail"]')?'rail':'shell';
+      const key=[region,item.family,item.parent,item.status,item.study].join('|');
+      let group=groups.get(key);if(!group){group={region,family:item.family,parent:item.parent,status:item.status,study:item.study,rendered:0,hiddenOrNonBox:0,samples:{rendered:[],hiddenOrNonBox:[]}};groups.set(key,group)}
+      group[state]++;const sample={tag:el.tagName.toLowerCase(),slot:el.dataset.uiSlot||null,profile:el.dataset.layoutProfile||el.dataset.geoLayout||el.dataset.cardKind||el.dataset.tableDensity||null};
+      const entries=group.samples[state];if(entries.length<3&&!entries.some(x=>JSON.stringify(x)===JSON.stringify(sample)))entries.push(sample);
+     }
+     return {counts,groups:[...groups.values()],registryPending:audit.pending.length}
+    };
+    const baseline=scan();let control=null;
+    if(label==='chat'){
+     const host=document.querySelector('.conversation'),shown=document.createElement('div'),hidden=document.createElement('div');
+     for(const el of [shown,hidden]){Object.assign(el.dataset,{family:'Layout',parentApi:'Layout',familyStatus:'PROVISIONAL',study:'STUDY-LAYOUT-SLOTS'});el.style.cssText='position:absolute;width:1px;height:1px;pointer-events:none';host.append(el)}
+     hidden.hidden=true;
+     try{const withProbes=scan();control={rendered:withProbes.counts.rendered-baseline.counts.rendered,hidden:withProbes.counts.hiddenOrNonBox-baseline.counts.hiddenOrNonBox,pending:withProbes.registryPending-baseline.registryPending}}finally{shown.remove();hidden.remove()}
+     control.restored=JSON.stringify(scan())===JSON.stringify(baseline)
+    }
+    return {label,width:innerWidth,...baseline,control}
+   },label);
+   assert.equal(result.counts.rendered+result.counts.hiddenOrNonBox,result.registryPending,label);
+   assert.equal(result.groups.reduce((n,g)=>n+g.rendered,0),result.counts.rendered,label);
+   assert.equal(result.groups.reduce((n,g)=>n+g.hiddenOrNonBox,0),result.counts.hiddenOrNonBox,label);
+   if(label==='chat')assert.deepEqual(result.control,{rendered:1,hidden:1,pending:2,restored:true});
+   console.log('P01 pending groups',JSON.stringify(result));return result;
+  };
+  const matrix=async(label,selectors)=>{const result=await page.evaluate(({label,selectors})=>{const proof=window.apiProof.report(),rows=selectors.map(sel=>{const e=document.querySelector(sel);if(!e||!e.getClientRects().length)return {selector:sel,visible:false};const s=getComputedStyle(e),r=e.getBoundingClientRect();return {selector:sel,visible:true,owner:e.dataset.parentApi||null,slot:e.dataset.uiSlot||null,font:s.fontSize,line:s.lineHeight,weight:s.fontWeight,width:Math.round(r.width*10)/10,height:Math.round(r.height*10)/10,gap:s.gap,radius:s.borderTopLeftRadius,border:s.borderTopWidth,padding:s.padding,overflow:[e.scrollWidth-e.clientWidth,e.scrollHeight-e.clientHeight]}});return {label,screen:proof.screen,viewport:proof.viewport,font:{total:proof.font.total,matched:proof.font.matched,issues:proof.font.issues.map(x=>({element:x.element,role:x.role,expected:x.expected,computed:x.computed}))},button:proof.button,icon:proof.icon,family:proof.family.counts,pending:proof.family.pending.length,rows}},{label,selectors});assert(result.rows.some(r=>r.visible),label);console.log('P01 matrix',JSON.stringify(result));await pendingEvidence(label);return result};
   await fonts([['.directory .panel-head strong',18,24,600],['.directory .label-version',10,16,400],['.contact .identity b',16,22,600],['.contact .identity small',13,18,400],['.contact .time',13,18,400]]);
   assert.equal(await page.locator('.contact').first().getAttribute('data-layout-profile'),'contact-row');assert.equal(await page.locator('.filters button').first().evaluate(el=>parseFloat(getComputedStyle(el).fontSize)),14);const dir=await read();assert.equal(dir.family.issues.length,0);const owners=await page.evaluate(()=>window.ownerAudit());assert(owners.parents.includes('KeyboardController'));assert(owners.parents.includes('Avatar'));assert(owners.parents.includes('Surface'));assert.equal(owners.report.issues.length,0);const gap=await page.locator('.contact').first().evaluate(el=>{const s=document.documentElement.style,old=s.getPropertyValue('--row-gap'),priority=s.getPropertyPriority('--row-gap'),read=()=>parseFloat(getComputedStyle(el).columnGap);const before=read();let during;try{s.setProperty('--row-gap',(before+4)+'px');during=read()}finally{old?s.setProperty('--row-gap',old,priority):s.removeProperty('--row-gap')}return {before,during,after:read()}});assert.equal(gap.during,gap.before+4);assert.equal(gap.after,gap.before);assert(dir.family.total>0);console.log('Family directory',width,JSON.stringify(dir.family.counts),JSON.stringify(dir.family.issues.slice(0,12)));assert.equal(dir.button.visible,dir.button.registered);assert.equal(dir.icon.visible,dir.icon.registered);assert.equal(dir.layout.contactGeometry.length,4);assert(dir.layout.contactGeometry.every(x=>x.inside<=1&&x.overlap<=1));
   await matrix('directory',['.directory','.directory .panel-head','.contact','.contact .avatar','.contact .identity b','.contact .time','.filters']);

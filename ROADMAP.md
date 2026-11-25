@@ -2,8 +2,8 @@
 
 **Mốc gốc:** v13.163 — 335ee17249d061ebec9aa6656204572c1e70aecb; index blob 71461d93541241b9fa8b3aa365056582ee3c4c18. Ngày 26/11/2026 (VN).
 **Mục tiêu:** hoàn thiện theo hệ thống cha–con; không tạo API mới nếu owner hiện có giải quyết được.
-**Bước đang chạy:** P01.2–P01.3 — phân loại owner, ma trận đo giao diện; [bản đồ P01](references/P01-OWNER-MATRIX.md).
-**Tiếp theo:** kiểm tra CI và đọc log ma trận P01.3; xử lý từng owner có lỗi được tái hiện, P01.4–P01.5; không sửa keyboard.
+**Bước đang chạy:** P01.4 — phân loại thành phần chờ xác minh theo vùng/owner; [bản đồ P01](references/P01-OWNER-MATRIX.md).
+**Tiếp theo:** đọc log P01 pending groups, chọn nhóm rendered lớn/có tác động thực; chứng minh hợp đồng cha bằng test hoặc sửa owner nếu tái hiện lỗi; P01.5 native pending.
 
 ## Bảng tiến trình duy nhất
 Trạng thái: TODO → DOING → E1 → E2 → E3 → E4 → DONE (E5 nếu cần chấp nhận). BLOCKED có lý do, bằng chứng và điều kiện gỡ. E0 tái hiện/kiểm kê; E1 sửa + kiểm thử; E2 CI; E3 Pages; E4 thiết bị; E5 chấp nhận. Ký hiệu E chỉ dùng khi có bằng chứng tương ứng. PENDING thiết bị không được biến thành DONE vì Chromium đạt. Đếm hoàn thành theo từng giai đoạn đã nghiệm thu, không theo số commit.
@@ -24,8 +24,8 @@ Trạng thái: TODO → DOING → E1 → E2 → E3 → E4 → DONE (E5 nếu c�
 ## P01 — các bước con
 - P01.1 (E2, PR #131 merged; kiểm kê ban đầu): kiểm kê tĩnh owner và đối chiếu danh mục; ghi baseline.
 - P01.2 (DOING, bản đồ source đã ghi; chưa chứng minh toàn bộ runtime): phân loại từng owner: Main trực tiếp/gián tiếp, lab-only, chưa chứng minh; dùng familyAudit/ownerAudit/apiProof, kiểm tra phạm vi thực.
-- P01.3 (DOING, mở rộng test log; CI pending): lập ma trận token/font/gap/viền/hình học theo vùng và kích thước, phát hiện chỗ con tự ghi đè.
-- P01.4 (DOING, đã sửa chỉ mục font/KB; chưa đóng các owner): đối chiếu active rule với lịch sử, sửa từng owner có test, nguồn upstream và bằng chứng.
+- P01.3 (E2, 24 lượt đo font/geometry mẫu đã đọc, PR #132 merged): lập ma trận token/font/gap/viền/hình học theo vùng và kích thước, phát hiện chỗ con tự ghi đè.
+- P01.4 (DOING, sửa CI đỏ của PR #133; tách pending rendered/hidden): đối chiếu active rule với lịch sử, sửa từng owner có test, nguồn upstream và bằng chứng.
 - P01.5 (TODO): chạy audit-design, browser CI, Pages, ma trận thiết bị; ghi nhận ngoại lệ và E5 nếu cần.
 
 ## Kiểm kê tĩnh lần 1 — P01.1
@@ -53,5 +53,9 @@ Nguồn: [index.html tại baseline](https://github.com/1sl2tp/0v/blob/335ee1724
 | 26/11/2026 | P01.1 | E0 một phần: baseline và danh sách khai báo tĩnh; chưa chạy runtime trong vòng tài liệu | P01.2: kiểm kê trực tiếp/gián tiếp và lab, kiểm tra các diagnostic hiện có |
 
 | 26/11/2026 | P01.1–P01.3 | PR #131 merged; [API CI](https://github.com/1sl2tp/0v/actions/runs/45683556620) và [DB CI](https://github.com/1sl2tp/0v/actions/runs/45683556625) đạt. Bản đồ owner + chỉnh chỉ mục + ma trận test, CI mới pending | Đọc log, xử lý mismatch, E4 pending |
+
+| 26/11/2026 | P01.3–P01.4 | PR #132: [API PR CI](https://github.com/1sl2tp/0v/actions/runs/45684219123), [API push CI](https://github.com/1sl2tp/0v/actions/runs/45684203289), [DB CI](https://github.com/1sl2tp/0v/actions/runs/45684219109) đều thành công; merge a71a63a3537c307d96243a263ad9e783b49f4a70. 24/24 lượt đo khớp font trong mẫu; phân nhóm pending theo vùng/owner, negative control; CI mới pending | Đọc nhóm pending và xác minh từng owner; không hạ tiêu chuẩn |
+
+| 26/11/2026 | P01.4 | CI PR #133 [45684897457](https://github.com/1sl2tp/0v/actions/runs/45684897457) và push [45684881030](https://github.com/1sl2tp/0v/actions/runs/45684881030) fail; job 139454727771: ReferenceError FamilyRegistry is not defined ở pendingEvidence. DB 45684897443 success. Sửa test qua public familyAudit; chưa xác nhận CI mới | Đọc log nhóm pending sau CI xanh |
 
 Nguồn rule duy nhất vẫn là RULES.md. Tài liệu này chỉ theo dõi công việc và bằng chứng; không thay đổi hợp đồng API.
