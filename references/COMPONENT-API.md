@@ -491,3 +491,7 @@ CardController.billPair(leftLabel,rightLabel) is shared sample/live layout. Bill
 ScrollController.followEnd/stopFollowing/userMoved: scoped navigation tail intent after Main final commit; shared content ResizeObserver watches current rows, repositions only when extent changes and user has not left target. Existing replaceMedia uses this intent, and jump re-arms it. No changes to KeyboardController; nonpinned restore stays nonpinned.
 
 LIVE-BILL-02 backend candidate: existing private admin_media optional bill_receipt uses exact key join, AAL2 and same-customer collection ledger, strict printed time/date. Existing wrapper/ACL unchanged; production not yet activated.
+
+LIVE-BILL-03: BillReceiptProjection.recipientDisplay returns proposed display and raw when a known prefix is detected; raw stays visible for review. Live bill preview uses existing MediaController.rotate from original, room-scoped, 24 MP cap; no automatic text orientation, persistence or financial authority.
+
+LIVE-BILL-04: MediaController.printedOrientation(image) -> 0|90|180|270|null; conservative local glyph direction hint, only live bill preview consumes, original retained, manual override available, no semantic recognition or financial authority. Browser canvas required.
