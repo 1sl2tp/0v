@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.205)
+## 00. Chỉ mục rule đang có hiệu lực (v13.206)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1531,3 +1531,6 @@ Supersedes standalone automatic scan/group UI. No automatic hash/visual/OCR run;
 
 ## v13.205 — LIVE-BILL-SIX-FIELDS-01
 Standalone manual OCR displays amount, transaction date, time, recipient name/account and memo from fresh raw OCR (or explicitly verified correction). Reuse BillOCRFieldAPI.parse and suggestUnlabelled with both numeric profiles; conflicting candidates remain missing; exact known recipient name only proposed when literally present adjacent to observed configured account. Never populate missing fields from configuration. No automatic OCR, financial mutation or external AI. Raw/edit/verify preserved. Real image accuracy and deployment pending.
+
+## v13.206 — LIVE-BILL-LSTM-01
+User approves LSTM upgrade for standalone manual OCR, superseding OEM 0 only on this route. Existing BillOCREngineAPI.liveFactory uses Tesseract.js 6.0.1 OEM 1 vie+eng, LSTM-only flags, isolated language model cache (no image cache persistence). Explicit sequential clicks reuse one authenticated worker; terminate on scope reset or OCR failure/timeout. Upscale small originals up to 3x, longest side 2400 and max 4 million pixels; no old OCR reuse for new reads. Parse-only handling of literal account+bank, date/time+reference and memo inline; raw preserved, no default values. Existing legacy demo factory unchanged. No external AI or financial writes. Upstream: https://github.com/naptha/tesseract.js/blob/v6.0.1/docs/api.md, docs/performance.md, src/createWorker.js. Real accuracy/latency, CDN and device verification pending.
