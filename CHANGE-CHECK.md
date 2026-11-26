@@ -789,3 +789,7 @@ Run 45781965239 job 139779345971 passed live login, directory, avatar identity, 
 
 ## v13.221 — LIVE-THREAD-BILL-NEW-ONLY
 Explicit user request supersedes v13.214 48h/known-receipt eligibility and quota retry. Authorized session starts at billNewAfter; valid incoming image/message/room IDs, strictly newer timestamp, no receipt/cache. One automatic attempt per asset reserved before model request, no automatic retry; quota cooldown and manual lab separate. New multiple images handled one image at a time; historical galleries grouped. Cache bill/nonbill/unclassified in existing scoped session storage. F5 skips previous timestamps, switching room does not reset attempts. Existing 64MB/64-item blob cache reused; object URLs may be recreated. Device clock cutoff can miss offline or skewed messages; no background scans or durable cross-device claim. No DB/Edge/financial writes, protected keyboard ranges unchanged apart from version labels. References prior CACHE-API-SOURCES/SYNC-API-SOURCES (stable scoped identity, stale guards), existing ThreadBillAutoPolicy; local policy fixture pass, CI/device pending. Release v13.220 merged separately after exact-head CI.
+
+
+### v13.221 release gate correction
+CI 45791277398 job 139810633118 failed solely on version rule index still v13.220. Update active index to v13.221, keep exact tests and runtime unchanged. Bank fixture passed; rerun both exact head checks.
