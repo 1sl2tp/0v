@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.228)
+## 00. Chỉ mục rule đang có hiệu lực (v13.229)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1758,3 +1758,7 @@ Previous exact head 6213193: synthetic bill fixture 45848333899, DB 45848333919,
 
 ### P05.1 — integrate v13.228
 Prior exact head 95ce836: synthetic bill fixture 45850243592 and DB 45850243739 PASS; API 45850243816 failed intermittent scroll regression. Main v13.228 342c770 includes fix; PR #214 exact head 6230630 passed API 45853986517 twice (attempts 1 and 2) and DB 45853986426. Preserve all current runtime and rules, rerun exact-head CI before merge. Offline fixture only; no runtime or financial writes.
+
+
+### v13.229 — LIVE-READ-ACK-02 / monotonic confirmed receipt
+E0 source inspection: directory response currently replaces rows wholesale and delayed ACK validates against request-start row, not current server-confirmed read marker. A stale response can regress readAt and reintroduce badge. E1: extend existing ReadStateController with pure reconcileLiveReceipt(previous,next), same contact+room and both server capability true only; preserve server-confirmed readAt/count/unread for strictly older marker, retain other fresh directory fields. Equal/newer marker accepts server aggregate; no guessed count, new store, or change to server contiguous-prefix authority. ACK verifies current scoped row and rejects earlier marker. Disabled capability/changed room/removal not retained. New server arrivals concurrent with stale receipt can temporarily leave prior confirmed count until fresh snapshot; equal-marker ordering lacks server revision and remains unresolved; no guarantee for OS Push, oversized-read coverage remains separate READ-API-06 task. Re-read pinned Matrix read-receipt.ts 3da1558b49f40937ee7eabae196d02c0a7ad6659 (separate receipts/order), Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894, Adobe SelectionManager d6ff15c5b5efd7f9be685f87f46c3ed251c093f5 (focus separate from selection). Four protected keyboard ranges byte-identical before version bump. Connector pure tests passed; static audit-design and Chromium pending, no DB/production writes. Rollback v13.228. Prior Bill #213 merged 5a7ca7e after all three CI green; batch synthetic only.
