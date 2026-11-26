@@ -85,3 +85,5 @@ L08: legacy sender-debit display-only recovery candidate, DB fixture pending; no
 L08 / v13.186 E1: unified admin bill audit workspace, sort/filter/search, per-field stored evidence and original image on demand. CI/backend/device pending; batch isolated re-OCR separate, no collection.
 
 L08 / v13.187: photo + original OCR, field-level explicit correction/not present, persistent review notes and progress. Full CI/backend/device pending. Not financial approval.
+
+L08 / v13.188: standalone bill review route, same secure APIs, automatic load and audit image lifecycle. CI/Pages/device pending.
