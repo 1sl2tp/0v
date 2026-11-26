@@ -516,3 +516,5 @@ LIVE-BILL-08: BillOCRFieldAPI.identify(line) exposes existing typed label routin
 LIVE-BILL-09: ParseAPI.billRecipientEvidence returns truncated-tail for exact 12-digit target prefix ending in 4–6 nines. BillRecognitionAPI recognizes this as review-only; projection retains OCR digits and existing ledger evidence. LIVE-AVATAR-01: Avatar.publicSource(path,origin) constructs only existing public bucket object URLs, validated path; Contact and live header consume the shared owner and ChatReadAPI avatarPath. Backend directory projection required.
 
 LIVE-DATA-PROJECTION-01: directory contact adds nullable avatar_path; existing private media projection can return date_vn with no transaction timestamp only when printed numeric date matches a valid normalized calendar date. No change to scope, clock, ledger or financial mutation.
+
+LIVE-BILL-BANK-PROOF-UI-01: BillReceiptProjection uses bank_verified_account only for truncated-tail + received + has_ledger and exact configured account. Original OCR remains accessible; no change to recognition or collection.
