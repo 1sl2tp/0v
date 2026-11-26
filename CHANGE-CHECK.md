@@ -793,3 +793,7 @@ Explicit user request supersedes v13.214 48h/known-receipt eligibility and quota
 
 ### v13.221 release gate correction
 CI 45791277398 job 139810633118 failed solely on version rule index still v13.220. Update active index to v13.221, keep exact tests and runtime unchanged. Bank fixture passed; rerun both exact head checks.
+
+
+## v13.222 — BILL-ACCOUNT-DECORATION-01
+Observed case: stored AI text contained 13 uninterrupted digits followed by a space and one bullet; normalized recipient was null. In 0v ParseAPI receiver evidence and v0-bill-vision-manual validation, remove only one separated terminal bullet after exactly 13 uninterrupted digits. No digit insertion, no masking substitution, no removal of interior bullet, no general punctuation stripping. Keep original OCR text in existing record. Recognition alone never authorizes collection. Exact synthetic regression verifies 13-digit terminal decoration, rejects shorter/longer and interior/repeated bullets as normalization candidates. The specific existing unposted record was separately corrected at user's request with original OCR and audit trail preserved; status remains review and ledger_id null; no model rerun or financial posting. Legacy v21 scan worker is separate and not changed in this 0v PR. Source and runtime Edge deployment not equivalent; verify full CI before release, deploy Edge separately only after verification. No keyboard changes beyond version labels.

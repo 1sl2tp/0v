@@ -22,7 +22,7 @@ function parseModel(v:any){
  if(fields.amount&&!/^[1-9]\d{0,17}$/.test(fields.amount))fields.amount=null;
  if(fields.date){const m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(fields.date);if(!m)fields.date=null;else{const d=new Date(Date.UTC(+m[3],+m[2]-1,+m[1]));if(d.getUTCFullYear()!==+m[3]||d.getUTCMonth()!==+m[2]-1||d.getUTCDate()!==+m[1])fields.date=null}}
  if(fields.time&&!/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/.test(fields.time))fields.time=null;
- if(fields.account){const digits=fields.account.replace(/\s/g,"");fields.account=/^\d{4,32}$/.test(digits)?digits:null}
+ if(fields.account){const raw=fields.account;const account=/^\s*\d{13}\s+•\s*$/u.test(raw)?raw.trim().replace(/\s+•$/u,""):raw;const digits=account.replace(/\s/g,"");fields.account=/^\d{4,32}$/.test(digits)?digits:null}
  if(fields.name&&!/^[\p{L}\p{M}][\p{L}\p{M} .'-]{1,119}$/u.test(fields.name))fields.name=null;
  if(fields.memo)fields.memo=fields.memo.replace(/\s+/g," ");
  if(v.kind==="non_bill")for(const k of keys)fields[k]=null;
