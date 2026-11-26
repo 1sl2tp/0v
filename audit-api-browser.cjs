@@ -182,6 +182,19 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
  assert.deepEqual(errors,[]);await pg.close();console.log('0v live login, directory, messages and logout passed (synthetic only)');
  }
+
+ // LIVE-MEDIA-OWNER-01: cache metadata and in-flight prep share the same Blob entry.
+ {
+ const html=require('node:fs').readFileSync('index.html','utf8'),start=html.indexOf('const auditBlobCache=(()=>{'),end=html.indexOf(' async function downloadLiveMedia',start);
+ assert(start>=0&&end>start);let scope={accountId:'fixture'},downloads=0,prepares=0;
+ const cache=new Function('scope','MediaController',html.slice(start,end)+';return auditBlobCache')(scope,{normalizeMime:x=>x,async prepareLiveImage(blob,mime,bill){prepares++;return {blob,width:32,height:64,hint:bill?90:null,rotated:null}}});
+ const download=async()=>{downloads++;return new Blob(['fixture'],{type:'image/png'})};
+ assert.equal(cache.peekImage('key',scope,'image/png',false),null);
+ const [a,b]=await Promise.all([cache.image('key',scope,'image/png',false,download),cache.image('key',scope,'image/png',false,download)]);
+ assert.equal(a,b);assert.equal(downloads,1);assert.equal(prepares,1);assert.equal(cache.peekImage('key',scope,'image/png',false),a);
+ await cache.image('key',scope,'image/png',true,download);assert.equal(downloads,1);assert.equal(prepares,2);
+ assert.equal(cache.peekImage('key',{},'image/png',false),null);cache.clear();assert.equal(cache.peekImage('key',scope,'image/png',false),null);
+ }
  // CHAT read boundary: test actual source via injected synthetic host, never network.
  {
  const html=require('node:fs').readFileSync('index.html','utf8'),start=html.indexOf('const ChatReadAPI=(()=>{'),end=html.indexOf('/* MainDataController',start);
