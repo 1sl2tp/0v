@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.181)
+## 00. Chỉ mục rule đang có hiệu lực (v13.182)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1443,3 +1443,9 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-BILL-BANK-PROOF-01: OCR 12 số thiếu 1 số 9 cuối vẫn lưu nguyên; chỉ khi receipt received có link thông báo Agribank đúng ledger cùng khách, khoản ghi có đúng STK đầy đủ, số tiền và phút/giờ chính xác mới trả bank_verified_account riêng. Không tự thêm số vào OCR, không đổi matcher, ledger hoặc kết quả thu. Không có bằng chứng thì tiếp tục cần xác minh.
 
 - LIVE-BILL-DIGIT-RECHECK-01: separate nullable ocr_rechecked_account from focused second reading. Require matching first raw account, second complete digits, digit count and source; display only, never treat as bank proof or overwrite original OCR.
+
+- LIVE-BILL-BANK-PROOF-UI-01: chỉ sử dụng bank_verified_account cho OCR thiếu đúng số 9 cuối, trạng thái received, có ledger và STK xác nhận đúng cấu hình. Giữ STK OCR gốc trong thông tin bổ sung; trạng thái đã ghi thu không đồng nghĩa OCR hoàn hảo. Không có bằng chứng giữ cảnh báo, không tự điền số.
+
+- LIVE-BILL-DIGIT-RECHECK-UI-01: khi có ocr_rechecked_account hợp lệ, hiển thị kết quả đọc lần hai, giữ nguyên STK OCR gốc; chỉ bank_verified_account mới được ghi Khớp Agribank. Không thay đổi trạng thái thu ngoài trạng thái thật.
+
+- LIVE-BILL-MEMO-LINE-01: giữ nguyên các dòng đọc từ ảnh làm bằng chứng; khi hiển thị nội dung nghiệp vụ thì gom toàn bộ khoảng trắng và xuống dòng thành một dấu cách. Không bỏ dòng, không dính chữ, không sửa raw_read hay sổ. Cả hai nguồn đối soát dùng chuẩn hóa hiện hữu, không nới điều kiện khớp.

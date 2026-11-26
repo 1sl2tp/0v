@@ -562,3 +562,9 @@ LIVE-BILL-MEMO-REVIEW-01: E0 screenshot shows two visible memo lines; existing r
 LIVE-BILL-BANK-PROOF-01 E0: read-only exact reported 6.536.000 receipt has matching bank credit account, amount, transaction timestamp and linked collection ledger/customer. Screenshot too small to count digits reliably. E1 separate bank_verified_account projection only; synthetic fixture positive + wrong customer ledger negative. No financial mutation. UI release separate, CI pending.
 
 LIVE-BILL-DIGIT-RECHECK-01: CHAT PR #418 introduces independent focused reading, no financial change. Projection checks exact evidence shape; positive and absent evidence fixture. CI pending; no actual image re-read verified.
+
+LIVE-BILL-BANK-PROOF-UI-01: v13.182 hiển thị riêng STK ngân hàng xác nhận và STK OCR gốc, không yêu cầu xác minh lại khoản đã được liên kết Agribank. E0 exact receipt read-only evidence; E1 render-only, synthetic positive/negative audit + Chromium fixture. Backend PR #160 dependency, CI pending. No changes to financial records.
+
+LIVE-BILL-DIGIT-RECHECK-UI-01: display-only rechecked account distinct from bank proof; added positive and status-preservation fixture. Backend #160 and OCR #418 dependencies. CI pending.
+
+LIVE-BILL-MEMO-LINE-01: user requests single-line logical memo. Existing CHAT tidy already removes whitespace on both operands; no new matching rule needed. Normalize bill display whitespace, preserve raw and reviewed evidence. Browser fixture checks one-line text from multiline payload. CI pending. Backend PR #160 deployed; 83 historical truncated accounts have exact linked bank evidence; remaining require reread. No financial mutation.
