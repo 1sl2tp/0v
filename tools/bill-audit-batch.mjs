@@ -17,8 +17,10 @@ export async function auditBatch({rows,version,checkpoint,read,save,limit=10,now
    // Adapter must independently authorize and verify original bytes against hash.
    const result=await read({id:r.id,assetId:r.assetId,hash:r.hash});
    if(!result||result.originalVerified!==true)throw Object.assign(Error('unverified original'),{status:422});
-   await save({id:r.id,assetId:r.assetId,key,state:'done',result});
+   // Persistence errors must abort the batch, not masquerade as OCR failures.
+   try { await save({id:r.id,assetId:r.assetId,key,state:'done',result}); } catch(cause){throw Object.assign(Error('checkpoint_write_failed'),{checkpointFailure:true,cause});}
   }catch(e){
+   if(e.checkpointFailure)throw e;
    const attempts=(prior?.attempts??0)+1;
    const retry=e.status===429||e.status===503;
    const retryAt=now+Math.max(60000,Number.isFinite(e.retryAfterMs)?e.retryAfterMs:0)*2**(attempts-1);
