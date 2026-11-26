@@ -95,7 +95,14 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  if(webkitTail){
    await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).tap();
    await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
-   await pg.waitForFunction(()=>!document.querySelector('#composer').inert&&document.querySelector('[data-live-message-id="m"] [data-live-image-group="3"] .mixed-media')&&document.querySelector('#messages').scrollHeight-document.querySelector('#messages').clientHeight>300);
+   const diagnose=async(label)=>{console.error('WebKit '+label,JSON.stringify(await pg.evaluate(()=>{const m=document.querySelector('#messages'),group=document.querySelector('[data-live-message-id="m"] [data-live-image-group="3"]');return {screen:document.querySelector('#app')?.dataset.screen,inert:document.querySelector('#composer')?.inert,top:m?.scrollTop,extent:m?.scrollHeight,height:m?.clientHeight,group:!!group,tiles:group?.querySelectorAll('.media-tile').length,pending:group?.dataset.mediaPaintPending,button:group?.querySelector('button')?.textContent,disabled:group?.querySelector('button')?.disabled,calls:window.calls}})),errors)}; 
+   await pg.waitForFunction(()=>!document.querySelector('#composer').inert).catch(async e=>{await diagnose('navigation');throw e});
+   await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight>300}).catch(async e=>{await diagnose('extent');throw e});
+   const group=pg.locator('[data-live-message-id="m"] [data-live-image-group="3"]');
+   await group.waitFor({state:'attached'}).catch(async e=>{await diagnose('group');throw e});
+   // This suite measures tail scroll, not IntersectionObserver auto-load timing. Use the existing load control if still idle.
+   await group.evaluate(el=>{const b=el.querySelector(':scope > button');if(!el.querySelector('.mixed-media')&&b&&!b.disabled)b.click()});
+   await pg.waitForFunction(()=>document.querySelector('[data-live-message-id="m"] [data-live-image-group="3"] .mixed-media')).catch(async e=>{await diagnose('image');throw e});
    const tail=()=>pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3&&document.querySelector('#jumpBottom').hidden});
    const away=async()=>{await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>document.querySelector('#messages').scrollTop<=1&&!document.querySelector('#jumpBottom').hidden)};
    const raf=()=>pg.evaluate(()=>new Promise(resolve=>{let n=6;const step=()=>--n?requestAnimationFrame(step):resolve();requestAnimationFrame(step)}));
