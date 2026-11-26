@@ -759,3 +759,7 @@ E0 source inspection: text-first partial snapshot inherited knownIds, but final 
 
 ## v13.234 — ScrollController tail frame
 `imagePaint` queues late live paints during explicit follow; existing `scheduleJump` drains valid queued paints before clamped tail reconciliation. `renderLiveSnapshot` retains follow even when extent temporarily differs; no additional scroll owner. User away anchor unchanged. Native Safari pending.
+
+
+## WebKit mobile tail regression (v13.234 test-only)
+Existing synthetic live adapter reused with mobile WebKit tap, two late paints and reading-away check. No runtime API change. Physical Safari evidence pending.
