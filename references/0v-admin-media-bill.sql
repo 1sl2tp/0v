@@ -45,7 +45,7 @@ BEGIN
           AND r.raw_read->>'transfer_time_printed_vn'=CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
           THEN r.raw_read->>'transfer_time_printed_vn' END,
         'receiving_account',left(r.receiving_account,200),'receiving_name',left(r.receiving_name,200),
-        'transfer_content',CASE WHEN jsonb_typeof(r.raw_read->'transfer_content')='string' THEN left(r.raw_read->>'transfer_content',1000) END,
+        'transfer_content',coalesce(v.reviewed_memo,CASE WHEN jsonb_typeof(r.raw_read->'transfer_content')='string' THEN left(r.raw_read->>'transfer_content',1000) END),
         'transfer_reference',left(r.transfer_reference,200),'sending_bank',left(r.sending_bank,200),'receiving_bank',left(r.receiving_bank,200)
       ) END AS bill_receipt
     FROM public.v21_media_assets a
@@ -54,6 +54,8 @@ BEGIN
       AND r.customer_account_id=a.owner_account_id AND r.customer_account_id<>me
       AND EXISTS(SELECT 1 FROM public.v21_conversations c WHERE c.id=p_conversation_id AND r.customer_account_id IN(c.member_a,c.member_b))
       AND auth.jwt()->>'aal'='aal2'
+    LEFT JOIN v0_private.bill_memo_review v ON v.media_asset_id=r.media_asset_id AND v.message_id=r.message_id
+      AND v.customer_account_id=r.customer_account_id AND v.raw_read_hash=md5(r.raw_read::text)
     WHERE a.conversation_id=p_conversation_id AND a.deleted_at IS NULL
   ) x;
   RETURN jsonb_build_object('account_id',me,'assets',result);

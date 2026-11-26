@@ -26,6 +26,7 @@ GRANT EXECUTE ON FUNCTION v0_private.admin_media(uuid) TO authenticated;
 CREATE FUNCTION public.v0_admin_media(p_conversation_id uuid) RETURNS jsonb LANGUAGE sql STABLE SECURITY INVOKER SET search_path='' AS $$ SELECT v0_private.admin_media(p_conversation_id) $$;
 REVOKE ALL ON FUNCTION public.v0_admin_media(uuid) FROM PUBLIC,anon,authenticated,service_role;
 GRANT EXECUTE ON FUNCTION public.v0_admin_media(uuid) TO authenticated;
+\ir ../../references/0v-bill-memo-review.sql
 \ir ../../references/0v-admin-media-bill.sql
 INSERT INTO public.v21_accounts(id,auth_user_id,role) VALUES
 ('00000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','admin'),
@@ -47,6 +48,10 @@ INSERT INTO public.chat_bank_bill_receipts(media_asset_id,message_id,customer_ac
 ('50000000-0000-0000-0000-000000000004','40000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000002','received',26000,null,'{}',null),
 ('50000000-0000-0000-0000-000000000005','40000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000003','received',26000,null,'{}',null),
 ('50000000-0000-0000-0000-000000000006','40000000-0000-0000-0000-000000000006','00000000-0000-0000-0000-000000000002','received',26000,2,'{"transfer_time_printed_vn":"21:52","transaction_time_precision":"minute","clock_text_conflict":true}','2026-11-25 21:52');
+INSERT INTO v0_private.bill_memo_review(media_asset_id,message_id,customer_account_id,raw_read_hash,reviewed_memo,evidence_kind)
+ SELECT media_asset_id,message_id,customer_account_id,md5(raw_read::text),E'KHACH MAU\nChuyen tien','visual_review' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+INSERT INTO v0_private.bill_memo_review(media_asset_id,message_id,customer_account_id,raw_read_hash,reviewed_memo,evidence_kind)
+ SELECT media_asset_id,message_id,customer_account_id,md5('stale'),E'INVALID\nSTALE','visual_review' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000002';
 UPDATE public.v21_accounts SET avatar_path='fixture/avatar.jpg' WHERE id='00000000-0000-0000-0000-000000000002';
 UPDATE public.v21_accounts SET avatar_path='../bad.jpg' WHERE id='00000000-0000-0000-0000-000000000003';
 SET LOCAL ROLE authenticated;
@@ -59,10 +64,10 @@ BEGIN
  result:=public.v0_admin_media('30000000-0000-0000-0000-000000000001');
  IF jsonb_array_length(result->'assets')<>7 THEN RAISE EXCEPTION 'asset count'; END IF;
  a:=result->'assets'->0->'bill_receipt';
- IF a->>'amount_vnd' IS DISTINCT FROM '26000' OR a->>'has_ledger' IS DISTINCT FROM 'true' OR a->>'time_vn' IS DISTINCT FROM '21:52' OR a->>'date_vn' IS DISTINCT FROM '25/11/2026' OR a->>'transfer_content' IS DISTINCT FROM 'fixture' THEN RAISE EXCEPTION 'valid projection'; END IF;
+ IF a->>'amount_vnd' IS DISTINCT FROM '26000' OR a->>'has_ledger' IS DISTINCT FROM 'true' OR a->>'time_vn' IS DISTINCT FROM '21:52' OR a->>'date_vn' IS DISTINCT FROM '25/11/2026' OR a->>'transfer_content' IS DISTINCT FROM E'KHACH MAU\nChuyen tien' THEN RAISE EXCEPTION 'valid projection'; END IF;
  IF a ? 'raw_read' OR a ? 'ledger_id' OR result::text LIKE '%never-return%' THEN RAISE EXCEPTION 'private fields leaked'; END IF;
  a:=result->'assets'->1->'bill_receipt';
- IF a->>'date_vn' IS DISTINCT FROM '25/11/2026' OR a->>'time_vn' IS NOT NULL OR a->>'has_ledger' IS DISTINCT FROM 'false' THEN RAISE EXCEPTION 'missing time'; END IF;
+ IF a->>'date_vn' IS DISTINCT FROM '25/11/2026' OR a->>'time_vn' IS NOT NULL OR a->>'has_ledger' IS DISTINCT FROM 'false' OR a->>'transfer_content' IS NOT NULL THEN RAISE EXCEPTION 'missing time or stale correction'; END IF;
  FOR i IN 2..4 LOOP
  IF result->'assets'->i->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'incorrect asset join'; END IF;
  END LOOP;
@@ -70,7 +75,7 @@ BEGIN
  IF a->>'has_ledger' IS DISTINCT FROM 'false' OR a->>'time_vn' IS NOT NULL THEN RAISE EXCEPTION 'wrong ledger or conflicting time'; END IF;
  IF result->'assets'->6->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'absent receipt'; END IF;
  BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000002'); RAISE EXCEPTION 'foreign room allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END;
- IF has_table_privilege(current_user,'public.chat_bank_bill_receipts','SELECT') OR has_table_privilege(current_user,'public.taphoa_debt_ledger','SELECT') THEN RAISE EXCEPTION 'direct table access'; END IF;
+ IF has_table_privilege(current_user,'v0_private.bill_memo_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','INSERT') OR has_table_privilege(current_user,'public.chat_bank_bill_receipts','SELECT') OR has_table_privilege(current_user,'public.taphoa_debt_ledger','SELECT') THEN RAISE EXCEPTION 'direct table access'; END IF;
 END $$;
 SELECT set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal1"}',true);
 DO $$ BEGIN IF public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'aal1 exposed bill'; END IF; END $$;
@@ -84,4 +89,5 @@ SET LOCAL ROLE authenticated;
 SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);
 DO $$ BEGIN BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'locked contact allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
 RESET ROLE;
+DO $$ BEGIN IF (SELECT raw_read->>'transfer_content' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001') IS DISTINCT FROM 'fixture' THEN RAISE EXCEPTION 'original receipt mutated'; END IF; END $$;
 ROLLBACK;
