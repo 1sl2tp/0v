@@ -695,3 +695,7 @@ Message.palettes/paletteKey/storedPalette/applyPalette/choosePalette centralize 
 
 ## v13.219 directory utilities
 Contact.update retains unread badge and positions it with shared avatar grid; Main.directoryMenu delegates existing actions to Popup. Compact mobile live directory only. No separate menu lifecycle or keyboard owner.
+
+
+### v13.219 Typography refinement
+Shared --font-ui system sans stack and --type-chat 16/24, weight 400; no input/geometry change. All Message content uses Typography. Screenshot approximation; CI and Safari pending.

@@ -749,3 +749,7 @@ User requests avatar unread dot, remove redundant top/footer, + vertical utility
 
 ### v13.219 CI repair
 Run 45771074600 job 139743585228 failed only noDirectFontSizes: unread badge hardcoded 11px. Replace with existing Typography --type-version token, same size. No audit bypass, layout or keyboard change. Browser CI and Pages pending.
+
+
+### v13.219 chat typography follow-up
+User screenshot shows current chat text visually larger than ChatGPT. E1 change root --type-chat 17→16, line 24 unchanged, system sans fallback stack. Input 17/22 remains; no geometry/keyboard owner modifications. Astryx token source and Tailwind theme inspected; role tests updated and family assertion added. Four protected ranges byte-identical; full CI and native comparison pending. Same unreleased v13.219.
