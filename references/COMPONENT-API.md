@@ -691,3 +691,7 @@ Surface.bind G1 consumers share mobile floating tint/edge/highlight/elevation; h
 
 ## v13.218 Message palette
 Message.palettes/paletteKey/storedPalette/applyPalette/choosePalette centralize outgoing bubble color choice, root token projection and local preference; Main mounts existing Button/Popup, no new geometry owner.
+
+
+## v13.219 directory utilities
+Contact.update retains unread badge and positions it with shared avatar grid; Main.directoryMenu delegates existing actions to Popup. Compact mobile live directory only. No separate menu lifecycle or keyboard owner.

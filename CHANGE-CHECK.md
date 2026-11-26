@@ -741,3 +741,7 @@ E0 source audit: existing G1 has flat tint and header elevation suppressed; user
 
 ## v13.218 — bubble palettes
 User requests ChatGPT/WhatsApp/Zalo/Facebook Messenger options. E1 Message parent and existing Popup/ Button, shared tokens for outgoing content only; local device storage. Approximate palettes, no branding claims. Astryx tokens, Radix theme and Adobe SelectionManager inspected. Four protected ranges byte-identical to merged v13.217; added browser regression, full audit/CI/Pages/physical iPhone pending. No DB, live messages, keyboard or glass change.
+
+
+## v13.219 — compact directory utilities
+User requests avatar unread dot, remove redundant top/footer, + vertical utility menu. Contact badge grid and expanded preview; Main + menu reuses Popup and existing actions. Search opens recipient selection, no send mutation. CSS live mobile only compact toolbar. Four locked ranges unchanged; browser logout/menu and badge tests added; full CI, Pages and physical Safari pending. Astryx Button, Radix dropdown and Adobe SelectionManager studied; Chatwoot guessed path unavailable, no claim of copied UI. No production data or keyboard changes.
