@@ -1576,3 +1576,6 @@ Same unreleased PR #197, no competing version. Prior head 0a913ee CI API applica
 
 ### v13.215 vòng 2 — hardening
 Throttle identical read proposals to 30s even on network failure or directory refresh; remove acknowledged observed IDs. Partial text render knows media completeness only for cached message IDs, avoiding incorrect missing-attachment label and unnecessary unchanged-node replacement. SQL explicitly qualifies unnested requested IDs. Candidate only; exact-head CI and SQL integration pending.
+
+### v13.215 vòng 3 — LIVE-INSTANT-CONTENT-01
+User requests no loading/sending text in normal live chat. Existing LiveChatSnapshotPolicy projects cached data and optimistic message immediately using client key; clear composer at enqueue, reconcile exact id on ACK, preserve newer draft, retain error and original idempotency key on failure. Directory/thread no loading text; live media aria-busy without loading text, reuse blob cache for attachments. Bill audit remains unchanged. Cold cache must await real response; no prewarm in this patch, no durable offline queue. Existing authorization, keyboard and backend unchanged. Source receipts CACHE/SYNC-API-SOURCES, Astryx Button/Stack, Adobe SelectionManager (previously inspected). Added delayed-ACK browser regression; syntax and pure policy checked; CI/native pending. Same PR #197 unreleased.
