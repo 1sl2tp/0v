@@ -2147,10 +2147,10 @@ const ChatReadAPI=(()=>{
    }
    contacts=next;return Object.freeze([...next.values()]);
   }
-  async function thread(contactId){
+  async function thread(contactId,{background=false}={}){
    const s=scope(),contact=contacts.get(contactId);if(!contact)throw Error('Contact not in authorized directory');
-   const seq=++request;if(!contact.conversationId)return Object.freeze([]);
-   const rows=await readThread(s,contact.conversationId);current(s,seq);
+   const seq=background?null:++request;if(!contact.conversationId)return Object.freeze([]);
+   const rows=await readThread(s,contact.conversationId);if(background){const now=scope();if(now.accountId!==s.accountId||now.epoch!==s.epoch||contacts.get(contactId)?.conversationId!==contact.conversationId)throw Error('Stale background read')}else current(s,seq);
    if(!Array.isArray(rows)||rows.length>100)throw Error('Invalid thread response');
    const seen=new Set(),out=[];
    for(const row of rows){
@@ -2378,7 +2378,7 @@ function mountLiveChat(root){
  const eligibleOcr=r=>!!r.storage_key&&isLiveImage(r);
  let lastAuditRequest=0,progressRestored=false,progressSaveError=false;
  const threadBillPrefix='0v.thread.bill.vision.v1:',liveCachePrefix='0v.thread.snapshot.v1:';
- const liveSnapshots=new Map(),liveConfirmed=new Map(),liveReadSeen=new Map();let liveReadTimer=0,liveReadBusy=false,liveReadContextKey='',liveReadLastAttempt=null;let liveSyncTimer=0,liveWakeTimer=0,liveSyncBusy=false,liveSyncOwner=null,liveChannel=null;
+ const liveSnapshots=new Map(),liveConfirmed=new Map(),liveReadSeen=new Map();let liveReadTimer=0,liveReadBusy=false,liveReadContextKey='',liveReadLastAttempt=null;let liveSyncTimer=0,liveWakeTimer=0,liveSyncBusy=false,liveSyncOwner=null,liveChannel=null;let prewarmTimer=0,prewarmRunning=false;
  const threadBillQueue=[],threadBillPending=new Set();let threadBillRunning=false,threadBillQuotaUntil=0;
  const billProgressPrefix='0v.bill.progress.ai.v1:';
  const progressKey=()=>scope&&standaloneBills?billProgressPrefix+scope.accountId:null;
@@ -2648,7 +2648,7 @@ function mountLiveChat(root){
   const prior=getLiveSnapshot(owner,row.conversationId);if(!mediaKnown&&prior?.mediaKnown){const ids=new Set(msgs.map(m=>m.id));assets=prior.assets.filter(x=>ids.has(x.message_id))}
   const s={room:row.conversationId,at:Date.now(),msgs,assets,mediaKnown};if(mediaKnown)saveLiveSnapshot(owner,s);return s
  }
- function stopLiveSync(){clearInterval(liveReadTimer);liveReadTimer=0;liveReadSeen.clear();liveReadContextKey='';liveReadLastAttempt=null;clearInterval(liveSyncTimer);clearTimeout(liveWakeTimer);liveSyncTimer=liveWakeTimer=0;liveSyncOwner=null;if(liveChannel){try{void client.removeChannel(liveChannel)}catch{}liveChannel=null}}
+ function stopLiveSync(){clearTimeout(prewarmTimer);prewarmTimer=0;clearInterval(liveReadTimer);liveReadTimer=0;liveReadSeen.clear();liveReadContextKey='';liveReadLastAttempt=null;clearInterval(liveSyncTimer);clearTimeout(liveWakeTimer);liveSyncTimer=liveWakeTimer=0;liveSyncOwner=null;if(liveChannel){try{void client.removeChannel(liveChannel)}catch{}liveChannel=null}}
  function wakeLiveSync(owner,delay=1500){if(scope!==owner||liveSyncOwner!==owner||document.hidden||liveWakeTimer)return;liveWakeTimer=setTimeout(()=>{liveWakeTimer=0;void refreshLive(owner)},delay)}
  async function refreshLive(owner){if(scope!==owner||liveSyncOwner!==owner||liveSyncBusy||document.hidden||sending||navigationPending)return;liveSyncBusy=true;
   try{if(root.dataset.screen==='chat'&&selected&&!navigationPending&&!sending){const row=rows.find(r=>r.id===selected),n=choice;if(row){const s=await fetchLiveSnapshot(row,owner,n);if(s&&scope===owner&&choice===n&&root.dataset.screen==='chat')renderLiveSnapshot(s,row,owner,n,{preserve:true})}}if(scope===owner&&liveSyncOwner===owner)await loadDirectory({quiet:true});if(scope===owner&&root.dataset.screen==='chat'&&!navigationPending){const row=rows.find(r=>r.id===selected),s=row&&getLiveSnapshot(owner,row.conversationId);if(s)renderLiveSnapshot(s,row,owner,choice,{preserve:true})}}catch{}finally{liveSyncBusy=false}}
@@ -2665,7 +2665,8 @@ function mountLiveChat(root){
   // Only the server may advance the contiguous read prefix. Never use device time as a receipt.
   liveReadBusy=true;try{const ack=await rpc('v0_admin_mark_seen',{p_conversation_id:room,p_message_ids:ids});if(scope!==owner||liveReadContextKey!==key||ack?.account_id!==owner.accountId||ack?.conversation_id!==room||!Number.isSafeInteger(ack.unread_count)||ack.unread_count<0)return;const stamp=Date.parse(ack.last_read_at);if(!Number.isFinite(stamp)||stamp<row.readAt)return;for(const node of thread.querySelectorAll('[data-live-incoming="true"]'))if(Number(node.dataset.liveCreatedAt)<=stamp)liveReadSeen.delete(node.dataset.liveMessageId);rows=rows.map(x=>x.id===row.id?Object.freeze({...x,readAt:stamp,unreadCount:ack.unread_count,unread:ack.unread_count>0,_lastReadProposal:signature}):x);renderDirectory()}catch{}finally{liveReadBusy=false}
  }
- function startLiveSync(owner){stopLiveSync();if(!ThreadBillAutoPolicy.uuid(owner.accountId))return;liveSyncOwner=owner;liveReadTimer=setInterval(()=>void sampleLiveRead(owner),500);liveSyncTimer=setInterval(()=>wakeLiveSync(owner,0),30000);
+ function schedulePrewarm(owner){if(prewarmTimer||prewarmRunning)return;prewarmTimer=setTimeout(async()=>{prewarmTimer=0;if(scope!==owner||liveSyncOwner!==owner||document.hidden||sending||navigationPending||liveSyncBusy)return;prewarmRunning=true;try{const candidates=rows.filter(r=>r.id!==selected&&ThreadBillAutoPolicy.uuid(r.conversationId)&&!getLiveSnapshot(owner,r.conversationId)).slice(0,3);for(const r of candidates){if(scope!==owner||document.hidden||sending||navigationPending||liveSyncBusy||r.id===selected)break;try{const msgs=await reader.thread(r.id,{background:true});if(scope===owner&&r.id!==selected&&!getLiveSnapshot(owner,r.conversationId)&&rows.some(x=>x.id===r.id&&x.conversationId===r.conversationId))saveLiveSnapshot(owner,{room:r.conversationId,at:Date.now(),msgs,assets:[],mediaKnown:false})}catch{}}}finally{prewarmRunning=false}},2500)}
+ function startLiveSync(owner){stopLiveSync();if(!ThreadBillAutoPolicy.uuid(owner.accountId))return;liveSyncOwner=owner;schedulePrewarm(owner);liveReadTimer=setInterval(()=>void sampleLiveRead(owner),500);liveSyncTimer=setInterval(()=>wakeLiveSync(owner,0),30000);
   if(typeof client.channel==='function'){try{liveChannel=client.channel('0v-live-wake-'+owner.accountId).on('postgres_changes',{event:'*',schema:'public',table:'v21_messages'},()=>wakeLiveSync(owner)).subscribe()}catch{}}
  }
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&liveSyncOwner)wakeLiveSync(liveSyncOwner,0)});window.addEventListener('online',()=>{if(liveSyncOwner)wakeLiveSync(liveSyncOwner,0)});
