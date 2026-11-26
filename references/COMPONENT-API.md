@@ -791,3 +791,6 @@ ScrollController.beginProjection(event,el) / finishProjection(tx,el,alias) owns 
 
 ## v13.239 S3b candidate
 ScrollController.normalizeReadingAnchor/anchorCandidates bounds persisted neighbor offsets; restore tries primary and nearby surviving rows. MediaController.reservePart owns fixed attachment frame from declared type. Browser/native pending.
+
+## S4 device diagnostic v13.240 candidate
+mountScrollS4 reads ScrollController edge/visualEdge/intentState/writeSerial only; no layout or scroll writes. Local report with bounded sampling, settled 12 frames, no content or IDs; explicit opt-in query and dispose.
