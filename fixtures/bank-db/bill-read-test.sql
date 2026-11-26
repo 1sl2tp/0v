@@ -34,6 +34,8 @@ GRANT EXECUTE ON FUNCTION public.v0_admin_media(uuid) TO authenticated;
 ALTER TABLE public.chat_bank_bill_receipts ADD COLUMN reason text;
 \ir ../../references/0v-admin-bill-audit.sql
 \ir ../../references/0v-admin-bill-audit-annotations.sql
+ALTER TABLE public.chat_bank_bill_receipts ADD COLUMN duplicate_of uuid, ADD COLUMN image_sha256 text;
+\ir ../../references/0v-admin-bill-audit-classification.sql
 INSERT INTO public.v21_accounts(id,auth_user_id,role) VALUES
 ('00000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','admin'),
 ('00000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','user'),
@@ -84,7 +86,9 @@ BEGIN
  result:=public.v0_admin_bill_audit();
  IF (result->>'total')::int<>7 OR jsonb_array_length(result->'rows')<>7 THEN RAISE EXCEPTION 'audit scoped count'; END IF;
  IF result::text LIKE '%never-return%' OR EXISTS (SELECT 1 FROM jsonb_array_elements(result->'rows') x WHERE x ? 'raw_read' OR x ? 'ledger_id') THEN RAISE EXCEPTION 'audit exposed internal fields'; END IF;
- IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(result->'rows') x WHERE x->>'status'='non_bill') THEN RAISE EXCEPTION 'audit excludes nonbill'; END IF;
+ IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(result->'rows') x WHERE x->>'status'='non_bill' AND x->>'audit_kind'='non_bill' AND jsonb_array_length(x->'flags')=0) THEN RAISE EXCEPTION 'audit nonbill classification'; END IF;
+ IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(result->'rows') x WHERE x->>'asset_id'='50000000-0000-0000-0000-000000000001' AND x->>'audit_kind'='bill') THEN RAISE EXCEPTION 'target suffix classification'; END IF;
+ IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(result->'rows') x WHERE x->>'asset_id'='50000000-0000-0000-0000-000000000010' AND x->>'audit_kind'='unverified') THEN RAISE EXCEPTION 'memo-only classification'; END IF;
  a:=(SELECT x FROM jsonb_array_elements(result->'rows') x WHERE x->>'asset_id'='50000000-0000-0000-0000-000000000001');
  IF a->>'review_state' IS DISTINCT FROM 'pending' THEN RAISE EXCEPTION 'initial review state'; END IF;
  PERFORM public.v0_save_bill_audit_annotation((a->>'id')::uuid,a->>'raw_hash',0,'needs_fix','{"account_raw":"1234567890123","clock":null}','fixture annotation');
@@ -128,6 +132,13 @@ DO $$ BEGIN BEGIN PERFORM public.v0_admin_bill_audit(); RAISE EXCEPTION 'audit n
 DO $$ BEGIN BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'nonadmin allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
 SELECT set_config('fixture.uid','',true),set_config('fixture.jwt','{}',true);
 DO $$ BEGIN BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'unauthenticated allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
+RESET ROLE;
+UPDATE public.chat_bank_bill_receipts SET image_sha256=repeat('a',64) WHERE media_asset_id='50000000-0000-0000-0000-000000000003';
+INSERT INTO public.chat_bank_bill_receipts(media_asset_id,message_id,customer_account_id,status,reason,raw_read,duplicate_of,image_sha256)
+SELECT '50000000-0000-0000-0000-000000000007','40000000-0000-0000-0000-000000000007',customer_account_id,'duplicate','duplicate_exact_image_sha256_no_ai','{}',id,image_sha256 FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000003';
+SET LOCAL ROLE authenticated;
+SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);
+DO $test$ BEGIN IF NOT EXISTS(SELECT 1 FROM jsonb_array_elements(public.v0_admin_bill_audit()->'rows') x WHERE x->>'asset_id'='50000000-0000-0000-0000-000000000007' AND x->>'status'='duplicate' AND x->>'audit_kind'='non_bill' AND jsonb_array_length(x->'flags')=0) THEN RAISE EXCEPTION 'duplicate nonbill origin classification'; END IF; END $test$;
 RESET ROLE;
 UPDATE public.v21_accounts SET locked_at=now() WHERE id='00000000-0000-0000-0000-000000000002';
 SET LOCAL ROLE authenticated;

@@ -89,3 +89,5 @@ L08 / v13.187: photo + original OCR, field-level explicit correction/not present
 L08 / v13.188: standalone bill review route, same secure APIs, automatic load and audit image lifecycle. CI/Pages/device pending.
 
 L08 / v13.189: dedicated /bill.html entry, source and version synchronized with canonical app; CI/Pages pending.
+
+L08 v13.189 (before release): separate nonbill, wrong account, uncertain and target suffix; hash duplicate evidence not OCR error. CI/migration pending.
