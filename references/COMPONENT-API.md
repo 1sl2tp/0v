@@ -763,3 +763,7 @@ E0 source inspection: text-first partial snapshot inherited knownIds, but final 
 
 ## WebKit mobile tail regression (v13.234 test-only)
 Existing synthetic live adapter reused with mobile WebKit tap, two late paints and reading-away check. No runtime API change. Physical Safari evidence pending.
+
+
+## v13.235 candidate — ScrollController follow handoff
+Existing jump frame hands queued work to scheduleImagePaint after loss of follow, including no-scroll cancellation. Mobile live scrollport edge bounce disabled where supported. No new owner, native acceptance pending.
