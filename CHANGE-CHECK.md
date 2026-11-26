@@ -737,3 +737,7 @@ User clarified no solid underline. Reuse Typography decoration owner for semanti
 
 ## v13.217 — mobile glass follow-up
 E0 source audit: existing G1 has flat tint and header elevation suppressed; user requests screenshot-like optics on web mobile. E1 shared Surface paint profile extension, one rim, no keyboard/composer geometry changes, exact four protected ranges unchanged versus PR head; mobile contrast and desktop regression added. Astryx pinned tokens and Apple WWDC25 219 read; CSS approximation, not native lensing. Same unreleased PR #199; CI, full audit, Pages and physical Safari pending. No database changes.
+
+
+## v13.218 — bubble palettes
+User requests ChatGPT/WhatsApp/Zalo/Facebook Messenger options. E1 Message parent and existing Popup/ Button, shared tokens for outgoing content only; local device storage. Approximate palettes, no branding claims. Astryx tokens, Radix theme and Adobe SelectionManager inspected. Four protected ranges byte-identical to merged v13.217; added browser regression, full audit/CI/Pages/physical iPhone pending. No DB, live messages, keyboard or glass change.

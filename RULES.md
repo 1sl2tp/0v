@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.217)
+## 00. Chỉ mục rule đang có hiệu lực (v13.218)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -10,7 +10,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
-| Typography | CHAT-RHYTHM-01–04 (turn spacing and latest projection), LATEST-MESSAGE-01–04 (message projection/edge), CONTENT-PRESENTATION-01–04 (thread/preview visual, supersedes CONTENT-AB-01 paint), CONTENT-FORMAT-01–04 (document display), TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
+| Typography | BUBBLE-PALETTE-01–03, CHAT-RHYTHM-01–04 (turn spacing and latest projection), LATEST-MESSAGE-01–04 (message projection/edge), CONTENT-PRESENTATION-01–04 (thread/preview visual, supersedes CONTENT-AB-01 paint), CONTENT-FORMAT-01–04 (document display), TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
@@ -1625,3 +1625,9 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 ## SURFACE-MOBILE-OPTICS — v13.217
 - SURFACE-MOBILE-OPTICS-01: Web mobile touch/standalone <=767px floating: Surface uses shared gradient tint, one physical 1px edge, inset highlight and mild elevation for G1 header and composer; jump face consumes same tokens. Child composer controls remain unlayered; desktop, input geometry and KB-LOCK unchanged. Header blur 12px only where supported and keyboard is not open; default composer remains no blur (existing explicit liveglass experiment is not the default). Accessibility flat/contrast/forced colors retained. No claim of native refraction.
 - SURFACE-MOBILE-OPTICS-02: Read pinned Astryx tokens.stylex.ts blob 7ca09a989079c26627462bfe50abbcb08ec1328c (semantic surface and contrast) and Apple WWDC25 Meet Liquid Glass https://developer.apple.com/videos/play/wwdc2025/219/ (functional layer, no stacked glass, readable tint and accessibility). Static locked ranges compared before commit; browser mobile/desktop/reduced contrast regression and native Safari pending.
+
+
+## BUBBLE-PALETTE — v13.218
+- BUBBLE-PALETTE-01: Message owns four allowlisted color profiles: chatgpt, whatsapp, zalo, messenger. ChatGPT-inspired light blue is default. Only outgoing text bubble foreground/background and nested muted/code tokens change; incoming document surface, media, card/table geometry, keyboard and Surface glass unchanged. Colors are inspired approximations, not official brand specifications.
+- BUBBLE-PALETTE-02: Shared Main footer button opens existing Popup menu with four options. Message applies root dataset immediately, saves only preference in localStorage (no account data/network); invalid/blocked storage defaults safely. Native buttons and popup lifecycle reused. Standalone bill footer retains its original behavior.
+- BUBBLE-PALETTE-03: Read pinned Astryx tokens.stylex.ts 7ca09a989079c26627462bfe50abbcb08ec1328c, Radix theme.tsx b980aa5217c5d50290e7856d735d126d631d6314, Adobe SelectionManager d6ff15c5b5efd7f9be685f87f46c3ed251c093f5. Scoped semantic tokens and explicit single selection. Browser color/geometry/F5 regression; native pending. Four protected KB ranges unchanged.
