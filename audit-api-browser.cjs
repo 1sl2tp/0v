@@ -68,7 +68,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  // Expose only the internal paint entry in the intercepted synthetic fixture; never in the shipped HTML.
  const liveFixtureSource=require('node:fs').readFileSync('index.html','utf8'),fixtureBoundary='function appShellActive(){';
  assert.equal(liveFixtureSource.split(fixtureBoundary).length,2);
- const instrumentedLiveFixture=liveFixtureSource.replace(fixtureBoundary,'window.__fixtureQueuePaint=(...args)=>ScrollController.imagePaint(...args);\n'+fixtureBoundary);
+ const instrumentedLiveFixture=liveFixtureSource.replace(fixtureBoundary,'window.__fixtureQueuePaint=(...args)=>ScrollController.imagePaint(...args);\nwindow.__fixtureManualState=()=>ScrollController.manual;window.__fixtureScrollState=()=>({edge:ScrollController.edge(),visual:ScrollController.visualEdge(),intent:ScrollController.intentState(),saved:ScrollController.savedPosition()});\n'+fixtureBoundary);
  const webkitFixture=webkitTail?instrumentedLiveFixture.replace("async prepareLiveImage(data,mime,bill){","async prepareLiveImage(data,mime,bill){try{return await this.__fixtureOriginalPrepare(data,mime,bill)}catch(e){(window.__fixtureMediaErrors??=[]).push({name:e.name,message:e.message,type:data?.type,size:data?.size});throw e}},\n async __fixtureOriginalPrepare(data,mime,bill){"):instrumentedLiveFixture;
  await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:webkitFixture}));
  await pg.route('**/storage/v1/object/public/v21-avatars/fixture/avatar.jpg',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="gray"/></svg>'}));
@@ -117,6 +117,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    await pg.evaluate(()=>{const m=document.querySelector('#messages'),row=document.querySelector('[data-live-message-id="old-22"]');window.__fixtureHandoffPaint=0;window.__fixtureQueuePaint(row,()=>{window.__fixtureHandoffPaint++},()=>row.isConnected);if(row.dataset.mediaPaintPending!=='true')throw Error('Paint not queued before cancel');m.dispatchEvent(new WheelEvent('wheel',{deltaY:-1,bubbles:true}))});
    await pg.waitForFunction(()=>window.__fixtureHandoffPaint===1&&!document.querySelector('[data-live-message-id="old-22"]').hasAttribute('data-media-paint-pending'));
    assert.equal(await pg.evaluate(()=>window.__fixtureHandoffPaint),1);
+   const state=await pg.evaluate(()=>window.__fixtureScrollState());assert.notEqual(state.intent,'FOLLOW_LATEST','no movement does not grant follow');assert(state.edge.gap>=0&&state.edge.top<=state.edge.max);
+   // Explicit movement to the actual end rearms follow; geometry alone never does.
+   await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});
+   await pg.waitForFunction(()=>window.__fixtureScrollState().intent==='READING_HISTORY');
+   const historyState=await pg.evaluate(()=>window.__fixtureScrollState());assert.equal(historyState.saved.pinned,false);assert(historyState.saved.reading?.id);
+   await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:500,bubbles:true}));m.scrollTop=m.scrollHeight-m.clientHeight});
+   await pg.waitForFunction(()=>window.__fixtureScrollState().intent==='FOLLOW_LATEST');
+   const settledState=await pg.evaluate(()=>window.__fixtureScrollState());assert(settledState.edge.atEnd&&settledState.saved.pinned&&settledState.visual.latestId);console.log('SCROLL-01 manual settle and visual edge',JSON.stringify(settledState.visual));
+
+
    // Reestablish explicit follow for the remaining independent tail regression cases.
    await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>!document.querySelector('#jumpBottom').hidden);await pg.locator('#jumpBottom').click();await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3});
 
@@ -179,6 +189,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    await pg.evaluate(()=>{const m=document.querySelector('#messages'),row=document.querySelector('[data-live-message-id="old-22"]');window.__fixtureHandoffPaint=0;window.__fixtureQueuePaint(row,()=>{window.__fixtureHandoffPaint++},()=>row.isConnected);if(row.dataset.mediaPaintPending!=='true')throw Error('Paint not queued before cancel');m.dispatchEvent(new WheelEvent('wheel',{deltaY:-1,bubbles:true}))});
    await pg.waitForFunction(()=>window.__fixtureHandoffPaint===1&&!document.querySelector('[data-live-message-id="old-22"]').hasAttribute('data-media-paint-pending'));
    assert.equal(await pg.evaluate(()=>window.__fixtureHandoffPaint),1);
+   const state=await pg.evaluate(()=>window.__fixtureScrollState());assert.notEqual(state.intent,'FOLLOW_LATEST','no movement does not grant follow');assert(state.edge.gap>=0&&state.edge.top<=state.edge.max);
+   // Explicit movement to the actual end rearms follow; geometry alone never does.
+   await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});
+   await pg.waitForFunction(()=>window.__fixtureScrollState().intent==='READING_HISTORY');
+   const historyState=await pg.evaluate(()=>window.__fixtureScrollState());assert.equal(historyState.saved.pinned,false);assert(historyState.saved.reading?.id);
+   await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:500,bubbles:true}));m.scrollTop=m.scrollHeight-m.clientHeight});
+   await pg.waitForFunction(()=>window.__fixtureScrollState().intent==='FOLLOW_LATEST');
+   const settledState=await pg.evaluate(()=>window.__fixtureScrollState());assert(settledState.edge.atEnd&&settledState.saved.pinned&&settledState.visual.latestId);console.log('SCROLL-01 manual settle and visual edge',JSON.stringify(settledState.visual));
+
+
    // Reestablish explicit follow for the remaining independent tail regression cases.
    await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>!document.querySelector('#jumpBottom').hidden);await pg.locator('#jumpBottom').click();await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3});
 
@@ -223,7 +243,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.getByRole('button',{name:'report.csv',exact:true}).click();await pg.getByRole('button',{name:'Không tải được · Thử lại',exact:true}).click();await pg.locator('a[download="report.csv"]').waitFor({state:'visible'});assert.equal(await pg.locator('a[download="report.csv"]').getAttribute('href').then(x=>x.startsWith('blob:')),true);
  await pg.getByRole('button',{name:'Tải ghi âm',exact:true}).click();await pg.locator('audio[data-media-part=audio]').waitFor({state:'visible'});await pg.waitForFunction(()=>document.querySelector('audio[data-media-part=audio]')?.readyState>=1);assert.equal(await pg.locator('audio[data-media-part=audio]').evaluate(e=>e.paused&&!e.autoplay&&e.controls),true);assert.equal(await pg.locator('a[download="voice.wav"]').count(),1);
  assert.deepEqual(await pg.evaluate(()=>window.calls),['session','directory','directory','thread','media','thread','media']);
- await pg.getByLabel('Nội dung tin nhắn',{exact:true}).focus();await pg.waitForFunction(()=>{const c=document.querySelector('#composer'),f=c.closest('.composer-frame');return c.getBoundingClientRect().width>=f.getBoundingClientRect().width*.90});await pg.waitForFunction(()=>{const m=document.querySelector('#messages'),f=document.querySelector('.composer-frame');return m.scrollHeight-m.clientHeight-m.scrollTop<3&&m.lastElementChild.getBoundingClientRect().bottom<=f.getBoundingClientRect().top+1});
+ await pg.getByLabel('Nội dung tin nhắn',{exact:true}).focus();await pg.waitForFunction(()=>{const c=document.querySelector('#composer'),f=c.closest('.composer-frame');return c.getBoundingClientRect().width>=f.getBoundingClientRect().width*.90});await pg.waitForFunction(()=>{const m=document.querySelector('#messages'),f=document.querySelector('.composer-frame');return m.scrollHeight-m.clientHeight-m.scrollTop<3&&m.lastElementChild.getBoundingClientRect().bottom<=f.getBoundingClientRect().top+1}).catch(async e=>{console.error('SCROLL-01 focus tail diagnostic',await pg.evaluate(()=>({state:window.__fixtureScrollState(),active:document.activeElement?.id,manual:window.__fixtureManualState?.(),last:document.querySelector('#messages').lastElementChild?.getBoundingClientRect().bottom,frame:document.querySelector('.composer-frame')?.getBoundingClientRect().top})));throw e});
  await pg.getByLabel('Nội dung tin nhắn',{exact:true}).fill('Tin gửi kiểm thử');
  const plusLive=pg.locator('#mediaBtn'),fileLive=pg.locator('[data-draft-media-picker]'),formLive=pg.locator('#composer');let liveChoosers=0;pg.on('filechooser',()=>liveChoosers++);
  const [chooserLive]=await Promise.all([pg.waitForEvent('filechooser'),plusLive.click()]);assert.equal(liveChoosers,1);assert.equal(chooserLive.isMultiple(),true);assert.equal(await formLive.getAttribute('data-native-picker'),'true');assert.equal(await pg.evaluate(()=>document.activeElement?.id),'draft');

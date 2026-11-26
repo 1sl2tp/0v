@@ -771,3 +771,11 @@ Existing jump frame hands queued work to scheduleImagePaint after loss of follow
 
 ## SCROLL-01 target parent contract (migration pending)
 ScrollController is sole live intent/position owner; Layout and KeyboardController expose actual visible interval and existing reserves, Message supplies latest identity, MediaController immutable display slots, Realtime/Cache keyed payload only. See RULES.md SCROLL-01a–h; no new owner or claim of completed runtime migration. S0 CI first.
+
+
+## v13.236 candidate — SCROLL-01 S1a
+ScrollController.edgeMetrics(extent,height,rawTop) returns clamped top/max/gap, actual end vs near threshold. intentState and tailPolicy separate passive events from focus; live geometry only schedules existing frame, no recurring focus observer. S1b/CI/native pending.
+
+
+## SCROLL-01 S1b candidate
+ScrollController.beginManual/manualScroll/scheduleManualSettle tracks same-extent movement and quiet settlement; savedPosition and visualEdge expose intent/anchor and physical/visual geometry. Restore uses existing anchor fallback. No keyboard owner edits.

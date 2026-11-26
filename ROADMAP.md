@@ -268,7 +268,8 @@ User requests original image audit. Existing authenticated standalone lab strips
 
 ## SCROLL-01 — approved priority migration (P02/P03/L04/L06)
 - S0 DOING: resolve #221/#222 CI WebKit image failure, release only exact-head green.
-- S1 TODO: central intent/edge metric, event matrix and one-shot focus; no keyboard geometry change.
+- S1a E1 candidate: central physical edge metric, passive tail policy, one-shot focus; isolated checks pass, full CI pending.
+- S1b E1 candidate: manual settle/rearm, saved intent and ID/offset, visual-edge diagnostic; exact CI, deleted-anchor fallback and native keyboard/history verification pending.
 - S2 TODO: fixed MediaController image slots, unknown dimensions and partial retry, existing bill geometry.
 - S3 TODO: A/B/ACK/restore/keyboard anchor integration; video/file reservation.
 - S4 TODO: Chromium/WebKit and actual Safari/PWA/Android E4, no premature DONE.
