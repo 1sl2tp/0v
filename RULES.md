@@ -1441,3 +1441,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-BILL-MEMO-REVIEW-01: Khi tên nằm trong vùng nội dung nhưng OCR đã phân loại thành sender_name, không tự ghép tên người gửi. Chỉ dùng bản chép trực tiếp từ ảnh đã soát, lưu tách biệt trong v0_private.bill_memo_review, ràng buộc asset/message/customer và hash OCR gốc; nếu OCR thay đổi thì bỏ bản chép cũ. Chỉ projection admin AAL2 hiện hữu sử dụng, không cấp quyền ghi client, không đổi raw_read, matcher, sổ, hoặc gửi tin. Không lưu ảnh/tên khách vào repo.
 
 - LIVE-BILL-BANK-PROOF-01: OCR 12 số thiếu 1 số 9 cuối vẫn lưu nguyên; chỉ khi receipt received có link thông báo Agribank đúng ledger cùng khách, khoản ghi có đúng STK đầy đủ, số tiền và phút/giờ chính xác mới trả bank_verified_account riêng. Không tự thêm số vào OCR, không đổi matcher, ledger hoặc kết quả thu. Không có bằng chứng thì tiếp tục cần xác minh.
+
+- LIVE-BILL-DIGIT-RECHECK-01: separate nullable ocr_rechecked_account from focused second reading. Require matching first raw account, second complete digits, digit count and source; display only, never treat as bank proof or overwrite original OCR.

@@ -45,6 +45,13 @@ BEGIN
           AND r.raw_read->>'transfer_time_printed_vn'=CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
           THEN r.raw_read->>'transfer_time_printed_vn' END,
         'receiving_account',left(r.receiving_account,200),'receiving_name',left(r.receiving_name,200),
+        'ocr_rechecked_account',CASE WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
+          AND r.raw_read->'account_digit_recheck'->>'source'='independent_focused_vision'
+          AND regexp_replace(coalesce(r.raw_read->'account_digit_recheck'->>'first_visible',''),'[[:space:]]','','g')='290118199999'
+          AND regexp_replace(coalesce(r.raw_read->'account_digit_recheck'->>'second_visible',''),'[[:space:]]','','g')='2901181999999'
+          AND r.raw_read->'account_digit_recheck'->>'digit_count'='13'
+          AND r.raw_read->'account_digit_recheck'->>'trailing_nines'='6'
+          THEN '2901181999999' END,
         'bank_verified_account',CASE WHEN r.status='received'
           AND regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
           AND EXISTS(SELECT 1 FROM public.chat_bank_app_collection_links k

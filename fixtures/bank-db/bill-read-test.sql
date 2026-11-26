@@ -51,6 +51,7 @@ INSERT INTO public.chat_bank_bill_receipts(media_asset_id,message_id,customer_ac
 ('50000000-0000-0000-0000-000000000005','40000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000003','received',26000,null,'{}',null),
 ('50000000-0000-0000-0000-000000000006','40000000-0000-0000-0000-000000000006','00000000-0000-0000-0000-000000000002','received',26000,2,'{"transfer_time_printed_vn":"21:52","transaction_time_precision":"minute","clock_text_conflict":true}','2026-11-25 21:52');
 UPDATE public.chat_bank_bill_receipts SET receiving_account='290118199999' WHERE media_asset_id IN ('50000000-0000-0000-0000-000000000001','50000000-0000-0000-0000-000000000006');
+UPDATE public.chat_bank_bill_receipts SET raw_read=raw_read||'{"account_digit_recheck":{"source":"independent_focused_vision","first_visible":"290118199999","second_visible":"2901181999999","digit_count":13,"trailing_nines":6}}'::jsonb WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
 INSERT INTO public.taphoa_agribank_notifications VALUES(1,'com.vnpay.Agribank3g','credit_candidate',false,'2901181999999',26000,'2026-11-25 21:52:00+07');
 INSERT INTO public.chat_bank_app_collection_links SELECT id,1,ledger_id FROM public.chat_bank_bill_receipts WHERE media_asset_id IN ('50000000-0000-0000-0000-000000000001','50000000-0000-0000-0000-000000000006');
 INSERT INTO v0_private.bill_memo_review(media_asset_id,message_id,customer_account_id,raw_read_hash,reviewed_memo,evidence_kind)
@@ -70,6 +71,7 @@ BEGIN
  IF jsonb_array_length(result->'assets')<>7 THEN RAISE EXCEPTION 'asset count'; END IF;
  a:=result->'assets'->0->'bill_receipt';
  IF a->>'amount_vnd' IS DISTINCT FROM '26000' OR a->>'has_ledger' IS DISTINCT FROM 'true' OR a->>'time_vn' IS DISTINCT FROM '21:52' OR a->>'date_vn' IS DISTINCT FROM '25/11/2026' OR a->>'transfer_content' IS DISTINCT FROM E'KHACH MAU\nChuyen tien' THEN RAISE EXCEPTION 'valid projection'; END IF;
+ IF a->>'ocr_rechecked_account' IS DISTINCT FROM '2901181999999' THEN RAISE EXCEPTION 'focused OCR projection'; END IF;
  IF a->>'bank_verified_account' IS DISTINCT FROM '2901181999999' OR a->>'receiving_account' IS DISTINCT FROM '290118199999' THEN RAISE EXCEPTION 'bank account proof or OCR preservation'; END IF;
  IF a ? 'raw_read' OR a ? 'ledger_id' OR result::text LIKE '%never-return%' THEN RAISE EXCEPTION 'private fields leaked'; END IF;
  a:=result->'assets'->1->'bill_receipt';
@@ -78,7 +80,7 @@ BEGIN
  IF result->'assets'->i->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'incorrect asset join'; END IF;
  END LOOP;
  a:=result->'assets'->5->'bill_receipt';
- IF a->>'has_ledger' IS DISTINCT FROM 'false' OR a->>'time_vn' IS NOT NULL OR a->>'bank_verified_account' IS NOT NULL THEN RAISE EXCEPTION 'wrong ledger or conflicting time'; END IF;
+ IF a->>'has_ledger' IS DISTINCT FROM 'false' OR a->>'time_vn' IS NOT NULL OR a->>'bank_verified_account' IS NOT NULL OR a->>'ocr_rechecked_account' IS NOT NULL THEN RAISE EXCEPTION 'wrong ledger or conflicting time'; END IF;
  IF result->'assets'->6->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'absent receipt'; END IF;
  BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000002'); RAISE EXCEPTION 'foreign room allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END;
  IF has_table_privilege(current_user,'v0_private.bill_memo_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','INSERT') OR has_table_privilege(current_user,'public.chat_bank_bill_receipts','SELECT') OR has_table_privilege(current_user,'public.taphoa_debt_ledger','SELECT') THEN RAISE EXCEPTION 'direct table access'; END IF;

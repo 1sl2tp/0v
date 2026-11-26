@@ -520,3 +520,5 @@ LIVE-DATA-PROJECTION-01: directory contact adds nullable avatar_path; existing p
 LIVE-BILL-MEMO-REVIEW-01: admin_media transfer_content uses independently visually reviewed memo only for exact asset/message/customer and matching OCR snapshot. No new public endpoint or client grant; canonical financial OCR evidence unchanged.
 
 LIVE-BILL-BANK-PROOF-01: nullable bank_verified_account is independent linked Agribank credit evidence for previously received truncated-tail OCR; original receiving_account is unchanged. Strict exact amount/time/account/linked collection/customer. UI must distinguish bank evidence from image OCR.
+
+LIVE-BILL-DIGIT-RECHECK-01: admin_media ocr_rechecked_account is nullable display-only second vision reading; distinct from bank_verified_account.
