@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.183)
+## 00. Chỉ mục rule đang có hiệu lực (v13.184)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1451,3 +1451,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-BILL-MEMO-LINE-01: giữ nguyên các dòng đọc từ ảnh làm bằng chứng; khi hiển thị nội dung nghiệp vụ thì gom toàn bộ khoảng trắng và xuống dòng thành một dấu cách. Không bỏ dòng, không dính chữ, không sửa raw_read hay sổ. Cả hai nguồn đối soát dùng chuẩn hóa hiện hữu, không nới điều kiện khớp.
 
 - LIVE-BILL-RECIPIENT-GATE-01 (supersedes live display eligibility in LIVE-BILL-05/06/09/BANK-PROOF-UI-01/DIGIT-RECHECK-UI-01): Bảng bill chỉ hiện khi tên nhận chuẩn hóa đúng BUI XUAN TUNG và STK nhận đủ 13 số đúng 2901181999999 từ OCR gốc hoặc bằng chứng hiệu chỉnh đã được API kiểm tra. 4–6 số 9/masked chỉ là dấu hiệu ứng viên, không tự xác nhận; chưa đủ bằng chứng thì giữ ảnh thường. Không thêm hàng Đối chiếu STK / Kiểm tra STK / Đọc lại STK vào bảng chính. Tên/STK/nội dung nằm trước thông tin bổ sung; giữ STK gốc và nguồn hiệu chỉnh ở phần bổ sung cuối. Trạng thái thu dựa trên dữ liệu thật, không đổi matcher/ledger, không ghi DB.
+
+- LIVE-BILL-REVIEW-REASONS-01: supersedes display hiding in RECIPIENT-GATE-01. Receipt server đúng asset/message, status thuộc tập bill và có tiền/ngày/giờ là ứng viên hiển thị để rà soát, kể cả sai/thiếu tên hoặc STK không có 4–6 số 9. Không đánh đồng nhận diện với hợp lệ. Hiện giá trị gốc sai, lý do riêng, đỏ trường sai; STK hiệu chỉnh chỉ từ bằng chứng API đã kiểm. Ngày khác hôm nay theo TimeAPI Asia/Ho_Chi_Minh báo rõ (quá khứ không mặc nhiên là giả), ngày tương lai và thiếu ngày/giờ báo riêng. Không đổi trạng thái thu hoặc gửi tin khách; không thay matcher. Giữ ảnh non_bill/không evidence bình thường.
