@@ -783,3 +783,5 @@ ScrollController.beginManual/manualScroll/scheduleManualSettle tracks same-exten
 
 ## v13.237 candidate — SCROLL-01 S2a
 MediaController.fixedRatios/fixedGallery/fixedImageState reserve display geometry from trusted metadata/default and update stable slot contents only. Existing cache and deferred paint ownership retained; bill/audit path unchanged. S2b and CI/device pending.
+
+- S2b candidate: mediaImageGroup delegates single live bill to MediaController.fixedGallery/fixedImageState; Layout retains paired frame at wide width and fixed portrait reservation at narrow width. Audit path remains separate.

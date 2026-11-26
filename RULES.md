@@ -1812,3 +1812,5 @@ S2: fixed media slot geometry in MediaController; 1–4 images and error/retry; 
 
 
 - SCROLL-01 S2a candidate: MediaController.fixedGallery/fixedRatios/fixedImageState owns ordinary live image slots, immutable display ratio through decode/error/retry; no collapse of failed slots. Existing bill/audit projection separate; S2b pending. Native verification pending.
+
+- SCROLL-01 S2b candidate: single live bill uses the same immutable media slots; narrow reserves portrait 3:4, wide inherits paired card height, image always contained. No audit or keyboard API change; browser/device pending.
