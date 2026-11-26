@@ -633,3 +633,6 @@ E0 user screenshot showed v13.200 OCR initialization failure, user wants horizon
 
 ## v13.202 — live init root cause
 Read AGENTS/RULES/COMPONENT-API/ROADMAP and existing source; confirmed live gate precedes const declarations in v13.201. Move contiguous shared API block without changing logic, keep demo UI after gate. 8 scripts parse; extracted shared block initialized, account label and OEM 0 checked; audit and browser test syntax checked. Authenticated standalone injected-worker test added (not run locally), full CI/Pages/native pending. No AI fallback, DB or keyboard changes. Actual CDN language data still not tested. Rollback v13.201.
+
+## v13.203 — visual triage / Storage budget
+Read AGENTS/RULES/COMPONENT-API/ROADMAP, Astryx Button and Adobe SelectionManager; OpenCV 4.10.0 threshold, morphology lines and template matching tutorials, Supabase serving/egress/logs docs. LIVE-BILL-VISUAL-PRIORITY-01/LIVE-BILL-STORAGE-BUDGET-01. 8 scripts parse, 3 synthetic visual cases passed; audit syntax checked. Shared RAM cache, inflight coalescing, real per-session counters and 5 minute automatic audit refresh; no change to auth/financial operations. Full hash scan remains, eviction can cause additional requests. No bank logo templates, no actual speed/egress measurement. CI/Pages pending. Stacked on PR183 to avoid changing its active CI. Rollback v13.202.
