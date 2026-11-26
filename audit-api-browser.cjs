@@ -128,10 +128,11 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='');
  await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight-m.scrollTop<3});
  // Late content growth must retain latest intent even after Main's initial layout frames.
- await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='600px');
- await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight-m.scrollTop<3});
- await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='');
- await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight-m.scrollTop<3});
+ const assertLiveTail=()=>pg.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight-m.scrollTop<3}).catch(async e=>{console.error('live tail resize diagnostic',await pg.evaluate(()=>{const m=document.querySelector('#messages');return {top:m.scrollTop,extent:m.scrollHeight,height:m.clientHeight,jumpHidden:document.querySelector('#jumpBottom').hidden}}));throw e});
+ for(let i=0;i<3;i++){
+  await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='600px');await assertLiveTail();
+  await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='');await assertLiveTail();
+ }
  // Intent must yield immediately to actual scroll input; later layout must not pull back down.
  await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});
  await pg.waitForFunction(()=>document.querySelector('#messages').scrollTop<=1);

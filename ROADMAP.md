@@ -234,3 +234,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 
 
 - v13.227 PR #212 post-touch tail regression: E1 candidate LIVE-MEDIA-SCROLL-04; content resize observer independent of tail intent, explicit jump and no-follow test. CI/Pages/native pending; keep v13.226 until exact-head gates pass.
+
+- v13.227 #212 E1 LIVE-MEDIA-SCROLL-05: reconcile clamped tail; three grow/shrink cycles; exact head CI pending.
