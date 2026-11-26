@@ -550,3 +550,5 @@ LIVE-BILL-STANDALONE-01: ?live=1&view=bills is a dedicated full-screen route of 
 LIVE-BILL-ENTRY-01: bill.html canonical alias activates the standalone Bill projection by pathname even with tracking parameters. Same original image, audit/annotation RPC and auth; no directory/thread bootstrap. All release entries share identical blob.
 
 LIVE-BILL-CLASSIFICATION-01: admin_bill_audit returns audit_kind bill/non_bill/other_transfer/unverified; BillAuditList.kind and filters use it. Hash-only copies have no artificial missing-field flags. No collection authority.
+
+LIVE-BILL-ID-01: BillAuditList.code derives a stable human-readable prefix from receipt id. Search indexes prefix, BILL-prefix and full UUID; copy full UUID. Prefix collision may return multiple records.
