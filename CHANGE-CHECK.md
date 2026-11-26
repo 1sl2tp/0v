@@ -650,3 +650,6 @@ E0 user requests six fields on standalone page. v13.204 both CI checks passed an
 
 ## v13.206 LSTM manual OCR
 E0 user approves upgrade after noisy Legacy read. v13.205 both CI checks passed and merged. Reviewed pinned upstream Tesseract API/performance/createWorker; keep demo OEM0 isolated, change live owner to OEM1, one worker, bounded upscale and parse-only receipt layout. Added synthetic test for two explicit reads with one worker; CI/Pages/live OCR performance and accuracy pending. No backend or financial mutation. Rollback v13.205.
+
+## v13.208 manual vision
+User rejects OCR heuristic, approves AI. v13.207 failed CI and not merged; branch from published v13.206. Inspected current deployed internal acceptance function and exact auth scope SQL; separate caller-authenticated endpoint, one model request, no ledger/DB mutation. Updated browser fixture for explicit calls and no on-load calls. CI, auth negative tests, actual provider call and live accuracy pending. Rollback v13.206. Existing automated collection unchanged.
