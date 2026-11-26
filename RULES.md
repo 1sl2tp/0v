@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.196)
+## 00. Chỉ mục rule đang có hiệu lực (v13.197)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1488,3 +1488,6 @@ Standalone Bill uses existing Button/CardController for two explicitly disabled 
 
 ## v13.196 — LIVE-BILL-BATCH-PLAN-01
 Replace two disabled controls with one disabled all-Bill control. BillAuditList.batchPlan is a read-only count projection of loaded unsaved review records, maximum 50 per estimated group; do not claim submitted, running, actual membership, or completion. Real grouping depends on image eligibility and payload limits. Refresh uses existing audit fetch; no dispatch or persistent job claim. Future approved backend must enforce durable campaign ownership, idempotency and resume independently of browser. No finance/keyboard change.
+
+## v13.197 — LIVE-BILL-SIMPLE-REVIEW-01
+User requests a standalone image/content view. Supersedes Batch controls/plan in standalone UI; all loaded audit image records (including previous nonbill/uncertain) shown by newest, simple search/refresh/pagination. Each row uses existing CardController.billPair and authorized media loader with two equal columns, right stored OCR projection clearly labeled, no financial status, manual editor, or fake read progress. No backend change or new AI call. Existing records scope is not a claim of whole media library. Preserve integrated audit and keyboard.

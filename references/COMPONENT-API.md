@@ -567,3 +567,6 @@ Existing CardController.panel and Button.create with native disabled; only exist
 
 ## v13.196 — BillAuditList.batchPlan(pending)
 Pure count projection (0..1000) at max 50 records; returns planned number/count, not actual jobs. Existing CardController rows and one disabled native Button; saved-result sync remains read-only. No endpoint calls added.
+
+## v13.197 — standalone image review
+Existing BillAuditList.effective/select, CardController.billPair and mediaImageGroup; two columns, all loaded records, search and read-only refresh. Existing integrated audit preserved. No new data API.

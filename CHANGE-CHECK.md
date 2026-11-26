@@ -609,3 +609,6 @@ Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Button / Adobe Selecti
 
 ## v13.196 — single Batch plan control
 Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Card/Adobe SelectionManager. LIVE-BILL-BATCH-PLAN-01; replaces two buttons with one disabled button, read-only dynamic estimated groups, clears on session reset. 7 synthetic plan cases and 8 script syntax checks passed. No submission, backend change or finances; durable one-click workflow not available. CI/Pages/native pending.
+
+## v13.197 — two-column image review
+Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Card/Adobe SelectionManager. User overrides prior Batch plan UI; remove disabled Batch controls and finance/review/editor controls from standalone projection, all loaded audit image records and clear stored-result provenance; old route remains alias. 8 inline scripts parse; static projection check passed; full CI/Pages/native pending. No production writes or new OCR execution; current API scope may not cover all images.
