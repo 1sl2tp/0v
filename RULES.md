@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.192)
+## 00. Chỉ mục rule đang có hiệu lực (v13.193)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1477,3 +1477,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-BILL-CURRENT-RESULT-01: saved review corrections (including isolated AI reread) overlay only the audit display, not financial receipts. Current values and field-level flags are used in audit list; original OCR remains expandable, no duplicate correction rows. Preserve independent conflict flags and original status/ledger. Explicit null means missing, not fallback. No keyboard changes.
 
 - LIVE-BILL-FRESHNESS-01: standalone Bill uses the existing audit RPC on foreground return and the authenticated 60-second heartbeat; do not reload while editing, using an open dialog, hidden, or request in flight. Preserve page and scroll, skip rebuild when unchanged, show Vietnam fetch time. Missing OCR fields are not confirmed absent; only checked explicit null may say absent. No financial or keyboard change.
+
+- LIVE-BILL-READ-TIME-01: each Bill result shows persisted OCR scan timestamp and latest saved audit result timestamp, formatted in Asia/Ho_Chi_Minh; never substitute browser fetch time, transaction time or current time. Manual correction save time is not claimed as AI execution time. Null remains unknown. No financial mutations.

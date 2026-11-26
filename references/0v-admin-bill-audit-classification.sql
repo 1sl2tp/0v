@@ -10,6 +10,7 @@ BEGIN
       md5(coalesce(r.raw_read::text,'')) AS raw_hash,
       coalesce(n.review_state,'pending') AS review_state,coalesce(n.revision,0) AS review_revision,
       coalesce(n.corrections,'{}'::jsonb) AS corrections,coalesce(n.note,'') AS review_note,
+      r.scanned_at AS ocr_scanned_at,n.updated_at AS result_saved_at,
       (r.ledger_id IS NOT NULL AND EXISTS(SELECT 1 FROM public.taphoa_debt_ledger l WHERE l.id=r.ledger_id AND l.customer_account_id=r.customer_account_id AND l.entry_type='collection')) AS has_ledger,
       a.id AS asset_id,a.message_id,a.conversation_id,a.kind,a.mime_type,a.storage_key,
       left(cust.display_name,150) AS customer,m.created_at AS sent_at,

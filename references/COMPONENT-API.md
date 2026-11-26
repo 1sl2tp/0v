@@ -556,3 +556,5 @@ LIVE-BILL-ID-01: BillAuditList.code derives a stable human-readable prefix from 
 LIVE-BILL-CURRENT-RESULT-01: BillAuditList.effective derives latest visible values from stored correction keys; original_ocr preserves previous fields, affected data-gap flags recalculated. Audit source rows remain unchanged. No finance writes.
 
 LIVE-BILL-FRESHNESS-01: fetchAudit({background}) uses existing RPC with single flight and scope guard; refreshAuditVisible skips active edits/dialogs/hidden; only changed rows rerender, stable search/page and scroll. No new API or financial writes.
+
+LIVE-BILL-READ-TIME-01: scoped audit RPC adds ocr_scanned_at and result_saved_at (nullable timestamptz); Card formats Vietnam time, distinct from transaction and page-fetch timestamps.
