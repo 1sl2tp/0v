@@ -1,6 +1,6 @@
 // P05.1: offline audit orchestration only. No network, storage or finance adapter.
-export async function auditBatch({rows,version,checkpoint,read,save,limit=10,now=Date.now()}) {
- if(!Number.isInteger(limit)||limit<1||limit>10||!version||!Array.isArray(rows)) throw Error('invalid scope');
+export async function auditBatch({rows,version,checkpoint,read,save,link,limit=10,now=Date.now()}) {
+ if(!Number.isInteger(limit)||limit<1||limit>10||!version||!Array.isArray(rows)||typeof link!=='function') throw Error('invalid scope');
  const priority=r=>r.status==='review'?0:r.missing?1:r.status==='received'?2:3;
  const sorted=[...rows].sort((a,b)=>priority(a)-priority(b)||a.id.localeCompare(b.id));
  let calls=0,linked=0,invalid=0,terminal=0,blockedUntil=null;
@@ -8,8 +8,8 @@ export async function auditBatch({rows,version,checkpoint,read,save,limit=10,now
   if(!r.id||!r.assetId||!r.hash||!/^[a-f0-9]{64}$/i.test(r.hash)){invalid++;continue;}
   const key=JSON.stringify([version,r.hash.toLowerCase()]);
   const prior=await checkpoint(key);
-  if(prior?.state==='done'){await save({id:r.id,assetId:r.assetId,key,state:'linked',result:prior.result});linked++;continue}
-  if(prior?.state==='terminal'){terminal++;await save({id:r.id,assetId:r.assetId,key,state:'linked_terminal',category:prior.category});continue;}
+  if(prior?.state==='done'){await link({id:r.id,assetId:r.assetId,key,state:'linked',result:prior.result});linked++;continue}
+  if(prior?.state==='terminal'){terminal++;await link({id:r.id,assetId:r.assetId,key,state:'linked_terminal',category:prior.category});continue;}
   if(prior?.retryAt>now){blockedUntil=prior.retryAt;break}
   if(calls>=limit)break;
   calls++;

@@ -845,3 +845,7 @@ User reports white “Đang khôi phục phiên…” on reopen/resume/F5. E0: v
 
 ### P05.1 — Offline historical bill batch candidate
 RULE-GATE-01–06 / ROADMAP-01–04 / LIVE-BILL-SINGLE-READER-01: offline orchestration fixture only, injected reader and checkpoint, maximum ten sequential calls, hash+version deduplication, quota pause, bounded attempts. No new OCR implementation or production adapter; authorization, durable private checkpoint, hash verification, concurrency lock, independent image truth and actual CI remain pending. No runtime version or financial change. Synthetic test added but not yet executed; audit-design.cjs pending. Rollback: revert fixture files and this entry.
+
+
+### P05.1 — repair synthetic checkpoint regression
+E0: PR #213 head f134e0ea, [Bill fixture 45844998154](https://github.com/1sl2tp/0v/actions/runs/45844998154), line 20 actual 1 expected 0. Shared save adapter overwrites terminal with linked_terminal. E1 candidate BILL-AUDIT-CHECKPOINT-01: separate mandatory link callback from canonical save; retain prior tests, add repeated terminal alias and done checkpoint assertions. Offline synthetic scope only; no runtime version, image access, database or finance change. Exact-head CI pending; independent image truth and real adapter remain BLOCKED. Rollback this candidate commit.

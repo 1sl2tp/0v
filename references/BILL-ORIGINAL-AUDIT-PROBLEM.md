@@ -47,3 +47,7 @@ Sau đợt ưu tiên, lấy mẫu đúng từ VietinBank, Vietcombank, MB, Co-op
 
 ## 6. Bằng chứng và giới hạn
 SELECT trực tiếp public.chat_bank_bill_receipts, storage.buckets/objects ngày 26/11; xem source v0-bill-vision-manual v9 và owner docs. Chưa lấy bytes ảnh, chưa có ground truth, không chạy mô hình mới, không sửa kết quả lưu hoặc quyền. Không đổi HTML hay version runtime. P05.1 độc lập về tài liệu, không chặn PR UI đang chạy.
+
+
+### Checkpoint contract (offline fixture)
+`save` writes canonical hash+reader-version state only; `link` writes separate per-receipt/asset references. Both must be durable in any future authorized adapter; linking never overwrites a terminal/done checkpoint. A link write failure aborts instead of rerunning OCR. Concurrent production execution still requires a lock and is not enabled here.
