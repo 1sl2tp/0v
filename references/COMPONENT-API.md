@@ -526,3 +526,5 @@ LIVE-BILL-DIGIT-RECHECK-01: admin_media ocr_rechecked_account is nullable displa
 LIVE-BILL-BANK-PROOF-UI-01: BillReceiptProjection uses bank_verified_account only for truncated-tail + received + has_ledger and exact configured account. Original OCR remains accessible; no change to recognition or collection.
 
 LIVE-BILL-DIGIT-RECHECK-UI-01: BillReceiptProjection prefers strict linked bank proof; otherwise accepts exact focused OCR projection for truncated-tail only; retains original and displays no bank confirmation.
+
+LIVE-BILL-MEMO-LINE-01: BillReceiptProjection converts runs of whitespace to one space for displayed memo only. Image transcription remains literal, business comparison retains existing normalization and guards.

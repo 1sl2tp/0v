@@ -1447,3 +1447,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-BILL-BANK-PROOF-UI-01: chỉ sử dụng bank_verified_account cho OCR thiếu đúng số 9 cuối, trạng thái received, có ledger và STK xác nhận đúng cấu hình. Giữ STK OCR gốc trong thông tin bổ sung; trạng thái đã ghi thu không đồng nghĩa OCR hoàn hảo. Không có bằng chứng giữ cảnh báo, không tự điền số.
 
 - LIVE-BILL-DIGIT-RECHECK-UI-01: khi có ocr_rechecked_account hợp lệ, hiển thị kết quả đọc lần hai, giữ nguyên STK OCR gốc; chỉ bank_verified_account mới được ghi Khớp Agribank. Không thay đổi trạng thái thu ngoài trạng thái thật.
+
+- LIVE-BILL-MEMO-LINE-01: giữ nguyên các dòng đọc từ ảnh làm bằng chứng; khi hiển thị nội dung nghiệp vụ thì gom toàn bộ khoảng trắng và xuống dòng thành một dấu cách. Không bỏ dòng, không dính chữ, không sửa raw_read hay sổ. Cả hai nguồn đối soát dùng chuẩn hóa hiện hữu, không nới điều kiện khớp.

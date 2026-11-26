@@ -566,3 +566,5 @@ LIVE-BILL-DIGIT-RECHECK-01: CHAT PR #418 introduces independent focused reading,
 LIVE-BILL-BANK-PROOF-UI-01: v13.182 hiển thị riêng STK ngân hàng xác nhận và STK OCR gốc, không yêu cầu xác minh lại khoản đã được liên kết Agribank. E0 exact receipt read-only evidence; E1 render-only, synthetic positive/negative audit + Chromium fixture. Backend PR #160 dependency, CI pending. No changes to financial records.
 
 LIVE-BILL-DIGIT-RECHECK-UI-01: display-only rechecked account distinct from bank proof; added positive and status-preservation fixture. Backend #160 and OCR #418 dependencies. CI pending.
+
+LIVE-BILL-MEMO-LINE-01: user requests single-line logical memo. Existing CHAT tidy already removes whitespace on both operands; no new matching rule needed. Normalize bill display whitespace, preserve raw and reviewed evidence. Browser fixture checks one-line text from multiline payload. CI pending. Backend PR #160 deployed; 83 historical truncated accounts have exact linked bank evidence; remaining require reread. No financial mutation.
