@@ -788,3 +788,6 @@ MediaController.fixedRatios/fixedGallery/fixedImageState reserve display geometr
 
 ## v13.238 S3a candidate
 ScrollController.beginProjection(event,el) / finishProjection(tx,el,alias) owns passive live projection with room/epoch guard and reading anchor; explicitLocalSend owns send intent. ACK alias maps pending to confirmed ID. Cache replay and Realtime do not acquire follow. Browser/native pending.
+
+## v13.239 S3b candidate
+ScrollController.normalizeReadingAnchor/anchorCandidates bounds persisted neighbor offsets; restore tries primary and nearby surviving rows. MediaController.reservePart owns fixed attachment frame from declared type. Browser/native pending.
