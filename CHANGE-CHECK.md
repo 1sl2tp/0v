@@ -709,3 +709,7 @@ Read AGENTS, active typography/CONTENT-AB rules, COMPONENT-API, ROADMAP and sour
 
 ### v13.216 follow-up — presentation and CI correction
 E0 run 45766048105 static version check false: RULE index stale v13.215; contentABContract true. Corrected index, scoped A/B visual policy, dotted links, hide thread clock/date (retain DOM metadata/send error), prefix cleanup via Contact.preview, scoped native family inheritance. Updated browser assertions for hidden clocks/new surfaces. Three preview cases, syntax and four locked keyboard ranges pass in connector. Real CI/device pending. No DB, CHAT, bank timestamp, keyboard or cache mutation.
+
+
+### v13.216 CI follow-up
+E0 API PR run 45766529230 / job 139728648984: audit-design.cjs line 356 extraction used old Contact.create-first literal; Contact.preview now first method, so end index -1 included HTML. Fix audit boundary to stable Contact object declaration; preserve tests. BillAuditList extraction and sample sort executed successfully. Connector auditDesign 130 checks, pass=false; not equivalent to Node CI; no runtime, snapshot, keyboard or database changes. Full CI/Pages/native pending.
