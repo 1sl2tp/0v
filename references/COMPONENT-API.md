@@ -552,3 +552,5 @@ LIVE-BILL-ENTRY-01: bill.html canonical alias activates the standalone Bill proj
 LIVE-BILL-CLASSIFICATION-01: admin_bill_audit returns audit_kind bill/non_bill/other_transfer/unverified; BillAuditList.kind and filters use it. Hash-only copies have no artificial missing-field flags. No collection authority.
 
 LIVE-BILL-ID-01: BillAuditList.code derives a stable human-readable prefix from receipt id. Search indexes prefix, BILL-prefix and full UUID; copy full UUID. Prefix collision may return multiple records.
+
+LIVE-BILL-CURRENT-RESULT-01: BillAuditList.effective derives latest visible values from stored correction keys; original_ocr preserves previous fields, affected data-gap flags recalculated. Audit source rows remain unchanged. No finance writes.

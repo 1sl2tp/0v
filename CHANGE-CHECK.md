@@ -594,3 +594,5 @@ LIVE-BILL-ENTRY-01 E0 user explicitly wants separate page file rather than query
 LIVE-BILL-CLASSIFICATION-01 E0 DB found 13 hash-only duplicate rows; 3 origins confirmed nonbill, 9 target-suffix originals, 1 unverified bank image. E1 read-only classification and frontend categories, synthetic DB same-hash fixture and UI filter regression. No financial writes or data deletion; CI, migration and Pages pending. Rollback to prior admin_bill_audit definition. Existing parent Card/Collection reused.
 
 LIVE-BILL-ID-01 E0 user requests stable bill identifier for feedback. E1 display immutable receipt prefix, copy full UUID and search by either; no new parent or backend change. Existing Card/Button reused. Syntax and isolated search tests before PR; full CI and Pages pending.
+
+LIVE-BILL-CURRENT-RESULT-01 E0 owner requests replace displayed OCR with actual reread. E1 overlay existing correction store; original remains expandable, current flags/search/sort use effective row, independent conflict evidence retained. Local synthetic tests; full CI/Pages pending. No financial or keyboard changes.
