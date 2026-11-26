@@ -35,7 +35,9 @@ begin
             nullif(m.body,''),'') as preview_text,
         coalesce(ma.created_at,m.created_at) as latest_at,
         coalesce(ma.created_at,m.created_at,a.created_at) as activity,
-        unread.total > 0 as has_unread, unread.total as unread_count
+        unread.total > 0 as has_unread, unread.total as unread_count,
+        own_state.last_read_at, peer_state.last_read_at as peer_last_read_at,
+        true as read_ack_supported
       from public.v21_accounts a
       left join lateral (
         select vc.id from public.v21_conversations vc
@@ -51,6 +53,8 @@ begin
           and (m.id is null or vma.message_id=m.id)
         order by vma.created_at desc,vma.id desc limit 1
       ) ma on true
+      left join public.v21_read_states own_state on own_state.conversation_id=c.id and own_state.account_id=me
+      left join public.v21_read_states peer_state on peer_state.conversation_id=c.id and peer_state.account_id=a.id
       cross join lateral (
         select count(*)::integer as total from public.v21_messages u
         left join public.v21_read_states rs on rs.conversation_id=c.id and rs.account_id=me
@@ -77,4 +81,34 @@ begin
   else raise exception 'invalid_read_request' using errcode='22023';
   end if;
 end;
-$function$
+$function$;
+
+-- Review only: apply together with directory count/feature flag, after isolated security tests.
+-- Shared read state is explicitly the existing v21_read_states; no message/ledger mutation.
+CREATE OR REPLACE FUNCTION v0_private.admin_mark_seen(p_conversation_id uuid,p_message_ids uuid[])
+RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $$
+DECLARE me uuid; before_at timestamptz; boundary timestamptz; next_at timestamptz; confirmed timestamptz; total integer;
+BEGIN
+  me := (v0_private.admin_read('session',null)->>'account_id')::uuid;
+  IF coalesce(auth.jwt()->>'aal','') <> 'aal2' THEN RAISE EXCEPTION 'mfa_required' USING errcode='42501'; END IF;
+  IF p_conversation_id IS NULL OR p_message_ids IS NULL OR cardinality(p_message_ids) NOT BETWEEN 1 AND 100 OR array_position(p_message_ids,NULL) IS NOT NULL THEN RAISE EXCEPTION 'invalid_seen_ids' USING errcode='22023'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM public.v21_conversations c JOIN public.v21_accounts a ON a.id=CASE WHEN c.member_a=me THEN c.member_b ELSE c.member_a END WHERE c.id=p_conversation_id AND me IN(c.member_a,c.member_b) AND a.role='user' AND a.deleted_at IS NULL AND a.locked_at IS NULL) THEN RAISE EXCEPTION 'conversation_forbidden' USING errcode='42501'; END IF;
+  IF EXISTS(SELECT 1 FROM unnest(p_message_ids) id WHERE NOT EXISTS(SELECT 1 FROM public.v21_messages m WHERE m.id=id AND m.conversation_id=p_conversation_id AND m.sender_account_id<>me AND m.deleted_at IS NULL)) THEN RAISE EXCEPTION 'message_not_in_scope' USING errcode='42501'; END IF;
+  SELECT coalesce((SELECT last_read_at FROM public.v21_read_states WHERE conversation_id=p_conversation_id AND account_id=me),'epoch'::timestamptz) INTO before_at;
+  -- Stop at first unseen incoming timestamp. Equal timestamps are one atomic group.
+  SELECT min(m.created_at) INTO boundary FROM public.v21_messages m WHERE m.conversation_id=p_conversation_id AND m.sender_account_id<>me AND m.deleted_at IS NULL AND m.created_at>before_at AND NOT (m.id=ANY(p_message_ids));
+  SELECT max(m.created_at) INTO next_at FROM public.v21_messages m WHERE m.conversation_id=p_conversation_id AND m.sender_account_id<>me AND m.deleted_at IS NULL AND m.created_at>before_at AND m.id=ANY(p_message_ids) AND (boundary IS NULL OR m.created_at<boundary);
+  IF next_at IS NOT NULL THEN
+    INSERT INTO public.v21_read_states(conversation_id,account_id,last_read_at) VALUES(p_conversation_id,me,next_at)
+    ON CONFLICT(conversation_id,account_id) DO UPDATE SET last_read_at=excluded.last_read_at,version=public.v21_read_states.version+1,updated_at=now() WHERE public.v21_read_states.last_read_at<excluded.last_read_at;
+  END IF;
+  SELECT coalesce((SELECT last_read_at FROM public.v21_read_states WHERE conversation_id=p_conversation_id AND account_id=me),'epoch'::timestamptz) INTO confirmed;
+  SELECT count(*)::integer INTO total FROM public.v21_messages m WHERE m.conversation_id=p_conversation_id AND m.sender_account_id<>me AND m.deleted_at IS NULL AND m.created_at>confirmed;
+  RETURN jsonb_build_object('account_id',me,'conversation_id',p_conversation_id,'last_read_at',confirmed,'unread_count',total);
+END; $$;
+REVOKE ALL ON FUNCTION v0_private.admin_mark_seen(uuid,uuid[]) FROM public,anon,authenticated,service_role;
+GRANT EXECUTE ON FUNCTION v0_private.admin_mark_seen(uuid,uuid[]) TO authenticated;
+CREATE OR REPLACE FUNCTION public.v0_admin_mark_seen(p_conversation_id uuid,p_message_ids uuid[])
+RETURNS jsonb LANGUAGE sql SECURITY INVOKER SET search_path TO '' AS $$ SELECT v0_private.admin_mark_seen(p_conversation_id,p_message_ids) $$;
+REVOKE ALL ON FUNCTION public.v0_admin_mark_seen(uuid,uuid[]) FROM public,anon,authenticated,service_role;
+GRANT EXECUTE ON FUNCTION public.v0_admin_mark_seen(uuid,uuid[]) TO authenticated;
