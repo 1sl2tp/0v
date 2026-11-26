@@ -745,3 +745,7 @@ User requests ChatGPT/WhatsApp/Zalo/Facebook Messenger options. E1 Message paren
 
 ## v13.219 — compact directory utilities
 User requests avatar unread dot, remove redundant top/footer, + vertical utility menu. Contact badge grid and expanded preview; Main + menu reuses Popup and existing actions. Search opens recipient selection, no send mutation. CSS live mobile only compact toolbar. Four locked ranges unchanged; browser logout/menu and badge tests added; full CI, Pages and physical Safari pending. Astryx Button, Radix dropdown and Adobe SelectionManager studied; Chatwoot guessed path unavailable, no claim of copied UI. No production data or keyboard changes.
+
+
+### v13.219 CI repair
+Run 45771074600 job 139743585228 failed only noDirectFontSizes: unread badge hardcoded 11px. Replace with existing Typography --type-version token, same size. No audit bypass, layout or keyboard change. Browser CI and Pages pending.
