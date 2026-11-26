@@ -44,15 +44,15 @@ BEGIN
           AND jsonb_typeof(r.raw_read->'transfer_time_printed_vn')='string'
           AND r.raw_read->>'transfer_time_printed_vn'=CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
           THEN r.raw_read->>'transfer_time_printed_vn' END,
-        'receiving_account',left(r.receiving_account,200),'receiving_name',left(r.receiving_name,200),
-        'ocr_rechecked_account',CASE WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999' AND ar.reviewed_account='2901181999999' THEN ar.reviewed_account WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
+        'receiving_account',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_account,200) END,'receiving_name',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_name,200) END,
+        'ocr_rechecked_account',CASE WHEN memo_only.flag THEN NULL WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999' AND ar.reviewed_account='2901181999999' THEN ar.reviewed_account WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
           AND r.raw_read->'account_digit_recheck'->>'source'='independent_focused_vision'
           AND regexp_replace(coalesce(r.raw_read->'account_digit_recheck'->>'first_visible',''),'[[:space:]]','','g')='290118199999'
           AND regexp_replace(coalesce(r.raw_read->'account_digit_recheck'->>'second_visible',''),'[[:space:]]','','g')='2901181999999'
           AND r.raw_read->'account_digit_recheck'->>'digit_count'='13'
           AND r.raw_read->'account_digit_recheck'->>'trailing_nines'='6'
           THEN '2901181999999' END,
-        'bank_verified_account',CASE WHEN r.status='received'
+        'bank_verified_account',CASE WHEN memo_only.flag THEN NULL WHEN r.status='received'
           AND regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
           AND EXISTS(SELECT 1 FROM public.chat_bank_app_collection_links k
             JOIN public.taphoa_agribank_notifications n ON n.id=k.notification_id
@@ -64,7 +64,7 @@ BEGIN
               AND n.transfer_at AT TIME ZONE 'Asia/Ho_Chi_Minh'=r.transfer_at_vn)
           THEN '2901181999999' END,
         'transfer_content',coalesce(v.reviewed_memo,CASE WHEN jsonb_typeof(r.raw_read->'transfer_content')='string' THEN left(r.raw_read->>'transfer_content',1000) END),
-        'transfer_reference',left(r.transfer_reference,200),'sending_bank',left(r.sending_bank,200),'receiving_bank',left(r.receiving_bank,200)
+        'transfer_reference',left(r.transfer_reference,200),'sending_bank',left(r.sending_bank,200),'receiving_bank',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_bank,200) END
       ) END AS bill_receipt
     FROM public.v21_media_assets a
     JOIN (SELECT id FROM public.v21_messages WHERE conversation_id=p_conversation_id AND deleted_at IS NULL ORDER BY created_at DESC,id DESC LIMIT 100) m ON m.id=a.message_id
@@ -80,21 +80,22 @@ BEGIN
     -- Recover display only from the original explicit debit amount and agreeing
     -- short printed date/clock. Never change the receipt status or ledger.
     LEFT JOIN LATERAL (
+      SELECT coalesce(r.status='review' AND r.ledger_id IS NULL
+        AND r.raw_read->>'amount_role'='sender_debit'
+        AND r.raw_read->>'image_type'='bank_credit_notification'
+        AND r.raw_read->>'sending_bank'='BIDV'
+        AND r.raw_read->>'transfer_content' ~* '^SMB-TkThe[[:space:]]*:',false) AS flag
+    ) memo_only ON true
+    LEFT JOIN LATERAL (
       SELECT CASE WHEN r.status='review' AND r.ledger_id IS NULL AND r.amount_vnd IS NULL
         AND r.raw_read->>'image_type'='bank_credit_notification'
         AND r.raw_read->>'amount_role'='sender_debit'
         AND r.raw_read->>'transaction_nature'='transfer'
         AND r.raw_read->>'amount_clear'='true' AND r.raw_read->>'transfer_success_visible'='true'
-        AND r.raw_read->>'amount_text' ~ '^-[0-9]{1,3}(,[0-9]{3}){1,5}[[:space:]]*VND
-  ) x;
-  RETURN jsonb_build_object('account_id',me,'assets',result);
-END;
-$function$;
-
+        AND r.raw_read->>'amount_text' ~ '^-[0-9]{1,3}(,[0-9]{3}){1,5}[[:space:]]*VND$'
         AND r.transfer_at_vn IS NOT NULL AND extract(year from r.transfer_at_vn) BETWEEN 2000 AND 2099
-        AND r.raw_read->>'transfer_date_printed_raw_vn'=to_char(r.transfer_at_vn,'DD/MM/YY')
+        AND ((r.raw_read->>'transfer_date_printed_raw_vn'=to_char(r.transfer_at_vn,'DD/MM/YY') AND r.raw_read->>'printed_date_invalid'='true') OR (memo_only.flag AND r.raw_read->>'transfer_date_printed_vn'=to_char(r.transfer_at_vn,'DD/MM/YYYY') AND coalesce(r.raw_read->>'printed_date_invalid','false')='false'))
         AND r.raw_read->>'transfer_date_vn'=to_char(r.transfer_at_vn,'YYYY-MM-DD')
-        AND r.raw_read->>'printed_date_invalid'='true'
         AND r.raw_read->>'transaction_time_precision'='minute'
         AND r.raw_read->>'transfer_time_printed_vn'=to_char(r.transfer_at_vn,'HH24:MI')
         AND coalesce(r.raw_read->>'time_date_conflict','false')='false'

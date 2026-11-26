@@ -538,3 +538,5 @@ LIVE-BILL-REVIEW-REASONS-01: BillReceiptProjection.read(asset,now=ISO) returns f
 LIVE-BILL-HISTORY-DATE-01: BillReceiptProjection.read uses ParseAPI.billDate and FormatAPI.date, and TimeAPI.businessDate only as future-date upper bound; accepts historical dates and explicit mixed text, retains missing/invalid date/clock reasons. No ledger changes.
 
 LIVE-BILL-LEGACY-DEBIT-01: admin_media returns recovered display-only amount_vnd/date_vn for tightly constrained legacy sender-debit OCR with matching literal short year and clock. Review status remains unchanged and has_ledger false. Same ACL and exact asset binding; no schema or financial mutation.
+
+LIVE-BILL-JOURNAL-MEMO-01: legacy admin_media review-only BIDV SMB-TkThe notification masks falsely inferred recipient fields while keeping memo and recovering explicit negative transaction amount for a matching printed date/clock. No collection authority.
