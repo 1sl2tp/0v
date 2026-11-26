@@ -753,3 +753,7 @@ Run 45771074600 job 139743585228 failed only noDirectFontSizes: unread badge har
 
 ### v13.219 chat typography follow-up
 User screenshot shows current chat text visually larger than ChatGPT. E1 change root --type-chat 17→16, line 24 unchanged, system sans fallback stack. Input 17/22 remains; no geometry/keyboard owner modifications. Astryx token source and Tailwind theme inspected; role tests updated and family assertion added. Four protected ranges byte-identical; full CI and native comparison pending. Same unreleased v13.219.
+
+
+### v13.219 text case and unread follow-up
+User reports t7 remains lowercase. Existing regex protected all leading letter+number tokens; allow short one-letter one-digit conversational tokens, preserve longer codes and URL/email. 10 pure tests passed. Contact unread state emphasizes name/preview and existing avatar dot/count, no read-state mutation. New screenshot unavailable; no claim visual match. Browser regressions added, four protected ranges byte-identical; exact CI and Pages pending. No DB or keyboard changes.

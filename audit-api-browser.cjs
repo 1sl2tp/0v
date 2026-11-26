@@ -24,6 +24,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  }
  await p.reload();assert.equal((await get()).key,'messenger');await p.close();
  }
+ // Shared capitalization and unopened unread projection (fixture).
+ {
+ const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?kbmode=light');
+ await p.locator('.contact[data-id=kh]').evaluate(e=>e.click());
+ await p.locator('#draft').fill('t7 a nghỉ rồi');await p.locator('#composer').evaluate(e=>e.requestSubmit());
+ assert.equal(await p.locator('#messages .message.mine').last().locator('.bubble').textContent(),'T7 a nghỉ rồi');
+ await p.evaluate(()=>window.receiveDemo('ncc','t7 có hàng'));
+ const row=p.locator('.contact[data-id=ncc]');assert.equal(await row.getAttribute('data-contact-unread'),'true');assert.equal(await row.locator('.unread-count').textContent(),'1');assert((await row.locator('.identity small').textContent()).includes('T7 có hàng'));
+ await row.evaluate(e=>e.click());assert.equal(await p.locator('#messages .message').last().locator('.bubble').textContent(),'T7 có hàng');await p.close()
+ }
  // Local printed orientation regression (synthetic, no customer data).
  {
  const p=await browser.newPage();await p.goto(url+'?kbmode=light');const method=require('node:fs').readFileSync('index.html','utf8').split(' printedOrientation(source){')[1].split(' clampZoom(value){')[0];

@@ -109,13 +109,23 @@ function auditDesign(html,rules,baseline){
    ["link",m("https://example.com/a...").text==="https://example.com/a..."],
    ["emoji",m("👨‍👩‍👧‍👦 …").text==="👨‍👩‍👧‍👦 …"],
    ["emoji and Vietnamese",m("👩🏽‍💻 chào chị\n🇻🇳 tiếng việt ❤️").text==="👩🏽‍💻 Chào chị\n🇻🇳 Tiếng việt ❤️"],
+   ["capitalization 1",m("t7").text==="T7"],
+   ["capitalization 2",m("t7 a nghỉ rồi").text==="T7 a nghỉ rồi"],
+   ["capitalization 3",m("t2\n t6").text==="T2\n T6"],
+   ["capitalization 4",m("👋 t7").text==="👋 T7"],
+   ["capitalization 5",m("abc123").text==="abc123"],
+   ["capitalization 6",m("x123").text==="x123"],
+   ["capitalization 7",m("a1b").text==="a1b"],
+   ["capitalization 8",m("681 cho 3 T").text==="681 cho 3 T"],
+   ["capitalization 9",m("https://example.com/t7").text==="https://example.com/t7"],
+   ["capitalization 10",m("t7@example.com").text==="t7@example.com"],
    ["number",n("12a34",6,false)==="1234"],
    ["money",n("1.250.000",12,true)==="1.250.000"],
    ["empty",n("",12,true)===""],
    ["limit",n("1234567",6,false)==="123456"]
   ].map(([name,pass])=>({name,pass}));
  }catch(e){inputError=e.message}
- const textInputContract=!inputError&&inputCases.length===12&&inputCases.every(c=>c.pass)&&css.includes("--input-font-floor:16px")&&css.includes("--input-font-size:max(var(--input-font-floor),var(--type-input))")&&!html.includes("function normalizeDraft(")&&html.includes("if(Input.isComposing(draft,e))return;")&&html.includes("commitNumericField(el,p.maxDigits,p.grouped)");
+ const textInputContract=!inputError&&inputCases.length===22&&inputCases.every(c=>c.pass)&&css.includes("--input-font-floor:16px")&&css.includes("--input-font-size:max(var(--input-font-floor),var(--type-input))")&&!html.includes("function normalizeDraft(")&&html.includes("if(Input.isComposing(draft,e))return;")&&html.includes("commitNumericField(el,p.maxDigits,p.grouped)");
  let inputApiCases=[],inputApiError=null;
  try{
   const src=html.slice(html.indexOf("const Input=(()=>{"),html.indexOf("function normalizeLines(value)"));

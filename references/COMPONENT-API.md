@@ -699,3 +699,7 @@ Contact.update retains unread badge and positions it with shared avatar grid; Ma
 
 ### v13.219 Typography refinement
 Shared --font-ui system sans stack and --type-chat 16/24, weight 400; no input/geometry change. All Message content uses Typography. Screenshot approximation; CI and Safari pending.
+
+
+### v13.219 text case / unread
+Shared normalizeLines handles t7, preserves long codes, URL and email. Contact.update projects actual unread state to parent data-contact-unread, preserving read authority. No new runtime owner.
