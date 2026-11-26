@@ -11,7 +11,7 @@
 <title>CHAT CRM — Bố cục v13.220</title>
 <script>const layoutParams=new URLSearchParams(location.search);document.documentElement.dataset.liveglass=layoutParams.get('liveglass')==='1'?'1':'0';document.documentElement.dataset.floating=layoutParams.has('floating')?(layoutParams.get('floating')==='1'?'1':'0'):(matchMedia('(max-width:767px)').matches?'1':'0');</script>
 <style>
-:root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#e5e5e5;--soft:#f5f5f5;--paper:#fff;--font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji";--font-chat:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans",Arial,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-family:var(--font-ui);font-size:var(--type-body)}
+:root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#0000001a;--soft:#f7f7f8;--paper:#fff;--sidebar:#fcfcfc;--line-medium:#00000026;--font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji";--font-chat:var(--font-ui);font-family:var(--font-ui);font-size:var(--type-body)}
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%;touch-action:manipulation;background:var(--paper);color:var(--ink)}
 button,input,textarea{font:inherit}button{border:0;background:transparent;color:inherit;cursor:pointer;min-height:44px}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--control-focus);outline-offset:2px}
@@ -37,7 +37,7 @@ input,textarea,select,[contenteditable]:not([contenteditable=false]){font-size:v
 @media(min-width:768px) and (max-width:1099px){#app.with-crm{grid-template-columns:54px minmax(0,1fr) 290px}#app.with-crm [data-ui-slot~="directory"]{display:none}}
 @media(max-width:767px){#app,#app.with-crm{display:block;height:var(--view-height,100dvh)}[data-ui-slot~="rail"]{display:none}[data-ui-slot~="directory"],[data-ui-slot~="conversation"],[data-ui-slot~="crm"],#app.with-crm [data-ui-slot~="crm"]{display:none;height:100%;width:100%;border:0}#app[data-screen="contacts"] [data-ui-slot~="directory"],#app[data-screen="chat"] [data-ui-slot~="conversation"],#app[data-screen="crm"] [data-ui-slot~="crm"]{display:flex}.mobile-only{display:grid}[data-ui-slot~="panel-head"]{height:calc(54px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);padding-left:10px;padding-right:10px}[data-ui-slot~="contacts"]{padding-bottom:env(safe-area-inset-bottom)}[data-ui-slot~="messages"]{padding:12px 15px;scrollbar-gutter:auto}[data-ui-slot~="message"]{max-width:87%}}
 [data-ui-slot~="module-note"]{margin-top:14px!important}[data-ui-slot~="fields"] [data-ui-slot~="field"] span{min-width:0;overflow-wrap:anywhere}[data-ui-slot~="fields"] [data-ui-slot~="field"] span:last-child{font-variant-numeric:tabular-nums}[data-ui-slot~="modules"] button{min-height:44px;padding:8px 10px}[data-ui-slot~="module-content"]{padding:12px}/* Shared UI tokens and component geometry */
-:root{--gap-xs:4px;--gap-sm:8px;--gap-md:12px;--gap-lg:16px;--gap-zero:0px;--geo-frame-xs:24px;--geo-frame-sm:32px;--geo-frame-md:var(--avatar-size);--geo-frame-lg:var(--touch);--geo-frame-xl:56px;--geo-radius-lg:16px;--geo-column-min:180px;--touch:44px;--control-radius:12px;--avatar-size:40px;--weight-regular:400;--weight-medium:500;--weight-semibold:600;--weight-bold:700;--weight-legacy-value:550;--weight-legacy-avatar:650;--type-version:11px;--line-version:16px;--type-caption:13px;--type-detail:14px;--type-body:16px;--type-title:18px;--type-chat:16px;--type-input:17px;--line-caption:18px;--line-detail:20px;--line-body:22px;--line-title:24px;--line-chat:24px;--line-input:22px;--text-main:var(--type-body);--text-sub:var(--type-caption);--text-title:var(--type-title);--header-size:56px}
+:root{--gap-xs:4px;--gap-sm:8px;--gap-md:12px;--gap-lg:16px;--gap-zero:0px;--geo-frame-xs:24px;--geo-frame-sm:32px;--geo-frame-md:var(--avatar-size);--geo-frame-lg:var(--touch);--geo-frame-xl:56px;--geo-radius-lg:16px;--geo-column-min:180px;--touch:44px;--control-radius:12px;--avatar-size:40px;--weight-regular:400;--weight-medium:500;--weight-semibold:600;--weight-bold:700;--weight-legacy-value:550;--weight-legacy-avatar:650;--type-version:11px;--line-version:16px;--type-caption:12px;--type-detail:14px;--type-body:16px;--type-title:18px;--type-chat:16px;--type-input:17px;--line-caption:16px;--line-detail:20px;--line-body:22px;--line-title:24px;--line-chat:26px;--line-input:22px;--text-main:var(--type-body);--text-sub:var(--type-caption);--text-title:var(--type-title);--header-size:56px}
 [data-ui-slot~="panel-head"]{height:var(--header-size);gap:var(--gap-sm);padding-inline:var(--gap-md)}
 [data-ui-slot~="panel-head"] strong,[data-ui-slot~="title-group"] b{font-size:var(--text-title);font-weight:var(--weight-semibold)}
 [data-avatar-profile]{--avatar-dimension:var(--avatar-size);width:var(--avatar-dimension);height:var(--avatar-dimension);aspect-ratio:1;flex-shrink:0}
@@ -121,7 +121,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 #app>[data-ui-slot~="conversation"]>.composer-frame{min-width:0}
 @media(max-width:767px){#app[data-screen="chat"]>[data-ui-slot~="conversation"]{grid-template-rows:var(--panel-tracks)}}
 /* Shared control contract */
-:root{--text-detail:var(--type-detail);--text-meta:var(--type-caption);--icon-size:22px;--icon-small:20px;--icon-stroke:1.7;--control-border:1px solid var(--line);--control-focus:#737373}
+:root{--text-detail:var(--type-detail);--text-meta:var(--type-caption);--icon-size:20px;--icon-small:20px;--icon-stroke:1.75;--control-border:1px solid var(--line);--control-focus:#737373}
 [data-ui-slot~="outline"],[data-ui-slot~="modules"] button{border:var(--control-border);border-radius:var(--control-radius);min-height:var(--touch)}
 
 
@@ -130,7 +130,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
 [data-ui-slot~="module-content"] h3{font-size:var(--text-title)}
 
 /* Conversation content contract */
-:root{--bubble-radius:17px;--message-line:var(--line-chat);--meta-line:var(--line-caption);--media-radius:8px}
+:root{--bubble-radius:22px;--bubble-pad-y:10px;--bubble-pad-x:16px;--bubble-max:70%;--message-line:var(--line-chat);--meta-line:var(--line-caption);--media-radius:8px}
 [data-layout-profile=message]{min-width:0;overflow-wrap:anywhere}
 [data-ui-slot~="bubble"]{line-height:var(--message-line);white-space:pre-wrap}
 [data-ui-slot~="message"] [data-ui-slot~="meta"]{line-height:var(--meta-line);padding-top:2px}
@@ -244,7 +244,7 @@ dialog[data-ui-slot~="local-preview"]>strong{display:block;line-height:var(--lin
 [data-ui-slot~="media-gallery"] .portrait-lead [data-ui-slot~="media-tile"]:not(:first-child){grid-column:2}
 [data-ui-slot~="media-viewer"]>img{transform:none!important;margin:0 auto!important;max-width:100%;object-fit:contain}
 
-:root{--surface-selected:#f0f0f0;--surface-pressed:#e8e8e8;--action-ink:#171717;--send-bg:#171717;--disabled-bg:#e9e9e9;--disabled-ink:#858585;--module-selected:#f3f3f3;--module-border:#bfbfbf;--surface-header:#fafafa;--avatar-bg:#ededed;--avatar-ink:#404040;--surface-hover:#f5f5f5;--composer-edge:6px;--composer-radius:calc(var(--composer-min-height) / 2);--composer-text-inset:6px;--action-hover:#303030;--action-pressed:#404040;--danger:#b42318;--overlay-ink:#171717e8;--shadow-soft:#0002;--muted-border:#aaa}
+:root{--surface-selected:#f2f2f2;--surface-pressed:#e8e8e8;--action-ink:#171717;--send-bg:#171717;--disabled-bg:#e9e9e9;--disabled-ink:#858585;--module-selected:#f3f3f3;--module-border:#bfbfbf;--surface-header:#fafafa;--avatar-bg:#ededed;--avatar-ink:#404040;--surface-hover:#f2f2f2;--composer-edge:6px;--composer-radius:calc(var(--composer-min-height) / 2);--composer-text-inset:6px;--action-hover:#303030;--action-pressed:#404040;--danger:#b42318;--overlay-ink:#171717e8;--shadow-soft:#0002;--muted-border:#aaa}
 /* Nested regions must shrink within their assigned grid tracks. */
 #app>[data-ui-slot~="directory"],#app>[data-ui-slot~="conversation"],#app>[data-ui-slot~="crm"],[data-ui-slot~="chat-view"],.composer-frame{min-width:0;min-height:0}
 [data-ui-slot~="panel-head"]>strong,[data-ui-slot~="title-group"],[data-ui-slot~="work-card"],[data-ui-slot~="fields"]{min-width:0;max-width:100%}
@@ -431,7 +431,7 @@ html[data-floating="1"] #app>[data-ui-slot~="conversation"]>.composer-frame::bef
  --app-top-controls:52px;--app-top-reserve:calc(var(--app-top-controls) + var(--safe-visible-top));
  --composer-edge:1px;--composer-min-height:calc(var(--input-height) + 2 * var(--composer-edge) + 2px);
  --composer-radius:calc(var(--composer-min-height) / 2);
- --app-composer-width:82%;--composer-frame-top:4px;--app-message-gap:12px;--app-message-bubble:#eaeaea;--app-action-face:32px;--app-jump-gap:12px;--app-content-inset:16px;--app-avatar:32px;--app-header-inset:20px;--app-chat-ink:#0d0d0d;--app-chat-surface:#f8f8f8;
+ --app-composer-width:82%;--composer-frame-top:4px;--app-message-gap:12px;--app-message-bubble:#eaeaea;--app-action-face:32px;--app-jump-gap:12px;--app-content-inset:16px;--app-avatar:32px;--app-header-inset:20px;--app-chat-ink:#0d0d0d;--app-chat-surface:var(--paper);
  --composer-reserve:calc(var(--composer-min-height) + var(--composer-frame-top) + var(--composer-frame-bottom));
  }
  html[data-floating="1"] #app>[data-ui-slot~="conversation"]{grid-template-rows:minmax(0,1fr);background:var(--app-chat-surface);color:var(--app-chat-ink)}
@@ -824,11 +824,11 @@ html[data-floating] #app>[data-ui-slot~="conversation"] [data-ui-slot~="message"
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-ui-slot~="message"][data-content-party=B]{align-items:flex-end}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=A][data-ui-slot~="message"]>[data-ui-slot~="bubble"]{width:100%;background:transparent;padding:0;border-radius:0}
 /* Message palette: semantic foreground/background pairs, only outgoing text surface. */
-#app{--chat-bubble-bg:#eaf0fc;--chat-bubble-ink:#294ab8;--chat-bubble-muted:#344e96;--chat-bubble-code:#f3f6fc}
+#app{--chat-bubble-bg:#e8f3fe;--chat-bubble-ink:#0c274a;--chat-bubble-muted:#1f4e94;--chat-bubble-code:#f3f3f3}
 #app[data-bubble-palette=whatsapp]{--chat-bubble-bg:#d9fdd3;--chat-bubble-ink:#153c29;--chat-bubble-muted:#345c43;--chat-bubble-code:#f1faee}
 #app[data-bubble-palette=zalo]{--chat-bubble-bg:#dcecff;--chat-bubble-ink:#17477a;--chat-bubble-muted:#365878;--chat-bubble-code:#f0f6ff}
 #app[data-bubble-palette=messenger]{--chat-bubble-bg:#075bd8;--chat-bubble-ink:#fff;--chat-bubble-muted:#e6efff;--chat-bubble-code:rgba(0,0,0,.22)}
-html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=B][data-ui-slot~="message"].mine>[data-ui-slot~="bubble"]{width:fit-content;max-width:86%;background:var(--chat-bubble-bg);color:var(--chat-bubble-ink);--muted:var(--chat-bubble-muted);--content-code-bg:var(--chat-bubble-code);padding:var(--gap-sm) var(--gap-md);border-radius:18px}
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=B][data-ui-slot~="message"].mine>[data-ui-slot~="bubble"]{width:fit-content;max-width:var(--bubble-max);background:var(--chat-bubble-bg);color:var(--chat-bubble-ink);--muted:var(--chat-bubble-muted);--content-code-bg:var(--chat-bubble-code);padding:var(--bubble-pad-y) var(--bubble-pad-x);border-radius:var(--bubble-radius)}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=B][data-ui-slot~="message"].mine>[data-ui-slot~="bubble"][data-content-parent]{--content-code-bg:var(--chat-bubble-code)}
 @media(forced-colors:active){html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=B][data-ui-slot~="message"].mine>[data-ui-slot~="bubble"]{background:Canvas;color:CanvasText;--muted:CanvasText;--content-code-bg:Canvas}}
 #bubblePaletteButton{display:block;width:100%;margin-block-end:var(--gap-xs);text-align:start}
@@ -863,21 +863,17 @@ dialog[data-directory-menu=true]>button:last-child{border-top:1px solid var(--li
  #app[data-live-chat=true]>.directory>.dir-bottom{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);padding:0;border:0;pointer-events:none}
  #app[data-live-chat=true]>.directory>.dir-bottom [data-live-account-actions]{display:none}
 }
-/* Foundation profile — Drive Vercel rules for business surfaces, chat contract unchanged. */
-@font-face{font-family:"Geist Vercel";src:url("https://vercel.com/_next/static/immutable/media/Geist_Variable-s.p.2v-cf9syxr5ni.woff2") format("woff2");font-style:normal;font-weight:100 900;font-display:optional}
-:root{--ux-font:"Geist Vercel",Geist,"Geist Sans",var(--font-ui);--ux-ink:#171717;--ux-muted:#4d4d4d;--ux-canvas:#fafafa;--ux-radius-table:6px;--ux-radius-control:6px;--ux-glyph:16px;--ux-divider:rgba(0,0,0,.08);--scroll-size:8px;--scroll-thumb:#c4c9d2;--scroll-thumb-hover:#98a2b3;--scroll-thumb-active:#667085;--scroll-track:transparent;--scroll-radius:999px}
-#app>[data-ui-slot~="crm"]{--ink:var(--ux-ink);--muted:var(--ux-muted);--line:var(--ux-divider)}
+/* Shared Drive ChatGPT profile — existing owner tokens, no external fonts. */
+:root{--ux-font:var(--font-ui);--ux-ink:var(--ink);--ux-muted:var(--muted);--ux-canvas:var(--soft);--ux-radius-table:var(--geo-radius-lg);--ux-radius-control:var(--control-radius);--ux-glyph:var(--icon-size);--ux-divider:var(--line);--scroll-size:16px;--scroll-thumb:#0000001a;--scroll-thumb-hover:#0003;--scroll-thumb-active:#0000004d;--scroll-track:transparent;--scroll-radius:999px;--scroll-inset:6px}
+#app>[data-ui-slot~="rail"],#app>[data-ui-slot~="directory"]{background:var(--sidebar)}
 #app>[data-ui-slot~="crm"] [data-ui-slot~="module-content"]{background:var(--ux-canvas)}
-#app>[data-ui-slot~="crm"] [data-type-role]:not(.input-child),#app>[data-ui-slot~="crm"] button[data-button-parent],dialog[data-directory-menu=true] [data-type-role],dialog[data-directory-menu=true] button[data-button-parent]{font-family:var(--ux-font);font-synthesis:none}
 #app>[data-ui-slot~="crm"] :is([data-card-parent],[data-ui-slot~="business-card"],[data-ui-slot~="work-card"]){border-radius:var(--ux-radius-table);background-color:var(--paper)}
 #app>[data-ui-slot~="crm"] :is([data-ui-slot~="bill-pair"],[data-ui-slot~="bill-reconcile"]){--bill-radius:var(--ux-radius-table)}
-#app>[data-ui-slot~="crm"] button[data-button-parent]:not([data-button-shape=round]):not([data-glass=g1]){border-radius:var(--ux-radius-control)}
-#app>[data-ui-slot~="crm"] button svg[data-icon-parent],dialog[data-directory-menu=true] button svg[data-icon-parent]{width:var(--ux-glyph);height:var(--ux-glyph)}
 @media(min-width:768px) and (hover:hover) and (pointer:fine){
  #app :is([data-ui-slot~="contacts"],[data-ui-slot~="module-content"]){scrollbar-gutter:stable}
  #app :is([data-ui-slot~="contacts"],[data-ui-slot~="messages"],[data-ui-slot~="module-content"])::-webkit-scrollbar{width:var(--scroll-size);height:var(--scroll-size)}
  #app :is([data-ui-slot~="contacts"],[data-ui-slot~="messages"],[data-ui-slot~="module-content"])::-webkit-scrollbar-track{background:var(--scroll-track)}
- #app :is([data-ui-slot~="contacts"],[data-ui-slot~="messages"],[data-ui-slot~="module-content"])::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border:2px solid transparent;background-clip:content-box;border-radius:var(--scroll-radius)}
+ #app :is([data-ui-slot~="contacts"],[data-ui-slot~="messages"],[data-ui-slot~="module-content"])::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border:var(--scroll-inset) solid transparent;background-clip:padding-box;border-radius:var(--scroll-radius)}
  #app :is([data-ui-slot~="contacts"],[data-ui-slot~="messages"],[data-ui-slot~="module-content"])::-webkit-scrollbar-thumb:hover{background-color:var(--scroll-thumb-hover)}
  #app :is([data-ui-slot~="contacts"],[data-ui-slot~="messages"],[data-ui-slot~="module-content"])::-webkit-scrollbar-thumb:active{background-color:var(--scroll-thumb-active)}
  @supports not selector(::-webkit-scrollbar){#app :is([data-ui-slot~="contacts"],[data-ui-slot~="messages"],[data-ui-slot~="module-content"]){scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) var(--scroll-track)}}
@@ -3079,6 +3075,8 @@ function resizeDraft(){
 let lastDraftFormWidth=0;
 new ResizeObserver(()=>{const width=draftForm.clientWidth;if(width&&width!==lastDraftFormWidth){lastDraftFormWidth=width;resizeDraft()}}).observe(draftForm);
 draft.addEventListener('input',resizeDraft);
+// One Enter action, existing submit owner; IME and repeat cannot send.
+draft.enterKeyHint='send';draft.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.shiftKey||e.altKey||e.ctrlKey||e.metaKey||Input.isComposing(draft,e)||e.keyCode===229)return;e.preventDefault();if(e.repeat)return;const send=draftForm.querySelector('.send');if(!send.disabled)draftForm.requestSubmit(send)});
 const ScrollController={
  tail:null,tailObserver:null,
  stopFollowing(){this.tail=null;this.tailObserver?.disconnect()},

@@ -711,3 +711,7 @@ Shared normalizeLines handles t7, preserves long codes, URL and email. Contact.u
 
 ## v13.220 Foundation Vercel profile
 Typography uses scoped --ux-font for Work/read and utility menu, input/chat unchanged. Card and Button consume scoped radius/glyph tokens; Scroll uses CSS native desktop rail tokens, no writer or event changes. See FOUNDATION-VERCEL-01–03 and linked Drive sources.
+
+
+## CHATGPT-DRIVE — v13.220
+User requests shared ChatGPT Drive profile + scrollbar + Web/PWA edges + single Enter. Supersedes conflicting FOUNDATION-VERCEL visual rules. Drive CSS 1ImNi8W0UGROtpsB1N41u1ENYK5I_5dRD and library 1ckwp6zF0bRZdlDG6n3VKLeM6cfVq2YI8: source scrollbar .mkt-style-scrollbars 16px rail, 6px transparent border, 4px optical thumb, light #0000001a/hover #0003 (corrected prior 10px estimate). Shared palette, font (accepted system stack, no remote font), chat 16/26, caption 12/16, icon 20, bubble 22 radius/70%/10x16 padding, neutral surfaces. Preserve existing 17/22 composer metrics, hit areas and keyboard geometry due 320px regression. Existing visibleSafeArea already subtracts clipped insets; keep single top/bottom owner, no new PWA offset. Enter calls existing form submit, Shift+Enter newline, IME/repeat ignored. Source Astryx tokens 7ca09a989079c26627462bfe50abbcb08ec1328c, Text da954186ff862485cbf0e1964cb2bec15f43b9bb, Button f87eb657180a0de978fb3ba1c59c24909a9cc63d. No DB change. CI/native pending; no claim full visual parity.
