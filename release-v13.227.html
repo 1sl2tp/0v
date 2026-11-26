@@ -2160,7 +2160,7 @@ const BillAuditList=Object.freeze({
   return unknown('Chưa đủ bằng chứng loại ảnh / STK; không suy đoán chữ viết tay từ điểm OCR')
  },
  localPending(rows,results,eligible){return rows.filter(r=>eligible(r)&&results.get(r.id)?.storageKey!==r.storage_key)},
- imageOnlySelect(rows,query=''){const q=query.trim().toUpperCase();return rows.filter(r=>!q||[r.id,BillAuditList.code(r),'BILL-'+BillAuditList.code(r)].some(x=>String(x??'').toUpperCase().includes(q))).sort((a,b)=>String(b.sent_at??'').localeCompare(String(a.sent_at??''))||String(b.id).localeCompare(String(a.id)))},
+ imageOnlySelect(rows,query=''){const terms=query.trim().toUpperCase().split(/[\s,;]+/).filter(Boolean);return rows.filter(r=>!terms.length||[r.id,BillAuditList.code(r),'BILL-'+BillAuditList.code(r)].some(x=>terms.some(q=>String(x??'').toUpperCase().includes(q)))).sort((a,b)=>String(b.sent_at??'').localeCompare(String(a.sent_at??''))||String(b.id).localeCompare(String(a.id)))},
  imageGroup(r){
   const kind=BillAuditList.kind(r);
   if(kind==='non_bill')return 'Không phải Bill';
@@ -2597,7 +2597,7 @@ function mountLiveChat(root){
  const liveFilters=root.querySelector('[data-ui-slot~="filters"]');if(liveFilters){const labels=['Tất cả','Chưa đọc','KH','CM','Bạn bè','Khác','NCC','NV','Nhóm'];liveFilters.replaceChildren(...labels.map((label,i)=>{const b=Button.create({text:label,kind:'outline',onClick:()=>{filter=label;for(const x of liveFilters.querySelectorAll('[data-filter]'))x.classList.toggle('active',x.dataset.filter===label);renderDirectory()}});b.dataset.filter=label;b.classList.toggle('active',i===0);return b}))}
  const auditPanel=$live('#moduleContent'),auditFilters=document.createElement('select'),auditSort=document.createElement('select'),auditBankGroup=Layout.slot({name:'bill-group-strip',attrs:{role:'group','aria-label':'Nhóm phân loại ảnh'}}),auditSearch=Input.create({type:'search',label:'Tìm bill',placeholder:'Mã bill, tên, tiền, STK, mã giao dịch'});
  auditBankGroup.style.cssText='display:flex;flex-direction:row;flex-wrap:wrap;gap:6px;align-items:center;min-width:0';
- if(standaloneBills){auditSearch.placeholder='Tìm mã ảnh';auditSearch.setAttribute('aria-label','Tìm mã ảnh')}
+ if(standaloneBills){auditSearch.placeholder='Tìm một hoặc nhiều mã ảnh';auditSearch.setAttribute('aria-label','Tìm mã ảnh')}
  auditFilters.setAttribute('aria-label','Lọc nhóm lỗi');auditSort.setAttribute('aria-label','Sắp xếp bill');let auditRows=[],auditTotal=0,auditPage=0,auditSequence=0,auditLastLoaded=null;const localOcrResults=new Map(),localImageHashes=new Map(),localVisualHints=new Map();let localOcrTask=null,localOcrWorker=null,localOcrPaused=false,localOcrError='',auditGroup='all';
  const auditSummary=text('caption','Chưa tải danh sách bill.','p'),auditList=Layout.slot({name:'bill-audit-list',children:[]}),auditPager=text('caption','','span');
  const opt=(value,label)=>{const e=document.createElement('option');e.value=value;e.textContent=label;return e};
@@ -2645,6 +2645,17 @@ function mountLiveChat(root){
  })();
  async function downloadLiveMedia(path){const {data,error}=await client.storage.from('v21-media').download(path);if(error)throw error;return data}
  function auditOriginal(key,owner){return auditBlobCache.get(key,owner,downloadLiveMedia)}
+ function originalBillExport(row,owner){
+  const current=()=>!!owner&&scope===owner&&button.isConnected&&auditRows.some(r=>r.id===row.id&&r.asset_id===row.asset_id&&r.storage_key===row.storage_key);
+  const button=Button.create({kind:'outline',text:'Tải ảnh gốc',onClick:async()=>{
+   if(!current()||!eligibleOcr(row))return;button.disabled=true;button.textContent='Chuẩn bị ảnh gốc…';let url=null;
+   try{const blob=await auditOriginal(row.storage_key,owner);if(!current())return;
+    const mime=MediaController.normalizeMime(blob.type||row.mime_type),extension=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/avif':'avif','image/heic':'heic','image/heif':'heif'})[mime]||'bin';
+    url=URL.createObjectURL(blob);auditMediaUrls.add(url);
+    const code=String(BillAuditList.code(row)).replace(/[^A-Za-z0-9-]/g,'').slice(0,80)||'image',link=MediaController.fileLink({src:url,name:'BILL-'+code+'.'+extension});link.dataset.originalBillDownload='true';link.dataset.releaseReadonly='true';button.replaceWith(link);url=null;
+   }catch{if(url){URL.revokeObjectURL(url);auditMediaUrls.delete(url)}if(current()){button.textContent='Không tải được ảnh gốc · Thử lại';button.disabled=false}}
+  }});button.dataset.releaseReadonly='true';return button
+ }
  function visualHint(r){const v=localVisualHints.get(r.id);return v?.storageKey===r.storage_key?v:null}
 
  const localResult=r=>{const v=localOcrResults.get(r.id);return v?.storageKey===r.storage_key?v:null};
@@ -2793,7 +2804,7 @@ function mountLiveChat(root){
      confirm.disabled=!!localOcrTask||select.value==='unclassified';select.addEventListener('change',()=>{confirm.disabled=!!localOcrTask||select.value==='unclassified';confirm.textContent='✓ Xác minh và lưu'});
      ocr.append(edit,select,confirm);
     }
-    if(eligibleOcr(r)){const media=mediaImageGroup([{...r,id:r.asset_id}],scope,choice,true,true);pair.left.append(media);const preview=billRegionPreview(r,result,scope,media);if(preview)pair.left.append(preview.button,preview.holder)}else pair.left.append(text('caption','Ảnh không khả dụng','p'));
+    if(eligibleOcr(r)){const media=mediaImageGroup([{...r,id:r.asset_id}],scope,choice,true,true);pair.left.append(media);const preview=billRegionPreview(r,result,scope,media);if(preview)pair.left.append(preview.button,preview.holder);pair.left.append(originalBillExport(r,scope))}else pair.left.append(text('caption','Ảnh không khả dụng','p'));
     auditList.append(pair.pair);
    }
    auditPager.textContent='Trang '+(auditPage+1)+' / '+pages;prevAudit.disabled=auditPage===0;nextAudit.disabled=auditPage>=pages-1;return
