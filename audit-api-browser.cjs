@@ -109,6 +109,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    await pg.evaluate(()=>{const m=document.querySelector('#messages'),row=document.querySelector('[data-live-message-id="old-22"]');window.__fixtureHandoffPaint=0;window.__fixtureQueuePaint(row,()=>{window.__fixtureHandoffPaint++},()=>row.isConnected);if(row.dataset.mediaPaintPending!=='true')throw Error('Paint not queued before cancel');m.dispatchEvent(new WheelEvent('wheel',{deltaY:-1,bubbles:true}))});
    await pg.waitForFunction(()=>window.__fixtureHandoffPaint===1&&!document.querySelector('[data-live-message-id="old-22"]').hasAttribute('data-media-paint-pending'));
    assert.equal(await pg.evaluate(()=>window.__fixtureHandoffPaint),1);
+   // Reestablish explicit follow for the remaining independent tail regression cases.
+   await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>!document.querySelector('#jumpBottom').hidden);await pg.locator('#jumpBottom').click();await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3});
 
    await away();await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='600px');await raf();assert(await pg.locator('#messages').evaluate(m=>m.scrollTop<=1));await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='');await pg.locator('#jumpBottom').tap();await tail();
    assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
@@ -169,6 +171,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    await pg.evaluate(()=>{const m=document.querySelector('#messages'),row=document.querySelector('[data-live-message-id="old-22"]');window.__fixtureHandoffPaint=0;window.__fixtureQueuePaint(row,()=>{window.__fixtureHandoffPaint++},()=>row.isConnected);if(row.dataset.mediaPaintPending!=='true')throw Error('Paint not queued before cancel');m.dispatchEvent(new WheelEvent('wheel',{deltaY:-1,bubbles:true}))});
    await pg.waitForFunction(()=>window.__fixtureHandoffPaint===1&&!document.querySelector('[data-live-message-id="old-22"]').hasAttribute('data-media-paint-pending'));
    assert.equal(await pg.evaluate(()=>window.__fixtureHandoffPaint),1);
+   // Reestablish explicit follow for the remaining independent tail regression cases.
+   await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>!document.querySelector('#jumpBottom').hidden);await pg.locator('#jumpBottom').click();await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3});
 
  await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight-m.scrollTop<3});
  // Late content growth must retain latest intent even after Main's initial layout frames.
