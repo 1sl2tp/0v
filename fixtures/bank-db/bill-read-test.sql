@@ -17,6 +17,8 @@ CREATE TABLE public.chat_bank_bill_receipts(media_asset_id uuid UNIQUE,message_i
 ALTER TABLE public.chat_bank_bill_receipts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.taphoa_debt_ledger ENABLE ROW LEVEL SECURITY;
 \ir ../../references/0v-admin-read.sql
+ALTER TABLE public.v21_accounts ADD COLUMN avatar_path text;
+\ir ../../references/0v-admin-directory-avatar.sql
 -- Baseline callable wrapper; establish exact ACL before replacement.
 CREATE FUNCTION v0_private.admin_media(p_conversation_id uuid) RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path='' AS $$ SELECT '{}'::jsonb $$;
 REVOKE ALL ON FUNCTION v0_private.admin_media(uuid) FROM PUBLIC,anon,authenticated,service_role;
@@ -40,16 +42,20 @@ INSERT INTO public.v21_media_assets(id,message_id,conversation_id,owner_account_
 INSERT INTO public.taphoa_debt_ledger VALUES(1,'00000000-0000-0000-0000-000000000002','collection',-26),(2,'00000000-0000-0000-0000-000000000003','collection',-26);
 INSERT INTO public.chat_bank_bill_receipts(media_asset_id,message_id,customer_account_id,status,amount_vnd,ledger_id,raw_read,transfer_at_vn) VALUES
 ('50000000-0000-0000-0000-000000000001','40000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','received',26000,1,'{"transfer_date_printed_vn":"25/11/2026","transfer_date_vn":"2026-11-25","transfer_time_printed_vn":"21:52","transaction_time_precision":"minute","transfer_content":"fixture","private":"never-return"}','2026-11-25 21:52'),
-('50000000-0000-0000-0000-000000000002','40000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000002','amount_read',445000,null,'{"transfer_date_printed_vn":"25/11/2026","transfer_date_vn":"2026-11-25"}','2026-11-25 00:00'),
+('50000000-0000-0000-0000-000000000002','40000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000002','amount_read',445000,null,'{"transfer_date_printed_vn":"25/11/2026","transfer_date_vn":"2026-11-25"}',null),
 ('50000000-0000-0000-0000-000000000003','40000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000002','non_bill',null,null,'{}',null),
 ('50000000-0000-0000-0000-000000000004','40000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000002','received',26000,null,'{}',null),
 ('50000000-0000-0000-0000-000000000005','40000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000003','received',26000,null,'{}',null),
 ('50000000-0000-0000-0000-000000000006','40000000-0000-0000-0000-000000000006','00000000-0000-0000-0000-000000000002','received',26000,2,'{"transfer_time_printed_vn":"21:52","transaction_time_precision":"minute","clock_text_conflict":true}','2026-11-25 21:52');
+UPDATE public.v21_accounts SET avatar_path='fixture/avatar.jpg' WHERE id='00000000-0000-0000-0000-000000000002';
+UPDATE public.v21_accounts SET avatar_path='../bad.jpg' WHERE id='00000000-0000-0000-0000-000000000003';
 SET LOCAL ROLE authenticated;
 SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);
 DO $$
 DECLARE result jsonb; a jsonb;
 BEGIN
+ result:=public.v0_admin_read('directory',null);
+ IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(result->'contacts') c WHERE c->>'id'='00000000-0000-0000-0000-000000000002' AND c->>'avatar_path'='fixture/avatar.jpg') OR EXISTS (SELECT 1 FROM jsonb_array_elements(result->'contacts') c WHERE c->>'id'='00000000-0000-0000-0000-000000000003' AND c->>'avatar_path' IS NOT NULL) THEN RAISE EXCEPTION 'avatar path projection'; END IF;
  result:=public.v0_admin_media('30000000-0000-0000-0000-000000000001');
  IF jsonb_array_length(result->'assets')<>7 THEN RAISE EXCEPTION 'asset count'; END IF;
  a:=result->'assets'->0->'bill_receipt';
