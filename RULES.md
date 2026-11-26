@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.221)
+## 00. Chỉ mục rule đang có hiệu lực (v13.222)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1669,3 +1669,7 @@ User requests shared ChatGPT Drive profile + scrollbar + Web/PWA edges + single 
 
 ## v13.221 — LIVE-THREAD-BILL-NEW-ONLY
 Explicit user request supersedes v13.214 48h/known-receipt eligibility and quota retry. Authorized session starts at billNewAfter; valid incoming image/message/room IDs, strictly newer timestamp, no receipt/cache. One automatic attempt per asset reserved before model request, no automatic retry; quota cooldown and manual lab separate. New multiple images handled one image at a time; historical galleries grouped. Cache bill/nonbill/unclassified in existing scoped session storage. F5 skips previous timestamps, switching room does not reset attempts. Existing 64MB/64-item blob cache reused; object URLs may be recreated. Device clock cutoff can miss offline or skewed messages; no background scans or durable cross-device claim. No DB/Edge/financial writes, protected keyboard ranges unchanged apart from version labels. References prior CACHE-API-SOURCES/SYNC-API-SOURCES (stable scoped identity, stale guards), existing ThreadBillAutoPolicy; local policy fixture pass, CI/device pending. Release v13.220 merged separately after exact-head CI.
+
+
+## v13.222 — BILL-ACCOUNT-DECORATION-01
+Observed case: stored AI text contained 13 uninterrupted digits followed by a space and one bullet; normalized recipient was null. In 0v ParseAPI receiver evidence and v0-bill-vision-manual validation, remove only one separated terminal bullet after exactly 13 uninterrupted digits. No digit insertion, no masking substitution, no removal of interior bullet, no general punctuation stripping. Keep original OCR text in existing record. Recognition alone never authorizes collection. Exact synthetic regression verifies 13-digit terminal decoration, rejects shorter/longer and interior/repeated bullets as normalization candidates. The specific existing unposted record was separately corrected at user's request with original OCR and audit trail preserved; status remains review and ledger_id null; no model rerun or financial posting. Legacy v21 scan worker is separate and not changed in this 0v PR. Source and runtime Edge deployment not equivalent; verify full CI before release, deploy Edge separately only after verification. No keyboard changes beyond version labels.
