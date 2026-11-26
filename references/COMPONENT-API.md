@@ -534,3 +534,5 @@ LIVE-BILL-RECIPIENT-GATE-01: BillReceiptProjection.read returns null unless norm
 LIVE-BILL-VISUAL-ACCOUNT-01: ocr_rechecked_account additionally accepts exact independently visually reviewed account tied to immutable raw snapshot. No bank proof implied. Existing UI consumes same field; no release version change for backend-only migration.
 
 LIVE-BILL-REVIEW-REASONS-01: BillReceiptProjection.read(asset,now=ISO) returns flagged field labels and a reason row for receipt candidates; no hiding solely due to mismatched recipient; no write or payment authorization. TimeAPI.businessDate owns comparison. Explicit now supports boundary tests.
+
+LIVE-BILL-HISTORY-DATE-01: BillReceiptProjection.read uses ParseAPI.billDate and FormatAPI.date, and TimeAPI.businessDate only as future-date upper bound; accepts historical dates and explicit mixed text, retains missing/invalid date/clock reasons. No ledger changes.

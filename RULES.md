@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.184)
+## 00. Chỉ mục rule đang có hiệu lực (v13.185)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1455,3 +1455,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-BILL-VISUAL-ACCOUNT-01: nếu ảnh được xem trực tiếp, nhìn rõ đầy đủ 13 chữ số nhận và OCR thiếu đúng một số 9, lưu kết quả hiệu chỉnh riêng trong v0_private.bill_account_review theo asset/message/customer/hash OCR; không tự điền số khi chưa đọc ảnh. Không đổi receiving_account, raw_read, matcher, ledger, không mở quyền client. Cùng projection đọc lại ảnh, khác bằng chứng Agribank. Bản ghi cũ không tự động sửa hàng loạt.
 
 - LIVE-BILL-REVIEW-REASONS-01: supersedes display hiding in RECIPIENT-GATE-01. Receipt server đúng asset/message, status thuộc tập bill và có tiền/ngày/giờ là ứng viên hiển thị để rà soát, kể cả sai/thiếu tên hoặc STK không có 4–6 số 9. Không đánh đồng nhận diện với hợp lệ. Hiện giá trị gốc sai, lý do riêng, đỏ trường sai; STK hiệu chỉnh chỉ từ bằng chứng API đã kiểm. Ngày khác hôm nay theo TimeAPI Asia/Ho_Chi_Minh báo rõ (quá khứ không mặc nhiên là giả), ngày tương lai và thiếu ngày/giờ báo riêng. Không đổi trạng thái thu hoặc gửi tin khách; không thay matcher. Giữ ảnh non_bill/không evidence bình thường.
+
+- LIVE-BILL-HISTORY-DATE-01: supersedes current-day warning in LIVE-BILL-REVIEW-REASONS-01. Valid historical transaction dates remain valid when viewed later. ParseAPI.billDate accepts explicit numeric, Vietnamese words and mixed day/month/year, FormatAPI.date displays DD/MM/YYYY, keep original evidence and do not borrow message/scan/current date. Flag missing/invalid or future date only in this projection; actual bank conflicts remain backend-owned. No financial writes or KB-LOCK changes.
