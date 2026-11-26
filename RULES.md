@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.203)
+## 00. Chỉ mục rule đang có hiệu lực (v13.204)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1524,3 +1524,7 @@ Classical 192px thumbnail triage on already downloaded original: grayscale histo
 
 ## v13.203 — LIVE-BILL-NO-REPEAT-01 (before release)
 No repeated automatic full-list scans: initial authenticated fetch and explicit refresh only (focus/heartbeat update UI, session auth heartbeat remains). New or incomplete image only, no automatic retry of a failed original; explicit single reread allowed. Same-tab sessionStorage checkpoint keyed by verified account and classical algorithm revision, matching current id/storage key, no raw OCR/account/bytes, no financial authority; duplicate labels rebuilt from current metadata and saved SHA. Persist pause/errors, clear on guest/signout; no cross-device/tab guarantee. No DOM rebuild every 3 OCR or 10 hash rows: update counts/status, rebuild list at phase boundary and completion or explicit filter. No unconditional finally restart. Original cache still bounded, eviction may require a second download. Actual Supabase usage pending. Supersedes 5-min background refresh rule. Synthetic browser reload/manual refresh regression added; CI pending.
+
+
+## v13.204 — LIVE-BILL-MANUAL-VERIFY-01 (user override)
+Supersedes standalone automatic scan/group UI. No automatic hash/visual/OCR run; single explicit read button and raw OCR text, editable correction, explicit type and verified save. No financial authorization. Same-tab sessionStorage raw/corrected result and timestamp (new namespace; erased on logout/guest), no database or cross-device persistence. Browser localStorage per verified account stores only ordered field-label signatures and type/count, no raw text or monetary values; matching signature hint after future manual read, not automatic template OCR or verified result propagation. No AI, no background bulk work. User can correct and save a nonbill even when OCR fails. Shared bounded original cache remains. Browser regression changes to zero automatic calls, one manual call, verify and reload. Actual language asset and real accuracy pending.
