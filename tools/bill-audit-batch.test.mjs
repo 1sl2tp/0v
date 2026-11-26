@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {auditBatch} from './bill-audit-batch.mjs';
+const rows=Array.from({length:12},(_,i)=>({id:String(i).padStart(2,'0'),assetId:'a'+i,hash:i.toString(16).padStart(64,'0'),status:i===11?'review':'received'}));
+const map=new Map(),seen=[];
+const opts={rows,version:'fixture-v1',checkpoint:async k=>map.get(k),save:async x=>{if(x.state!=='linked')map.set(x.key,x)},read:async x=>{seen.push(x.id);return {originalVerified:true,fields:{amount:null}}}};
+assert.equal((await auditBatch(opts)).calls,10);
+assert.equal(seen[0],'11');
+assert.equal((await auditBatch(opts)).calls,2);
+assert.equal((await auditBatch(opts)).calls,0);
+const duplicate={...rows[0],id:'duplicate',assetId:'other'};
+assert.equal((await auditBatch({...opts,rows:[duplicate]})).calls,0);
+const quota=await auditBatch({...opts,version:'quota',now:100,read:async()=>{throw Object.assign(Error(),{status:429,retryAfterMs:120000})}});
+assert.equal(quota.calls,1);assert.equal(quota.blockedUntil,120100);
+assert.equal((await auditBatch({...opts,version:'quota',now:101})).calls,0);
+console.log('synthetic audit batch checks passed');
