@@ -668,3 +668,6 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 
 ## v13.216 ContentAPI
 Existing line/segments/create extended with tableAt/appendInline/status; semantic display shared by live and demo. Scoped formatting, not new parallel owner. Input/keyboard and business data untouched. CI/native pending.
+
+
+v13.216 follow-up: Contact.preview owns prefix cleanup; Message keeps date/time; visual rule hides them. ContentAPI owns dotted links. A/B paint updated, media and keyboard retained.

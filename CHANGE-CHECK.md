@@ -705,3 +705,7 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 
 ## v13.216 — user-requested rich content candidate stacked on #197
 Read AGENTS, active typography/CONTENT-AB rules, COMPONENT-API, ROADMAP and source evidence: Astryx Text da954186ff862485cbf0e1964cb2bec15f43b9bb and Stack c56d72759ad2f6f86102228e22c3123530b32894; sindresorhus/github-markdown-css github-markdown.css blob 2d308c762a8bca86ab43275f959575e68779b6ad. Semantic roles, shared spacing, native list/table/quote. No copied runtime or official ChatGPT CSS. E1 ten policy assertions, inline script syntax and four keyboard ranges exact. No full node audit/browser executed in connector. CI/Pages/native pending. No production data, backend or old CHAT changes. No claim of all-screen normalization or device acceptance.
+
+
+### v13.216 follow-up — presentation and CI correction
+E0 run 45766048105 static version check false: RULE index stale v13.215; contentABContract true. Corrected index, scoped A/B visual policy, dotted links, hide thread clock/date (retain DOM metadata/send error), prefix cleanup via Contact.preview, scoped native family inheritance. Updated browser assertions for hidden clocks/new surfaces. Three preview cases, syntax and four locked keyboard ranges pass in connector. Real CI/device pending. No DB, CHAT, bank timestamp, keyboard or cache mutation.

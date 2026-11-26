@@ -781,6 +781,22 @@ html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][dat
 html[data-floating="1"] #app>[data-ui-slot~="conversation"] [data-content-party][data-content-continuation="true"]{margin-block-start:calc(-1 * var(--app-message-gap))}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-content-time-shared="true"]>[data-ui-slot~="meta"]{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-ui-slot~="message"]>[data-ui-slot~="meta"]{text-align:end}
+
+/* CONTENT-PRESENTATION: shared thread visual policy; preserve chronology and metadata. */
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-ui-slot~="message"][data-content-party]{position:relative;background:transparent;padding:0;gap:var(--gap-xs);align-items:flex-start}
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=B]{align-items:flex-end}
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=A][data-ui-slot~="message"]>[data-ui-slot~="bubble"]{width:100%;background:transparent;padding:0;border-radius:0}
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=B][data-ui-slot~="message"].mine>[data-ui-slot~="bubble"]{width:fit-content;max-width:86%;background:var(--surface-selected);padding:var(--gap-sm) var(--gap-md);border-radius:18px}
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-ui-slot~="message"]>[data-ui-slot~="meta"]:not([data-send-error]){position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-ui-slot~="messages"]>[data-ui-slot~="day"]{display:none}
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-content-continuation="true"]{margin-block-start:0;padding-block-start:0}
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-content-time-shared="true"]{padding-block-end:0}
+[data-content-parent] u{text-decoration:underline solid;text-underline-offset:.16em}
+[data-content-parent] a{color:inherit;text-decoration-line:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:.23em}
+[data-content-parent] a::after{content:" ↗" / "";display:inline;font-size:.84em;text-decoration:none}
+[data-content-parent] a:focus-visible{outline:2px solid var(--control-focus);outline-offset:2px}
+[data-content-parent] a:hover{text-decoration-style:solid}
+
 /* Standalone bill route is a projection of the existing CRM parent, not a second app. */
 #app[data-bill-workspace="standalone"],#app[data-bill-workspace="standalone"].with-crm{display:grid;grid-template-columns:minmax(0,1fr)}
 #app[data-bill-workspace="standalone"]>[data-ui-slot~="rail"],#app[data-bill-workspace="standalone"]>[data-ui-slot~="directory"],#app[data-bill-workspace="standalone"]>[data-ui-slot~="conversation"]{display:none}
@@ -1142,6 +1158,7 @@ const FamilyRegistry=(()=>{
   if(family&&family!=='Unclassified')return {family,parent:d.parentApi||null,status:'WRONG-PARENT',study:'STUDY-CLASSIFY'};
   if(el.ownerSVGElement?.closest('[data-icon-parent],[data-api-icon]'))return {family:'Icon',parent:'Icon',status:'INHERITED',study:null};
   if(['thead','tbody','tfoot','tr','colgroup','col'].includes(tag)&&el.closest('[data-table-parent],table[data-family=Table]'))return {family:'Table',parent:'TableController',status:'PROVISIONAL',study:'STUDY-TABLE'};
+  if(['div','h1','h2','h3','blockquote','ul','ol','li','strong','em','u','s','mark','span','a','pre','code','table','thead','tbody','tr','th','td'].includes(tag)&&el.parentElement?.closest('[data-content-parent]'))return {family:'Typography',parent:'Typography',status:'INHERITED',study:null};
   if(['strong','b','em','u','s','span','small','li','ul','ol'].includes(tag)&&el.parentElement?.closest('[data-type-role]'))return {family:'Typography',parent:'Typography',status:'INHERITED',study:null};
   return {family:'Unclassified',parent:'Review',status:'NEEDS-STUDY',study:'STUDY-CLASSIFY'};
  }
@@ -2068,17 +2085,17 @@ const BillAuditList=Object.freeze({
   return eligible.filter(r=>!q||[r.customer,r.amount_vnd,r.account_raw,r.recipient,r.memo,r.reference,r.trace,r.date_raw,r.clock,r.id,BillAuditList.code(r),'BILL-'+BillAuditList.code(r)].some(x=>String(x??'').toLocaleLowerCase('vi-VN').includes(q))).sort((a,b)=>{if(order==='errors'&&a.flags.length!==b.flags.length)return b.flags.length-a.flags.length;if(order==='amount'){const d=BigInt(b.amount_vnd||'0')-BigInt(a.amount_vnd||'0');if(d)return d>0n?1:-1}return String(b.sent_at).localeCompare(String(a.sent_at))||String(b.id).localeCompare(String(a.id))})
  }
 });
-const Contact=Object.freeze({create({id,name,avatar,avatarSrc,preview,time,selected=false}){
+const Contact=Object.freeze({preview(value){return normalizeLines(String(value??'').replace(/^Bạn:\s*/iu,''))},create({id,name,avatar,avatarSrc,preview,time,selected=false}){
  return View.button({className:'contact'+(selected?' active':''),attrs:{'data-id':id},children:[
   Avatar.create({text:avatar,name,src:avatarSrc,size:'directory'}),
-  Layout.slot({tag:'span',name:'identity',children:[View.text({role:'body',tag:'b',weight:'medium',text:name}),View.text({role:'detail',tag:'small',text:normalizeLines(String(preview??""))})]}),
+  Layout.slot({tag:'span',name:'identity',children:[View.text({role:'body',tag:'b',weight:'medium',text:name}),View.text({role:'detail',tag:'small',text:Contact.preview(preview)})]}),
   Layout.slot({tag:'span',name:'contact-status',children:[View.text({role:'caption',name:'time',text:time})]})
  ]});
 },
  visibility(row,{visible,selected}){if(row.hidden===visible)row.hidden=!visible;row.classList.toggle('active',selected)},
  update(row,{preview,time,unread,typing=false}){
   const label=row.querySelector('.identity small'),stamp=row.querySelector('.time'),status=row.querySelector('.contact-status');
-  if(preview!==undefined){preview=normalizeLines(String(preview??''));if(typing){if(label.classList.contains('is-typing'))label.dataset.previous=preview;else label.textContent=preview}else if(label.textContent!==preview)label.textContent=preview}
+  if(preview!==undefined){preview=Contact.preview(preview);if(typing){if(label.classList.contains('is-typing'))label.dataset.previous=preview;else label.textContent=preview}else if(label.textContent!==preview)label.textContent=preview}
   if(time!==undefined&&stamp.textContent!==time)stamp.textContent=time;
   const badge=status.querySelector('.unread-count');if(unread){if(badge){if(badge.textContent!==String(unread))badge.textContent=String(unread)}else status.append(View.text({name:'unread-count',role:'caption',text:String(unread)}))}else badge?.remove()
  },
@@ -2157,7 +2174,7 @@ const Message=Object.freeze({
  return Layout.slot({name:'message'+(mine?' mine':''),attrs:{'data-message-day':day,'data-content-party':mine?'B':'A','data-content-time':time,'data-content-kind':media.length?'media':text?'text':'empty','aria-label':(mine?'Bên B':'Bên A')+(time?' · '+time:'')},children:[
   ...(text?[ContentAPI.create(text)]:[]),
   ...(media.length?[Layout.slot({name:'media-gallery',attrs:{'data-draft-sent-media':'true'},children:Array.from({length:Math.ceil(media.length/4)},(_,i)=>MediaController.gallery(media.slice(i*4,i*4+4)))})]:[]),
-  View.text({tag:'div',name:'meta',role:'caption',text:time})
+  View.text({tag:'div',name:'meta',role:'caption',text:time,attrs:time==='!'?{'data-send-error':'true'}:{}})
  ]});
 }});
 /* ChatReadAPI — host-authorized read projection. No credentials, network, persistence or write methods. */
@@ -2688,7 +2705,7 @@ function mountLiveChat(root){
   if(preserve){if(follow){ScrollController.end('incoming');ScrollController.followEnd()}else ScrollController.writeLocal(thread,top);syncJump()}
  }
  async function fetchLiveSnapshot(row,owner,n){
-  const msgs=await reader.thread(row.id);if(scope!==owner||choice!==n)return null;let assets=[],mediaKnown=!row.conversationId;const latest=msgs.at(-1);if(latest?.text&&latest.date>(row.latestAt||0)){liveDirectoryHints.set(row.id,{preview:(latest.mine?'Bạn: ':'')+latest.text,time:latest.time,date:latest.date,observedAt:Date.now()});renderDirectory()}
+  const msgs=await reader.thread(row.id);if(scope!==owner||choice!==n)return null;let assets=[],mediaKnown=!row.conversationId;const latest=msgs.at(-1);if(latest?.text&&latest.date>(row.latestAt||0)){liveDirectoryHints.set(row.id,{preview:latest.text,time:latest.time,date:latest.date,observedAt:Date.now()});renderDirectory()}
   const confirmed=liveConfirmed.get(row.conversationId);if(confirmed){for(const m of msgs)confirmed.delete(m.id);if(!confirmed.size)liveConfirmed.delete(row.conversationId)}
   const cached=getLiveSnapshot(owner,row.conversationId),ids=new Set(msgs.map(m=>m.id));
   if(cached){assets=cached.assets.filter(x=>ids.has(x.message_id));}
@@ -2844,7 +2861,7 @@ function mountLiveChat(root){
   // Retain the same key after an uncertain response, never auto-retry.
   if(previous&&previous.body!==body){setSendStatus('Tin trước chưa xác nhận. Khôi phục nội dung đó để thử lại.');return}
   const key=previous?.key||'0v:'+crypto.randomUUID(),at=previous?.message?.date||Date.now(),message=LiveChatSnapshotPolicy.localMessage(key,body,at);pending.set(id,{key,body,message});
-  liveDirectoryHints.set(id,{preview:'Bạn: '+body,time:message.time,date:at,observedAt:Date.now()});renderDirectory();
+  liveDirectoryHints.set(id,{preview:body,time:message.time,date:at,observedAt:Date.now()});renderDirectory();
   sending=true;send.disabled=true;setSendStatus('');
   if(selected===id){draft.value='';drafts.delete(id);updateComposer();send.disabled=true;if(root.dataset.screen==='chat'){const cached=getLiveSnapshot(owner,contact.conversationId),node=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]');if(cached)renderLiveSnapshot(cached,contact,owner,choice,{preserve:true});else if(!node){const date=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}).format(at),local=Message.create({text:body,time:message.time,mine:true,day:date});local.dataset.liveMessageId=message.id;local.dataset.livePending='true';Message.flow(thread.lastElementChild,local);thread.append(local)}ScrollController.end('send');draft.focus({preventScroll:true})}}
   try{
@@ -2855,7 +2872,7 @@ function mountLiveChat(root){
    if(ThreadBillAutoPolicy.uuid(result.message_id)&&ThreadBillAutoPolicy.uuid(result.conversation_id)){let confirmed=liveConfirmed.get(result.conversation_id);if(!confirmed){confirmed=new Map();liveConfirmed.set(result.conversation_id,confirmed)}const now=Date.now();confirmed.set(result.message_id,{id:result.message_id,text:body,mine:true,date:now,time:message.time,localAck:true});while(confirmed.size>100)confirmed.delete(confirmed.keys().next().value)}
    if(selected===id){setSendStatus('');if(root.dataset.screen==='chat'){const local=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]'),existing=thread.querySelector('[data-live-message-id="'+CSS.escape(result.message_id)+'"]');if(local&&existing)local.remove();else if(local){local.dataset.liveMessageId=result.message_id;delete local.dataset.livePending;delete local.dataset.liveSignature}else if(!existing){const date=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}).format(at),node=Message.create({text:body,time:message.time,mine:true,day:date});node.dataset.liveMessageId=result.message_id;Message.flow(thread.lastElementChild,node);thread.append(node)}ScrollController.end('send')}}
    await loadDirectory();if(scope===owner&&selected===id&&root.dataset.screen==='chat'){const fresh=rows.find(r=>r.id===id);if(fresh){if(ThreadBillAutoPolicy.uuid(fresh.conversationId)){const n=choice,s=await fetchLiveSnapshot(fresh,owner,n);if(s&&scope===owner&&choice===n)renderLiveSnapshot(s,fresh,owner,n,{preserve:true})}else await openThread(fresh,null,'send')}}
-  }catch{if(scope===owner&&pending.get(id)?.key===key){pending.set(id,{key,body,message:LiveChatSnapshotPolicy.localMessage(key,body,at,true)});liveDirectoryHints.delete(id);renderDirectory();if(selected===id){if(!draft.value.trim())draft.value=body;const node=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]');const meta=node?.querySelector('[data-ui-slot~="meta"]');if(meta)meta.textContent='!';setSendStatus('Chưa xác nhận gửi. Bấm Gửi để thử lại cùng tin.')}else if(!drafts.get(id))drafts.set(id,body)}}
+  }catch{if(scope===owner&&pending.get(id)?.key===key){pending.set(id,{key,body,message:LiveChatSnapshotPolicy.localMessage(key,body,at,true)});liveDirectoryHints.delete(id);renderDirectory();if(selected===id){if(!draft.value.trim())draft.value=body;const node=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]');const meta=node?.querySelector('[data-ui-slot~="meta"]');if(meta){meta.textContent='!';meta.dataset.sendError='true'};setSendStatus('Chưa xác nhận gửi. Bấm Gửi để thử lại cùng tin.')}else if(!drafts.get(id))drafts.set(id,body)}}
   finally{if(scope===owner){sending=false;updateComposer()}}
  }
  async function signout(){eraseBillProgress();const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();try{const result=await client?.auth.signOut({scope:'local'});if(result?.error)throw result.error;show('guest');status.textContent='Đã đăng xuất.'}catch{bootStatus.textContent='Chưa xác nhận đăng xuất. Thử lại.';retryBoot.hidden=false}}
