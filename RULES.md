@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.201)
+## 00. Chỉ mục rule đang có hiệu lực (v13.202)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1512,3 +1512,7 @@ No generative AI, neural OCR/LSTM, or neural image classification in new Bill re
 
 ## v13.201 — LIVE-BILL-GROUP-STRIP-01 / LIVE-BILL-EXACT-INTAKE-01
 Standalone audit only: replace hidden dropdown with five stable native buttons in horizontal flex wrap (all, exact duplicate, unclassified, bill, nonbill), counts and aria-pressed; selected group remains stable on updates. Before OCR use storage-object identity and SHA-256 via existing BillDuplicateAPI.digest on downloaded original bytes, session-scoped, no old OCR, no perceptual duplicate automatic decisions. Exact duplicates link to canonical row and never OCR again. Hash pass independent of OCR initialization; unique images need a second storage download, bounded memory, no persistent cache. Failed hash is not duplicate evidence. Legacy startup timeout and sanitized failure reason, no LSTM fallback. No bank grouping change, no finance/DB/keyboard writes. UI and live 600-image throughput pending.
+
+
+## v13.202 — LIVE-BILL-INIT-01
+Root cause: live path returns from the application IIFE before BillDuplicateAPI, BillOCRFieldAPI and BillOCREngineAPI const initialization. Move contiguous shared pure bank APIs and BusinessProjectionAPI ahead of the existing live mount/return, retain demo UI after return, preserve single owner and existing OEM 0. No extra AI or database mutation. Add source-order guard and authenticated standalone synthetic browser fixture with duplicate asset and injected classical worker; actual network language assets still require live verification. Existing static test extraction follows shared API boundary. No keyboard change.

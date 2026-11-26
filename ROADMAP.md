@@ -119,3 +119,5 @@ L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezo
 - v13.200 before release: explicit Legacy OEM 0 and strict recipient/transaction context, lexical nonbill signals, 17 synthetic tests. Real image and classical visual classifier pending.
 
 - v13.201 P05 E1: horizontal count groups and original-byte exact dedup before OCR; startup error detail. Bank hints, persistence, speed/device evidence pending.
+
+- v13.202 P05 E1: shared Bill API initialization before live gate, synthetic standalone runtime regression added; CI/Pages and real OCR assets pending.
