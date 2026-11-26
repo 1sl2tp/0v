@@ -1,4 +1,4 @@
--- Review-only: additive directory fields from verified live function. No state writes or new grants.
+-- Deployed 2026-11-26: v0_admin_read_ack_count_20261126. Additive directory fields; mark_seen writes shared read state only after auth and scope checks.
 CREATE OR REPLACE FUNCTION v0_private.admin_read(p_kind text, p_conversation_id uuid)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -37,7 +37,7 @@ begin
         coalesce(ma.created_at,m.created_at,a.created_at) as activity,
         unread.total > 0 as has_unread, unread.total as unread_count,
         own_state.last_read_at, peer_state.last_read_at as peer_last_read_at,
-        true as read_ack_supported
+        (coalesce(auth.jwt()->>'aal','')='aal2') as read_ack_supported
       from public.v21_accounts a
       left join lateral (
         select vc.id from public.v21_conversations vc
@@ -83,7 +83,7 @@ begin
 end;
 $function$;
 
--- Review only: apply together with directory count/feature flag, after isolated security tests.
+-- Deployed together with directory count/feature flag. Device acceptance pending.
 -- Shared read state is explicitly the existing v21_read_states; no message/ledger mutation.
 CREATE OR REPLACE FUNCTION v0_private.admin_mark_seen(p_conversation_id uuid,p_message_ids uuid[])
 RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $$
