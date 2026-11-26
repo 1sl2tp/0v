@@ -540,3 +540,5 @@ LIVE-BILL-HISTORY-DATE-01: BillReceiptProjection.read uses ParseAPI.billDate and
 LIVE-BILL-LEGACY-DEBIT-01: admin_media returns recovered display-only amount_vnd/date_vn for tightly constrained legacy sender-debit OCR with matching literal short year and clock. Review status remains unchanged and has_ledger false. Same ACL and exact asset binding; no schema or financial mutation.
 
 LIVE-BILL-JOURNAL-MEMO-01: legacy admin_media review-only BIDV SMB-TkThe notification masks falsely inferred recipient fields while keeping memo and recovering explicit negative transaction amount for a matching printed date/clock. No collection authority.
+
+LIVE-BILL-AUDIT-WORKSPACE-01: v0_admin_bill_audit() -> {account_id,total,rows} read-only, max 1000, private AAL2 scope; BillAuditList.select derives sorting/filter/search, CardController and existing media loader render. No collection authority. Explicit missing data, account review separately.
