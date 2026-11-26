@@ -701,3 +701,7 @@ User screenshot v13.213: composer 82%, last message under input when focused, di
 
 ### v13.215 release repair
 CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtures individually passed. Restore all four protected ranges byte-for-byte to last passing candidate 53b66a9; separate live-only tail adapter outside protected ranges uses existing ScrollController.end/followEnd, no viewport geometry writer. Explicit pointer/touch/wheel/blur cancels tail intent; room/epoch guard. Count 12 Unicode cases, do not remove assertions. Full exact-head CI pending, native iPhone pending.
+
+
+## v13.216 — user-requested rich content candidate stacked on #197
+Read AGENTS, active typography/CONTENT-AB rules, COMPONENT-API, ROADMAP and source evidence: Astryx Text da954186ff862485cbf0e1964cb2bec15f43b9bb and Stack c56d72759ad2f6f86102228e22c3123530b32894; sindresorhus/github-markdown-css github-markdown.css blob 2d308c762a8bca86ab43275f959575e68779b6ad. Semantic roles, shared spacing, native list/table/quote. No copied runtime or official ChatGPT CSS. E1 ten policy assertions, inline script syntax and four keyboard ranges exact. No full node audit/browser executed in connector. CI/Pages/native pending. No production data, backend or old CHAT changes. No claim of all-screen normalization or device acceptance.

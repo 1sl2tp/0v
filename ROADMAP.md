@@ -180,3 +180,6 @@ User screenshot v13.213: composer 82%, last message under input when focused, di
 
 ### v13.215 release repair
 CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtures individually passed. Restore all four protected ranges byte-for-byte to last passing candidate 53b66a9; separate live-only tail adapter outside protected ranges uses existing ScrollController.end/followEnd, no viewport geometry writer. Explicit pointer/touch/wheel/blur cancels tail intent; room/epoch guard. Count 12 Unicode cases, do not remove assertions. Full exact-head CI pending, native iPhone pending.
+
+
+- v13.216 P01 explicit user request: rich content display; E1 policy and source proof, CI/native pending, stacked on #197.

@@ -10,7 +10,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
-| Typography | TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
+| Typography | CONTENT-FORMAT-01–04 (document display), TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
@@ -1588,3 +1588,10 @@ User screenshot v13.213: composer 82%, last message under input when focused, di
 
 ### v13.215 release repair
 CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtures individually passed. Restore all four protected ranges byte-for-byte to last passing candidate 53b66a9; separate live-only tail adapter outside protected ranges uses existing ScrollController.end/followEnd, no viewport geometry writer. Explicit pointer/touch/wheel/blur cancels tail intent; room/epoch guard. Count 12 Unicode cases, do not remove assertions. Full exact-head CI pending, native iPhone pending.
+
+
+## v13.216 — CONTENT-FORMAT
+- CONTENT-FORMAT-01: existing ContentAPI owns message display. Heading ratios 1.294/1.176/1.059 (~22/20/18px at 17px), 600, line 1.3; body inherited. Native list indent 1.5em, 4px item gap, nesting up to 3, read-only checklist. Quote 3px border; table 14/20, 8px cell padding, local horizontal overflow. No Input/Keyboard changes.
+- CONTENT-FORMAT-02: explicit bold, italic, strike, ==mark==, <u>underline</u>, code, http(s) links, headings, list, quote, divider, strict pipe tables. No arbitrary HTML execution, no unsafe links or amount inference. Source stored unchanged, code not capitalized. Keep legacy quantity emphasis.
+- CONTENT-FORMAT-03: semantic status and actual AI queue loading, aria-busy/reduced motion; highlight not financial approval. No DB or cache changes. Palette is project choice; full dark mode outside scope.
+- CONTENT-FORMAT-04: pure policy checks, syntax, keyboard lock, CI and native visual verification. Astryx Text da954186ff862485cbf0e1964cb2bec15f43b9bb and Stack c56d72759ad2f6f86102228e22c3123530b32894; sindresorhus/github-markdown-css github-markdown.css blob 2d308c762a8bca86ab43275f959575e68779b6ad. Semantic roles, shared spacing, native list/table/quote. No copied runtime or official ChatGPT CSS.
