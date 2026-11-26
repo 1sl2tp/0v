@@ -1,0 +1,17 @@
+# Bill sample regions — individual review register
+Status: candidate rules, not visually verified. Exact ten IDs supplied by user; legacy database image_layout and recognition_case are observations of a prior AI, not ground truth. Original private images not available to this connector. Do not infer field geometry or reuse transaction values. Review each original with Xem vùng AI đọc; confirm separately before promoting to a bank layout. All region coordinates remain unset.
+
+| Receipt | Bank / family | Prior image_layout | Prior recognition_case | Individual region review rule |
+|---|---|---|---|---|
+| BILL-233071C7 | Techcombank receipt | paper_photo | cropped_recipient | Isolate receipt from surroundings. Check whether main success panel includes Tới/name, transaction amount, account block, Lời nhắn, Ngày thực hiện. Do not assume alternate photographed Techcombank layout matches; inspect recipient edge and keep missing digits null. |
+| BILL-207D5514 | BIDV receipt | paper_photo | cropped_recipient | Isolate receipt; locate success amount and separate beneficiary label/value from sender account. Verify crop boundaries and printed date/time. Do not apply BIDV journal memo-only template unless labels actually match. |
+| BILL-53A01132 | VPBank receipt | paper_photo | no_printed_clock | Locate date and time separately; search actual transaction detail, never status bar. If no printed time, null and manual verification. Locate beneficiary and memo independently. |
+| BILL-95AF248A | BIDV balance notice | app_screenshot | amount_ambiguous; latest_top_row | Segment each transaction row; compare GD/SD and sign. Do not combine rows or assume newest is the intended transaction; if ambiguous return unclassified. SMB-TkThe stays memo, never source of recipient. |
+| BILL-8268651D | MoMo wallet transfer | app_screenshot | cropped_recipient | Identify wallet logo and transfer amount rather than total including fee. Distinguish wallet recipient name/phone from bank beneficiary account; do not map phone to bank STK. Inspect cropped beneficiary block. |
+| BILL-1C0AD231 | MB balance notice (user label) | app_screenshot | amount_ambiguous | Separate GD, SD, sender account, date/time and ND. Determine debit/credit by evidence, not signed balance. Only use explicit DEN/recipient fields. |
+| BILL-4CBFF2A9 | MB receipt variant 1 | app_screenshot | cropped_recipient | Keep separate variant; inspect beneficiary block and whether account is masked/cropped. No inferred digits or borrowing layout of variant 2. |
+| BILL-AC4B545C | MB receipt variant 2 | app_screenshot | complete_receipt | Independently map success amount, date/time, name, account, memo in actual order. Do not extrapolate from variant 1; complete_receipt label is not confirmation of correctness. |
+| BILL-33B118A9 | SHB receipt | paper_photo | cropped_recipient | Identify receipt boundaries; locate beneficiary name and account separately, inspect cut-off digits; locate actual date/time and memo, not background. |
+| BILL-36652584 | MSB receipt | app_screenshot | complete_receipt | Independently mark logo, amount, date, time, name, account, memo; keep name/account roles distinct from sender. Verify line order from source before making fixed geometry. |
+
+Review data per field: original box [ymin,xmin,ymax,xmax] normalized 0..1000, printed label, value role, line order, region boundary, human confirmation. Do not store raw transaction values in shared prompt or rules. One explicit AI call per image; review only; no auto scan or ledger mutation.
