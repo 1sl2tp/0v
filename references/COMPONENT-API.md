@@ -561,3 +561,6 @@ LIVE-BILL-READ-TIME-01: scoped audit RPC adds ocr_scanned_at and result_saved_at
 
 ## v13.194 BillAuditList.progress(rows)
 Returns total/saved/pending/latest over loaded Bill scope, excludes non-bill, distinguishes annotation save from model completion; no new request or mutation. CardController keeps existing row layout.
+
+## v13.195 — Batch controls
+Existing CardController.panel and Button.create with native disabled; only existing fetchAudit is actionable. No duplicate runtime owner. No dispatch, no production changes.
