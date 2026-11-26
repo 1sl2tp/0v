@@ -784,7 +784,7 @@ html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][dat
 
 /* CONTENT-PRESENTATION: shared thread visual policy; preserve chronology and metadata. */
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-ui-slot~="message"][data-content-party]{position:relative;background:transparent;padding:0;gap:var(--gap-xs);align-items:flex-start}
-html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=B]{align-items:flex-end}
+html[data-floating] #app>[data-ui-slot~="conversation"] [data-ui-slot~="message"][data-content-party=B]{align-items:flex-end}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=A][data-ui-slot~="message"]>[data-ui-slot~="bubble"]{width:100%;background:transparent;padding:0;border-radius:0}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party=B][data-ui-slot~="message"].mine>[data-ui-slot~="bubble"]{width:fit-content;max-width:86%;background:var(--surface-selected);padding:var(--gap-sm) var(--gap-md);border-radius:18px}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-ui-slot~="message"]>[data-ui-slot~="meta"]:not([data-send-error]){position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}

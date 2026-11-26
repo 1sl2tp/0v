@@ -713,3 +713,7 @@ E0 run 45766048105 static version check false: RULE index stale v13.215; content
 
 ### v13.216 CI follow-up
 E0 API PR run 45766529230 / job 139728648984: audit-design.cjs line 356 extraction used old Contact.create-first literal; Contact.preview now first method, so end index -1 included HTML. Fix audit boundary to stable Contact object declaration; preserve tests. BillAuditList extraction and sample sort executed successfully. Connector auditDesign 130 checks, pass=false; not equivalent to Node CI; no runtime, snapshot, keyboard or database changes. Full CI/Pages/native pending.
+
+
+### v13.216 — fix outgoing alignment specificity
+E0 PR run 45766905066 job 139729872121: static audit and snapshot success, Chromium six viewport matrix passed, line 458 outgoing align actual flow-start expected flex-end. Generic row selector has higher specificity than party B selector. Fix B selector to include same message slot, later wins; strengthen browser test with actual edge alignment. No changes to locked keyboard ranges, DB or old CHAT. Same pending release; CI/Pages/native pending.
