@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.216)
+## 00. Chỉ mục rule đang có hiệu lực (v13.217)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -10,7 +10,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
-| Typography | LATEST-MESSAGE-01–04 (message projection/edge), CONTENT-PRESENTATION-01–04 (thread/preview visual, supersedes CONTENT-AB-01 paint), CONTENT-FORMAT-01–04 (document display), TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
+| Typography | CHAT-RHYTHM-01–04 (turn spacing and latest projection), LATEST-MESSAGE-01–04 (message projection/edge), CONTENT-PRESENTATION-01–04 (thread/preview visual, supersedes CONTENT-AB-01 paint), CONTENT-FORMAT-01–04 (document display), TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
@@ -1609,3 +1609,10 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 - LATEST-MESSAGE-02: Message.latest/hint/markLatest own chronological pointer projection, stable message ID and monotonic preview updates; do not mark status before actual ACK. Live cache and authoritative directory remain existing sources; no new requests or duplicate store. Unknown media without evidence has no synthetic preview.
 - LATEST-MESSAGE-03: Message.follow centralizes visible outgoing-send follow and pinned incoming/ACK follow; reading above stays in place on incoming/ACK. ScrollController owns actual writes; keyboard lock unchanged. Latest row marker is type-independent. Real media sending still unavailable; no fake ACK.
 - LATEST-MESSAGE-04: explicit user request, scope only local projection and existing live reads/text send; test text/image/video/file/mixed/unknown/stale/scroll and marker. Source: Matrix event-timeline-set.ts 93c6ce4a8151aa3c93c2aef36d22cf3f7341904b; Redux Toolkit unsorted_state_adapter.ts 81d97994c84c491c2b19aedb3582f9d224d15cdb; Adobe Virtualizer.ts 3959c1cc7666f0384d31af2c770c6902662cdcb1; Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894. E2/E3/E4 pending.
+
+
+## v13.217 — CHAT-RHYTHM and live latest state
+- CHAT-RHYTHM-01: Message.rhythm/flow own same sender/day within 5 min (or no reliable minute) compact gap-xs, different sender gap-md, new day or over 5 min gap-lg; all content types, stable IDs, reset derived flags. Existing base gap retained. Project choices, not official ChatGPT CSS.
+- CHAT-RHYTHM-02: Message.newIncoming counts unseen newer incoming IDs, not media reprojection/history/ACK. Open contact clears only jump count, not unread receipt; touching reader not forced down.
+- CHAT-RHYTHM-03: normalized group and known role fallback, explicit Other wins; numeric server unread count precedes boolean, unknown remains dot. No guessing or fabricated receipts.
+- CHAT-RHYTHM-04: coalesced dirty wake while blocked; trailing refresh, no new timer cadence/RPC type; reproject fresh snapshot only. Sources Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894, Adobe Virtualizer 3959c1cc7666f0384d31af2c770c6902662cdcb1, Matrix timeline 93c6ce4a8151aa3c93c2aef36d22cf3f7341904b. CI/device pending.

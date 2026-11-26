@@ -721,3 +721,7 @@ E0 PR run 45766905066 job 139729872121: static audit and snapshot success, Chrom
 
 ### v13.216 — shared latest-message parent + CI correction
 E0 run 45767434670 / job 139731631220 Chromium computed alignItems flow-end (browser alias for flex-end), after specificity correction. Accept equivalent aliases only while retaining exact physical left/right edge check. E1 extend existing Message parent describe/latest/hint/follow/markLatest; live text and received attachments share projection with fixture; no new RPC, no database/old CHAT, no fake media send. 10 policy cases and all inline syntax, four protected ranges exact; added static and Chromium marker assertion. Source receipts in LATEST-MESSAGE-04. Full Node/Chromium/Pages/native pending.
+
+
+## v13.217 — chat rhythm and live latest follow-up
+E0 screenshots v13.216: uniform broad gap, jump lacks count, group/unread uncertain. E1 Message parent turn spacing, unseen incoming IDs, deferred sync, fresh snapshot only, normalized groups and numeric unread. 13 policy assertions, inline syntax and four protected ranges checked. Added static/Chromium tests. Source receipts CHAT-RHYTHM-04; reviewed AGENTS/RULES/COMPONENT-API/ROADMAP. No DB/CHAT/media-send change. CI/Pages/device pending.

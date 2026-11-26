@@ -183,3 +183,5 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 
 
 - v13.216 P01 explicit user request: rich content display; E1 policy and source proof, CI/native pending, stacked on #197.
+
+- v13.217 explicit screenshot follow-up: message rhythm, jump count, group/unread, sync. E1; CI/native pending.
