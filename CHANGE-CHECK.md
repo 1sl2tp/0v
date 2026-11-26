@@ -558,3 +558,5 @@ LIVE-DATA-PROJECTION-01 — E0 production read-only: 128 of 148 authorized user 
 E2: repair SQL regex and replace whole canonical function; previous backend CI failed due regex repetition limit and corrupted SQL replacement. Rebased on released v13.181; no production rollout. Retry DB fixture.
 
 LIVE-BILL-BANK-PROOF-UI-01: v13.182 hiển thị riêng STK ngân hàng xác nhận và STK OCR gốc, không yêu cầu xác minh lại khoản đã được liên kết Agribank. E0 exact receipt read-only evidence; E1 render-only, synthetic positive/negative audit + Chromium fixture. Backend PR #160 dependency, CI pending. No changes to financial records.
+
+LIVE-BILL-DIGIT-RECHECK-UI-01: display-only rechecked account distinct from bank proof; added positive and status-preservation fixture. Backend #160 and OCR #418 dependencies. CI pending.

@@ -518,3 +518,5 @@ LIVE-BILL-09: ParseAPI.billRecipientEvidence returns truncated-tail for exact 12
 LIVE-DATA-PROJECTION-01: directory contact adds nullable avatar_path; existing private media projection can return date_vn with no transaction timestamp only when printed numeric date matches a valid normalized calendar date. No change to scope, clock, ledger or financial mutation.
 
 LIVE-BILL-BANK-PROOF-UI-01: BillReceiptProjection uses bank_verified_account only for truncated-tail + received + has_ledger and exact configured account. Original OCR remains accessible; no change to recognition or collection.
+
+LIVE-BILL-DIGIT-RECHECK-UI-01: BillReceiptProjection prefers strict linked bank proof; otherwise accepts exact focused OCR projection for truncated-tail only; retains original and displays no bank confirmation.

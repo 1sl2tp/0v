@@ -1439,3 +1439,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-DATA-PROJECTION-01: directory API returns bounded existing avatar_path only for already-authorized directory rows; reject unsafe path; no new grant. Bill date projection may use independent printed date and matching canonical calendar date when timestamp is null; reject conflict/invalid and never infer clock. Existing AAL2 receipt scope, joins, status and ledger untouched. Backend-only review; no production deployment from this PR.
 
 - LIVE-BILL-BANK-PROOF-UI-01: chỉ sử dụng bank_verified_account cho OCR thiếu đúng số 9 cuối, trạng thái received, có ledger và STK xác nhận đúng cấu hình. Giữ STK OCR gốc trong thông tin bổ sung; trạng thái đã ghi thu không đồng nghĩa OCR hoàn hảo. Không có bằng chứng giữ cảnh báo, không tự điền số.
+
+- LIVE-BILL-DIGIT-RECHECK-UI-01: khi có ocr_rechecked_account hợp lệ, hiển thị kết quả đọc lần hai, giữ nguyên STK OCR gốc; chỉ bank_verified_account mới được ghi Khớp Agribank. Không thay đổi trạng thái thu ngoài trạng thái thật.
