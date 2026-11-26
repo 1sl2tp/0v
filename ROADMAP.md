@@ -99,3 +99,5 @@ L08 / v13.191: latest saved OCR review result becomes primary audit display; ori
 L08 / v13.192: standalone Bill foreground/heartbeat refresh and current data timestamp; pending CI/Pages.
 
 L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezone; CI/RPC/Pages pending.
+
+- v13.194 P05: scoped saved-review progress and honest AI completion label; E1 source and synthetic check; CI/Pages pending; production Batch invocation remains blocked.

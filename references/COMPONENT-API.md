@@ -558,3 +558,6 @@ LIVE-BILL-CURRENT-RESULT-01: BillAuditList.effective derives latest visible valu
 LIVE-BILL-FRESHNESS-01: fetchAudit({background}) uses existing RPC with single flight and scope guard; refreshAuditVisible skips active edits/dialogs/hidden; only changed rows rerender, stable search/page and scroll. No new API or financial writes.
 
 LIVE-BILL-READ-TIME-01: scoped audit RPC adds ocr_scanned_at and result_saved_at (nullable timestamptz); Card formats Vietnam time, distinct from transaction and page-fetch timestamps.
+
+## v13.194 BillAuditList.progress(rows)
+Returns total/saved/pending/latest over loaded Bill scope, excludes non-bill, distinguishes annotation save from model completion; no new request or mutation. CardController keeps existing row layout.
