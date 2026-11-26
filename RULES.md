@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.206)
+## 00. Chỉ mục rule đang có hiệu lực (v13.208)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1534,3 +1534,9 @@ Standalone manual OCR displays amount, transaction date, time, recipient name/ac
 
 ## v13.206 — LIVE-BILL-LSTM-01
 User approves LSTM upgrade for standalone manual OCR, superseding OEM 0 only on this route. Existing BillOCREngineAPI.liveFactory uses Tesseract.js 6.0.1 OEM 1 vie+eng, LSTM-only flags, isolated language model cache (no image cache persistence). Explicit sequential clicks reuse one authenticated worker; terminate on scope reset or OCR failure/timeout. Upscale small originals up to 3x, longest side 2400 and max 4 million pixels; no old OCR reuse for new reads. Parse-only handling of literal account+bank, date/time+reference and memo inline; raw preserved, no default values. Existing legacy demo factory unchanged. No external AI or financial writes. Upstream: https://github.com/naptha/tesseract.js/blob/v6.0.1/docs/api.md, docs/performance.md, src/createWorker.js. Real accuracy/latency, CDN and device verification pending.
+
+## v13.208 — LIVE-BILL-AI-MANUAL-01
+User explicitly supersedes standalone classical/LSTM OCR: one explicit authenticated manual Gemini Vision request per click, original private image resolved server-side from existing v0_admin_bill_audit scope (active admin/session/AAL2), caller-scoped Storage, server-only key, no service role, no automatic retry/scan, no financial writes. Six literal fields and null for unreadable; no expected values in prompt, no confidence percentage fabricated. Separate tab checkpoint namespace, editable structured text and verify, no cross-device durability. New endpoint v0-bill-vision-manual; existing internal acceptance and financial functions unchanged. One internal audit RPC per click returns scoped metadata server-side; no new polling, but cost/latency not measured. Original selected image sent to Gemini on explicit click. Provider quota, privacy terms and actual image accuracy pending. Source Supabase Auth docs and existing v0-bill-audit-reread endpoint; no internal key exposed.
+
+### v13.208 — standalone presentation revision
+User requests removing raw OCR text. Only six structured values, image, ID, manual read, verification status, optional inline per-field edit and verify. No raw or duplicate AI transcript displayed; old local OCR checkpoint removed for current account on initial load. No old DB data or ledger deleted. Verified edits retain structured values, no reparsing. Browser regression checks no raw label/textarea. CI pending.

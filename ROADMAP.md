@@ -131,3 +131,7 @@ L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezo
 - v13.205 P05 E1: display six fresh OCR fields on explicit manual read; preserve raw/edit/verify. CI/Pages/device pending.
 
 - v13.206 P05 E1: manual LSTM worker reuse, bounded upscale, six-field layout parsing. CI and real 600-image accuracy pending; PaddleOCR/RapidOCR benchmark separate.
+
+- v13.208 P05 E1: replace standalone manual LSTM with one-shot authenticated Gemini Vision read, six fields; CI, endpoint tests and live accuracy pending.
+
+- v13.208 presentation revision: remove raw OCR and duplicate AI text; six fields only, optional field edits; CI pending.
