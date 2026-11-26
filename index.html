@@ -11,7 +11,7 @@
 <title>CHAT CRM — Bố cục v13.215</title>
 <script>const layoutParams=new URLSearchParams(location.search);document.documentElement.dataset.liveglass=layoutParams.get('liveglass')==='1'?'1':'0';document.documentElement.dataset.floating=layoutParams.has('floating')?(layoutParams.get('floating')==='1'?'1':'0'):(matchMedia('(max-width:767px)').matches?'1':'0');</script>
 <style>
-:root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#e5e5e5;--soft:#f5f5f5;--paper:#fff;--font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-family:var(--font-ui);font-size:var(--type-body)}
+:root{color-scheme:light;--ink:#0d0d0d;--muted:#676767;--line:#e5e5e5;--soft:#f5f5f5;--paper:#fff;--font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji";font-family:var(--font-ui);font-size:var(--type-body)}
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%;touch-action:manipulation;background:var(--paper);color:var(--ink)}
 button,input,textarea{font:inherit}button{border:0;background:transparent;color:inherit;cursor:pointer;min-height:44px}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--control-focus);outline-offset:2px}
@@ -473,7 +473,8 @@ html[data-floating="1"] #app>[data-ui-slot~="conversation"]>.composer-frame::bef
  html[data-floating="1"] #app>[data-ui-slot~="conversation"]>.composer-frame::before{
  inset:-12px 0 0;background:linear-gradient(to bottom,transparent,rgba(255,255,255,.14) 35%,rgba(255,255,255,.32));
  }
- /* Keyboard state is semantic, never a geometry switch. Bottom padding is owned by composer-frame tokens. */
+ html[data-floating="1"] #app[data-live-chat="true"]>[data-ui-slot~="conversation"]>.composer-frame>.composer:focus-within{width:94%}
+ /* Keyboard state is semantic, never a viewport geometry switch. Bottom padding is owned by composer-frame tokens. */
 }
 /* Safari and standalone share the same visible safe-area tokens. */
 @media(max-width:360px){
@@ -812,7 +813,7 @@ const Input=(()=>{
  }
  return Object.freeze({types,bind,create,isComposing:isTextComposing,commitMessage:committedMessage,searchKey:searchText});
 })();
-function normalizeLines(value){return canonicalText(value).split('\n').map(line=>line.replace(/^(\s*(?:[-•*]\s+|\d+[.)]\s+)?)(\p{L})(.*)$/u,(whole,prefix,first,rest)=>{const word=first+rest;if(/^(?:https?:\/\/|www\.|[\w.+-]+@|[\p{L}]*\d)/iu.test(word))return whole;return prefix+first.toLocaleUpperCase('vi-VN')+rest})).join('\n')}
+function normalizeLines(value){return canonicalText(value).split('\n').map(line=>line.replace(/^(\s*(?:[-•*]\s+|\d+[.)]\s+)?(?:[\p{Extended_Pictographic}\p{Regional_Indicator}\p{Emoji_Modifier}\uFE0F\u200D\s]+)?)(\p{L})(.*)$/u,(whole,prefix,first,rest)=>{const word=first+rest;if(/^(?:https?:\/\/|www\.|[\w.+-]+@|[\p{L}]*\d)/iu.test(word))return whole;return prefix+first.toLocaleUpperCase('vi-VN')+rest})).join('\n')}
 const MediaController={
  normalizeMime(value){const mime=String(value||'').toLowerCase().split(';')[0].trim();return mime==='image/jpg'||mime==='image/pjpeg'?'image/jpeg':mime},
  isImageMime(value){return /^image\/(jpeg|png|webp|gif|avif|heic|heif)$/.test(this.normalizeMime(value))},
@@ -2033,20 +2034,20 @@ const BillAuditList=Object.freeze({
 const Contact=Object.freeze({create({id,name,avatar,avatarSrc,preview,time,selected=false}){
  return View.button({className:'contact'+(selected?' active':''),attrs:{'data-id':id},children:[
   Avatar.create({text:avatar,name,src:avatarSrc,size:'directory'}),
-  Layout.slot({tag:'span',name:'identity',children:[View.text({role:'body',tag:'b',weight:'medium',text:name}),View.text({role:'detail',tag:'small',text:preview})]}),
+  Layout.slot({tag:'span',name:'identity',children:[View.text({role:'body',tag:'b',weight:'medium',text:name}),View.text({role:'detail',tag:'small',text:normalizeLines(String(preview??""))})]}),
   Layout.slot({tag:'span',name:'contact-status',children:[View.text({role:'caption',name:'time',text:time})]})
  ]});
 },
  visibility(row,{visible,selected}){if(row.hidden===visible)row.hidden=!visible;row.classList.toggle('active',selected)},
  update(row,{preview,time,unread,typing=false}){
   const label=row.querySelector('.identity small'),stamp=row.querySelector('.time'),status=row.querySelector('.contact-status');
-  if(preview!==undefined){if(typing){if(label.classList.contains('is-typing'))label.dataset.previous=preview;else label.textContent=preview}else if(label.textContent!==preview)label.textContent=preview}
+  if(preview!==undefined){preview=normalizeLines(String(preview??''));if(typing){if(label.classList.contains('is-typing'))label.dataset.previous=preview;else label.textContent=preview}else if(label.textContent!==preview)label.textContent=preview}
   if(time!==undefined&&stamp.textContent!==time)stamp.textContent=time;
   const badge=status.querySelector('.unread-count');if(unread){if(badge){if(badge.textContent!==String(unread))badge.textContent=String(unread)}else status.append(View.text({name:'unread-count',role:'caption',text:String(unread)}))}else badge?.remove()
  },
  typingLabel(label,typing,fallback){
   if(typing){if(label.classList.contains('is-typing'))return;if(fallback===undefined)label.dataset.previous=label.textContent;label.replaceChildren(document.createTextNode('Đang nhập'),make('span','typing-dots','•••'));label.classList.add('is-typing')}
-  else{const was=label.classList.contains('is-typing');const value=fallback??(was?label.dataset.previous||'':label.textContent);if(was||label.textContent!==value)label.textContent=value;if(was){label.classList.remove('is-typing');delete label.dataset.previous}}
+  else{const was=label.classList.contains('is-typing');const value=normalizeLines(String(fallback??(was?label.dataset.previous||'':label.textContent)));if(was||label.textContent!==value)label.textContent=value;if(was){label.classList.remove('is-typing');delete label.dataset.previous}}
  }
 });
 const DraftMedia=(()=>{
@@ -2142,7 +2143,7 @@ const ChatReadAPI=(()=>{
    for(const row of rows){
     if(!row||row.deleted_at||row.locked_at)continue;
     if(!id(row.id)||next.has(row.id)||typeof row.display_name!=='string')throw Error('Invalid contact');
-    const value=Object.freeze({id:row.id,name:str(row.display_name,300),avatarPath:str(row.avatar_path,300),role:str(row.role,40),group:str(row.contact_group,40),readAckSupported:row.read_ack_supported===true,readAt:stamp(row.last_read_at)?Date.parse(row.last_read_at):0,peerReadAt:stamp(row.peer_last_read_at)?Date.parse(row.peer_last_read_at):0,unreadCount:Number.isSafeInteger(row.unread_count)&&row.unread_count>=0?row.unread_count:row.has_unread===false?0:null,conversationId:id(row.conversation_id)?row.conversation_id:null,preview:str(row.preview_text,500),time:time(row.latest_at),unread:row.has_unread===true});
+    const value=Object.freeze({id:row.id,name:str(row.display_name,300),avatarPath:str(row.avatar_path,300),role:str(row.role,40),group:str(row.contact_group,40),readAckSupported:row.read_ack_supported===true,readAt:stamp(row.last_read_at)?Date.parse(row.last_read_at):0,peerReadAt:stamp(row.peer_last_read_at)?Date.parse(row.peer_last_read_at):0,unreadCount:Number.isSafeInteger(row.unread_count)&&row.unread_count>=0?row.unread_count:row.has_unread===false?0:null,conversationId:id(row.conversation_id)?row.conversation_id:null,preview:typeof row.preview_text==='string'?row.preview_text:'',latestAt:stamp(row.latest_at)?Date.parse(row.latest_at):0,time:time(row.latest_at),unread:row.has_unread===true});
     next.set(value.id,value);
    }
    contacts=next;return Object.freeze([...next.values()]);
@@ -2157,7 +2158,7 @@ const ChatReadAPI=(()=>{
     if(!row||row.deleted_at)continue;
     if(!id(row.id)||seen.has(row.id)||row.conversation_id!==contact.conversationId||!id(row.sender_account_id)||!stamp(row.created_at))throw Error('Invalid message scope');
     seen.add(row.id);
-    out.push(Object.freeze({id:row.id,text:str(row.body,20000),mine:row.sender_account_id===s.accountId,date:Date.parse(row.created_at),time:time(row.created_at)}));
+    out.push(Object.freeze({id:row.id,text:typeof row.body==='string'?row.body:'',mine:row.sender_account_id===s.accountId,date:Date.parse(row.created_at),time:time(row.created_at)}));
    }
    return Object.freeze(out.sort((a,b)=>a.date-b.date||a.id.localeCompare(b.id)));
   }
@@ -2288,6 +2289,7 @@ const LiveAuthAPI=Object.freeze({
 });
 // Independent live admin UI.
 function mountLiveChat(root){
+ root.dataset.liveChat="true";
  const standaloneBills=location.pathname.endsWith('/bill.html')||new URLSearchParams(location.search).get('view')==='bills';
  if(standaloneBills){root.dataset.billWorkspace='standalone';document.title='Rà soát Bill · v13.215';}
  const endpoint='https://vtqhbhrkdxirqeqkgylo.supabase.co',publicKey='sb_publishable_3ms4nAPXQwBN18Zo2yNoIg_d4WrHu04';
@@ -2378,7 +2380,7 @@ function mountLiveChat(root){
  const eligibleOcr=r=>!!r.storage_key&&isLiveImage(r);
  let lastAuditRequest=0,progressRestored=false,progressSaveError=false;
  const threadBillPrefix='0v.thread.bill.vision.v1:',liveCachePrefix='0v.thread.snapshot.v1:';
- const liveSnapshots=new Map(),liveConfirmed=new Map(),liveReadSeen=new Map();let liveReadTimer=0,liveReadBusy=false,liveReadContextKey='',liveReadLastAttempt=null;let liveSyncTimer=0,liveWakeTimer=0,liveSyncBusy=false,liveSyncOwner=null,liveChannel=null;let prewarmTimer=0,prewarmRunning=false;
+ const liveSnapshots=new Map(),liveConfirmed=new Map(),liveReadSeen=new Map(),liveDirectoryHints=new Map();let liveReadTimer=0,liveReadBusy=false,liveReadContextKey='',liveReadLastAttempt=null;let liveSyncTimer=0,liveWakeTimer=0,liveSyncBusy=false,liveSyncOwner=null,liveChannel=null;let prewarmTimer=0,prewarmRunning=false;
  const threadBillQueue=[],threadBillPending=new Set();let threadBillRunning=false,threadBillQuotaUntil=0;
  const billProgressPrefix='0v.bill.progress.ai.v1:';
  const progressKey=()=>scope&&standaloneBills?billProgressPrefix+scope.accountId:null;
@@ -2602,7 +2604,7 @@ function mountLiveChat(root){
  composer.addEventListener('submit',e=>{e.preventDefault();if(Input.isComposing(draft,e))return;void sendText()});
  show('boot');document.body.prepend(boot,loginScreen,mfa,root);thread.addEventListener('scroll',saveView,{passive:true});list.addEventListener('scroll',saveView,{passive:true});window.addEventListener('pagehide',saveView);
  const style=document.createElement('style');style.textContent='[hidden]{display:none!important}#liveBoot,#liveMfa{display:flex;flex-direction:column;gap:12px;align-items:stretch;width:min(100%,360px);margin:auto;padding:16px}#liveBoot{min-height:100dvh;justify-content:center}#liveMfa{min-height:100dvh;justify-content:center}#liveMfa img{align-self:center}#liveMfa input{min-height:44px}#liveLogin input{width:100%;min-height:44px;border:1px solid var(--line);border-radius:12px;padding:10px}';document.head.append(style);
- function clear(){stopLiveSync();liveSnapshots.clear();liveConfirmed.clear();liveReadSeen.clear();threadBillQueue.length=0;threadBillPending.clear();threadBillQuotaUntil=0;epoch++;choice++;navigationEpoch++;navigationPending=false;cancelEarlyClose();cancelGeometryScroll();InputController.blur();active=null;for(const id of Object.keys(scrolls))delete scrolls[id];clearMedia();for(const id of attachmentRooms){for(const item of DraftMedia.list(id))DraftMedia.remove(id,item.key)}attachmentRooms.clear();finishPickerHandoff();pickerSession=null;clearInterval(heartbeat);reader?.dispose();reader=null;scope=null;rows=[];selected=null;resetBillAudit();list.replaceChildren();thread.replaceChildren();title.textContent='Chọn hội thoại';$live('#currentRole').textContent='';Avatar.update($live('#currentAvatar'),{text:'',name:''});drafts.clear();pending.clear();draft.value='';composer.hidden=true;setSendStatus('');sending=false;resetMfa();show('boot')}
+ function clear(){stopLiveSync();liveSnapshots.clear();liveConfirmed.clear();liveReadSeen.clear();liveDirectoryHints.clear();threadBillQueue.length=0;threadBillPending.clear();threadBillQuotaUntil=0;epoch++;choice++;navigationEpoch++;navigationPending=false;cancelEarlyClose();cancelGeometryScroll();InputController.blur();active=null;for(const id of Object.keys(scrolls))delete scrolls[id];clearMedia();for(const id of attachmentRooms){for(const item of DraftMedia.list(id))DraftMedia.remove(id,item.key)}attachmentRooms.clear();finishPickerHandoff();pickerSession=null;clearInterval(heartbeat);reader?.dispose();reader=null;scope=null;rows=[];selected=null;resetBillAudit();list.replaceChildren();thread.replaceChildren();title.textContent='Chọn hội thoại';$live('#currentRole').textContent='';Avatar.update($live('#currentAvatar'),{text:'',name:''});drafts.clear();pending.clear();draft.value='';composer.hidden=true;setSendStatus('');sending=false;resetMfa();show('boot')}
  async function rpc(name,args){const {data,error}=await client.rpc(name,args);if(error)throw error;return data}
  async function getClient(){if(client)return client;await new Promise((resolve,reject)=>{const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js';el.onload=resolve;el.onerror=reject;document.head.append(el)});client=window.supabase.createClient(endpoint,publicKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'0v.chat.auth.v1'}});client.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){eraseBillProgress();const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();show('guest');status.textContent='Đã đăng xuất.'}});return client}
  async function connect(withPassword){
@@ -2621,8 +2623,8 @@ function mountLiveChat(root){
    heartbeat=setInterval(async()=>{try{const result=await read('session');if(scope===captured&&result.role!=='admin')throw Error('admin_required')}catch{if(scope===captured){saveView();clear();bootStatus.textContent='Không xác minh được phiên. Kiểm tra kết nối.';retryBoot.hidden=false}}},60000);
   }catch(error){restoring=false;clear();const denied=String(error?.message).includes('admin_required');if(denied||(withPassword&&!passwordAccepted)){show('guest');status.textContent=denied?'Chỉ tài khoản admin được phép sử dụng 0v.':'Không đăng nhập được. Kiểm tra tài khoản hoặc mạng.'}else{show('boot');bootStatus.textContent='Không khôi phục được phiên. Kiểm tra kết nối.';retryBoot.hidden=false}}finally{busy=false;submit.disabled=false}
  }
- async function loadDirectory({quiet=false}={}){if(!reader)return;const owner=scope;if(!quiet&&!rows.length)count.textContent='';try{const result=await reader.directory();if(scope!==owner)return;rows=result;renderDirectory();count.textContent=rows.length+' liên hệ';if(selected&&!rows.some(r=>r.id===selected)){selected=null;active=null;clearMedia();thread.replaceChildren();title.textContent='Chọn hội thoại';composer.hidden=true}}catch(error){if(scope===owner){if(!quiet)count.textContent='Không đọc được danh bạ. Bấm làm mới.';if(restoring)throw error}}}
- function renderDirectory(){const key=Collection.searchKey||Input.searchKey,q=key(search.value.trim()),top=list.scrollTop;list.replaceChildren();let n=0;for(const row of rows){if((q&&!key(row.name).includes(q))||(filter!=='Tất cả'&&(filter==='Chưa đọc'?!row.unread:roleGroup(row.group||row.role)!==filter)))continue;n++;const b=Contact.create({id:row.id,name:row.name,avatar:Avatar.initials(row.name),avatarSrc:Avatar.publicSource(row.avatarPath,endpoint),preview:row.preview,time:row.time,selected:row.id===selected});Contact.update(b,{unread:row.unreadCount===null?(row.unread?'•':0):row.unreadCount});b.addEventListener('click',()=>void openThread(row));list.append(b)}empty.textContent=n?'': 'Không tìm thấy danh bạ phù hợp.';list.append(empty);ScrollController.writeLocal(list,top)}
+ async function loadDirectory({quiet=false}={}){if(!reader)return;const owner=scope;if(!quiet&&!rows.length)count.textContent='';try{const result=await reader.directory();if(scope!==owner)return;rows=result;for(const r of rows){const hint=liveDirectoryHints.get(r.id);if(hint&&(r.latestAt>=hint.date||Date.now()-hint.observedAt>30000))liveDirectoryHints.delete(r.id)}renderDirectory();count.textContent=rows.length+' liên hệ';if(selected&&!rows.some(r=>r.id===selected)){selected=null;active=null;clearMedia();thread.replaceChildren();title.textContent='Chọn hội thoại';composer.hidden=true}}catch(error){if(scope===owner){if(!quiet)count.textContent='Không đọc được danh bạ. Bấm làm mới.';if(restoring)throw error}}}
+ function renderDirectory(){const key=Collection.searchKey||Input.searchKey,q=key(search.value.trim()),top=list.scrollTop;list.replaceChildren();let n=0;const projected=rows.map(r=>{const hint=liveDirectoryHints.get(r.id);return hint&&Date.now()-hint.observedAt<=30000&&hint.date>=(r.latestAt||0)?{...r,preview:hint.preview,time:hint.time,latestAt:hint.date}:r}).sort((a,b)=>(b.latestAt||0)-(a.latestAt||0));for(const row of projected){if((q&&!key(row.name).includes(q))||(filter!=='Tất cả'&&(filter==='Chưa đọc'?!row.unread:roleGroup(row.group||row.role)!==filter)))continue;n++;const b=Contact.create({id:row.id,name:row.name,avatar:Avatar.initials(row.name),avatarSrc:Avatar.publicSource(row.avatarPath,endpoint),preview:row.preview,time:row.time,selected:row.id===selected});Contact.update(b,{unread:row.unreadCount===null?(row.unread?'•':0):row.unreadCount});b.addEventListener('click',()=>void openThread(rows.find(r=>r.id===row.id)||row));list.append(b)}empty.textContent=n?'': 'Không tìm thấy danh bạ phù hợp.';list.append(empty);ScrollController.writeLocal(list,top)}
  function liveSnapshotKey(owner,room){return liveCachePrefix+owner.accountId+':'+room}
  function getLiveSnapshot(owner,room){if(!room)return null;const k=liveSnapshotKey(owner,room);let s=liveSnapshots.get(k);if(!s)try{s=JSON.parse(sessionStorage.getItem(k)||'null')}catch{}return LiveChatSnapshotPolicy.usable(s,room)?s:null}
  function saveLiveSnapshot(owner,s){if(scope!==owner||!s.room)return;const k=liveSnapshotKey(owner,s.room);liveSnapshots.delete(k);liveSnapshots.set(k,s);while(liveSnapshots.size>12)liveSnapshots.delete(liveSnapshots.keys().next().value);try{sessionStorage.removeItem(k);sessionStorage.setItem(k,JSON.stringify(s));const keys=[];for(let i=0;i<sessionStorage.length;i++){const key=sessionStorage.key(i);if(key?.startsWith(liveCachePrefix))keys.push(key)}for(const key of keys.slice(0,Math.max(0,keys.length-12)))sessionStorage.removeItem(key)}catch{}}
@@ -2633,10 +2635,10 @@ function mountLiveChat(root){
   for(const node of [...thread.children])if(!wanted.includes(node))node.remove();
   let cursor=thread.firstElementChild;for(const node of wanted){if(node!==cursor)thread.insertBefore(node,cursor);cursor=node.nextElementSibling}
   for(let i=0;i<wanted.length;i++)if(wanted[i].dataset.liveMessageId)Message.flow(wanted[i-1],wanted[i]);
-  if(preserve){if(follow)ScrollController.end('incoming');else ScrollController.writeLocal(thread,top);syncJump()}
+  if(preserve){if(follow){ScrollController.end('incoming');ScrollController.followEnd()}else ScrollController.writeLocal(thread,top);syncJump()}
  }
  async function fetchLiveSnapshot(row,owner,n){
-  const msgs=await reader.thread(row.id);if(scope!==owner||choice!==n)return null;let assets=[],mediaKnown=!row.conversationId;
+  const msgs=await reader.thread(row.id);if(scope!==owner||choice!==n)return null;let assets=[],mediaKnown=!row.conversationId;const latest=msgs.at(-1);if(latest?.text&&latest.date>(row.latestAt||0)){liveDirectoryHints.set(row.id,{preview:(latest.mine?'Bạn: ':'')+latest.text,time:latest.time,date:latest.date,observedAt:Date.now()});renderDirectory()}
   const confirmed=liveConfirmed.get(row.conversationId);if(confirmed){for(const m of msgs)confirmed.delete(m.id);if(!confirmed.size)liveConfirmed.delete(row.conversationId)}
   const cached=getLiveSnapshot(owner,row.conversationId),ids=new Set(msgs.map(m=>m.id));
   if(cached){assets=cached.assets.filter(x=>ids.has(x.message_id));}
@@ -2649,7 +2651,7 @@ function mountLiveChat(root){
   const s={room:row.conversationId,at:Date.now(),msgs,assets,mediaKnown};if(mediaKnown)saveLiveSnapshot(owner,s);return s
  }
  function stopLiveSync(){clearTimeout(prewarmTimer);prewarmTimer=0;clearInterval(liveReadTimer);liveReadTimer=0;liveReadSeen.clear();liveReadContextKey='';liveReadLastAttempt=null;clearInterval(liveSyncTimer);clearTimeout(liveWakeTimer);liveSyncTimer=liveWakeTimer=0;liveSyncOwner=null;if(liveChannel){try{void client.removeChannel(liveChannel)}catch{}liveChannel=null}}
- function wakeLiveSync(owner,delay=1500){if(scope!==owner||liveSyncOwner!==owner||document.hidden||liveWakeTimer)return;liveWakeTimer=setTimeout(()=>{liveWakeTimer=0;void refreshLive(owner)},delay)}
+ function wakeLiveSync(owner,delay=150){if(scope!==owner||liveSyncOwner!==owner||document.hidden||liveWakeTimer)return;liveWakeTimer=setTimeout(()=>{liveWakeTimer=0;void refreshLive(owner)},delay)}
  async function refreshLive(owner){if(scope!==owner||liveSyncOwner!==owner||liveSyncBusy||document.hidden||sending||navigationPending)return;liveSyncBusy=true;
   try{if(root.dataset.screen==='chat'&&selected&&!navigationPending&&!sending){const row=rows.find(r=>r.id===selected),n=choice;if(row){const s=await fetchLiveSnapshot(row,owner,n);if(s&&scope===owner&&choice===n&&root.dataset.screen==='chat')renderLiveSnapshot(s,row,owner,n,{preserve:true})}}if(scope===owner&&liveSyncOwner===owner)await loadDirectory({quiet:true});if(scope===owner&&root.dataset.screen==='chat'&&!navigationPending){const row=rows.find(r=>r.id===selected),s=row&&getLiveSnapshot(owner,row.conversationId);if(s)renderLiveSnapshot(s,row,owner,choice,{preserve:true})}}catch{}finally{liveSyncBusy=false}}
  async function sampleLiveRead(owner){
@@ -2792,6 +2794,7 @@ function mountLiveChat(root){
   // Retain the same key after an uncertain response, never auto-retry.
   if(previous&&previous.body!==body){setSendStatus('Tin trước chưa xác nhận. Khôi phục nội dung đó để thử lại.');return}
   const key=previous?.key||'0v:'+crypto.randomUUID(),at=previous?.message?.date||Date.now(),message=LiveChatSnapshotPolicy.localMessage(key,body,at);pending.set(id,{key,body,message});
+  liveDirectoryHints.set(id,{preview:'Bạn: '+body,time:message.time,date:at,observedAt:Date.now()});renderDirectory();
   sending=true;send.disabled=true;setSendStatus('');
   if(selected===id){draft.value='';drafts.delete(id);updateComposer();send.disabled=true;if(root.dataset.screen==='chat'){const cached=getLiveSnapshot(owner,contact.conversationId),node=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]');if(cached)renderLiveSnapshot(cached,contact,owner,choice,{preserve:true});else if(!node){const date=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}).format(at),local=Message.create({text:body,time:message.time,mine:true,day:date});local.dataset.liveMessageId=message.id;local.dataset.livePending='true';Message.flow(thread.lastElementChild,local);thread.append(local)}ScrollController.end('send');draft.focus({preventScroll:true})}}
   try{
@@ -2802,7 +2805,7 @@ function mountLiveChat(root){
    if(ThreadBillAutoPolicy.uuid(result.message_id)&&ThreadBillAutoPolicy.uuid(result.conversation_id)){let confirmed=liveConfirmed.get(result.conversation_id);if(!confirmed){confirmed=new Map();liveConfirmed.set(result.conversation_id,confirmed)}const now=Date.now();confirmed.set(result.message_id,{id:result.message_id,text:body,mine:true,date:now,time:message.time,localAck:true});while(confirmed.size>100)confirmed.delete(confirmed.keys().next().value)}
    if(selected===id){setSendStatus('');if(root.dataset.screen==='chat'){const local=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]'),existing=thread.querySelector('[data-live-message-id="'+CSS.escape(result.message_id)+'"]');if(local&&existing)local.remove();else if(local){local.dataset.liveMessageId=result.message_id;delete local.dataset.livePending;delete local.dataset.liveSignature}else if(!existing){const date=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}).format(at),node=Message.create({text:body,time:message.time,mine:true,day:date});node.dataset.liveMessageId=result.message_id;Message.flow(thread.lastElementChild,node);thread.append(node)}ScrollController.end('send')}}
    await loadDirectory();if(scope===owner&&selected===id&&root.dataset.screen==='chat'){const fresh=rows.find(r=>r.id===id);if(fresh){if(ThreadBillAutoPolicy.uuid(fresh.conversationId)){const n=choice,s=await fetchLiveSnapshot(fresh,owner,n);if(s&&scope===owner&&choice===n)renderLiveSnapshot(s,fresh,owner,n,{preserve:true})}else await openThread(fresh,null,'send')}}
-  }catch{if(scope===owner&&pending.get(id)?.key===key){pending.set(id,{key,body,message:LiveChatSnapshotPolicy.localMessage(key,body,at,true)});if(selected===id){if(!draft.value.trim())draft.value=body;const node=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]');const meta=node?.querySelector('[data-ui-slot~="meta"]');if(meta)meta.textContent='!';setSendStatus('Chưa xác nhận gửi. Bấm Gửi để thử lại cùng tin.')}else if(!drafts.get(id))drafts.set(id,body)}}
+  }catch{if(scope===owner&&pending.get(id)?.key===key){pending.set(id,{key,body,message:LiveChatSnapshotPolicy.localMessage(key,body,at,true)});liveDirectoryHints.delete(id);renderDirectory();if(selected===id){if(!draft.value.trim())draft.value=body;const node=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]');const meta=node?.querySelector('[data-ui-slot~="meta"]');if(meta)meta.textContent='!';setSendStatus('Chưa xác nhận gửi. Bấm Gửi để thử lại cùng tin.')}else if(!drafts.get(id))drafts.set(id,body)}}
   finally{if(scope===owner){sending=false;updateComposer()}}
  }
  async function signout(){eraseBillProgress();const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();try{const result=await client?.auth.signOut({scope:'local'});if(result?.error)throw result.error;show('guest');status.textContent='Đã đăng xuất.'}catch{bootStatus.textContent='Chưa xác nhận đăng xuất. Thử lại.';retryBoot.hidden=false}}
@@ -2989,7 +2992,7 @@ function reconcileViewport(){
  const rect=appliedRect;
  const {top,left,height,width}=rect,focused=InputController.isEditable(document.activeElement);
  const chat=width<768&&app.dataset.screen==='chat';
- const pinned=chat&&(anchor?.pinned??scrolls[active]?.pinned??nearBottom());
+ const liveDraftFocus=isLive&&document.activeElement===draft,keepLiveTail=liveDraftFocus&&anchor?.pinned===true;const pinned=chat&&(anchor?.pinned??scrolls[active]?.pinned??nearBottom());
  const state=classifyKeyboard({height:rawRect.height,top:rawRect.top,width:rawRect.width,focused,restingHeight,restingWidth,wasOpen:keyboardOccluding});
  restingHeight=state.reference;restingWidth=rawRect.width;keyboardOpen=state.open;keyboardOccluding=state.occluding;
  const safe=updateSafeArea(rect);
@@ -3007,9 +3010,9 @@ function reconcileViewport(){
   const key=[top,left,height,width,composerHeight,room,safe.top,safe.right,safe.bottom,safe.left,keyboardOccluding].join('/');
   if(key!==previousRect){
    previousRect=key;
-   if(pinned&&!touchingMessages&&!navigationPending&&performance.now()>scrollingUntil&&!keyboardOccluding){
+   if(pinned&&!touchingMessages&&!navigationPending&&performance.now()>scrollingUntil&&(!keyboardOccluding||keepLiveTail)){
     if(viewportScrollFrame)cancelAnimationFrame(viewportScrollFrame);
-    const epoch=navigationEpoch;viewportScrollFrame=requestAnimationFrame(()=>{viewportScrollFrame=0;if(epoch===navigationEpoch&&!touchingMessages&&app.dataset.screen==='chat'&&!keyboardOccluding)ScrollController.geometry(true)});
+    const epoch=navigationEpoch;viewportScrollFrame=requestAnimationFrame(()=>{viewportScrollFrame=0;if(epoch===navigationEpoch&&!touchingMessages&&app.dataset.screen==='chat'&&(!keyboardOccluding||(isLive&&document.activeElement===draft&&anchor?.pinned===true)))ScrollController.geometry(true)});
    }
   }
   if(!focused&&!keyboardOccluding)anchor=null;
@@ -3037,7 +3040,7 @@ register(el){if(!this.isEditable(el))return;el.dataset.inputKind=this.kind(el);e
 document.querySelectorAll(InputController.selector).forEach(el=>InputController.register(el));
 let outsideTap=null;
 document.addEventListener('pointerdown',e=>{outsideTap=null;const el=e.target.closest(InputController.selector);if(InputController.isEditable(el)){InputController.register(el);if(document.activeElement!==el){preFocusAnchor=InputController.snapshot();if(el===draft&&e.pointerType==='touch'&&e.cancelable){e.preventDefault();el.focus({preventScroll:true})}}return}if(InputController.isEditable(document.activeElement)&&!e.target.closest('[data-input-parent],button,a,summary,select,dialog')){if(!e.target.closest('.messages,.directory-list,#moduleContent')){anchor=InputController.snapshot();InputController.blur();updateViewport()}else outsideTap={id:e.pointerId,x:e.clientX,y:e.clientY,owner:document.activeElement}}},{capture:true,passive:false});
-document.addEventListener('focusin',e=>{if(InputController.isEditable(e.target)){cancelEarlyClose();InputController.register(e.target);anchor=preFocusAnchor||InputController.snapshot();preFocusAnchor=null}updateViewport()});
+document.addEventListener('focusin',e=>{if(InputController.isEditable(e.target)){cancelEarlyClose();InputController.register(e.target);anchor=preFocusAnchor||InputController.snapshot();preFocusAnchor=null;if(isLive&&e.target===draft&&app.dataset.screen==='chat'){anchor={pinned:true,top:messages.scrollTop};scrolls[active]={top:messages.scrollTop,pinned:true};ScrollController.end('focus-latest');ScrollController.followEnd();resizeDraft()}}updateViewport()});
 document.addEventListener('focusout',e=>{if(InputController.isEditable(e.target)){if(!anchor)anchor=InputController.snapshot();if(e.target===draft&&!InputController.isEditable(e.relatedTarget))scheduleEarlyClose()}updateViewport()});
 document.addEventListener('pointermove',e=>{if(outsideTap&&Math.hypot(e.clientX-outsideTap.x,e.clientY-outsideTap.y)>8)outsideTap=null},{passive:true});
 document.addEventListener('pointercancel',()=>{outsideTap=null;preFocusAnchor=null},{passive:true});

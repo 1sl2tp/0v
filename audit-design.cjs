@@ -108,6 +108,7 @@ function auditDesign(html,rules,baseline){
    ["original",m("  tiếng việt...  ").originalText==="  tiếng việt...  "],
    ["link",m("https://example.com/a...").text==="https://example.com/a..."],
    ["emoji",m("👨‍👩‍👧‍👦 …").text==="👨‍👩‍👧‍👦 …"],
+   ["emoji and Vietnamese",m("👩🏽‍💻 chào chị\n🇻🇳 tiếng việt ❤️").text==="👩🏽‍💻 Chào chị\n🇻🇳 Tiếng việt ❤️"],
    ["number",n("12a34",6,false)==="1234"],
    ["money",n("1.250.000",12,true)==="1.250.000"],
    ["empty",n("",12,true)===""],
