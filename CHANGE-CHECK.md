@@ -781,3 +781,7 @@ User requests shared ChatGPT Drive profile + scrollbar + Web/PWA edges + single 
 
 ### LIVE-DIRECTORY-STABLE — CI correction
 Run 45778781330 job 139768852394 reached Chromium assertion at line 123. New manual refresh fixture already passed node identity check, but introduces one legitimate directory read. Update both exact trace assertions to include that single read (no loosening counts, no product changes). Rerun exact head required.
+
+
+### LIVE-DIRECTORY-STABLE — isolated format fixture correction
+Run 45781965239 job 139779345971 passed live login, directory, avatar identity, messages and logout. Isolated ChatReadAPI fixture then failed because its extracted code omitted real shared FormatAPI/TimeAPI/DecimalAPI declarations. Load the same production declarations before evaluating ChatReadAPI; no mock or weakened assertions. No runtime changes. Require both exact-head workflows.

@@ -168,7 +168,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  // CHAT read boundary: test actual source via injected synthetic host, never network.
  {
  const html=require('node:fs').readFileSync('index.html','utf8'),start=html.indexOf('const ChatReadAPI=(()=>{'),end=html.indexOf('/* MainDataController',start);
- const policy=html.slice(html.indexOf('const LiveChatSnapshotPolicy='),start);const API=new Function(policy+html.slice(start,end)+';return ChatReadAPI')();
+ const policy=html.slice(html.indexOf('const LiveChatSnapshotPolicy='),start);const foundation=html.slice(html.indexOf('const DecimalAPI=(()=>{'),html.indexOf('const ParseAPI=(()=>{'));const API=new Function(foundation+policy+html.slice(start,end)+';return ChatReadAPI')();
  let state={accountId:'a',epoch:'e1',approved:true},calls=0,rows=[{id:'c',display_name:'Khách',conversation_id:'r',preview_text:'<b>text</b>'},{id:'empty',display_name:'Trống',conversation_id:null},{id:'locked',display_name:'Ẩn',locked_at:'yes'}],reply=[{id:'m',conversation_id:'r',sender_account_id:'a',body:'<script>text</script>',created_at:'2026-11-25T18:00:00Z'}];
  let resolve=null;
  const api=API.create({session:()=>state,readContacts:async()=>rows,readThread:async()=>{calls++;return resolve?await new Promise(r=>{resolve=r}):reply}});
