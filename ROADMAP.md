@@ -238,3 +238,7 @@ User requests original image audit. Existing authenticated standalone lab strips
 - v13.227 #212 E1 LIVE-MEDIA-SCROLL-05: reconcile clamped tail; three grow/shrink cycles; exact head CI pending.
 
 - v13.227 #212 E1 LIVE-MEDIA-SCROLL-06: extent-aware follow intent; exact head CI pending.
+
+- v13.227 E2 merged f0e6d4c; repeat #213 CI reproduced tail race. v13.228 E1 LIVE-MEDIA-SCROLL-07, explicit intent and coalesced reflow; exact-head and repeat CI required. E3/E4 pending.
+
+- v13.228 #214: E1 repair active rule version index; prior static CI only version false; browser CI not reached. Repeat exact-head checks pending.
