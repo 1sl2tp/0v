@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.204)
+## 00. Chỉ mục rule đang có hiệu lực (v13.205)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1528,3 +1528,6 @@ No repeated automatic full-list scans: initial authenticated fetch and explicit 
 
 ## v13.204 — LIVE-BILL-MANUAL-VERIFY-01 (user override)
 Supersedes standalone automatic scan/group UI. No automatic hash/visual/OCR run; single explicit read button and raw OCR text, editable correction, explicit type and verified save. No financial authorization. Same-tab sessionStorage raw/corrected result and timestamp (new namespace; erased on logout/guest), no database or cross-device persistence. Browser localStorage per verified account stores only ordered field-label signatures and type/count, no raw text or monetary values; matching signature hint after future manual read, not automatic template OCR or verified result propagation. No AI, no background bulk work. User can correct and save a nonbill even when OCR fails. Shared bounded original cache remains. Browser regression changes to zero automatic calls, one manual call, verify and reload. Actual language asset and real accuracy pending.
+
+## v13.205 — LIVE-BILL-SIX-FIELDS-01
+Standalone manual OCR displays amount, transaction date, time, recipient name/account and memo from fresh raw OCR (or explicitly verified correction). Reuse BillOCRFieldAPI.parse and suggestUnlabelled with both numeric profiles; conflicting candidates remain missing; exact known recipient name only proposed when literally present adjacent to observed configured account. Never populate missing fields from configuration. No automatic OCR, financial mutation or external AI. Raw/edit/verify preserved. Real image accuracy and deployment pending.
