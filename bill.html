@@ -1949,27 +1949,40 @@ const BillAuditList=Object.freeze({
  kind(r){return r.audit_kind|| (r.status==='non_bill'?'non_bill':'bill')},
  imageOnly(r){return {id:r.id,asset_id:r.asset_id,storage_key:r.storage_key,mime_type:r.mime_type,kind:r.kind,sent_at:r.sent_at}},
  printedClassification(raw,confidence){
-  if(typeof raw!=='string'||raw.length>20000||!Number.isFinite(confidence)||confidence<0||confidence>100)return {kind:'unclassified',reason:'Không đủ dữ liệu OCR',account:null};
+  const unknown=reason=>({kind:'unclassified',reason,account:null});
+  if(typeof raw!=='string'||raw.length>20000||!Number.isFinite(confidence)||confidence<0||confidence>100)return unknown('Không đủ dữ liệu OCR');
   const fold=s=>s.normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().replace(/đ/g,'d').trim();
   const lines=raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),joined=fold(lines.join(' '));
-  const context=/(?:chuyen khoan|chuyen tien|giao dich|bien lai|thu huong|nguoi nhan|tai khoan|\bstk\b|beneficiary|transfer|transaction|\bvnd\b)/.test(joined);
-  const heading=/(?:chuyen khoan thanh cong|chuyen tien thanh cong|giao dich thanh cong|bien lai chuyen khoan|nhat ky giao dich|chi tiet giao dich|transfer successful|transaction successful)/.test(joined);
+  const heading=/(?:chuyen khoan thanh cong|chuyen tien thanh cong|giao dich thanh cong|bien lai chuyen khoan|nhat ky giao dich|chi tiet giao dich|transfer successful|transaction successful)/;
+  const transferHead=lines.some(l=>heading.test(fold(l)));
+  const context=/(?:chuyen khoan|chuyen tien|giao dich|bien lai|thu huong|nguoi nhan|tai khoan|\bstk\b|beneficiary|transfer|transaction)/.test(joined);
   const clean=val=>String(val).replace(/[ \t\u00a0\u202f\u2009]/g,'');
-  const account=val=>{const s=clean(val);return /^(?:\d{0,13}|\d{0,12}[*•xX×]{2,24})9{4,6}$/.test(s)&&! /9{7}$/.test(s)&&s.replace(/[^0-9]/g,'').length<=13?s:null};
-  let explicit=[],bare=[],pending=false,excluded=false;
+  const number=val=>{const s=clean(val);return /^(?:\d{4,13}|\d{0,12}[*•xX×]{2,24}\d{4,13})$/.test(s)&&s.replace(/\D/g,'').length<=13?s:null};
+  const suffix=s=>!!s&&/9{4,6}$/.test(s)&&!/9{7}$/.test(s);
+  const accountLabel=/^(stk (?:nhan|nguoi nhan|thu huong)|(?:so )?tai khoan (?:nhan|nguoi nhan|thu huong|dich)|tk nhan|gui vao stk|den tai khoan|beneficiary account)\s+([0-9*x×•][0-9*x×• \t]*)$/iu;
+  let explicit=[],pending=false,blocked=false,ambiguous=false,fields=new Set();
   for(const l of lines){
-   const tag=BillOCRFieldAPI.identify(l),simple=fold(l);
-   if(tag){pending=tag.key==='account'&&!tag.value;excluded=['excluded','senderName','memo','reference','trace'].includes(tag.key)&&!tag.value;if(tag.key==='account'&&tag.value){const a=account(tag.value);if(a)explicit.push(a)}continue}
-   if(pending){const a=account(l);if(a)explicit.push(a);pending=false;continue}
-   if(excluded){excluded=false;continue}
-   if(/[:]/.test(l)||/^(?:ma |noi dung|nguoi gui|nguoi chuyen|stk gui|tk nguon|tai khoan gui|reference|memo|sender)/.test(simple))continue;
-   const a=account(l);if(a)bare.push(a)
+   const simple=fold(l),inline=simple.match(accountLabel);
+   const tag=BillOCRFieldAPI.identify(l)||(inline?{key:'account',value:inline[2]}:null);
+   if(tag){
+    pending=tag.key==='account'&&!tag.value;blocked=['memo','reference','trace','excluded','senderName'].includes(tag.key);
+    if(tag.key==='account'){fields.add('account');if(tag.value){const n=number(tag.value);if(n)explicit.push(n);else ambiguous=true}}
+    else if(!blocked&&['amount','name','date','datetime','time','sendingBank','receivingBank'].includes(tag.key))fields.add(tag.key);
+    continue
+   }
+   if(pending){const n=number(l);if(n)explicit.push(n);else ambiguous=true;pending=false;continue}
+   if(blocked)continue;
   }
-  const valid=[...new Set(explicit.length?explicit:heading?bare:[])];
-  if(confidence>=70&&valid.length===1&&context)return {kind:'bill',reason:'Có dấu hiệu chữ in, ngữ cảnh giao dịch và đuôi STK 4–6 số 9',account:valid[0]};
+  const unique=[...new Set(explicit)],paymentEvidence=transferHead&&(fields.has('amount')||fields.has('account'))||fields.has('amount')&&fields.has('account')&&['name','datetime','time','date','sendingBank','receivingBank'].some(k=>fields.has(k));
+  const order=/(?:don dat hang|don hang|ten hang|so luong|dat hang|ma hang|phieu giao hang|phieu xuat kho)/.test(joined);
+  const product=/(?:khoi luong tinh|the tich thuc|thanh phan|huong dan su dung|han su dung|ngay san xuat|bao quan|xuat xu|kem danh rang|bot giat|nuoc giat|nuoc rua chen)/.test(joined);
+  if(confidence>=70&&paymentEvidence&&!order&&!ambiguous&&unique.length===1&&suffix(unique[0]))return {kind:'bill',reason:'Có cấu trúc giao dịch và STK nhận đuôi 4–6 số 9',account:unique[0]};
+  if(confidence>=85&&paymentEvidence&&!order&&!ambiguous&&unique.length===1&&!suffix(unique[0])&&/^\d{8,13}$/.test(unique[0]))return {kind:'non_bill',reason:'Ảnh giao dịch có STK nhận đọc rõ nhưng không đúng đuôi yêu cầu',account:unique[0]};
+  if(confidence>=70&&!context&&!transferHead&&!fields.has('account')&&(product||order))return {kind:'non_bill',reason:product?'Có chữ đặc trưng bao bì sản phẩm, không có cấu trúc chuyển khoản':'Có chữ đặc trưng đơn hàng, không có cấu trúc chuyển khoản',account:null};
+  if(confidence>=85&&order&&!transferHead&&!paymentEvidence)return {kind:'non_bill',reason:'Đơn hàng, không có bằng chứng giao dịch hoàn tất',account:null};
   const letters=raw.match(/\p{L}/gu)?.length||0,possibleNine=/9{4,}/.test(clean(raw));
-  if(confidence>=85&&letters>=35&&!context&&!possibleNine)return {kind:'non_bill',reason:'Đọc được chữ, không thấy dấu hiệu chuyển khoản hoặc đuôi STK yêu cầu',account:null};
-  return {kind:'unclassified',reason:'Chưa đủ bằng chứng chữ in / tài khoản; cần xem ảnh',account:null}
+  if(confidence>=85&&letters>=35&&!context&&!possibleNine&&!fields.has('account'))return {kind:'non_bill',reason:'Đọc được chữ, không thấy dấu hiệu chuyển khoản hoặc đuôi STK yêu cầu',account:null};
+  return unknown('Chưa đủ bằng chứng loại ảnh / STK; không suy đoán chữ viết tay từ điểm OCR')
  },
  localPending(rows,results,eligible){return rows.filter(r=>eligible(r)&&results.get(r.id)?.storageKey!==r.storage_key)},
  imageOnlySelect(rows,query=''){const q=query.trim().toUpperCase();return rows.filter(r=>!q||[r.id,BillAuditList.code(r),'BILL-'+BillAuditList.code(r)].some(x=>String(x??'').toUpperCase().includes(q))).sort((a,b)=>String(b.sent_at??'').localeCompare(String(a.sent_at??''))||String(b.id).localeCompare(String(a.id)))},
@@ -2388,7 +2401,7 @@ function mountLiveChat(root){
     completed++;updateScanStatus();if(completed%3===0)redrawOcr();
     await new Promise(resolve=>setTimeout(resolve,0));
    }
-  }catch{if(valid()){localOcrPaused=true;localOcrError='Không khởi tạo được OCR cục bộ; bấm Tiếp tục để thử lại.'}}
+  }catch{if(valid()){localOcrPaused=true;localOcrError='Không khởi tạo được OCR Legacy; không chuyển sang LSTM. Bấm Tiếp tục để thử lại.'}}
   finally{
    if(localOcrTask===task){
     if(task.worker)await task.worker.terminate().catch(()=>{});
@@ -2406,7 +2419,7 @@ function mountLiveChat(root){
    const selectedRows=BillAuditList.imageOnlySelect(auditRows,auditSearch.value).filter(r=>auditBankGroup.value==='all'||kind(r)===auditBankGroup.value);
    const pages=Math.max(1,Math.ceil(selectedRows.length/25));auditPage=Math.min(auditPage,pages-1);releaseAuditMedia();auditList.replaceChildren();
    const readCount=auditRows.filter(r=>localResult(r)?.readAt).length;
-   auditSummary.textContent=count+' / '+auditTotal+' ảnh · '+readCount+' ảnh đã đọc OCR trong phiên này · '+selectedRows.length+' ảnh đang lọc. OCR cục bộ, không gọi Gemini, không dùng OCR cũ.'+(auditLastLoaded?' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'')+(auditTotal>count?' · Danh sách chưa đầy đủ.':'');
+   auditSummary.textContent=count+' / '+auditTotal+' ảnh · '+readCount+' ảnh đã đọc OCR trong phiên này · '+selectedRows.length+' ảnh đang lọc. OCR Legacy (OEM 0), không dùng LSTM, Gemini hoặc OCR cũ.'+(auditLastLoaded?' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'')+(auditTotal>count?' · Danh sách chưa đầy đủ.':'');
    for(const r of selectedRows.slice(auditPage*25,auditPage*25+25)){
     const pair=CardController.billPair('Ảnh gốc','Kết quả OCR mới'),ocr=CardController.create('business'),result=localResult(r);
     pair.pair.dataset.simpleBillReview='true';pair.right.append(ocr);
@@ -3368,7 +3381,7 @@ const BillOCREngineAPI=(()=>{
  let quality=null;try{if(qualityCrop.width<=1024&&qualityCrop.height<=1024)quality=qualityPixels(qualityCrop.getContext('2d').getImageData(0,0,qualityCrop.width,qualityCrop.height).data,qualityCrop.width,qualityCrop.height)}catch{}
  const advice=qualityAdvice(field,combined,quality,Boolean(valueRect));return Object.freeze({...attachRescue(combined,rescue),plan,quality,qualityScope:valueRect?'value':'line',advice})}finally{busy=false}}
   return Object.freeze({run,close})}
- function demoFactory(engine){if(!engine||typeof engine.createWorker!=='function')throw Error('Missing OCR engine');return ()=>engine.createWorker(['vie','eng'],1,{workerPath:root+'tesseract.js@6.0.1/dist/worker.min.js',corePath:root+'tesseract.js-core@6.0.0',cacheMethod:'none'})}
+ function demoFactory(engine){if(!engine||typeof engine.createWorker!=='function')throw Error('Missing OCR engine');return ()=>engine.createWorker(['vie','eng'],0,{legacyCore:true,legacyLang:true,workerPath:root+'tesseract.js@6.0.1/dist/worker.min.js',corePath:root+'tesseract.js-core@6.0.0',cacheMethod:'none'})}
  function crop(canvas,r){const [x,y,w,h]=r.rect;if(![x,y,w,h].every(Number.isSafeInteger)||w<1||h<1||x<0||y<0||x+w>canvas.width||y+h>canvas.height||![0,90,180,270].includes(r.rotation))throw Error('Invalid OCR crop');const c=document.createElement('canvas'),swap=r.rotation===90||r.rotation===270;c.width=swap?h:w;c.height=swap?w:h;const g=c.getContext('2d');if(!g)throw Error('No OCR canvas');g.translate(c.width/2,c.height/2);g.rotate(r.rotation*Math.PI/180);g.drawImage(canvas,x,y,w,h,-w/2,-h/2,w,h);return c}
  return Object.freeze({version,create,createRegionBatch,loadDemo,demoFactory,crop,fieldCropPlan,cropField,contrastPixels,fieldVariants,createFieldReread,sourcePlan,sourceImage,rawLines,fieldOCRProfile,typedRead,combineTypedEvidence,sharpenPixels,rescueImage,rescueNeeded,attachRescue,qualityPixels,qualityAdvice})
 })();
