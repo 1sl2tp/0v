@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.202)
+## 00. Chỉ mục rule đang có hiệu lực (v13.203)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1516,3 +1516,11 @@ Standalone audit only: replace hidden dropdown with five stable native buttons i
 
 ## v13.202 — LIVE-BILL-INIT-01
 Root cause: live path returns from the application IIFE before BillDuplicateAPI, BillOCRFieldAPI and BillOCREngineAPI const initialization. Move contiguous shared pure bank APIs and BusinessProjectionAPI ahead of the existing live mount/return, retain demo UI after return, preserve single owner and existing OEM 0. No extra AI or database mutation. Add source-order guard and authenticated standalone synthetic browser fixture with duplicate asset and injected classical worker; actual network language assets still require live verification. Existing static test extraction follows shared API boundary. No keyboard change.
+
+
+## v13.203 — LIVE-BILL-VISUAL-PRIORITY-01 / LIVE-BILL-STORAGE-BUDGET-01
+Classical 192px thumbnail triage on already downloaded original: grayscale histogram, neutral/saturated share, row foreground transitions/bands and edge density. Document-like is priority only, not bank/handwriting evidence or nonbill verdict. No neural inference or template library yet. One authenticated session RAM LRU (64 MiB/64 entries, 15 MiB per image) shares original Blob and single in-flight Promise between standalone image render, exact SHA and OCR; clears on logout, never persists private bytes, no new signed/public URL or storage schema. Full hash pass remains before OCR; evicted images may download again, no one-download guarantee. Refresh foreground/heartbeat audit RPC no more often than 5 min automatically; manual refresh unchanged, auth heartbeat unchanged. Show actual client download attempts and reuse counts, visual timing. No production data writes. Source OpenCV 4.10.0 threshold and morphology/lines docs, Supabase Storage egress and private serving docs. Actual CDN cache/egress/log quotas and throughput not measured.
+
+
+## v13.203 — LIVE-BILL-NO-REPEAT-01 (before release)
+No repeated automatic full-list scans: initial authenticated fetch and explicit refresh only (focus/heartbeat update UI, session auth heartbeat remains). New or incomplete image only, no automatic retry of a failed original; explicit single reread allowed. Same-tab sessionStorage checkpoint keyed by verified account and classical algorithm revision, matching current id/storage key, no raw OCR/account/bytes, no financial authority; duplicate labels rebuilt from current metadata and saved SHA. Persist pause/errors, clear on guest/signout; no cross-device/tab guarantee. No DOM rebuild every 3 OCR or 10 hash rows: update counts/status, rebuild list at phase boundary and completion or explicit filter. No unconditional finally restart. Original cache still bounded, eviction may require a second download. Actual Supabase usage pending. Supersedes 5-min background refresh rule. Synthetic browser reload/manual refresh regression added; CI pending.
