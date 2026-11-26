@@ -29,6 +29,7 @@ CREATE FUNCTION public.v0_admin_media(p_conversation_id uuid) RETURNS jsonb LANG
 REVOKE ALL ON FUNCTION public.v0_admin_media(uuid) FROM PUBLIC,anon,authenticated,service_role;
 GRANT EXECUTE ON FUNCTION public.v0_admin_media(uuid) TO authenticated;
 \ir ../../references/0v-bill-memo-review.sql
+\ir ../../references/0v-bill-account-review.sql
 \ir ../../references/0v-admin-media-bill.sql
 INSERT INTO public.v21_accounts(id,auth_user_id,role) VALUES
 ('00000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','admin'),
@@ -58,6 +59,11 @@ INSERT INTO v0_private.bill_memo_review(media_asset_id,message_id,customer_accou
  SELECT media_asset_id,message_id,customer_account_id,md5(raw_read::text),E'KHACH MAU\nChuyen tien','visual_review' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
 INSERT INTO v0_private.bill_memo_review(media_asset_id,message_id,customer_account_id,raw_read_hash,reviewed_memo,evidence_kind)
  SELECT media_asset_id,message_id,customer_account_id,md5('stale'),E'INVALID\nSTALE','visual_review' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000002';
+UPDATE public.chat_bank_bill_receipts SET receiving_account='290118199999' WHERE media_asset_id='50000000-0000-0000-0000-000000000002';
+INSERT INTO v0_private.bill_account_review(media_asset_id,message_id,customer_account_id,raw_read_hash,reviewed_account,evidence_kind)
+ SELECT media_asset_id,message_id,customer_account_id,md5(raw_read::text),'2901181999999','visual_review' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000002';
+INSERT INTO v0_private.bill_account_review(media_asset_id,message_id,customer_account_id,raw_read_hash,reviewed_account,evidence_kind)
+ SELECT media_asset_id,message_id,customer_account_id,md5('stale'),'2901181999999','visual_review' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000006';
 UPDATE public.v21_accounts SET avatar_path='fixture/avatar.jpg' WHERE id='00000000-0000-0000-0000-000000000002';
 UPDATE public.v21_accounts SET avatar_path='../bad.jpg' WHERE id='00000000-0000-0000-0000-000000000003';
 SET LOCAL ROLE authenticated;
@@ -75,6 +81,7 @@ BEGIN
  IF a->>'bank_verified_account' IS DISTINCT FROM '2901181999999' OR a->>'receiving_account' IS DISTINCT FROM '290118199999' THEN RAISE EXCEPTION 'bank account proof or OCR preservation'; END IF;
  IF a ? 'raw_read' OR a ? 'ledger_id' OR result::text LIKE '%never-return%' THEN RAISE EXCEPTION 'private fields leaked'; END IF;
  a:=result->'assets'->1->'bill_receipt';
+ IF a->>'ocr_rechecked_account' IS DISTINCT FROM '2901181999999' OR a->>'receiving_account' IS DISTINCT FROM '290118199999' OR a->>'bank_verified_account' IS NOT NULL THEN RAISE EXCEPTION 'visual account correction distinct from bank proof'; END IF;
  IF a->>'date_vn' IS DISTINCT FROM '25/11/2026' OR a->>'time_vn' IS NOT NULL OR a->>'has_ledger' IS DISTINCT FROM 'false' OR a->>'transfer_content' IS NOT NULL THEN RAISE EXCEPTION 'missing time or stale correction'; END IF;
  FOR i IN 2..4 LOOP
  IF result->'assets'->i->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'incorrect asset join'; END IF;
@@ -83,7 +90,7 @@ BEGIN
  IF a->>'has_ledger' IS DISTINCT FROM 'false' OR a->>'time_vn' IS NOT NULL OR a->>'bank_verified_account' IS NOT NULL OR a->>'ocr_rechecked_account' IS NOT NULL THEN RAISE EXCEPTION 'wrong ledger or conflicting time'; END IF;
  IF result->'assets'->6->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'absent receipt'; END IF;
  BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000002'); RAISE EXCEPTION 'foreign room allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END;
- IF has_table_privilege(current_user,'v0_private.bill_memo_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','INSERT') OR has_table_privilege(current_user,'public.chat_bank_bill_receipts','SELECT') OR has_table_privilege(current_user,'public.taphoa_debt_ledger','SELECT') THEN RAISE EXCEPTION 'direct table access'; END IF;
+ IF has_table_privilege(current_user,'v0_private.bill_account_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_account_review','INSERT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','INSERT') OR has_table_privilege(current_user,'public.chat_bank_bill_receipts','SELECT') OR has_table_privilege(current_user,'public.taphoa_debt_ledger','SELECT') THEN RAISE EXCEPTION 'direct table access'; END IF;
 END $$;
 SELECT set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal1"}',true);
 DO $$ BEGIN IF public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'aal1 exposed bill'; END IF; END $$;

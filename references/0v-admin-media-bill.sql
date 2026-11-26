@@ -45,7 +45,7 @@ BEGIN
           AND r.raw_read->>'transfer_time_printed_vn'=CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
           THEN r.raw_read->>'transfer_time_printed_vn' END,
         'receiving_account',left(r.receiving_account,200),'receiving_name',left(r.receiving_name,200),
-        'ocr_rechecked_account',CASE WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
+        'ocr_rechecked_account',CASE WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999' AND ar.reviewed_account='2901181999999' THEN ar.reviewed_account WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
           AND r.raw_read->'account_digit_recheck'->>'source'='independent_focused_vision'
           AND regexp_replace(coalesce(r.raw_read->'account_digit_recheck'->>'first_visible',''),'[[:space:]]','','g')='290118199999'
           AND regexp_replace(coalesce(r.raw_read->'account_digit_recheck'->>'second_visible',''),'[[:space:]]','','g')='2901181999999'
@@ -74,6 +74,8 @@ BEGIN
       AND auth.jwt()->>'aal'='aal2'
     LEFT JOIN v0_private.bill_memo_review v ON v.media_asset_id=r.media_asset_id AND v.message_id=r.message_id
       AND v.customer_account_id=r.customer_account_id AND v.raw_read_hash=md5(r.raw_read::text)
+    LEFT JOIN v0_private.bill_account_review ar ON ar.media_asset_id=r.media_asset_id AND ar.message_id=r.message_id
+      AND ar.customer_account_id=r.customer_account_id AND ar.raw_read_hash=md5(r.raw_read::text)
     WHERE a.conversation_id=p_conversation_id AND a.deleted_at IS NULL
   ) x;
   RETURN jsonb_build_object('account_id',me,'assets',result);
