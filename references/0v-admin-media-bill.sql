@@ -45,6 +45,17 @@ BEGIN
           AND r.raw_read->>'transfer_time_printed_vn'=CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
           THEN r.raw_read->>'transfer_time_printed_vn' END,
         'receiving_account',left(r.receiving_account,200),'receiving_name',left(r.receiving_name,200),
+        'bank_verified_account',CASE WHEN r.status='received'
+          AND regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
+          AND EXISTS(SELECT 1 FROM public.chat_bank_app_collection_links k
+            JOIN public.taphoa_agribank_notifications n ON n.id=k.notification_id
+            JOIN public.taphoa_debt_ledger l ON l.id=k.ledger_id AND l.customer_account_id=r.customer_account_id AND l.entry_type='collection'
+            WHERE k.receipt_id=r.id AND k.ledger_id=r.ledger_id
+              AND n.package_name='com.vnpay.Agribank3g' AND n.status='credit_candidate'
+              AND n.is_own_transfer=false AND n.bank_credit_account='2901181999999'
+              AND n.amount_vnd=r.amount_vnd AND r.amount_vnd>0
+              AND n.transfer_at AT TIME ZONE 'Asia/Ho_Chi_Minh'=r.transfer_at_vn)
+          THEN '2901181999999' END,
         'transfer_content',coalesce(v.reviewed_memo,CASE WHEN jsonb_typeof(r.raw_read->'transfer_content')='string' THEN left(r.raw_read->>'transfer_content',1000) END),
         'transfer_reference',left(r.transfer_reference,200),'sending_bank',left(r.sending_bank,200),'receiving_bank',left(r.receiving_bank,200)
       ) END AS bill_receipt
