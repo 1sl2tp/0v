@@ -101,3 +101,5 @@ L08 / v13.192: standalone Bill foreground/heartbeat refresh and current data tim
 L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezone; CI/RPC/Pages pending.
 
 - v13.194 P05: scoped saved-review progress and honest AI completion label; E1 source and synthetic check; CI/Pages pending; production Batch invocation remains blocked.
+
+- v13.195 P05: explicit unavailable Batch controls and read-only sync, E1 source and syntax; actual Batch production remains BLOCKED; CI/Pages pending.

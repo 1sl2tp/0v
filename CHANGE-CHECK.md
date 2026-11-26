@@ -603,3 +603,6 @@ LIVE-BILL-READ-TIME-01: verified original scanned_at and annotation updated_at i
 
 ## v13.194 — Bill progress truthfulness
 Read AGENTS/RULES/COMPONENT-API/ROADMAP, Astryx Card and Adobe SelectionManager pinned references. LIVE-BILL-PROGRESS-01: loaded scope count, missing vs confirmed absence, explicit unknown AI completion, save timestamp not AI execution. Synthetic progress passed; whole-page syntax/full audit and CI pending. No DB writes, new polling, keyboard or Batch invocation. Backend Batch merge PR #423 is source only; actual AI execution remains blocked. Pages/device pending.
+
+## v13.195 — Batch control shell
+Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Button / Adobe SelectionManager. LIVE-BILL-BATCH-CONTROLS-01. Backend absent verified in prior round. Two disabled start controls, existing read-only sync action, clear unavailable label; no false progress, no paid job or finance changes. 8 inline scripts parsed; static source guard passed; CI/Pages/device pending.
