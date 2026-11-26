@@ -69,7 +69,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.deepEqual(await pg.evaluate(()=>window.calls),[]);
  assert.equal(await pg.getByText('Khách hàng mẫu',{exact:true}).count(),0);
  assert.equal(await pg.getByText('Kiểm tra phê duyệt thiết bị',{exact:true}).count(),0);
- await pg.goto('https://1sl2tp.github.io/0v/?v=13.168&r=1');
+ await pg.goto('https://1sl2tp.github.io/0v/?v=13.168&r=1&floating=1');
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  await pg.waitForFunction(()=>Array.isArray(window.calls));
  assert.deepEqual(await pg.evaluate(()=>window.calls),[]);
@@ -87,6 +87,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.waitForFunction(()=>window.calls.filter(x=>x==='directory').length>window.directoryBefore);await pg.waitForFunction(()=>document.querySelector('#directoryRefresh').disabled===false);
  assert(await pg.evaluate(()=>{const node=document.querySelector('#contacts [data-id=c]');return node===window.stableContact&&node.querySelector('img')===window.stableAvatar&&node.querySelector('.identity b')===window.stableName&&node.querySelector('.time')===window.stableStamp}));
  assert.equal(await pg.locator('#app .composer-frame').count(),1);assert.equal(await pg.locator('#app .crm').count(),1);
+ const stableDirectory=await pg.evaluate(()=>{const row=document.querySelector('#contacts [data-id=c]'),stamp=row.querySelector('.time'),name=row.querySelector('.identity b'),preview=row.querySelector('.identity small'),prior=stamp.textContent,measure=()=>[row,name,preview,stamp].map(e=>{const r=e.getBoundingClientRect();return [r.x,r.y,r.width,r.height]});const a=measure();stamp.textContent='T7 23:59';const b=measure();stamp.textContent=prior;return {a,b}});assert.deepEqual(stableDirectory.a,stableDirectory.b);
+
  await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tìm kiếm',exact:true}).click();await pg.getByLabel('Tìm kiếm danh bạ',{exact:true}).fill('khong-co');await pg.getByText('Không tìm thấy danh bạ phù hợp.',{exact:true}).waitFor({state:'visible'});await pg.getByLabel('Tìm kiếm danh bạ',{exact:true}).fill('Liên hệ');await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).waitFor({state:'visible'});await pg.getByRole('button',{name:'Đóng tìm kiếm',exact:true}).click();
  assert.equal(await pg.getByText('Khách hàng mẫu',{exact:true}).count(),0);
  await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).click();
@@ -95,7 +97,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.equal(await pg.getByRole('button',{name:'Thêm ảnh hoặc tệp',exact:true}).isVisible(),true);assert.equal(await pg.locator('#composer[data-input-parent=chat]').count(),1);assert.equal(await pg.locator('[data-live-message-id=m][data-live-content=mixed]').count(),1);assert.equal(await pg.locator('[data-draft-media-picker]').count(),1);
  assert.equal(await pg.locator('#app').getAttribute('data-keyboard-owner'),'KeyboardController');
  await pg.waitForFunction(()=>!document.querySelector('#composer').inert);
- assert(await pg.evaluate(()=>{const d=document.querySelector('#composer textarea'),m=document.querySelector('#messages'),h=document.querySelector('.conversation>.panel-head').getBoundingClientRect(),f=document.querySelector('.composer-frame').getBoundingClientRect(),r=m.getBoundingClientRect(),x=r.left+3;return document.activeElement!==d&&getComputedStyle(m).clipPath!=='none'&&!m.contains(document.elementFromPoint(x,h.bottom-2))&&!m.contains(document.elementFromPoint(x,f.top+2))}));
+ const entryBoundary=await pg.evaluate(()=>{const d=document.querySelector('#composer textarea'),m=document.querySelector('#messages'),h=document.querySelector('.conversation>.panel-head').getBoundingClientRect(),f=document.querySelector('.composer-frame').getBoundingClientRect(),r=m.getBoundingClientRect(),x=r.left+3;return {floating:document.documentElement.dataset.floating,focused:document.activeElement===d,clip:getComputedStyle(m).clipPath,headerHit:m.contains(document.elementFromPoint(x,h.bottom-2)),footerHit:m.contains(document.elementFromPoint(x,f.top+2))}});assert(entryBoundary.floating==='1'&&!entryBoundary.focused&&entryBoundary.clip!=='none'&&!entryBoundary.headerHit&&!entryBoundary.footerHit,JSON.stringify(entryBoundary));
 
  await pg.getByLabel('Nội dung tin nhắn',{exact:true}).fill('bb');await pg.waitForFunction(()=>document.querySelector('#composer').dataset.mode==='single');assert(await pg.locator('#composer').evaluate(e=>Math.abs(e.querySelector('#mediaBtn').getBoundingClientRect().top-e.querySelector('.send').getBoundingClientRect().top)<=1));
  await pg.getByLabel('Nội dung tin nhắn',{exact:true}).fill('Dòng 1\nDòng 2\nDòng 3\nDòng 4');await pg.waitForFunction(()=>document.querySelector('#composer').dataset.mode==='expanded');
