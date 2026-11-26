@@ -250,3 +250,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 - v13.230 #216: E1 test-only correction of closure scope, no runtime change; prior Chromium CI 45857578005 failed before one-write assertion. New CI pending.
 
 - L04 v13.231 E1: live uses shared READ-API-06 segment coverage; static pure test passed, CI pending; server prefix remains authoritative. v13.230 E3 Pages 45858620412 success, E4 pending.
+
+- L04 v13.231 E2 merge 6ebffd0, both CI passed. v13.232 E1 LIVE-CACHE-MEDIA-01 preserves confirmed media knowledge on transient RPC failure; CI pending.
