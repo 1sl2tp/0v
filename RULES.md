@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.198)
+## 00. Chỉ mục rule đang có hiệu lực (v13.199)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1497,3 +1497,6 @@ Standalone image review groups existing classified transfer images by sending_ba
 
 ## v13.198 — LIVE-BILL-FRESH-ONLY-01 (user override before release)
 Supersedes stored-result and bank-group presentation in standalone only. Existing authorized RPC response is immediately projected to image metadata (id, asset_id, storage_key, mime_type, kind, sent_at); no stored OCR, annotations, bank, classification, status, or prior read timestamps in standalone state, display, search or grouping. All are unclassified until genuinely new AI evidence exists. Current backend still returns legacy data to the client; no claim of a new media-only endpoint. No AI execution, no DB writes. Integrated audit unchanged. New-result feed not available; never fabricate results.
+
+## v13.199 — LIVE-BILL-LOCAL-PRINT-01
+Standalone only, explicit one-image classification using existing authenticated storage download and pinned BillOCREngineAPI Tesseract worker, local canvas, no Gemini request, no automatic batch, no writes. OCR confidence and printed-text transfer context are heuristic, not handwriting proof. Require visible 4–6 trailing nines in recipient-labelled account or bare account with transfer heading, no fabricated digits; sender/memo/reference/trace excluded. Confident readable text without transfer context/nines may be nonbill; otherwise unclassified. Results held only in authenticated page memory and cleared at logout/refresh; read timestamp is actual completion. No use of old OCR. Original stored bytes unchanged. Integrated audit/keyboard unchanged. User explicitly requests local OCR; this is not the external AI batch pathway.
