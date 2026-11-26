@@ -116,5 +116,5 @@ SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set
 DO $$ BEGIN BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'locked contact allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
 RESET ROLE;
 DO $$ BEGIN IF (SELECT raw_read->>'transfer_content' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001') IS DISTINCT FROM 'fixture' THEN RAISE EXCEPTION 'original receipt mutated'; END IF; END $$;
-DO $ BEGIN IF EXISTS (SELECT 1 FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000008' AND (amount_vnd IS NOT NULL OR ledger_id IS NOT NULL OR status<>'review')) THEN RAISE EXCEPTION 'legacy recovery mutated financial record'; END IF; END $;
+DO $$ BEGIN IF EXISTS (SELECT 1 FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000008' AND (amount_vnd IS NOT NULL OR ledger_id IS NOT NULL OR status<>'review')) THEN RAISE EXCEPTION 'legacy recovery mutated financial record'; END IF; END $$;
 ROLLBACK;
