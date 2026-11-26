@@ -18,3 +18,5 @@ const bad=await auditBatch({...opts,rows:[{id:'bad',assetId:'a',hash:'bad'}]});a
 const denied=await auditBatch({...opts,version:'denied',rows:[rows[0]],read:async()=>({originalVerified:false})});assert.equal(denied.calls,1);
 assert.equal((await auditBatch({...opts,version:'denied',rows:[rows[0]]})).terminal,1);
 assert.equal((await auditBatch({...opts,version:'denied',rows:[duplicate]})).calls,0);
+
+let writes=0;await assert.rejects(auditBatch({...opts,version:'disk-failure',save:async()=>{writes++;throw Error('disk');}}),/checkpoint_write_failed/);assert.equal(writes,1);
