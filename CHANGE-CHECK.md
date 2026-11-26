@@ -650,3 +650,6 @@ E0 user requests six fields on standalone page. v13.204 both CI checks passed an
 
 ## v13.206 LSTM manual OCR
 E0 user approves upgrade after noisy Legacy read. v13.205 both CI checks passed and merged. Reviewed pinned upstream Tesseract API/performance/createWorker; keep demo OEM0 isolated, change live owner to OEM1, one worker, bounded upscale and parse-only receipt layout. Added synthetic test for two explicit reads with one worker; CI/Pages/live OCR performance and accuracy pending. No backend or financial mutation. Rollback v13.205.
+
+## v13.207 low confidence
+User screenshot BILL-164DDC9C shows all fields missing despite raw OCR. v13.206 CI passed and merged. Add scoped receipt layout and explicit contrast reread; synthetic browser fixture tests six visible values, not actual photo accuracy. CI/Pages pending. No finance/DB writes. Rollback v13.206.
