@@ -707,3 +707,7 @@ Shared normalizeLines handles t7, preserves long codes, URL and email. Contact.u
 
 ### v13.219 Typography correction
 --font-ui restored to accepted stack; --font-chat restricted to ContentAPI reading surfaces. Input font, sizing and protected code unchanged.
+
+
+## v13.220 Foundation Vercel profile
+Typography uses scoped --ux-font for Work/read and utility menu, input/chat unchanged. Card and Button consume scoped radius/glyph tokens; Scroll uses CSS native desktop rail tokens, no writer or event changes. See FOUNDATION-VERCEL-01–03 and linked Drive sources.

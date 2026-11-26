@@ -34,6 +34,13 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const row=p.locator('.contact[data-id=ncc]');assert.equal(await row.getAttribute('data-contact-unread'),'true');assert.equal(await row.locator('.unread-count').textContent(),'1');assert((await row.locator('.identity small').textContent()).includes('T7 có hàng'));
  await row.evaluate(e=>e.click());assert.equal(await p.locator('#messages .message').last().locator('.bubble').textContent(),'T7 có hàng');await p.close()
  }
+ // Vercel business profile and desktop scrollbar tokens. Font bytes are not required by this offline test.
+ {
+ const p=await browser.newPage({viewport:{width:1280,height:800}});await p.route('https://vercel.com/**',route=>route.abort());await p.goto(url);
+ const result=await p.evaluate(()=>{const root=document.documentElement,s=getComputedStyle(root),c=document.querySelector('.contacts'),m=document.querySelector('#messages'),d=document.querySelector('#draft'),work=document.querySelector('.crm');return {radius:s.getPropertyValue('--ux-radius-table').trim(),font:s.getPropertyValue('--ux-font').trim(),thumb:s.getPropertyValue('--scroll-thumb').trim(),size:s.getPropertyValue('--scroll-size').trim(),gutter:getComputedStyle(c).scrollbarGutter,chatGutter:getComputedStyle(m).scrollbarGutter,input:getComputedStyle(d).fontFamily,workInk:getComputedStyle(work).getPropertyValue('--ink').trim()}});
+ assert.equal(result.radius,'6px');assert(result.font.includes('Geist Vercel'));assert.equal(result.thumb,'#c4c9d2');assert.equal(result.size,'8px');assert.equal(result.gutter,'stable');assert.equal(result.chatGutter,'stable both-edges');assert(!result.input.includes('Geist Vercel'));assert.equal(result.workInk,'#171717');await p.close();
+ const m=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});await m.goto(url);assert.equal(await m.locator('#messages').evaluate(e=>getComputedStyle(e).scrollbarGutter),'auto');assert.equal(await m.locator('#draft').evaluate(e=>getComputedStyle(e).fontSize),'17px');await m.close();
+ }
  // Local printed orientation regression (synthetic, no customer data).
  {
  const p=await browser.newPage();await p.goto(url+'?kbmode=light');const method=require('node:fs').readFileSync('index.html','utf8').split(' printedOrientation(source){')[1].split(' clampZoom(value){')[0];

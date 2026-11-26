@@ -765,3 +765,7 @@ CI 45772176602 job 139747178700 failed width320 repeated draft tap (frame 60→1
 
 ### v13.219 Typography fixture correction
 CI 45772603604 job 139748560893 reached styled text assertions after prior 320px keyboard regression checks. Existing five formatted text samples still expected old 17px; update expectation to approved 16px/24px, keep exact count, role, weight, underline, italic and strike checks. No production HTML, snapshot, font or keyboard change. Full exact-head CI pending.
+
+
+## v13.220 — Drive Vercel foundation
+Read exact Drive Vercel HTML, locked UX rule tabs, shared F-61–74 and Astryx tokens. Scoped Work/card/control/utility paint and font, 8px desktop native scrollbar, no mobile scroll owner/keyboard/DB change. One optional online Geist resource with system fallback; offline regression tests tokens, not actual font load. 44px target retained (not Vercel 32/36). Four protected ranges byte-identical. CI and Pages pending; actual font/Safari visual check pending.

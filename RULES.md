@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.219)
+## 00. Chỉ mục rule đang có hiệu lực (v13.220)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1651,3 +1651,9 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 
 ### CHAT-TYPE-219-03 — CI correction
 Run 45772176602 job 139747178700 exposed 320px touch draft frame 60→108 after system-ui global font change. Restore exact prior --font-ui for Input, Button and other roles; new --font-chat only on actual ContentAPI chat read surface, 16/24 unchanged. Supersedes global font scope in CHAT-TYPE-219-01. Hypothesis to verify in exact-head CI; preserve existing 320px keyboard assertion, no keyboard owner changes.
+
+
+## FOUNDATION-VERCEL — v13.220
+- FOUNDATION-VERCEL-01: User authorizes Vercel as supplementary source. Read Drive UX - VERCEL UI RULES https://docs.google.com/spreadsheets/d/1d8p8GbXoMnqIo8AV_lARFpfPcVCiQLpqwDUTaojzPvo/edit tabs 00_CHUNG, 00_COT_LOI, 02_KHOANG_CACH, 00_QUY_TAC and saved Vercel.html https://drive.google.com/file/d/1CVc-V-NP0TAkdiqg0ZU8uzvDbjBdt37n/view. Work surfaces use #fafafa/#fff/#171717/#4d4d4d, 6px card and control radius, 16px glyphs, existing 14/20 business detail and spacing tokens. Shared 44px hit geometry remains; no 32/36px control geometry change. No chat glass or composer change. Bill image/card paired radius uses existing shared Bill token.
+- FOUNDATION-VERCEL-02: Scoped Geist Vercel variable font for Work and directory utilities menu; input and chat keep current stack. Source URL as FONT-SOURCE row 21; online optional fetch with font-display:optional and offline local/system fallback, not a claim of loaded exact font. Explicit limited exception to no font download default F-04 (one optional font resource, no DB/API changes); rollback remove @font-face/profile. No font binary copied. Do not apply to input or change its metrics.
+- FOUNDATION-VERCEL-03: RULE CHUNG TOÀN BỘ HỆ THỐNG https://docs.google.com/spreadsheets/d/1vu8mlXSr_E6klO3UjrsoWjos2MefCWkDra3MBbI6NHQ/edit tab 04 - UI FOUNDATION TOKENS F-61–74: desktop fine-pointer scrollbar 8px rail, 4px optical thumb, transparent track, neutral colors, stable gutter, native mobile overlay unchanged. CSS only, reuse scroll owner. Chat existing stable both-edges preserved. Read pinned Astryx tokens.stylex.ts 7ca09a989079c26627462bfe50abbcb08ec1328c; Vercel saved HTML and locked sheet supply second source. Four protected ranges byte-identical; actual Geist load, CI and Safari pending.
