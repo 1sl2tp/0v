@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.211)
+## 00. Chỉ mục rule đang có hiệu lực (v13.212)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1555,3 +1555,6 @@ User identifies BILL-70A42109 as VCB Digibank. Inspected enlarged screenshot: lo
 
 ### v13.211 — Co-opBank sender recognition
 User identifies BILL-2B8C7111 as Co-opBank; exact receipt record confirms stored sender COOPBANK. Original image pixels were not accessible in this session; no claim of verified field geometry. Add conditional sender-brand recognition and normalize aliases to Co-opBank, use actual labels with generic evidence-only reading until an image is visually reviewed. No hardcoded relative positions, no sample transaction values, no extra AI request. Existing VietinBank and VCB layouts remain. Actual read and CI pending.
+
+## v13.212 — LIVE-BILL-BANK-TYPE-03
+User provided ten sample IDs; matched database metadata for all, not original image pixels. Registry: 233071C7 Techcombank receipt; 207D5514 BIDV receipt; 53A01132 VPBank receipt; 95AF248A BIDV balance notice (stored sender_debit); 8268651D MoMo wallet transfer; 1C0AD231 MB balance notice (user identifies MB, stored sender null; sender_debit); 4CBFF2A9 MB receipt variant 1; AC4B545C MB receipt variant 2; 33B118A9 SHB receipt; 36652584 MSB receipt. No transaction values in prompt, no unverified fixed geometry. New type field separates transfer receipt, debit notice, credit notice, wallet transfer and unclear; sender aliases normalized. For notices distinguish GD from SD, read actual DEN/ND if present; do not infer recipient or credit confirmation. Keep both previous verified-position guides and Co-opBank label-based fallback. One explicit AI request, no scan or ledger mutation. Actual sample pixels unavailable; layout variants not visually verified. CI/live verification pending.
