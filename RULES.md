@@ -1647,3 +1647,7 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 ## TEXT-CASE-219 / unread presentation — v13.219
 - TEXT-CASE-219-01: normalizeLines shared by commit, ContentAPI and Contact.preview now permits short letter+single digit tokens like t7, t2 at line start; preserve URLs, emails, longer alphanumeric product/reference codes, pure numbers, emoji, original history; no input-time mutation. Tests 10 cases. Scope limited to ordinary text, not bill/DB fields.
 - DIRECTORY-UTILITIES-04: unread presentation uses Contact.update and actual unread count/unknown dot; visually distinguish unread name/preview, badge at avatar from existing rule. No fabricated count, automatic read, push or additional notification system. Latest attached reference image was not available; visual choice provisional.
+
+
+### CHAT-TYPE-219-03 — CI correction
+Run 45772176602 job 139747178700 exposed 320px touch draft frame 60→108 after system-ui global font change. Restore exact prior --font-ui for Input, Button and other roles; new --font-chat only on actual ContentAPI chat read surface, 16/24 unchanged. Supersedes global font scope in CHAT-TYPE-219-01. Hypothesis to verify in exact-head CI; preserve existing 320px keyboard assertion, no keyboard owner changes.

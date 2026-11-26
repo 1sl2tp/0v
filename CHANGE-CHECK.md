@@ -757,3 +757,7 @@ User screenshot shows current chat text visually larger than ChatGPT. E1 change 
 
 ### v13.219 text case and unread follow-up
 User reports t7 remains lowercase. Existing regex protected all leading letter+number tokens; allow short one-letter one-digit conversational tokens, preserve longer codes and URL/email. 10 pure tests passed. Contact unread state emphasizes name/preview and existing avatar dot/count, no read-state mutation. New screenshot unavailable; no claim visual match. Browser regressions added, four protected ranges byte-identical; exact CI and Pages pending. No DB or keyboard changes.
+
+
+### v13.219 keyboard regression release repair
+CI 45772176602 job 139747178700 failed width320 repeated draft tap (frame 60→108). Static audit and bank fixture passed; live synthetic login/menu/logout passed. Scope system-ui font to reading role; restore old global/input font. Cause is hypothesis, not yet proven. No change to assertions, protected code or keyboard metrics. Exact-head CI pending.

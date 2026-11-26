@@ -703,3 +703,7 @@ Shared --font-ui system sans stack and --type-chat 16/24, weight 400; no input/g
 
 ### v13.219 text case / unread
 Shared normalizeLines handles t7, preserves long codes, URL and email. Contact.update projects actual unread state to parent data-contact-unread, preserving read authority. No new runtime owner.
+
+
+### v13.219 Typography correction
+--font-ui restored to accepted stack; --font-chat restricted to ContentAPI reading surfaces. Input font, sizing and protected code unchanged.
