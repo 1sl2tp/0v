@@ -50,18 +50,9 @@ Deno.serve(async req=>{
    if(scopeError||!audit?.account_id||!Array.isArray(audit.rows))return reply({error:"admin_mfa_required"},403);
    row=audit.rows.find((r:any)=>r.id===id);
   }else if(id===undefined&&uuid(room)&&uuid(assetId)&&uuid(messageId)){
-   // Exact authenticated admin+AAL2 scope; never accept a client-supplied storage key.
-   const {data:claims,error:claimError}=await db.auth.getClaims(auth.slice(7));
-   if(claimError||claims?.claims?.aal!=="aal2"||claims.claims.sub!==user.user.id)return reply({error:"admin_mfa_required"},403);
-   const [m,t]=await Promise.all([db.rpc("v0_admin_media",{p_conversation_id:room}),db.rpc("v0_admin_read",{p_kind:"thread",p_conversation_id:room})]);
-   if(m.error||t.error||!m.data?.account_id||m.data.account_id!==t.data?.account_id||!Array.isArray(m.data.assets)||!Array.isArray(t.data.messages))return reply({error:"conversation_forbidden"},403);
-   const msg=t.data.messages.find((x:any)=>x.id===messageId&&x.conversation_id===room&&x.sender_account_id!==m.data.account_id);
-   const asset=m.data.assets.find((x:any)=>x.id===assetId&&x.message_id===messageId&&x.kind==="image");
-   if(!msg||!asset)return reply({error:"image_not_in_scope"},404);
-   const known=asset.bill_receipt?.asset_id===assetId&&asset.bill_receipt?.message_id===messageId;
-   const at=Date.parse(msg.created_at),single=m.data.assets.filter((x:any)=>x.message_id===messageId).length===1;
-   if(!known&&(!single||!Number.isFinite(at)||at>Date.now()||Date.now()-at>172800000))return reply({error:"image_not_in_scope"},404);
-   row=asset;
+   // Old clients must never issue another live inference. No record or image
+   // is returned here; authenticated live UI uses its existing admin media RPC.
+   return reply({error:"live_bill_reader_server_owned"},409);
   }else return reply({error:"bad_request"},400);
   if(!row||typeof row.storage_key!=="string"||!["image/jpeg","image/jpg","image/png","image/webp"].includes(row.mime_type))return reply({error:"image_not_in_scope"},404);
   const key=Deno.env.get("GEMINI_API_KEY");if(!key)return reply({error:"ai_not_configured"},503);
