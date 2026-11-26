@@ -516,3 +516,9 @@ LIVE-BILL-08: BillOCRFieldAPI.identify(line) exposes existing typed label routin
 LIVE-BILL-09: ParseAPI.billRecipientEvidence returns truncated-tail for exact 12-digit target prefix ending in 4–6 nines. BillRecognitionAPI recognizes this as review-only; projection retains OCR digits and existing ledger evidence. LIVE-AVATAR-01: Avatar.publicSource(path,origin) constructs only existing public bucket object URLs, validated path; Contact and live header consume the shared owner and ChatReadAPI avatarPath. Backend directory projection required.
 
 LIVE-DATA-PROJECTION-01: directory contact adds nullable avatar_path; existing private media projection can return date_vn with no transaction timestamp only when printed numeric date matches a valid normalized calendar date. No change to scope, clock, ledger or financial mutation.
+
+LIVE-BILL-MEMO-REVIEW-01: admin_media transfer_content uses independently visually reviewed memo only for exact asset/message/customer and matching OCR snapshot. No new public endpoint or client grant; canonical financial OCR evidence unchanged.
+
+LIVE-BILL-BANK-PROOF-01: nullable bank_verified_account is independent linked Agribank credit evidence for previously received truncated-tail OCR; original receiving_account is unchanged. Strict exact amount/time/account/linked collection/customer. UI must distinguish bank evidence from image OCR.
+
+LIVE-BILL-DIGIT-RECHECK-01: admin_media ocr_rechecked_account is nullable display-only second vision reading; distinct from bank_verified_account.
