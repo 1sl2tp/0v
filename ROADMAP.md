@@ -75,3 +75,5 @@ Nguồn rule duy nhất vẫn là RULES.md. Tài liệu này chỉ theo dõi cô
 | L09 | Nghiệm thu thay thế hoàn toàn, giữ khả năng rollback | TODO |
 
 Không đánh dấu các bước TODO là hoạt động chỉ vì quyền admin đã được cấp. CHAT cũ không bị tắt hoặc sửa trong quá trình chuyển. 
+
+L08 / v13.184 E1: show bill exceptions (recipient, account, VN date, missing clock) using existing receipt projection. CI and device pending. Historical isolated OCR rerun remains TODO.
