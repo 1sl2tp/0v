@@ -869,3 +869,17 @@ E0: v13.227 PR #212 exact head 16a8f5a passed both workflows and merged f0e6d4c,
 
 ### v13.228 — release rule index repair
 Exact head aca7c4d API CI 45850684974 failed audit-design.cjs solely at `checks.version` (active RULES index still v13.227); DB 45850685246 passed. Align active index with title/version.json v13.228; index.html, bill.html and release-v13.228.html verified same blob 1cd70d53631d29db56303488b4644582177f2fd8. No runtime/test assertion change, no additional version. Re-run all checks; browser regression not yet reached. Require repeat browser CI before merge.
+
+
+### P05.1 — Offline historical bill batch candidate
+RULE-GATE-01–06 / ROADMAP-01–04 / LIVE-BILL-SINGLE-READER-01: offline orchestration fixture only, injected reader and checkpoint, maximum ten sequential calls, hash+version deduplication, quota pause, bounded attempts. No new OCR implementation or production adapter; authorization, durable private checkpoint, hash verification, concurrency lock, independent image truth and actual CI remain pending. No runtime version or financial change. Synthetic test added but not yet executed; audit-design.cjs pending. Rollback: revert fixture files and this entry.
+
+
+### P05.1 — repair synthetic checkpoint regression
+E0: PR #213 head f134e0ea, [Bill fixture 45844998154](https://github.com/1sl2tp/0v/actions/runs/45844998154), line 20 actual 1 expected 0. Shared save adapter overwrites terminal with linked_terminal. E1 candidate BILL-AUDIT-CHECKPOINT-01: separate mandatory link callback from canonical save; retain prior tests, add repeated terminal alias and done checkpoint assertions. Offline synthetic scope only; no runtime version, image access, database or finance change. Exact-head CI pending; independent image truth and real adapter remain BLOCKED. Rollback this candidate commit.
+
+### P05.1 — integrate v13.227
+Previous exact head 6213193: synthetic bill fixture 45848333899, DB 45848333919, API 45848333920 all PASS. Merge latest main f0e6d4c (v13.227) into candidate preserving release rules. Re-run exact-head CI before merge. Offline fixture only, no runtime or financial writes.
+
+### P05.1 — integrate v13.228
+Prior exact head 95ce836: synthetic bill fixture 45850243592 and DB 45850243739 PASS; API 45850243816 failed intermittent scroll regression. Main v13.228 342c770 includes fix; PR #214 exact head 6230630 passed API 45853986517 twice (attempts 1 and 2) and DB 45853986426. Preserve all current runtime and rules, rerun exact-head CI before merge. Offline fixture only; no runtime or financial writes.
