@@ -35,6 +35,7 @@ ALTER TABLE public.chat_bank_bill_receipts ADD COLUMN reason text;
 \ir ../../references/0v-admin-bill-audit.sql
 \ir ../../references/0v-admin-bill-audit-annotations.sql
 ALTER TABLE public.chat_bank_bill_receipts ADD COLUMN duplicate_of uuid, ADD COLUMN image_sha256 text;
+ALTER TABLE public.chat_bank_bill_receipts ADD COLUMN scanned_at timestamptz;
 \ir ../../references/0v-admin-bill-audit-classification.sql
 INSERT INTO public.v21_accounts(id,auth_user_id,role) VALUES
 ('00000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','admin'),
