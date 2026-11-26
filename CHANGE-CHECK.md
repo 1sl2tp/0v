@@ -636,3 +636,6 @@ Read AGENTS/RULES/COMPONENT-API/ROADMAP and existing source; confirmed live gate
 
 ## v13.203 — visual triage / Storage budget
 Read AGENTS/RULES/COMPONENT-API/ROADMAP, Astryx Button and Adobe SelectionManager; OpenCV 4.10.0 threshold, morphology lines and template matching tutorials, Supabase serving/egress/logs docs. LIVE-BILL-VISUAL-PRIORITY-01/LIVE-BILL-STORAGE-BUDGET-01. 8 scripts parse, 3 synthetic visual cases passed; audit syntax checked. Shared RAM cache, inflight coalescing, real per-session counters and 5 minute automatic audit refresh; no change to auth/financial operations. Full hash scan remains, eviction can cause additional requests. No bank logo templates, no actual speed/egress measurement. CI/Pages pending. Stacked on PR183 to avoid changing its active CI. Rollback v13.202.
+
+## v13.203 no-repeat revision
+User reports repeated scanning; source confirms session-only maps lost on F5 and finally rescheduling, repeated card rebuilding and background metadata calls. Supersede with minimal account-scoped tab checkpoint, no raw account/text or bytes persisted, manual list refresh, explicit retry, preserved auth heartbeat and bounded cache. 8 scripts and browser/static audit syntax parsed; new reload regression added, CI not yet run. No guarantee across tabs or storage failure. No DB changes.
