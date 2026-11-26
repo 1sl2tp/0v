@@ -2992,7 +2992,7 @@ function reconcileViewport(){
  const rect=appliedRect;
  const {top,left,height,width}=rect,focused=InputController.isEditable(document.activeElement);
  const chat=width<768&&app.dataset.screen==='chat';
- const liveDraftFocus=isLive&&document.activeElement===draft,keepLiveTail=liveDraftFocus&&anchor?.pinned===true;const pinned=chat&&(anchor?.pinned??scrolls[active]?.pinned??nearBottom());
+ const pinned=chat&&(anchor?.pinned??scrolls[active]?.pinned??nearBottom());
  const state=classifyKeyboard({height:rawRect.height,top:rawRect.top,width:rawRect.width,focused,restingHeight,restingWidth,wasOpen:keyboardOccluding});
  restingHeight=state.reference;restingWidth=rawRect.width;keyboardOpen=state.open;keyboardOccluding=state.occluding;
  const safe=updateSafeArea(rect);
@@ -3010,9 +3010,9 @@ function reconcileViewport(){
   const key=[top,left,height,width,composerHeight,room,safe.top,safe.right,safe.bottom,safe.left,keyboardOccluding].join('/');
   if(key!==previousRect){
    previousRect=key;
-   if(pinned&&!touchingMessages&&!navigationPending&&performance.now()>scrollingUntil&&(!keyboardOccluding||keepLiveTail)){
+   if(pinned&&!touchingMessages&&!navigationPending&&performance.now()>scrollingUntil&&!keyboardOccluding){
     if(viewportScrollFrame)cancelAnimationFrame(viewportScrollFrame);
-    const epoch=navigationEpoch;viewportScrollFrame=requestAnimationFrame(()=>{viewportScrollFrame=0;if(epoch===navigationEpoch&&!touchingMessages&&app.dataset.screen==='chat'&&(!keyboardOccluding||(isLive&&document.activeElement===draft&&anchor?.pinned===true)))ScrollController.geometry(true)});
+    const epoch=navigationEpoch;viewportScrollFrame=requestAnimationFrame(()=>{viewportScrollFrame=0;if(epoch===navigationEpoch&&!touchingMessages&&app.dataset.screen==='chat'&&!keyboardOccluding)ScrollController.geometry(true)});
    }
   }
   if(!focused&&!keyboardOccluding)anchor=null;
@@ -3040,7 +3040,7 @@ register(el){if(!this.isEditable(el))return;el.dataset.inputKind=this.kind(el);e
 document.querySelectorAll(InputController.selector).forEach(el=>InputController.register(el));
 let outsideTap=null;
 document.addEventListener('pointerdown',e=>{outsideTap=null;const el=e.target.closest(InputController.selector);if(InputController.isEditable(el)){InputController.register(el);if(document.activeElement!==el){preFocusAnchor=InputController.snapshot();if(el===draft&&e.pointerType==='touch'&&e.cancelable){e.preventDefault();el.focus({preventScroll:true})}}return}if(InputController.isEditable(document.activeElement)&&!e.target.closest('[data-input-parent],button,a,summary,select,dialog')){if(!e.target.closest('.messages,.directory-list,#moduleContent')){anchor=InputController.snapshot();InputController.blur();updateViewport()}else outsideTap={id:e.pointerId,x:e.clientX,y:e.clientY,owner:document.activeElement}}},{capture:true,passive:false});
-document.addEventListener('focusin',e=>{if(InputController.isEditable(e.target)){cancelEarlyClose();InputController.register(e.target);anchor=preFocusAnchor||InputController.snapshot();preFocusAnchor=null;if(isLive&&e.target===draft&&app.dataset.screen==='chat'){anchor={pinned:true,top:messages.scrollTop};scrolls[active]={top:messages.scrollTop,pinned:true};ScrollController.end('focus-latest');ScrollController.followEnd();resizeDraft()}}updateViewport()});
+document.addEventListener('focusin',e=>{if(InputController.isEditable(e.target)){cancelEarlyClose();InputController.register(e.target);anchor=preFocusAnchor||InputController.snapshot();preFocusAnchor=null}updateViewport()});
 document.addEventListener('focusout',e=>{if(InputController.isEditable(e.target)){if(!anchor)anchor=InputController.snapshot();if(e.target===draft&&!InputController.isEditable(e.relatedTarget))scheduleEarlyClose()}updateViewport()});
 document.addEventListener('pointermove',e=>{if(outsideTap&&Math.hypot(e.clientX-outsideTap.x,e.clientY-outsideTap.y)>8)outsideTap=null},{passive:true});
 document.addEventListener('pointercancel',()=>{outsideTap=null;preFocusAnchor=null},{passive:true});
@@ -3052,6 +3052,18 @@ window.visualViewport?.addEventListener('scroll',applyViewport,{passive:true});
 const KeyboardController=Object.freeze({bind(el){el.dataset.keyboardOwner='KeyboardController';return el},focus:InputController,applyViewport,reconcileViewport});
 
 for(const el of document.querySelectorAll('[data-parent-api=KeyboardController]'))KeyboardController.bind(el);
+
+// Live chat tail intent adapter: scroll owner only, no keyboard/viewport geometry writes.
+let liveFocusTail=null,liveTailFrame=0;
+function cancelLiveFocusTail(){liveFocusTail=null;if(liveTailFrame)cancelAnimationFrame(liveTailFrame);liveTailFrame=0}
+function scheduleLiveFocusTail(){if(!liveFocusTail||liveTailFrame)return;const intent=liveFocusTail;liveTailFrame=requestAnimationFrame(()=>{liveTailFrame=0;if(intent!==liveFocusTail||intent.epoch!==navigationEpoch||intent.room!==active||document.activeElement!==draft||app.dataset.screen!=='chat'||app.hidden||touchingMessages||navigationPending)return;ScrollController.end('live-focus-tail');ScrollController.followEnd()})}
+draft.addEventListener('focus',()=>{if(!isLive||app.dataset.screen!=='chat'||!appShellActive())return;liveFocusTail={epoch:navigationEpoch,room:active};scheduleLiveFocusTail()});
+draft.addEventListener('blur',cancelLiveFocusTail);
+for(const event of ['pointerdown','touchstart','wheel'])messages.addEventListener(event,cancelLiveFocusTail,{passive:true});
+window.visualViewport?.addEventListener('resize',scheduleLiveFocusTail,{passive:true});
+window.visualViewport?.addEventListener('scroll',scheduleLiveFocusTail,{passive:true});
+new ResizeObserver(scheduleLiveFocusTail).observe(messages);
+
 let backSwipe=null;
 app.addEventListener('touchstart',e=>{backSwipe=null;if(innerWidth>=768||app.dataset.screen==='contacts'||e.touches.length!==1||document.querySelector('dialog[open]'))return;const t=e.touches[0];if(e.target.closest('input,textarea,button,select,img,.sample-media,.media-gallery,.composer-frame,[contenteditable]')||(!window.getSelection()?.isCollapsed))return;backSwipe={x:t.clientX,y:t.clientY,screen:app.dataset.screen,locked:false,edge:t.clientX<=24,start:performance.now()}}, {passive:true});
 app.addEventListener('touchmove',e=>{if(!backSwipe)return;if(e.touches.length!==1){backSwipe=null;return}const t=e.touches[0],dx=t.clientX-backSwipe.x,dy=t.clientY-backSwipe.y;if(!backSwipe.locked&&((Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx))||dx< -12)){backSwipe=null;return}if(dx>10&&dx>Math.abs(dy)*1.25)backSwipe.locked=true;}, {passive:true});

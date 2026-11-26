@@ -115,7 +115,7 @@ function auditDesign(html,rules,baseline){
    ["limit",n("1234567",6,false)==="123456"]
   ].map(([name,pass])=>({name,pass}));
  }catch(e){inputError=e.message}
- const textInputContract=!inputError&&inputCases.length===11&&inputCases.every(c=>c.pass)&&css.includes("--input-font-floor:16px")&&css.includes("--input-font-size:max(var(--input-font-floor),var(--type-input))")&&!html.includes("function normalizeDraft(")&&html.includes("if(Input.isComposing(draft,e))return;")&&html.includes("commitNumericField(el,p.maxDigits,p.grouped)");
+ const textInputContract=!inputError&&inputCases.length===12&&inputCases.every(c=>c.pass)&&css.includes("--input-font-floor:16px")&&css.includes("--input-font-size:max(var(--input-font-floor),var(--type-input))")&&!html.includes("function normalizeDraft(")&&html.includes("if(Input.isComposing(draft,e))return;")&&html.includes("commitNumericField(el,p.maxDigits,p.grouped)");
  let inputApiCases=[],inputApiError=null;
  try{
   const src=html.slice(html.indexOf("const Input=(()=>{"),html.indexOf("function normalizeLines(value)"));
