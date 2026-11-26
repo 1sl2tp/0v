@@ -68,7 +68,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  // Expose only the internal paint entry in the intercepted synthetic fixture; never in the shipped HTML.
  const liveFixtureSource=require('node:fs').readFileSync('index.html','utf8'),fixtureBoundary='function appShellActive(){';
  assert.equal(liveFixtureSource.split(fixtureBoundary).length,2);
- const instrumentedLiveFixture=liveFixtureSource.replace(fixtureBoundary,'window.__fixtureQueuePaint=(...args)=>ScrollController.imagePaint(...args);\n'+fixtureBoundary);
+ const instrumentedLiveFixture=liveFixtureSource.replace(fixtureBoundary,'window.__fixtureQueuePaint=(...args)=>ScrollController.imagePaint(...args);\nwindow.__fixtureScrollState=()=>({edge:ScrollController.edge(),intent:ScrollController.intentState()});\n'+fixtureBoundary);
  const webkitFixture=webkitTail?instrumentedLiveFixture.replace("async prepareLiveImage(data,mime,bill){","async prepareLiveImage(data,mime,bill){try{return await this.__fixtureOriginalPrepare(data,mime,bill)}catch(e){(window.__fixtureMediaErrors??=[]).push({name:e.name,message:e.message,type:data?.type,size:data?.size});throw e}},\n async __fixtureOriginalPrepare(data,mime,bill){"):instrumentedLiveFixture;
  await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:webkitFixture}));
  await pg.route('**/storage/v1/object/public/v21-avatars/fixture/avatar.jpg',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="gray"/></svg>'}));
@@ -117,6 +117,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    await pg.evaluate(()=>{const m=document.querySelector('#messages'),row=document.querySelector('[data-live-message-id="old-22"]');window.__fixtureHandoffPaint=0;window.__fixtureQueuePaint(row,()=>{window.__fixtureHandoffPaint++},()=>row.isConnected);if(row.dataset.mediaPaintPending!=='true')throw Error('Paint not queued before cancel');m.dispatchEvent(new WheelEvent('wheel',{deltaY:-1,bubbles:true}))});
    await pg.waitForFunction(()=>window.__fixtureHandoffPaint===1&&!document.querySelector('[data-live-message-id="old-22"]').hasAttribute('data-media-paint-pending'));
    assert.equal(await pg.evaluate(()=>window.__fixtureHandoffPaint),1);
+   const state=await pg.evaluate(()=>window.__fixtureScrollState());assert.notEqual(state.intent,'FOLLOW_LATEST','no movement does not grant follow');assert(state.edge.gap>=0&&state.edge.top<=state.edge.max);
+
    // Reestablish explicit follow for the remaining independent tail regression cases.
    await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>!document.querySelector('#jumpBottom').hidden);await pg.locator('#jumpBottom').click();await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3});
 
@@ -179,6 +181,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    await pg.evaluate(()=>{const m=document.querySelector('#messages'),row=document.querySelector('[data-live-message-id="old-22"]');window.__fixtureHandoffPaint=0;window.__fixtureQueuePaint(row,()=>{window.__fixtureHandoffPaint++},()=>row.isConnected);if(row.dataset.mediaPaintPending!=='true')throw Error('Paint not queued before cancel');m.dispatchEvent(new WheelEvent('wheel',{deltaY:-1,bubbles:true}))});
    await pg.waitForFunction(()=>window.__fixtureHandoffPaint===1&&!document.querySelector('[data-live-message-id="old-22"]').hasAttribute('data-media-paint-pending'));
    assert.equal(await pg.evaluate(()=>window.__fixtureHandoffPaint),1);
+   const state=await pg.evaluate(()=>window.__fixtureScrollState());assert.notEqual(state.intent,'FOLLOW_LATEST','no movement does not grant follow');assert(state.edge.gap>=0&&state.edge.top<=state.edge.max);
+
    // Reestablish explicit follow for the remaining independent tail regression cases.
    await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>!document.querySelector('#jumpBottom').hidden);await pg.locator('#jumpBottom').click();await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3});
 
