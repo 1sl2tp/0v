@@ -41,8 +41,8 @@ INSERT INTO auth.sessions VALUES
 INSERT INTO public.v21_conversations VALUES
 ('30000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002'),
 ('30000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003');
-INSERT INTO public.v21_messages(id,conversation_id,created_at,sender_account_id,body) SELECT ('40000000-0000-0000-0000-'||lpad(i::text,12,'0'))::uuid,'30000000-0000-0000-0000-000000000001',now(),'00000000-0000-0000-0000-000000000002','' FROM generate_series(1,7) i;
-INSERT INTO public.v21_media_assets(id,message_id,conversation_id,owner_account_id,kind,mime_type,sort_index) SELECT ('50000000-0000-0000-0000-'||lpad(i::text,12,'0'))::uuid,('40000000-0000-0000-0000-'||lpad(i::text,12,'0'))::uuid,'30000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','image','image/jpeg',0 FROM generate_series(1,7) i;
+INSERT INTO public.v21_messages(id,conversation_id,created_at,sender_account_id,body) SELECT ('40000000-0000-0000-0000-'||lpad(i::text,12,'0'))::uuid,'30000000-0000-0000-0000-000000000001',now(),'00000000-0000-0000-0000-000000000002','' FROM generate_series(1,9) i;
+INSERT INTO public.v21_media_assets(id,message_id,conversation_id,owner_account_id,kind,mime_type,sort_index) SELECT ('50000000-0000-0000-0000-'||lpad(i::text,12,'0'))::uuid,('40000000-0000-0000-0000-'||lpad(i::text,12,'0'))::uuid,'30000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','image','image/jpeg',0 FROM generate_series(1,9) i;
 INSERT INTO public.taphoa_debt_ledger VALUES(1,'00000000-0000-0000-0000-000000000002','collection',-26),(2,'00000000-0000-0000-0000-000000000003','collection',-26);
 INSERT INTO public.chat_bank_bill_receipts(media_asset_id,message_id,customer_account_id,status,amount_vnd,ledger_id,raw_read,transfer_at_vn) VALUES
 ('50000000-0000-0000-0000-000000000001','40000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','received',26000,1,'{"transfer_date_printed_vn":"25/11/2026","transfer_date_vn":"2026-11-25","transfer_time_printed_vn":"21:52","transaction_time_precision":"minute","transfer_content":"fixture","private":"never-return"}','2026-11-25 21:52'),
@@ -51,6 +51,9 @@ INSERT INTO public.chat_bank_bill_receipts(media_asset_id,message_id,customer_ac
 ('50000000-0000-0000-0000-000000000004','40000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000002','received',26000,null,'{}',null),
 ('50000000-0000-0000-0000-000000000005','40000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000003','received',26000,null,'{}',null),
 ('50000000-0000-0000-0000-000000000006','40000000-0000-0000-0000-000000000006','00000000-0000-0000-0000-000000000002','received',26000,2,'{"transfer_time_printed_vn":"21:52","transaction_time_precision":"minute","clock_text_conflict":true}','2026-11-25 21:52');
+INSERT INTO public.chat_bank_bill_receipts(media_asset_id,message_id,customer_account_id,status,amount_vnd,ledger_id,raw_read,transfer_at_vn) VALUES
+('50000000-0000-0000-0000-000000000008','40000000-0000-0000-0000-000000000008','00000000-0000-0000-0000-000000000002','review',null,null,'{"image_type":"bank_credit_notification","amount_role":"sender_debit","transaction_nature":"transfer","amount_clear":true,"transfer_success_visible":true,"amount_text":"-1,234,000VND","transfer_date_printed_raw_vn":"24/11/26","transfer_date_vn":"2026-11-24","printed_date_invalid":true,"transaction_time_precision":"minute","transfer_time_printed_vn":"15:16"}','2026-11-24 15:16'),
+('50000000-0000-0000-0000-000000000009','40000000-0000-0000-0000-000000000009','00000000-0000-0000-0000-000000000002','review',null,null,'{"image_type":"bank_credit_notification","amount_role":"sender_debit","transaction_nature":"transfer","amount_clear":true,"transfer_success_visible":true,"amount_text":"-1,234,000VND","transfer_date_printed_raw_vn":"25/11/26","transfer_date_vn":"2026-11-24","printed_date_invalid":true,"transaction_time_precision":"minute","transfer_time_printed_vn":"15:16"}','2026-11-24 15:16');
 UPDATE public.chat_bank_bill_receipts SET receiving_account='290118199999' WHERE media_asset_id IN ('50000000-0000-0000-0000-000000000001','50000000-0000-0000-0000-000000000006');
 UPDATE public.chat_bank_bill_receipts SET raw_read=raw_read||'{"account_digit_recheck":{"source":"independent_focused_vision","first_visible":"290118199999","second_visible":"2901181999999","digit_count":13,"trailing_nines":6}}'::jsonb WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
 INSERT INTO public.taphoa_agribank_notifications VALUES(1,'com.vnpay.Agribank3g','credit_candidate',false,'2901181999999',26000,'2026-11-25 21:52:00+07');
@@ -74,7 +77,7 @@ BEGIN
  result:=public.v0_admin_read('directory',null);
  IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(result->'contacts') c WHERE c->>'id'='00000000-0000-0000-0000-000000000002' AND c->>'avatar_path'='fixture/avatar.jpg') OR EXISTS (SELECT 1 FROM jsonb_array_elements(result->'contacts') c WHERE c->>'id'='00000000-0000-0000-0000-000000000003' AND c->>'avatar_path' IS NOT NULL) THEN RAISE EXCEPTION 'avatar path projection'; END IF;
  result:=public.v0_admin_media('30000000-0000-0000-0000-000000000001');
- IF jsonb_array_length(result->'assets')<>7 THEN RAISE EXCEPTION 'asset count'; END IF;
+ IF jsonb_array_length(result->'assets')<>9 THEN RAISE EXCEPTION 'asset count'; END IF;
  a:=result->'assets'->0->'bill_receipt';
  IF a->>'amount_vnd' IS DISTINCT FROM '26000' OR a->>'has_ledger' IS DISTINCT FROM 'true' OR a->>'time_vn' IS DISTINCT FROM '21:52' OR a->>'date_vn' IS DISTINCT FROM '25/11/2026' OR a->>'transfer_content' IS DISTINCT FROM E'KHACH MAU\nChuyen tien' THEN RAISE EXCEPTION 'valid projection'; END IF;
  IF a->>'ocr_rechecked_account' IS DISTINCT FROM '2901181999999' THEN RAISE EXCEPTION 'focused OCR projection'; END IF;
@@ -89,6 +92,10 @@ BEGIN
  a:=result->'assets'->5->'bill_receipt';
  IF a->>'has_ledger' IS DISTINCT FROM 'false' OR a->>'time_vn' IS NOT NULL OR a->>'bank_verified_account' IS NOT NULL OR a->>'ocr_rechecked_account' IS NOT NULL THEN RAISE EXCEPTION 'wrong ledger or conflicting time'; END IF;
  IF result->'assets'->6->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'absent receipt'; END IF;
+ a:=result->'assets'->7->'bill_receipt';
+ IF a->>'amount_vnd' IS DISTINCT FROM '1234000' OR a->>'date_vn' IS DISTINCT FROM '24/11/2026' OR a->>'time_vn' IS DISTINCT FROM '15:16' OR a->>'status' IS DISTINCT FROM 'review' OR a->>'has_ledger' IS DISTINCT FROM 'false' THEN RAISE EXCEPTION 'legacy debit display recovery'; END IF;
+ a:=result->'assets'->8->'bill_receipt';
+ IF a->>'amount_vnd' IS NOT NULL OR a->>'date_vn' IS NOT NULL THEN RAISE EXCEPTION 'conflicting short date accepted'; END IF;
  BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000002'); RAISE EXCEPTION 'foreign room allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END;
  IF has_table_privilege(current_user,'v0_private.bill_account_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_account_review','INSERT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','INSERT') OR has_table_privilege(current_user,'public.chat_bank_bill_receipts','SELECT') OR has_table_privilege(current_user,'public.taphoa_debt_ledger','SELECT') THEN RAISE EXCEPTION 'direct table access'; END IF;
 END $$;
@@ -105,4 +112,5 @@ SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set
 DO $$ BEGIN BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'locked contact allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
 RESET ROLE;
 DO $$ BEGIN IF (SELECT raw_read->>'transfer_content' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001') IS DISTINCT FROM 'fixture' THEN RAISE EXCEPTION 'original receipt mutated'; END IF; END $$;
+DO $ BEGIN IF EXISTS (SELECT 1 FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000008' AND (amount_vnd IS NOT NULL OR ledger_id IS NOT NULL OR status<>'review')) THEN RAISE EXCEPTION 'legacy recovery mutated financial record'; END IF; END $;
 ROLLBACK;

@@ -79,3 +79,5 @@ Không đánh dấu các bước TODO là hoạt động chỉ vì quyền admin
 L08 / v13.184 E1: show bill exceptions (recipient, account, VN date, missing clock) using existing receipt projection. CI and device pending. Historical isolated OCR rerun remains TODO.
 
 L08 / v13.185: historical transaction date display and explicit Vietnamese mixed dates; isolated date/projection tests passed, CI/device pending.
+
+L08: legacy sender-debit display-only recovery candidate, DB fixture pending; no automatic collection or historic batch.

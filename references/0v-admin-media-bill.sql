@@ -16,8 +16,8 @@ BEGIN
       CASE WHEN r.status IN ('received','amount_read','review','duplicate') THEN jsonb_build_object(
         'asset_id',a.id,'message_id',a.message_id,'status',r.status,
         'has_ledger',EXISTS(SELECT 1 FROM public.taphoa_debt_ledger l WHERE l.id=r.ledger_id AND l.customer_account_id=r.customer_account_id AND l.entry_type='collection'),
-        'amount_vnd',CASE WHEN r.amount_vnd>0 THEN r.amount_vnd::text END,
-        'date_vn',CASE WHEN r.transfer_at_vn IS NOT NULL
+        'amount_vnd',CASE WHEN r.amount_vnd>0 THEN r.amount_vnd::text ELSE legacy.amount_vnd END,
+        'date_vn',CASE WHEN legacy.amount_vnd IS NOT NULL THEN to_char(r.transfer_at_vn,'DD/MM/YYYY') WHEN r.transfer_at_vn IS NOT NULL
           AND jsonb_typeof(r.raw_read->'transfer_date_printed_vn')='string'
           AND nullif(btrim(r.raw_read->>'transfer_date_printed_vn'),'') IS NOT NULL
           AND r.raw_read->>'transfer_date_vn'=to_char(r.transfer_at_vn,'YYYY-MM-DD')
@@ -76,6 +76,34 @@ BEGIN
       AND v.customer_account_id=r.customer_account_id AND v.raw_read_hash=md5(r.raw_read::text)
     LEFT JOIN v0_private.bill_account_review ar ON ar.media_asset_id=r.media_asset_id AND ar.message_id=r.message_id
       AND ar.customer_account_id=r.customer_account_id AND ar.raw_read_hash=md5(r.raw_read::text)
+    -- Legacy OCR misclassified a sender debit as an incoming notification.
+    -- Recover display only from the original explicit debit amount and agreeing
+    -- short printed date/clock. Never change the receipt status or ledger.
+    LEFT JOIN LATERAL (
+      SELECT CASE WHEN r.status='review' AND r.ledger_id IS NULL AND r.amount_vnd IS NULL
+        AND r.raw_read->>'image_type'='bank_credit_notification'
+        AND r.raw_read->>'amount_role'='sender_debit'
+        AND r.raw_read->>'transaction_nature'='transfer'
+        AND r.raw_read->>'amount_clear'='true' AND r.raw_read->>'transfer_success_visible'='true'
+        AND r.raw_read->>'amount_text' ~ '^-[0-9]{1,3}(,[0-9]{3}){1,5}[[:space:]]*VND
+  ) x;
+  RETURN jsonb_build_object('account_id',me,'assets',result);
+END;
+$function$;
+
+        AND r.transfer_at_vn IS NOT NULL AND extract(year from r.transfer_at_vn) BETWEEN 2000 AND 2099
+        AND r.raw_read->>'transfer_date_printed_raw_vn'=to_char(r.transfer_at_vn,'DD/MM/YY')
+        AND r.raw_read->>'transfer_date_vn'=to_char(r.transfer_at_vn,'YYYY-MM-DD')
+        AND r.raw_read->>'printed_date_invalid'='true'
+        AND r.raw_read->>'transaction_time_precision'='minute'
+        AND r.raw_read->>'transfer_time_printed_vn'=to_char(r.transfer_at_vn,'HH24:MI')
+        AND coalesce(r.raw_read->>'time_date_conflict','false')='false'
+        AND coalesce(r.raw_read->>'clock_text_conflict','false')='false'
+        AND coalesce(r.raw_read->>'date_swap_suspected','false')='false'
+        AND coalesce(r.raw_read->>'ocr_iso_date_conflict','false')='false'
+        THEN nullif(ltrim(regexp_replace(r.raw_read->>'amount_text','[^0-9]','','g'),'0'),'')
+      END AS amount_vnd
+    ) legacy ON true
     WHERE a.conversation_id=p_conversation_id AND a.deleted_at IS NULL
   ) x;
   RETURN jsonb_build_object('account_id',me,'assets',result);
