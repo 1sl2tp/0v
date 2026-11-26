@@ -24,6 +24,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  }
  await p.reload();assert.equal((await get()).key,'messenger');await p.close();
  }
+ // Shared capitalization and unopened unread projection (fixture).
+ {
+ const p=await browser.newPage({viewport:{width:390,height:844}});await p.goto(url+'?kbmode=light');
+ await p.locator('.contact[data-id=kh]').evaluate(e=>e.click());
+ await p.locator('#draft').fill('t7 a nghỉ rồi');await p.locator('#composer').evaluate(e=>e.requestSubmit());
+ assert.equal(await p.locator('#messages .message.mine').last().locator('.bubble').textContent(),'T7 a nghỉ rồi');
+ await p.evaluate(()=>window.receiveDemo('ncc','t7 có hàng'));
+ const row=p.locator('.contact[data-id=ncc]');assert.equal(await row.getAttribute('data-contact-unread'),'true');assert.equal(await row.locator('.unread-count').textContent(),'1');assert((await row.locator('.identity small').textContent()).includes('T7 có hàng'));
+ await row.evaluate(e=>e.click());assert.equal(await p.locator('#messages .message').last().locator('.bubble').textContent(),'T7 có hàng');await p.close()
+ }
  // Local printed orientation regression (synthetic, no customer data).
  {
  const p=await browser.newPage();await p.goto(url+'?kbmode=light');const method=require('node:fs').readFileSync('index.html','utf8').split(' printedOrientation(source){')[1].split(' clampZoom(value){')[0];
@@ -139,7 +149,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.getByRole('button',{name:'Làm mới danh sách ảnh',exact:true}).click();await pg.waitForFunction(()=>window.calls.filter(x=>x==='bill-audit').length===2);assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls||0),0);
  assert.deepEqual(errors,[]);
  await pg.goto('https://1sl2tp.github.io/0v/');await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
- await pg.getByRole('button',{name:'Về danh bạ',exact:true}).click();await pg.waitForFunction(()=>{const e=document.querySelector('[data-live-account-actions]');return e&&Math.abs(e.children[0].getBoundingClientRect().top-e.children[1].getBoundingClientRect().top)<=1});await pg.getByRole('button',{name:'Đăng xuất',exact:true}).click();
+ await pg.getByRole('button',{name:'Về danh bạ',exact:true}).click();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
  assert.deepEqual(errors,[]);await pg.close();console.log('0v live login, directory, messages and logout passed (synthetic only)');
@@ -422,10 +432,10 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
   await page.waitForSelector('dialog[open]',{state:'detached'});
   await page.locator('.contact[data-id=nv]').evaluate(el=>el.click());
   await page.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat');
-  await fonts([['#currentName',18,24,600],['#currentRole',13,18,400],['#messages .bubble',17,24,400],['#messages .meta',13,18,400],['#draft',17,22,400]]);
+  await fonts([['#currentName',18,24,600],['#currentRole',13,18,400],['#messages .bubble',16,24,400],['#messages .meta',13,18,400],['#draft',17,22,400]]);
   assert.equal((await inspect('#draft')).input,'chat');assert.equal(await page.locator('#messages .message').first().getAttribute('data-layout-profile'),'message');assert.equal((await read()).family.issues.length,0);console.log('Family chat',width,JSON.stringify((await read()).family.counts));
   const sizes=await page.evaluate(()=>{const root=document.documentElement,s=root.style,old=s.getPropertyValue('--type-chat'),priority=s.getPropertyPriority('--type-chat'),get=()=>[...document.querySelectorAll('#messages .bubble')].map(e=>parseFloat(getComputedStyle(e).fontSize));const before=get();let during,after;try{s.setProperty('--type-chat','21px');during=get()}finally{old?s.setProperty('--type-chat',old,priority):s.removeProperty('--type-chat');after=get()}return {before,during,after}});
-  assert(sizes.before.length>=2);assert(sizes.before.every(n=>n===17));assert(sizes.during.every(n=>n===21));assert.deepEqual(sizes.after,sizes.before);
+  assert(await page.locator('#messages .bubble').first().evaluate(e=>getComputedStyle(e).fontFamily.includes('system-ui')&&getComputedStyle(e).fontWeight==='400'));assert(sizes.before.length>=2);assert(sizes.before.every(n=>n===16));assert(sizes.during.every(n=>n===21));assert.deepEqual(sizes.after,sizes.before);
   await matrix('chat',['.conversation','.conversation .panel-head','#messages','#messages .bubble','#draft','#composer','#mediaBtn']);
   if(width>=768)assert.equal(await page.locator('#messages').evaluate(e=>parseFloat(getComputedStyle(e).rowGap)),8,'desktop thread gap');
   await fonts([['.conversation .chat-version',11,16,400]]);
@@ -436,7 +446,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
   await checkButtonText('#messages .bill-actions > button',{minHeight:44,weight:'500'});
   await page.locator('.conversation .panel-head button[data-go=crm]').evaluate(e=>e.click());
   const styled=await page.evaluate(()=>[...document.querySelectorAll('#messages .sample-content > strong,#messages .sample-content > u,#messages .sample-content > em,#messages .sample-content > s,#messages .sample-content > .muted-sample')].map(e=>{const s=getComputedStyle(e);return {tag:e.tagName,role:e.dataset.typeRole,size:parseFloat(s.fontSize),line:parseFloat(s.lineHeight),weight:s.fontWeight,style:s.fontStyle,decoration:s.textDecorationLine,decorationStyle:getComputedStyle(e).textDecorationStyle}}));
-  assert.equal(styled.length,5);assert(styled.every(x=>x.role==='chat'&&x.size===17&&x.line===24));assert.equal(styled.find(x=>x.tag==='STRONG').weight,'700');assert.equal(styled.find(x=>x.tag==='EM').style,'italic');assert(styled.find(x=>x.tag==='U').decoration.includes('underline'));assert.equal(styled.find(x=>x.tag==='U').decorationStyle,'dotted');assert(styled.find(x=>x.tag==='S').decoration.includes('line-through'));
+  assert.equal(styled.length,5);assert(styled.every(x=>x.role==='chat'&&x.size===16&&x.line===24));assert.equal(styled.find(x=>x.tag==='STRONG').weight,'700');assert.equal(styled.find(x=>x.tag==='EM').style,'italic');assert(styled.find(x=>x.tag==='U').decoration.includes('underline'));assert.equal(styled.find(x=>x.tag==='U').decorationStyle,'dotted');assert(styled.find(x=>x.tag==='S').decoration.includes('line-through'));
   for(const label of ['Đơn hàng','Bill']){await page.locator('#modules button').filter({hasText:label}).first().evaluate(e=>e.click());await page.waitForFunction(()=>document.querySelector('#app').dataset.screen==='crm');await matrix('work-'+label,['.crm','.crm .panel-head','#modules','#moduleContent','#moduleContent h3','#moduleContent .business-card','#moduleContent table']);await checkButtonText('#modules button',{minHeight:44});const text=await page.evaluate(()=>[...document.querySelectorAll('#moduleContent [data-table-parent] :is(th,td),#moduleContent [data-card-parent] .business-row > span')].map(e=>{const s=getComputedStyle(e);return {size:parseFloat(s.fontSize),line:parseFloat(s.lineHeight),role:e.dataset.typeRole}}));assert(text.length>0,label);assert(text.every(x=>x.role==='detail'&&x.size===14&&x.line===20),JSON.stringify({label,text}));assert.equal((await read()).font.issues.length,0,label);}
   // Reload checks first paint roles persist; no synthetic keyboard is represented as native.
   await page.reload();await page.waitForFunction(()=>window.apiProof);
@@ -476,7 +486,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const received=mp.locator('#messages .message').filter({hasText:'681 cho 3 T'});assert.deepEqual(await received.evaluate(profile),initial);
  assert.equal(await sent.getAttribute('data-content-party'),'B');assert.equal(await received.getAttribute('data-content-party'),'A');const surfaces=await Promise.all([sent,received].map(row=>row.evaluate(e=>{const b=e.querySelector('.bubble'),m=e.querySelector('.meta');return {bg:getComputedStyle(b).backgroundColor,radius:getComputedStyle(b).borderRadius,align:getComputedStyle(e).alignItems,width:e.getBoundingClientRect().width,meta:getComputedStyle(m).clipPath,left:Math.abs(b.getBoundingClientRect().left-e.getBoundingClientRect().left),right:Math.abs(b.getBoundingClientRect().right-e.getBoundingClientRect().right)}})));assert.notEqual(surfaces[0].bg,surfaces[1].bg);assert.equal(surfaces[0].radius,'18px');assert.equal(surfaces[1].radius,'0px');assert(['flex-end','flow-end'].includes(surfaces[0].align));assert(['flex-start','flow-start'].includes(surfaces[1].align));assert(surfaces[0].right<=1&&surfaces[1].left<=1,JSON.stringify(surfaces));assert(surfaces.every(x=>x.meta!=='none'));assert(Math.abs(surfaces[0].width-surfaces[1].width)<1);const quantity=received;assert.equal(await quantity.locator('strong').textContent(),'3 T');assert.equal(await quantity.locator('.bubble').textContent(),'681 cho 3 T');assert.equal(await received.getAttribute('data-message-latest'),'true');assert.equal(await sent.getAttribute('data-message-latest'),null);
  await mp.evaluate(()=>window.receiveDemo('ncc','Tin chưa đọc thứ nhất'));
- const badge=await mp.locator('.contact[data-id=ncc] .unread-count').elementHandle();assert.equal(await badge.textContent(),'1');
+ const badge=await mp.locator('.contact[data-id=ncc] .unread-count').elementHandle();assert.equal(await badge.textContent(),'1');assert(await badge.evaluate(e=>{const a=e.closest('.contact').querySelector('.avatar').getBoundingClientRect(),b=e.getBoundingClientRect();return b.left>=a.left-1&&b.right<=a.right+2&&b.bottom<=a.bottom+6&&b.bottom>=a.bottom-8}));
  await mp.evaluate(()=>window.receiveDemo('ncc','Tin chưa đọc thứ hai'));assert.equal(await badge.textContent(),'2');assert(await badge.evaluate(e=>e.isConnected&&e===document.querySelector('.contact[data-id=ncc] .unread-count')));
  // Use actual visible navigation and foreground focus; do not assume selected === read.
  await mp.bringToFront();await mp.locator('.conversation .panel-head button[data-go=contacts]').click();await mp.locator('.contact[data-id=ncc]').click();

@@ -1,16 +1,16 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.218)
+## 00. Chỉ mục rule đang có hiệu lực (v13.219)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
 |---|---|---|
 | Quản trị bắt buộc | ROADMAP-01–06, GOV-01–05, RULE-GATE-01–06, SOURCE-01–04, API-APPLY-01–07, API-PROOF-01–05, FAMILY-01–08, PARENT-RUNTIME-01–05, OWNER-UNIFY-01–06, MAIN-BUILD-01–05, LIST-PROOF-01–03, SOURCE-GATE-01–03, ASTRYX-STUDY-01–04, ADOBE-STUDY-01–03, SYSTEMS-API-01–08, RELEASE-API-01–06, RELEASE-PROOF-01–03, COLLECTION-API-01–06, VIRTUAL-API-01–05, DYNAMIC-VIRTUAL-01–05, HISTORY-API-01–04, MESSAGE-API-01–05, CONVERSATION-API-01–05, TIME-API-01–04, DECIMAL-API-01–03, MONEY-API-01–04, FORMAT-API-01–02, PARSE-API-01–03, CALENDAR-API-01–02, SCHEDULE-API-01–03, CONTEXT-API-01–06, SYNC-API-01–05, NOTICE-API-01–06, RECOVERY-API-01–05, CACHE-API-01–05, CACHE-SYNC-01–05, DIRECTORY-API-01–06, READ-API-01–06, PRESENCE-API-01–05, NOTIFICATION-API-01–07, ALERT-DURABLE-01–05, MULTI-API-01–05, OFFLINE-API-01–05, RELOAD-API-01–04, PERF-API-01–05, VIRTUAL-PERF-01–04, SYNC-PERF-01–04, MEASURE-PERF-01–05, MAIN-OWNER-01–04, MAIN-DATA-01–06, MAIN-BIZ-01–04, BILL-EVIDENCE-01–04 | không bỏ qua RULE khi sửa nhỏ |
-| Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
+| Popup | DIRECTORY-UTILITIES-01–03, POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
-| Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
-| Typography | BUBBLE-PALETTE-01–03, CHAT-RHYTHM-01–04 (turn spacing and latest projection), LATEST-MESSAGE-01–04 (message projection/edge), CONTENT-PRESENTATION-01–04 (thread/preview visual, supersedes CONTENT-AB-01 paint), CONTENT-FORMAT-01–04 (document display), TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
+| Input / text / zoom | TEXT-CASE-219-01, INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
+| Typography | CHAT-TYPE-219-01–02, BUBBLE-PALETTE-01–03, CHAT-RHYTHM-01–04 (turn spacing and latest projection), LATEST-MESSAGE-01–04 (message projection/edge), CONTENT-PRESENTATION-01–04 (thread/preview visual, supersedes CONTENT-AB-01 paint), CONTENT-FORMAT-01–04 (document display), TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
@@ -1631,3 +1631,23 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 - BUBBLE-PALETTE-01: Message owns four allowlisted color profiles: chatgpt, whatsapp, zalo, messenger. ChatGPT-inspired light blue is default. Only outgoing text bubble foreground/background and nested muted/code tokens change; incoming document surface, media, card/table geometry, keyboard and Surface glass unchanged. Colors are inspired approximations, not official brand specifications.
 - BUBBLE-PALETTE-02: Shared Main footer button opens existing Popup menu with four options. Message applies root dataset immediately, saves only preference in localStorage (no account data/network); invalid/blocked storage defaults safely. Native buttons and popup lifecycle reused. Standalone bill footer retains its original behavior.
 - BUBBLE-PALETTE-03: Read pinned Astryx tokens.stylex.ts 7ca09a989079c26627462bfe50abbcb08ec1328c, Radix theme.tsx b980aa5217c5d50290e7856d735d126d631d6314, Adobe SelectionManager d6ff15c5b5efd7f9be685f87f46c3ed251c093f5. Scoped semantic tokens and explicit single selection. Browser color/geometry/F5 regression; native pending. Four protected KB ranges unchanged.
+
+
+## DIRECTORY-UTILITIES — v13.219
+- DIRECTORY-UTILITIES-01: Contact parent positions unread badge at avatar lower right, preserving actual count/unknown dot and stable element identity. No invented read state. Preview spans freed status column. Geometry audit checks avatar relation, not obsolete preview baseline.
+- DIRECTORY-UTILITIES-02: Live mobile only combines filter strip and search/+ in one top row; full-width search when open. Main owns utility routing; existing Popup owns vertical menu and dismissal; hidden footer account actions are reused, status/version available in menu. Send entry selects/searches recipient, never sends automatically. Existing composer + and native picker untouched. Desktop unchanged except unread position.
+- DIRECTORY-UTILITIES-03: Studied Astryx Button.tsx f87eb657180a0de978fb3ba1c59c24909a9cc63d, Radix DropdownMenu 5af14f488d45052979625b1c8c69cb8981a91a77 (trigger/selection state), Adobe SelectionManager d6ff15c5b5efd7f9be685f87f46c3ed251c093f5. Chatwoot source guessed path unavailable; visual direction only. Four protected ranges unchanged. Browser regression for actual menu/logout and badge geometry, native pending.
+
+
+## CHAT-TYPE-219 — v13.219
+- CHAT-TYPE-219-01: User comparison screenshot desktop narrow Safari: chat role 16/24px, regular 400 (supersedes chat size in TYPE-HARMONY-01; actual previous token 17/24). System sans stack shared by all roles, emoji fallback; no remote font. Keep input 17/22, floor 16, title/contact/metadata and keyboard geometry unchanged. Color palette unchanged. Approximation from screenshot, no claim of exact ChatGPT proprietary font or browser zoom equivalence.
+- CHAT-TYPE-219-02: Read pinned Astryx tokens.stylex.ts blob 7ca09a989079c26627462bfe50abbcb08ec1328c (semantic family/size tokens); Tailwind packages/tailwindcss/theme.css blob 05364f5c201868b7dd957fdfde570fa6d17e575b (base 1rem/1.5, sans fallback). Update actual role assertions across six viewport test and preserve dynamic token mutation test; four locked ranges byte-identical. No production data; native Safari visual proof pending.
+
+
+## TEXT-CASE-219 / unread presentation — v13.219
+- TEXT-CASE-219-01: normalizeLines shared by commit, ContentAPI and Contact.preview now permits short letter+single digit tokens like t7, t2 at line start; preserve URLs, emails, longer alphanumeric product/reference codes, pure numbers, emoji, original history; no input-time mutation. Tests 10 cases. Scope limited to ordinary text, not bill/DB fields.
+- DIRECTORY-UTILITIES-04: unread presentation uses Contact.update and actual unread count/unknown dot; visually distinguish unread name/preview, badge at avatar from existing rule. No fabricated count, automatic read, push or additional notification system. Latest attached reference image was not available; visual choice provisional.
+
+
+### CHAT-TYPE-219-03 — CI correction
+Run 45772176602 job 139747178700 exposed 320px touch draft frame 60→108 after system-ui global font change. Restore exact prior --font-ui for Input, Button and other roles; new --font-chat only on actual ContentAPI chat read surface, 16/24 unchanged. Supersedes global font scope in CHAT-TYPE-219-01. Hypothesis to verify in exact-head CI; preserve existing 320px keyboard assertion, no keyboard owner changes.

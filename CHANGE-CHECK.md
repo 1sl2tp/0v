@@ -741,3 +741,27 @@ E0 source audit: existing G1 has flat tint and header elevation suppressed; user
 
 ## v13.218 — bubble palettes
 User requests ChatGPT/WhatsApp/Zalo/Facebook Messenger options. E1 Message parent and existing Popup/ Button, shared tokens for outgoing content only; local device storage. Approximate palettes, no branding claims. Astryx tokens, Radix theme and Adobe SelectionManager inspected. Four protected ranges byte-identical to merged v13.217; added browser regression, full audit/CI/Pages/physical iPhone pending. No DB, live messages, keyboard or glass change.
+
+
+## v13.219 — compact directory utilities
+User requests avatar unread dot, remove redundant top/footer, + vertical utility menu. Contact badge grid and expanded preview; Main + menu reuses Popup and existing actions. Search opens recipient selection, no send mutation. CSS live mobile only compact toolbar. Four locked ranges unchanged; browser logout/menu and badge tests added; full CI, Pages and physical Safari pending. Astryx Button, Radix dropdown and Adobe SelectionManager studied; Chatwoot guessed path unavailable, no claim of copied UI. No production data or keyboard changes.
+
+
+### v13.219 CI repair
+Run 45771074600 job 139743585228 failed only noDirectFontSizes: unread badge hardcoded 11px. Replace with existing Typography --type-version token, same size. No audit bypass, layout or keyboard change. Browser CI and Pages pending.
+
+
+### v13.219 chat typography follow-up
+User screenshot shows current chat text visually larger than ChatGPT. E1 change root --type-chat 17→16, line 24 unchanged, system sans fallback stack. Input 17/22 remains; no geometry/keyboard owner modifications. Astryx token source and Tailwind theme inspected; role tests updated and family assertion added. Four protected ranges byte-identical; full CI and native comparison pending. Same unreleased v13.219.
+
+
+### v13.219 text case and unread follow-up
+User reports t7 remains lowercase. Existing regex protected all leading letter+number tokens; allow short one-letter one-digit conversational tokens, preserve longer codes and URL/email. 10 pure tests passed. Contact unread state emphasizes name/preview and existing avatar dot/count, no read-state mutation. New screenshot unavailable; no claim visual match. Browser regressions added, four protected ranges byte-identical; exact CI and Pages pending. No DB or keyboard changes.
+
+
+### v13.219 keyboard regression release repair
+CI 45772176602 job 139747178700 failed width320 repeated draft tap (frame 60→108). Static audit and bank fixture passed; live synthetic login/menu/logout passed. Scope system-ui font to reading role; restore old global/input font. Cause is hypothesis, not yet proven. No change to assertions, protected code or keyboard metrics. Exact-head CI pending.
+
+
+### v13.219 Typography fixture correction
+CI 45772603604 job 139748560893 reached styled text assertions after prior 320px keyboard regression checks. Existing five formatted text samples still expected old 17px; update expectation to approved 16px/24px, keep exact count, role, weight, underline, italic and strike checks. No production HTML, snapshot, font or keyboard change. Full exact-head CI pending.

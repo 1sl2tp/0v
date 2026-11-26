@@ -109,13 +109,23 @@ function auditDesign(html,rules,baseline){
    ["link",m("https://example.com/a...").text==="https://example.com/a..."],
    ["emoji",m("👨‍👩‍👧‍👦 …").text==="👨‍👩‍👧‍👦 …"],
    ["emoji and Vietnamese",m("👩🏽‍💻 chào chị\n🇻🇳 tiếng việt ❤️").text==="👩🏽‍💻 Chào chị\n🇻🇳 Tiếng việt ❤️"],
+   ["capitalization 1",m("t7").text==="T7"],
+   ["capitalization 2",m("t7 a nghỉ rồi").text==="T7 a nghỉ rồi"],
+   ["capitalization 3",m("t2\n t6").text==="T2\n T6"],
+   ["capitalization 4",m("👋 t7").text==="👋 T7"],
+   ["capitalization 5",m("abc123").text==="abc123"],
+   ["capitalization 6",m("x123").text==="x123"],
+   ["capitalization 7",m("a1b").text==="a1b"],
+   ["capitalization 8",m("681 cho 3 T").text==="681 cho 3 T"],
+   ["capitalization 9",m("https://example.com/t7").text==="https://example.com/t7"],
+   ["capitalization 10",m("t7@example.com").text==="t7@example.com"],
    ["number",n("12a34",6,false)==="1234"],
    ["money",n("1.250.000",12,true)==="1.250.000"],
    ["empty",n("",12,true)===""],
    ["limit",n("1234567",6,false)==="123456"]
   ].map(([name,pass])=>({name,pass}));
  }catch(e){inputError=e.message}
- const textInputContract=!inputError&&inputCases.length===12&&inputCases.every(c=>c.pass)&&css.includes("--input-font-floor:16px")&&css.includes("--input-font-size:max(var(--input-font-floor),var(--type-input))")&&!html.includes("function normalizeDraft(")&&html.includes("if(Input.isComposing(draft,e))return;")&&html.includes("commitNumericField(el,p.maxDigits,p.grouped)");
+ const textInputContract=!inputError&&inputCases.length===22&&inputCases.every(c=>c.pass)&&css.includes("--input-font-floor:16px")&&css.includes("--input-font-size:max(var(--input-font-floor),var(--type-input))")&&!html.includes("function normalizeDraft(")&&html.includes("if(Input.isComposing(draft,e))return;")&&html.includes("commitNumericField(el,p.maxDigits,p.grouped)");
  let inputApiCases=[],inputApiError=null;
  try{
   const src=html.slice(html.indexOf("const Input=(()=>{"),html.indexOf("function normalizeLines(value)"));
@@ -183,7 +193,7 @@ function auditDesign(html,rules,baseline){
  return [['roles',Typography.roles.length===10],['text preserved',a.textContent==='Tiếng Việt… <b>...'],['body',a.dataset.typeRole==='body'],['same node',same],['clear variants',!b.dataset.typeWeight&&!b.dataset.typeDecoration],['invalid role',throws(()=>Typography.create({role:'bad'}))],['invalid weight',throws(()=>Typography.create({role:'body',weight:900}))],['invalid decoration',throws(()=>Typography.create({role:'body',decoration:'bad'}))],['editable',throws(()=>Typography.bind({tagName:'SPAN',isContentEditable:true},{role:'body'}))],['input rejected',throws(()=>Typography.create({role:'body',tag:'input'}))],['number original',b.textContent==='1.250.000 đ']].map(([name,pass])=>({name,pass}));
  `)();
  }catch(e){typeApiError=e.message}
- const typeApiContract=!typeApiError&&typeApiCases.length===11&&typeApiCases.every(c=>c.pass)&&['--font-ui:', '--weight-regular:400','--weight-medium:500','--weight-semibold:600','--weight-bold:700','--type-input:17px','--line-input:22px','--type-chat:17px','--line-chat:24px'].every(x=>css.includes(x))&&css.includes('[data-type-role=money]')&&css.includes('font-variant-numeric:tabular-nums')&&!html.slice(html.indexOf('const Typography=(()=>{'),html.indexOf('function make(tag,cls,txt)')).includes('.style');
+ const typeApiContract=!typeApiError&&typeApiCases.length===11&&typeApiCases.every(c=>c.pass)&&['--font-ui:', '--weight-regular:400','--weight-medium:500','--weight-semibold:600','--weight-bold:700','--type-input:17px','--line-input:22px','--type-chat:16px','--line-chat:24px'].every(x=>css.includes(x))&&css.includes('[data-type-role=money]')&&css.includes('font-variant-numeric:tabular-nums')&&!html.slice(html.indexOf('const Typography=(()=>{'),html.indexOf('function make(tag,cls,txt)')).includes('.style');
  let geoCases=[],geoError=null;
  try{
   const src=html.slice(html.indexOf("const Geometry=(()=>{"),html.indexOf("function make(tag,cls,txt)"));

@@ -691,3 +691,19 @@ Surface.bind G1 consumers share mobile floating tint/edge/highlight/elevation; h
 
 ## v13.218 Message palette
 Message.palettes/paletteKey/storedPalette/applyPalette/choosePalette centralize outgoing bubble color choice, root token projection and local preference; Main mounts existing Button/Popup, no new geometry owner.
+
+
+## v13.219 directory utilities
+Contact.update retains unread badge and positions it with shared avatar grid; Main.directoryMenu delegates existing actions to Popup. Compact mobile live directory only. No separate menu lifecycle or keyboard owner.
+
+
+### v13.219 Typography refinement
+Shared --font-ui system sans stack and --type-chat 16/24, weight 400; no input/geometry change. All Message content uses Typography. Screenshot approximation; CI and Safari pending.
+
+
+### v13.219 text case / unread
+Shared normalizeLines handles t7, preserves long codes, URL and email. Contact.update projects actual unread state to parent data-contact-unread, preserving read authority. No new runtime owner.
+
+
+### v13.219 Typography correction
+--font-ui restored to accepted stack; --font-chat restricted to ContentAPI reading surfaces. Input font, sizing and protected code unchanged.
