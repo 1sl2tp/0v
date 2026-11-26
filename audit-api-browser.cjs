@@ -69,7 +69,9 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.deepEqual(await pg.evaluate(()=>window.calls),[]);
  assert.equal(await pg.getByText('Khách hàng mẫu',{exact:true}).count(),0);
  assert.equal(await pg.getByText('Kiểm tra phê duyệt thiết bị',{exact:true}).count(),0);
- await pg.goto('https://1sl2tp.github.io/0v/?v=13.168&r=1&floating=1');
+ // Set mobile viewport before navigation so default live routing and floating profile both apply.
+ await pg.setViewportSize({width:390,height:844});
+ await pg.goto('https://1sl2tp.github.io/0v/?v=13.168&r=1');
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  await pg.waitForFunction(()=>Array.isArray(window.calls));
  assert.deepEqual(await pg.evaluate(()=>window.calls),[]);
