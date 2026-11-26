@@ -687,3 +687,7 @@ CONTENT-FORMAT-06: one dotted underline paint for Typography and ContentAPI; nat
 
 ## v13.217 mobile glass optics
 Surface.bind G1 consumers share mobile floating tint/edge/highlight/elevation; header and jump face, composer parent only (no nested glass). Header blur supported and keyboard closed, composer default remains static. Protected geometry and focus unchanged; desktop and accessibility fallback retained. See SURFACE-MOBILE-OPTICS.
+
+
+## v13.218 Message palette
+Message.palettes/paletteKey/storedPalette/applyPalette/choosePalette centralize outgoing bubble color choice, root token projection and local preference; Main mounts existing Button/Popup, no new geometry owner.

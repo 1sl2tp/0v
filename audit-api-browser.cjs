@@ -14,6 +14,16 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await p.emulateMedia({contrast:'more'});const a=await read();assert.equal(a.composer,'accessible-flat');assert.equal(a.composerImage,'none');assert.equal(a.jumpImage,'none');await p.close();
  const d=await browser.newPage({viewport:{width:1280,height:800}});await d.goto(url+'?floating=0&kbmode=light');assert.equal(await d.locator('.composer[data-glass=g1]').evaluate(e=>getComputedStyle(e).getPropertyValue('--paint-profile').trim()),'flat');await d.close();
  }
+ // Message palette selection, persistence and contrast pairs (fixture only).
+ {
+ const p=await browser.newPage({viewport:{width:1280,height:800}});await p.goto(url+'?floating=0&kbmode=light');
+ const get=()=>p.evaluate(()=>{const e=document.querySelector('#messages [data-content-party=B] .bubble');return {key:document.querySelector('#app').dataset.bubblePalette,bg:getComputedStyle(e).backgroundColor,ink:getComputedStyle(e).color,rect:e.getBoundingClientRect().width,button:document.querySelector('#bubblePaletteButton').textContent}});
+ const first=await get();assert.equal(first.key,'chatgpt');assert.equal(first.bg,'rgb(234, 240, 252)');
+ for(const [key,label,bg,ink] of [['whatsapp','WhatsApp','rgb(217, 253, 211)','rgb(21, 60, 41)'],['zalo','Zalo','rgb(220, 236, 255)','rgb(23, 71, 122)'],['messenger','Messenger','rgb(7, 91, 216)','rgb(255, 255, 255)']]){
+ await p.locator('#bubblePaletteButton').evaluate(e=>e.click());await p.getByRole('dialog',{name:'Màu bong bóng'}).getByRole('button',{name:label,exact:true}).click();const now=await get();assert.equal(now.key,key);assert.equal(now.bg,bg);assert.equal(now.ink,ink);assert.equal(now.rect,first.rect);assert.equal(now.button,'Màu chat: '+label);
+ }
+ await p.reload();assert.equal((await get()).key,'messenger');await p.close();
+ }
  // Local printed orientation regression (synthetic, no customer data).
  {
  const p=await browser.newPage();await p.goto(url+'?kbmode=light');const method=require('node:fs').readFileSync('index.html','utf8').split(' printedOrientation(source){')[1].split(' clampZoom(value){')[0];
