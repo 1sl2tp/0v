@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.185)
+## 00. Chỉ mục rule đang có hiệu lực (v13.186)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1461,3 +1461,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-BILL-LEGACY-DEBIT-01: Khi OCR cũ nhầm thông báo trừ tiền bên gửi thành thông báo ghi có, chỉ projection admin hiện hữu được hiển thị trị tuyệt đối của amount_text âm có nhóm nghìn và VND rõ, role sender_debit, transfer, amount_clear, success; chỉ với review chưa có ledger, ngày in DD/MM/YY khớp timestamp và ngày ISO, giờ in khớp, không xung đột. Không dùng SD, không tự suy ra tiền đã về, không sửa raw_read/amount/status/ledger/matcher, không gửi khách. OCR mới xử lý GD/DEN/ND riêng; các kiểu khác cần bằng chứng riêng. Không đổi version UI cho backend-only.
 
 - LIVE-BILL-JOURNAL-MEMO-01: Nhật ký giao dịch BIDV dạng thông báo có nội dung SMB-TkThe nhưng không có nhãn người nhận riêng: STK/tên/NH nhận để trống, nguyên văn memo giữ nguyên, số tiền GD riêng, không dùng số dư hoặc giờ thông báo. Với OCR cũ chỉ áp dụng projection review/no ledger và dấu hiệu cụ thể BIDV sender_debit + SMB-TkThe; không chỉnh dữ liệu tài chính hoặc suy diễn tiền về.
+
+- LIVE-BILL-AUDIT-WORKSPACE-01: one admin-only read workspace under Công việc. Existing authenticated session + AAL2, exact conversation/customer/media/message joins, active user and messages, bounded 1000 rows with explicit total/overflow. Show raw field gaps as review signals, not confirmed OCR errors. Sort/filter/search locally with 25/page; original media uses existing authorized loader on demand. No automatic collection, no public raw data, no record mutation; distinguish non_bill and ledger state. No keyboard changes.

@@ -350,4 +350,9 @@ result.checks.adobeSourceIntegrity=adobeOK;result.pass=result.pass&&adobeOK;resu
 // Compile the complete browser test without executing it, before installing browsers.
 let browserTestSyntax=true;try{new Function('require','__dirname','module','exports',fs.readFileSync(path.join(__dirname,'audit-api-browser.cjs'),'utf8'))}catch(e){browserTestSyntax=false;result.browserTestSyntaxError=e.message}
 result.checks.browserTestSyntax=browserTestSyntax;result.pass=result.pass&&browserTestSyntax;
+const billAuditSrc=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+const billAuditCode=billAuditSrc.slice(billAuditSrc.indexOf('const BillAuditList='),billAuditSrc.indexOf('const Contact=Object.freeze({create'));
+const billAudit=new Function(billAuditCode+';return BillAuditList')();
+const billAuditSample=[{"id":"a","status":"review","amount_vnd":"1000","flags":["time"],"sent_at":"2026-11-26","customer":"MAU"},{"id":"b","status":"received","amount_vnd":"2000","flags":["time","date"],"sent_at":"2026-11-25"},{"id":"c","status":"non_bill","flags":["amount"],"sent_at":"2026-11-25"},{"id":"d","status":"received","amount_vnd":"3000","flags":[],"sent_at":"2026-11-25"}];
+result.checks.billAuditSort=billAudit.select(billAuditSample).map(x=>x.id).join()==='b,a'&&billAudit.select(billAuditSample,'bills','amount').map(x=>x.id).join()==='d,b,a'&&billAudit.select(billAuditSample,'non_bill').map(x=>x.id).join()==='c'&&billAudit.select(billAuditSample,'flagged','errors','mau').map(x=>x.id).join()==='a';result.pass=result.pass&&result.checks.billAuditSort;
 console.log(JSON.stringify(result,null,2));process.exitCode=result.pass?0:1;

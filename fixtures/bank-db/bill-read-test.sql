@@ -31,6 +31,8 @@ GRANT EXECUTE ON FUNCTION public.v0_admin_media(uuid) TO authenticated;
 \ir ../../references/0v-bill-memo-review.sql
 \ir ../../references/0v-bill-account-review.sql
 \ir ../../references/0v-admin-media-bill.sql
+ALTER TABLE public.chat_bank_bill_receipts ADD COLUMN reason text;
+\ir ../../references/0v-admin-bill-audit.sql
 INSERT INTO public.v21_accounts(id,auth_user_id,role) VALUES
 ('00000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','admin'),
 ('00000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','user'),
@@ -78,6 +80,10 @@ DECLARE result jsonb; a jsonb;
 BEGIN
  result:=public.v0_admin_read('directory',null);
  IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(result->'contacts') c WHERE c->>'id'='00000000-0000-0000-0000-000000000002' AND c->>'avatar_path'='fixture/avatar.jpg') OR EXISTS (SELECT 1 FROM jsonb_array_elements(result->'contacts') c WHERE c->>'id'='00000000-0000-0000-0000-000000000003' AND c->>'avatar_path' IS NOT NULL) THEN RAISE EXCEPTION 'avatar path projection'; END IF;
+ result:=public.v0_admin_bill_audit();
+ IF (result->>'total')::int<>7 OR jsonb_array_length(result->'rows')<>7 THEN RAISE EXCEPTION 'audit scoped count'; END IF;
+ IF result::text LIKE '%never-return%' OR EXISTS (SELECT 1 FROM jsonb_array_elements(result->'rows') x WHERE x ? 'raw_read' OR x ? 'ledger_id') THEN RAISE EXCEPTION 'audit exposed internal fields'; END IF;
+ IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(result->'rows') x WHERE x->>'status'='non_bill') THEN RAISE EXCEPTION 'audit excludes nonbill'; END IF;
  result:=public.v0_admin_media('30000000-0000-0000-0000-000000000001');
  IF jsonb_array_length(result->'assets')<>10 THEN RAISE EXCEPTION 'asset count'; END IF;
  a:=result->'assets'->0->'bill_receipt';
@@ -104,8 +110,10 @@ BEGIN
  IF has_table_privilege(current_user,'v0_private.bill_account_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_account_review','INSERT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','INSERT') OR has_table_privilege(current_user,'public.chat_bank_bill_receipts','SELECT') OR has_table_privilege(current_user,'public.taphoa_debt_ledger','SELECT') THEN RAISE EXCEPTION 'direct table access'; END IF;
 END $$;
 SELECT set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal1"}',true);
+DO $$ BEGIN BEGIN PERFORM public.v0_admin_bill_audit(); RAISE EXCEPTION 'audit aal1 allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
 DO $$ BEGIN IF public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'aal1 exposed bill'; END IF; END $$;
 SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000002',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000002","aal":"aal2"}',true);
+DO $$ BEGIN BEGIN PERFORM public.v0_admin_bill_audit(); RAISE EXCEPTION 'audit nonadmin allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
 DO $$ BEGIN BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'nonadmin allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
 SELECT set_config('fixture.uid','',true),set_config('fixture.jwt','{}',true);
 DO $$ BEGIN BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-000000000001'); RAISE EXCEPTION 'unauthenticated allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
