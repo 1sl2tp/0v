@@ -1,10 +1,12 @@
-const {chromium}=require('playwright');
+const {chromium,webkit}=require('playwright');
+const webkitTail=process.argv.includes('--webkit-tail');
 const {pathToFileURL}=require('node:url');
 const assert=require('node:assert/strict');
 const url=pathToFileURL(process.cwd()+'/index.html').href;
 (async()=>{
- const browser=await chromium.launch({headless:true});
+ const browser=await (webkitTail?webkit:chromium).launch({headless:true});
  try{
+ if(!webkitTail){
  // Surface mobile optics: real computed CSS, no live data.
  {
  const p=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
@@ -53,9 +55,11 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const source=require('node:fs').readFileSync('index.html','utf8').split('const Message=Object.freeze(')[1].split('/* ChatReadAPI')[0];
  const out=await p.evaluate(source=>{const M=new Function('const Message=Object.freeze('+source+';return Message')();const thread=document.querySelector('#messages');thread.replaceChildren();const row=(party,time,day='2026-11-26',kind='text')=>{const r=document.createElement('div');r.dataset.uiSlot='message';r.dataset.contentParty=party;r.dataset.contentTime=time;r.dataset.messageDay=day;r.dataset.contentKind=kind;r.setAttribute('aria-label',party+' · '+time);const m=document.createElement('div');m.dataset.uiSlot='meta';m.textContent=time;r.append(m);M.flow(thread.lastElementChild,r);thread.append(r);return r};const a=row('A','09:01'),b=row('A','09:01'),c=row('B','09:01'),d=row('B','09:02'),e=row('B','09:02','2026-11-26','media'),f=row('B','09:02','2026-11-27');return {rows:thread.children.length,shared:a.dataset.contentTimeShared,joined:b.dataset.contentContinuation,others:[c,d,e,f].every(x=>!x.dataset.contentContinuation),hidden:getComputedStyle(a.firstChild).clipPath,visible:getComputedStyle(b.firstChild).clipPath,metadata:a.firstChild.textContent,aria:a.getAttribute('aria-label'),rhythm:[b,c,d,e,f].map(x=>x.dataset.messageRhythm),margins:[b,c,d,e,f].map(x=>parseFloat(getComputedStyle(x).marginBlockStart))}},source);assert.equal(out.rows,6);assert.equal(out.shared,'true');assert.equal(out.joined,'true');assert(out.others);assert.notEqual(out.hidden,'none');assert.notEqual(out.visible,'none');assert.equal(out.metadata,'09:01');assert.equal(out.aria,'A · 09:01');assert.deepEqual(out.rhythm,['run','turn','run','run','break']);assert(out.margins[0]<out.margins[1]&&out.margins[4]>=out.margins[1],JSON.stringify(out.margins));await p.close()
  }
+ }
  // Live 0v page uses its own login; intercept only the pinned SDK, never production.
  {
- const pg=await browser.newPage({viewport:{width:1280,height:800}});
+ const pg=await browser.newPage(webkitTail?{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:3}:{viewport:{width:1280,height:800}});
+ if(webkitTail)await pg.route('**/*',route=>{const protocol=new URL(route.request().url()).protocol;return ['blob:','data:'].includes(protocol)?route.continue():route.abort()});
  const errors=[];pg.on('pageerror',e=>errors.push(e.message));
  await pg.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js',r=>r.fulfill({contentType:'application/javascript',body:`
  window.calls=[];let logged=sessionStorage.getItem('fixture-logged')==='1';let aal=sessionStorage.getItem('fixture-aal')==='2'?'aal2':'aal1';
@@ -65,7 +69,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const liveFixtureSource=require('node:fs').readFileSync('index.html','utf8'),fixtureBoundary='function appShellActive(){';
  assert.equal(liveFixtureSource.split(fixtureBoundary).length,2);
  const instrumentedLiveFixture=liveFixtureSource.replace(fixtureBoundary,'window.__fixtureQueuePaint=(...args)=>ScrollController.imagePaint(...args);\n'+fixtureBoundary);
- await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:instrumentedLiveFixture}));
+ const webkitFixture=webkitTail?instrumentedLiveFixture.replace("async prepareLiveImage(data,mime,bill){","async prepareLiveImage(data,mime,bill){try{return await this.__fixtureOriginalPrepare(data,mime,bill)}catch(e){(window.__fixtureMediaErrors??=[]).push({name:e.name,message:e.message,type:data?.type,size:data?.size});throw e}},\n async __fixtureOriginalPrepare(data,mime,bill){"):instrumentedLiveFixture;
+ await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:webkitFixture}));
  await pg.route('**/storage/v1/object/public/v21-avatars/fixture/avatar.jpg',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="gray"/></svg>'}));
  await pg.goto('https://1sl2tp.github.io/0v/');
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
@@ -88,6 +93,27 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.getByRole('button',{name:'Xác nhận mã',exact:true}).click();
  await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).waitFor({state:'visible'});
  await pg.locator('#contacts [data-id=c] [data-avatar-state=image]').waitFor({state:'visible'});
+ if(webkitTail){
+   await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).tap();
+   await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
+   const diagnose=async(label)=>{console.error('WebKit '+label,JSON.stringify(await pg.evaluate(()=>{const m=document.querySelector('#messages'),group=document.querySelector('[data-live-message-id="m"] [data-live-image-group="3"]');return {screen:document.querySelector('#app')?.dataset.screen,inert:document.querySelector('#composer')?.inert,top:m?.scrollTop,extent:m?.scrollHeight,height:m?.clientHeight,group:!!group,tiles:group?.querySelectorAll('.media-tile').length,pending:group?.dataset.mediaPaintPending,button:group?.querySelector('button')?.textContent,disabled:group?.querySelector('button')?.disabled,calls:window.calls,mediaErrors:window.__fixtureMediaErrors||[]}})),errors)}; 
+   await pg.waitForFunction(()=>!document.querySelector('#composer').inert).catch(async e=>{await diagnose('navigation');throw e});
+   await pg.waitForFunction(()=>{const m=document.querySelector('#messages');return m.scrollHeight-m.clientHeight>300}).catch(async e=>{await diagnose('extent');throw e});
+   const group=pg.locator('[data-live-message-id="m"] [data-live-image-group="3"]');
+   await group.waitFor({state:'attached'}).catch(async e=>{await diagnose('group');throw e});
+   // This suite measures tail scroll, not IntersectionObserver auto-load timing. Use the existing load control if still idle.
+   await group.evaluate(el=>{const b=el.querySelector(':scope > button');if(!el.querySelector('.mixed-media')&&b&&!b.disabled)b.click()});
+   await pg.waitForFunction(()=>document.querySelector('[data-live-message-id="m"] [data-live-image-group="3"] .mixed-media')).catch(async e=>{await diagnose('image');throw e});
+   const tail=()=>pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3&&document.querySelector('#jumpBottom').hidden});
+   const away=async()=>{await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>document.querySelector('#messages').scrollTop<=1&&!document.querySelector('#jumpBottom').hidden)};
+   const raf=()=>pg.evaluate(()=>new Promise(resolve=>{let n=6;const step=()=>--n?requestAnimationFrame(step):resolve();requestAnimationFrame(step)}));
+   await tail();await away();await pg.locator('#jumpBottom').tap();await tail();await raf();
+   assert(await pg.locator('#messages').evaluate(m=>Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3));
+   const batch=await pg.evaluate(async()=>{const m=document.querySelector('#messages'),one=document.querySelector('[data-live-message-id="old-22"]'),two=document.querySelector('[data-live-message-id="old-21"]');if(!one||!two)throw Error('Missing synthetic rows');let proto=m,d;while(proto&&!d){d=Object.getOwnPropertyDescriptor(proto,'scrollTop');proto=Object.getPrototypeOf(proto)}if(!d?.set||!d?.get)throw Error('Missing native scrollTop');let writes=0,painted=0;Object.defineProperty(m,'scrollTop',{configurable:true,get(){return d.get.call(m)},set(v){writes++;d.set.call(m,v)}});try{window.__fixtureQueuePaint(one,()=>{painted++;one.style.minHeight='600px'},()=>one.isConnected);window.__fixtureQueuePaint(two,()=>{painted++;two.style.minHeight='500px'},()=>two.isConnected);const queued=one.dataset.mediaPaintPending==='true'&&two.dataset.mediaPaintPending==='true';await new Promise(resolve=>{let n=6;const step=()=>--n?requestAnimationFrame(step):resolve();requestAnimationFrame(step)});return {queued,painted,writes,gap:m.scrollHeight-m.clientHeight-m.scrollTop,hidden:document.querySelector('#jumpBottom').hidden}}finally{delete m.scrollTop;one.style.minHeight='';two.style.minHeight=''}});
+   assert(batch.queued&&batch.painted===2&&batch.writes===1&&Math.abs(batch.gap)<3&&batch.hidden,JSON.stringify(batch));await tail();
+   await away();await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='600px');await raf();assert(await pg.locator('#messages').evaluate(m=>m.scrollTop<=1));await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='');await pg.locator('#jumpBottom').tap();await tail();
+   assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
+ }
  // Live directory idempotent refresh: no avatar/row recreation on equal payload.
  await pg.evaluate(()=>{window.stableContact=document.querySelector('#contacts [data-id=c]');window.stableAvatar=window.stableContact.querySelector('img');window.stableName=window.stableContact.querySelector('.identity b');window.stableStamp=window.stableContact.querySelector('.time');window.directoryBefore=window.calls.filter(x=>x==='directory').length;document.querySelector('#directoryRefresh').click()});
  await pg.waitForFunction(()=>window.calls.filter(x=>x==='directory').length>window.directoryBefore);await pg.waitForFunction(()=>document.querySelector('#directoryRefresh').disabled===false);

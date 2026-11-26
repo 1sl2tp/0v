@@ -21,6 +21,8 @@ jobs:
       - name: Install browser test tools
         run: |
           npm install --no-save --no-package-lock playwright
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium webkit
       - name: Verify API 1–7 on real Chromium
         run: node audit-api-browser.cjs
+      - name: Verify live mobile jump on WebKit
+        run: node audit-api-browser.cjs --webkit-tail
