@@ -95,3 +95,5 @@ L08 v13.189 (before release): separate nonbill, wrong account, uncertain and tar
 L08 / v13.190: stable bill identifiers and exact UUID copy for review feedback.
 
 L08 / v13.191: latest saved OCR review result becomes primary audit display; original OCR expandable. Full CI and Pages pending.
+
+L08 / v13.192: standalone Bill foreground/heartbeat refresh and current data timestamp; pending CI/Pages.
