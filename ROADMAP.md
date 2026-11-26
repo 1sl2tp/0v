@@ -83,3 +83,5 @@ L08 / v13.185: historical transaction date display and explicit Vietnamese mixed
 L08: legacy sender-debit display-only recovery candidate, DB fixture pending; no automatic collection or historic batch.
 
 L08 / v13.186 E1: unified admin bill audit workspace, sort/filter/search, per-field stored evidence and original image on demand. CI/backend/device pending; batch isolated re-OCR separate, no collection.
+
+L08 / v13.187: photo + original OCR, field-level explicit correction/not present, persistent review notes and progress. Full CI/backend/device pending. Not financial approval.

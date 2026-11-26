@@ -33,6 +33,7 @@ GRANT EXECUTE ON FUNCTION public.v0_admin_media(uuid) TO authenticated;
 \ir ../../references/0v-admin-media-bill.sql
 ALTER TABLE public.chat_bank_bill_receipts ADD COLUMN reason text;
 \ir ../../references/0v-admin-bill-audit.sql
+\ir ../../references/0v-admin-bill-audit-annotations.sql
 INSERT INTO public.v21_accounts(id,auth_user_id,role) VALUES
 ('00000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','admin'),
 ('00000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','user'),
@@ -84,6 +85,15 @@ BEGIN
  IF (result->>'total')::int<>7 OR jsonb_array_length(result->'rows')<>7 THEN RAISE EXCEPTION 'audit scoped count'; END IF;
  IF result::text LIKE '%never-return%' OR EXISTS (SELECT 1 FROM jsonb_array_elements(result->'rows') x WHERE x ? 'raw_read' OR x ? 'ledger_id') THEN RAISE EXCEPTION 'audit exposed internal fields'; END IF;
  IF NOT EXISTS (SELECT 1 FROM jsonb_array_elements(result->'rows') x WHERE x->>'status'='non_bill') THEN RAISE EXCEPTION 'audit excludes nonbill'; END IF;
+ a:=(SELECT x FROM jsonb_array_elements(result->'rows') x WHERE x->>'asset_id'='50000000-0000-0000-0000-000000000001');
+ IF a->>'review_state' IS DISTINCT FROM 'pending' THEN RAISE EXCEPTION 'initial review state'; END IF;
+ PERFORM public.v0_save_bill_audit_annotation((a->>'id')::uuid,a->>'raw_hash',0,'needs_fix','{"account_raw":"1234567890123","clock":null}','fixture annotation');
+ BEGIN PERFORM public.v0_save_bill_audit_annotation((a->>'id')::uuid,a->>'raw_hash',0,'checked','{}','stale'); RAISE EXCEPTION 'stale annotation allowed'; EXCEPTION WHEN serialization_failure THEN NULL; END;
+ BEGIN PERFORM public.v0_save_bill_audit_annotation((a->>'id')::uuid,repeat('0',32),1,'checked','{}','stale OCR'); RAISE EXCEPTION 'stale OCR allowed'; EXCEPTION WHEN serialization_failure THEN NULL; END;
+ result:=public.v0_admin_bill_audit();
+ a:=(SELECT x FROM jsonb_array_elements(result->'rows') x WHERE x->>'asset_id'='50000000-0000-0000-0000-000000000001');
+ IF a->>'review_state' IS DISTINCT FROM 'needs_fix' OR a->'corrections'->>'account_raw' IS DISTINCT FROM '1234567890123' OR a->>'account_raw' IS DISTINCT FROM '290118199999' OR a->>'review_revision' IS DISTINCT FROM '1' THEN RAISE EXCEPTION 'annotation isolation'; END IF;
+ IF has_table_privilege(current_user,'v0_private.bill_audit_annotations','SELECT') OR has_table_privilege(current_user,'v0_private.bill_audit_annotations','INSERT') THEN RAISE EXCEPTION 'annotation table access'; END IF;
  result:=public.v0_admin_media('30000000-0000-0000-0000-000000000001');
  IF jsonb_array_length(result->'assets')<>10 THEN RAISE EXCEPTION 'asset count'; END IF;
  a:=result->'assets'->0->'bill_receipt';
@@ -110,6 +120,7 @@ BEGIN
  IF has_table_privilege(current_user,'v0_private.bill_account_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_account_review','INSERT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','SELECT') OR has_table_privilege(current_user,'v0_private.bill_memo_review','INSERT') OR has_table_privilege(current_user,'public.chat_bank_bill_receipts','SELECT') OR has_table_privilege(current_user,'public.taphoa_debt_ledger','SELECT') THEN RAISE EXCEPTION 'direct table access'; END IF;
 END $$;
 SELECT set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal1"}',true);
+DO $$ BEGIN BEGIN PERFORM public.v0_save_bill_audit_annotation('00000000-0000-0000-0000-000000000001',repeat('0',32),0,'checked','{}',''); RAISE EXCEPTION 'annotation aal1 allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
 DO $$ BEGIN BEGIN PERFORM public.v0_admin_bill_audit(); RAISE EXCEPTION 'audit aal1 allowed'; EXCEPTION WHEN insufficient_privilege THEN NULL; END; END $$;
 DO $$ BEGIN IF public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'aal1 exposed bill'; END IF; END $$;
 SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000002',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000002","aal":"aal2"}',true);

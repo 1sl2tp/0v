@@ -542,3 +542,5 @@ LIVE-BILL-LEGACY-DEBIT-01: admin_media returns recovered display-only amount_vnd
 LIVE-BILL-JOURNAL-MEMO-01: legacy admin_media review-only BIDV SMB-TkThe notification masks falsely inferred recipient fields while keeping memo and recovering explicit negative transaction amount for a matching printed date/clock. No collection authority.
 
 LIVE-BILL-AUDIT-WORKSPACE-01: v0_admin_bill_audit() -> {account_id,total,rows} read-only, max 1000, private AAL2 scope; BillAuditList.select derives sorting/filter/search, CardController and existing media loader render. No collection authority. Explicit missing data, account review separately.
+
+LIVE-BILL-AUDIT-ANNOTATION-01: audit read adds raw_hash/review_state/review_revision/corrections/review_note; v0_save_bill_audit_annotation accepts per-field string/null, note, state, revision and raw hash. BillAuditList filters progress; existing CardController.billPair and Media loader. Financially inert annotations.
