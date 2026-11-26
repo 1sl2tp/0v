@@ -248,3 +248,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 - L04 v13.229 E2: PR #215 CI 45856567686/45856567792 passed, merged a5e0549. v13.230 E1: user-reported jump arrow jitter prioritized over oversized read coverage; one scroll transaction; CI and native pending.
 
 - v13.230 #216: E1 test-only correction of closure scope, no runtime change; prior Chromium CI 45857578005 failed before one-write assertion. New CI pending.
+
+- L04 v13.231 E1: live uses shared READ-API-06 segment coverage; static pure test passed, CI pending; server prefix remains authoritative. v13.230 E3 Pages 45858620412 success, E4 pending.
