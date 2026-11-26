@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.199)
+## 00. Chỉ mục rule đang có hiệu lực (v13.200)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1500,3 +1500,11 @@ Supersedes stored-result and bank-group presentation in standalone only. Existin
 
 ## v13.199 — LIVE-BILL-LOCAL-PRINT-01
 Standalone only, explicit one-image classification using existing authenticated storage download and pinned BillOCREngineAPI Tesseract worker, local canvas, no Gemini request, no automatic batch, no writes. OCR confidence and printed-text transfer context are heuristic, not handwriting proof. Require visible 4–6 trailing nines in recipient-labelled account or bare account with transfer heading, no fabricated digits; sender/memo/reference/trace excluded. Confident readable text without transfer context/nines may be nonbill; otherwise unclassified. Results held only in authenticated page memory and cleared at logout/refresh; read timestamp is actual completion. No use of old OCR. Original stored bytes unchanged. Integrated audit/keyboard unchanged. User explicitly requests local OCR; this is not the external AI batch pathway.
+
+
+## v13.200 — LIVE-BILL-AUTO-LOCAL-01
+User override of single-image start: after successful standalone audit fetch automatically enqueue all loaded eligible image metadata, independent of current filter or page. One worker per scan, sequential, no old OCR, no external AI or financial writes. Attempted failures remain unclassified; image errors continue, worker errors pause, explicit resume, manual reread after scan, hidden tab pauses after current image, logout invalidates scope. Progress is actual attempts and successful reads; redraw every three, preserve scroll. Session memory only; no cross-F5 persistence; no claim of handwriting accuracy. Integrated audit and keyboard unchanged.
+
+
+## v13.200 — LIVE-BILL-CLASSICAL-01 (user override before release)
+No generative AI, neural OCR/LSTM, or neural image classification in new Bill reading. Supersedes BANK-ENGINE-01/05 and LIVE-BILL-LOCAL-PRINT-01 only on OCR OEM and classification: pinned Tesseract.js 6.0.1 uses OEM 0, legacyCore/legacyLang true, cache none, no fallback. Legacy is a traditional trained/adaptive character classifier, not an untrained algorithm. Require actual transaction structure plus unique recipient-labelled suffix, support inline label without colon; no bare digits accepted, no sender/memo/code inference. Clear wrong account excluded from target bill group with reason; product/order positive lexical cues only, not visual or handwriting classification. Sparse, blurred, uncertain or conflicting input remains unclassified. No AI, old OCR, DB or collection write. Existing CDN dependency and real Vietnamese Legacy initialization unverified; no claim of new self-hosting or private-image network audit. Session-only as before. Source: https://github.com/naptha/tesseract.js/blob/v6.0.1/src/createWorker.js and src/worker-script/index.js, browser/getCore.js; https://github.com/tesseract-ocr/tessdoc/blob/main/Data-Files.md. Future classical image geometry study pending.
