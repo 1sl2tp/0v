@@ -94,6 +94,9 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.locator('#currentAvatar[data-avatar-state=image]').waitFor({state:'visible'});
  assert.equal(await pg.getByRole('button',{name:'Thêm ảnh hoặc tệp',exact:true}).isVisible(),true);assert.equal(await pg.locator('#composer[data-input-parent=chat]').count(),1);assert.equal(await pg.locator('[data-live-message-id=m][data-live-content=mixed]').count(),1);assert.equal(await pg.locator('[data-draft-media-picker]').count(),1);
  assert.equal(await pg.locator('#app').getAttribute('data-keyboard-owner'),'KeyboardController');
+ await pg.waitForFunction(()=>!document.querySelector('#composer').inert);
+ assert(await pg.evaluate(()=>{const d=document.querySelector('#composer textarea'),m=document.querySelector('#messages'),h=document.querySelector('.conversation>.panel-head').getBoundingClientRect(),f=document.querySelector('.composer-frame').getBoundingClientRect(),r=m.getBoundingClientRect(),x=r.left+3;return document.activeElement!==d&&getComputedStyle(m).clipPath!=='none'&&!m.contains(document.elementFromPoint(x,h.bottom-2))&&!m.contains(document.elementFromPoint(x,f.top+2))}));
+
  await pg.getByLabel('Nội dung tin nhắn',{exact:true}).fill('bb');await pg.waitForFunction(()=>document.querySelector('#composer').dataset.mode==='single');assert(await pg.locator('#composer').evaluate(e=>Math.abs(e.querySelector('#mediaBtn').getBoundingClientRect().top-e.querySelector('.send').getBoundingClientRect().top)<=1));
  await pg.getByLabel('Nội dung tin nhắn',{exact:true}).fill('Dòng 1\nDòng 2\nDòng 3\nDòng 4');await pg.waitForFunction(()=>document.querySelector('#composer').dataset.mode==='expanded');
  const originalDraft=await pg.getByLabel('Nội dung tin nhắn',{exact:true}).inputValue();

@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.224)
+## 00. Chỉ mục rule đang có hiệu lực (v13.225)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -13,7 +13,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Typography | CHAT-TYPE-219-01–02, BUBBLE-PALETTE-01–03, CHAT-RHYTHM-01–04 (turn spacing and latest projection), LATEST-MESSAGE-01–04 (message projection/edge), CONTENT-PRESENTATION-01–04 (thread/preview visual, supersedes CONTENT-AB-01 paint), CONTENT-FORMAT-01–04 (document display), TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
-| Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
+| Scroll | LIVE-THREAD-BOUNDARY-01, KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
 | Material / edge | SURFACE-MOBILE-OPTICS-01–02, SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung), SURFACE-API-01–05 | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
 | Bill layout | LIVE-BILL-PAIR-01, GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
@@ -1700,3 +1700,7 @@ CI 45810507799 reported left content 2px vs right 493px despite equal width. Bas
 
 ### LIVE-BILL-PAIR-01 — Single-image sizing cascade
 Exact head 28234c6: API CI 45811305172 failed at photoHeight>0 after frame equality assertions passed; DB fixture 45811305166 passed. Existing single-gallery selectors have higher specificity than earlier bill image override and impose intrinsic auto height. Within the existing wide live bill container, explicitly size the single tile and contained image to the positioned gallery frame; no new owner, no !important, narrow layout unchanged. Fixture now supplies a real local SVG and intrinsic ratio; retains original assertions and adds image-to-frame height equality. Re-read Astryx Stack blob c56d72759ad2f6f86102228e22c3123530b32894 and MUI ImageListItem blob aeac6e4e7949b187ddad1815fc0bfff4973ba50c. No keyboard or production changes. Full CI and native Safari pending; no local full-repo audit.
+
+
+## v13.225 — LIVE-THREAD-BOUNDARY-01
+User reports contact-to-thread media jumps, unexpected composer activation and overlapping content. E0 source: partial text and final media can independently call Main.finishNavigation for the same epoch, final cold snapshot used preserve=false, and floating content viewport extends behind controls. E1 candidate: deduplicate live navigation settlement by room/epoch, preserve user scroll/follow state after first settlement, prevent independent media scroll write during navigation, make composer inert only during mobile route entry and release on settle/error/reset/route change. Use existing measured top and composer reserve to clip message paint/hit-testing (no extra viewport writer, no change to scroll padding or glass control geometry). Composer remains available for intentional focus after settlement. Existing KB-LOCK protected ranges byte-identical to v13.224. Sources re-read Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894, Adobe useSelectableCollection 739a9433b098c081ce872815f10fbc83ba07172c (focus separate from selection), MUI ImageListItem aeac6e4e7949b187ddad1815fc0bfff4973ba50c (frame sizing). Classic scripts parsed; added browser regression for unrequested focus and hit testing. Full CI/native iOS pending; no device reproduction of phantom focus, no claim cold media never shifts (server dimensions may be absent). No DB/finance/keyboard owner change. No intentional rule exception; source-only review not complete global runtime audit. Rollback prior main v13.224.
