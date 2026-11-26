@@ -639,3 +639,5 @@ Read AGENTS/RULES/COMPONENT-API/ROADMAP, Astryx Button and Adobe SelectionManage
 
 ## v13.203 no-repeat revision
 User reports repeated scanning; source confirms session-only maps lost on F5 and finally rescheduling, repeated card rebuilding and background metadata calls. Supersede with minimal account-scoped tab checkpoint, no raw account/text or bytes persisted, manual list refresh, explicit retry, preserved auth heartbeat and bounded cache. 8 scripts and browser/static audit syntax parsed; new reload regression added, CI not yet run. No guarantee across tabs or storage failure. No DB changes.
+
+- Additional same-tab explicit logout checkpoint purge; synthetic shared cache two concurrent reads + one reuse makes one download; clear forces a fresh request. 8 scripts parse. CI pending.

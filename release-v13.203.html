@@ -2652,7 +2652,7 @@ function mountLiveChat(root){
   }catch{if(scope===owner&&selected===id)setSendStatus('Chưa xác nhận gửi. Giữ nguyên nội dung và bấm Gửi để thử lại.')}
   finally{if(scope===owner){sending=false;updateComposer()}}
  }
- async function signout(){const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();try{const result=await client?.auth.signOut({scope:'local'});if(result?.error)throw result.error;show('guest');status.textContent='Đã đăng xuất.'}catch{bootStatus.textContent='Chưa xác nhận đăng xuất. Thử lại.';retryBoot.hidden=false}}
+ async function signout(){eraseBillProgress();const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();try{const result=await client?.auth.signOut({scope:'local'});if(result?.error)throw result.error;show('guest');status.textContent='Đã đăng xuất.'}catch{bootStatus.textContent='Chưa xác nhận đăng xuất. Thử lại.';retryBoot.hidden=false}}
  login.addEventListener('submit',e=>{e.preventDefault();void connect(true)});
  // Restore only this origin's authenticated admin session, never import a CHAT token.
  void connect(false);
