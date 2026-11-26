@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.209)
+## 00. Chỉ mục rule đang có hiệu lực (v13.210)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1546,3 +1546,6 @@ Observed 502 at 33494 ms on 2026-11-26 04:36:42 UTC with ai_timeout. Keep Gemini
 
 ## v13.209 — LIVE-BILL-AI-LITE-01
 Production Gemini Flash logs show two provider HTTP 200 responses at 67987 and 69784ms and one timeout at 75002ms. Switch only manual bill Vision to gemini-3.5-flash-lite, supported MINIMAL thinking, original image, same single-call budget and 75s deadline; no automatic retry, no financial writes. Google Gemini thinking documentation consulted (https://ai.google.dev/gemini-api/docs/thinking). During retry show current in-flight state rather than stale timeout; retain prior successful fields if new request fails and show latest failure. Backend deploy and real-image accuracy/latency must be checked separately from CI.
+
+## v13.210 — LIVE-BILL-VIETINBANK-LAYOUT-01
+User confirms BILL-BEB34B9E as VietinBank sender layout. On each explicit manual Vision request, first identify sending bank from app header/logo, not beneficiary bank, then apply relative layout only if VietinBank matches: amount center, small date/time/reference under amount, recipient name and account below arrow, right-aligned one/two-line memo ending before Xem thêm. Never copy transaction values or infer missing digits. Add editable sending_bank alongside six existing fields; old AI results may lack bank until reread. One model call, no auto scan, no financial mutation. This is prompt guidance, not model training. Synthetic fixture verifies display; accuracy on new real images pending.
