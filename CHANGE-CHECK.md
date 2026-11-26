@@ -761,3 +761,7 @@ User reports t7 remains lowercase. Existing regex protected all leading letter+n
 
 ### v13.219 keyboard regression release repair
 CI 45772176602 job 139747178700 failed width320 repeated draft tap (frame 60→108). Static audit and bank fixture passed; live synthetic login/menu/logout passed. Scope system-ui font to reading role; restore old global/input font. Cause is hypothesis, not yet proven. No change to assertions, protected code or keyboard metrics. Exact-head CI pending.
+
+
+### v13.219 Typography fixture correction
+CI 45772603604 job 139748560893 reached styled text assertions after prior 320px keyboard regression checks. Existing five formatted text samples still expected old 17px; update expectation to approved 16px/24px, keep exact count, role, weight, underline, italic and strike checks. No production HTML, snapshot, font or keyboard change. Full exact-head CI pending.
