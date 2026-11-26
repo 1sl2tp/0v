@@ -618,3 +618,6 @@ Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Card/Adobe SelectionMa
 
 ## v13.198 — user override before release: fresh-only
 LIVE-BILL-FRESH-ONLY-01. Standalone state stripped to six metadata keys from existing audit RPC; no legacy OCR rendering, bank grouping or searching; all unclassified, nonbill 0 (no new results). Existing integrated audit preserved. Eight inline scripts parse, synthetic isolation/search test passed. CI/Pages pending. No new OCR/API or database mutation; RPC still returns older fields before local projection.
+
+## v13.199 — standalone local print classifier
+Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Card/Adobe SelectionManager; existing Tesseract source/field labels inspected. LIVE-BILL-LOCAL-PRINT-01. 11 synthetic text cases and 8 inline scripts parse. No image sent to Gemini, no batch, no DB changes. OCR model assets load via existing pinned CDN worker; actual OCR accuracy, handwritten images, mobile device and Pages not verified. Results memory-only, F5 clears. CI pending.

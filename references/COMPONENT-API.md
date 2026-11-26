@@ -576,3 +576,6 @@ Pure display grouping based on stored audit_kind and sender-bank aliases, no OCR
 
 ## v13.198 — BillAuditList.imageOnly / imageOnlySelect
 Standalone ingress allowlist metadata only; search by image ID, sort by sent_at. No use of legacy fields. Bank-group helpers are dormant until an independently verified new-result source exists.
+
+## v13.199 — BillAuditList.printedClassification
+Pure OCR text classification with explicit recipient label from BillOCRFieldAPI.identify, numeric suffix, contextual printed-text proxy and confidence. Local single-image OCR reuses BillOCREngineAPI.loadDemo/demoFactory; single flight, bounded image size, session-only results. No verified handwriting classifier or production database persistence.
