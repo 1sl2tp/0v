@@ -671,3 +671,6 @@ Existing line/segments/create extended with tableAt/appendInline/status; semanti
 
 
 v13.216 follow-up: Contact.preview owns prefix cleanup; Message keeps date/time; visual rule hides them. ContentAPI owns dotted links. A/B paint updated, media and keyboard retained.
+
+
+v13.216 Message.describe/latest/hint/follow/markLatest: shared latest projection for text, attachments and mixed; type-independent tail, parent delegates actual scroll to ScrollController. Media sending live not implemented. CI/native pending.

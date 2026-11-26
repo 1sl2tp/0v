@@ -717,3 +717,7 @@ E0 API PR run 45766529230 / job 139728648984: audit-design.cjs line 356 extracti
 
 ### v13.216 — fix outgoing alignment specificity
 E0 PR run 45766905066 job 139729872121: static audit and snapshot success, Chromium six viewport matrix passed, line 458 outgoing align actual flow-start expected flex-end. Generic row selector has higher specificity than party B selector. Fix B selector to include same message slot, later wins; strengthen browser test with actual edge alignment. No changes to locked keyboard ranges, DB or old CHAT. Same pending release; CI/Pages/native pending.
+
+
+### v13.216 — shared latest-message parent + CI correction
+E0 run 45767434670 / job 139731631220 Chromium computed alignItems flow-end (browser alias for flex-end), after specificity correction. Accept equivalent aliases only while retaining exact physical left/right edge check. E1 extend existing Message parent describe/latest/hint/follow/markLatest; live text and received attachments share projection with fixture; no new RPC, no database/old CHAT, no fake media send. 10 policy cases and all inline syntax, four protected ranges exact; added static and Chromium marker assertion. Source receipts in LATEST-MESSAGE-04. Full Node/Chromium/Pages/native pending.
