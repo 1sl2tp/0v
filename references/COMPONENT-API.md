@@ -785,3 +785,6 @@ ScrollController.beginManual/manualScroll/scheduleManualSettle tracks same-exten
 MediaController.fixedRatios/fixedGallery/fixedImageState reserve display geometry from trusted metadata/default and update stable slot contents only. Existing cache and deferred paint ownership retained; bill/audit path unchanged. S2b and CI/device pending.
 
 - S2b candidate: mediaImageGroup delegates single live bill to MediaController.fixedGallery/fixedImageState; Layout retains paired frame at wide width and fixed portrait reservation at narrow width. Audit path remains separate.
+
+## v13.238 S3a candidate
+ScrollController.beginProjection(event,el) / finishProjection(tx,el,alias) owns passive live projection with room/epoch guard and reading anchor; explicitLocalSend owns send intent. ACK alias maps pending to confirmed ID. Cache replay and Realtime do not acquire follow. Browser/native pending.
