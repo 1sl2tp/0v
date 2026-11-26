@@ -644,3 +644,6 @@ User reports repeated scanning; source confirms session-only maps lost on F5 and
 
 ## v13.204 manual override
 User explicitly rejects bulk filtering. Main v13.203 used as clean base; failing unreleased batch code replaced. Read AGENTS/RULES/COMPONENT-API/ROADMAP and Astryx/Adobe pinned sources. Manual single OCR, raw text/edit/confirm, minimal label template, no automatic scan. 8 scripts parse; browser and static audit syntax checked, CI pending. No production data writes; session-only full text; local structural template hint not automatic recognition.
+
+## v13.205 six-field review
+E0 user requests six fields on standalone page. v13.204 both CI checks passed and merged. E1 reuse existing OCR parser, no new OCR engine or UI owner; add CardController rows and browser assertions. CI, deployment and real-image reading pending. No backend or ledger change. Rollback v13.204.

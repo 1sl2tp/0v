@@ -110,6 +110,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls||0),0);
  const review=pg.locator('[data-simple-bill-review]').first();await review.getByRole('button',{name:'Đọc ảnh',exact:true}).click();
  await review.getByLabel('Sửa nội dung OCR').waitFor();assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls),1);
+ for(const label of ['Số tiền','Ngày','Giờ','Tên TK nhận','STK nhận','Nội dung'])assert.ok(await review.getByText(label,{exact:true}).count());
+ assert.ok(await review.getByText('100000',{exact:true}).count());assert.ok(await review.getByText('123459999',{exact:true}).count());
  await review.getByLabel('Loại ảnh xác minh').selectOption('bill');await review.getByRole('button',{name:'✓ Xác minh và lưu',exact:true}).click();
  await review.getByRole('button',{name:'✓ Đã lưu xác minh',exact:true}).waitFor();
  await pg.reload();await pg.locator('[data-simple-bill-review]').first().getByRole('button',{name:'✓ Đã lưu xác minh',exact:true}).waitFor();assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls||0),0);
