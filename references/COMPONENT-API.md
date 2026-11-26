@@ -794,3 +794,6 @@ ScrollController.normalizeReadingAnchor/anchorCandidates bounds persisted neighb
 
 ## S4 device diagnostic v13.240 candidate
 mountScrollS4 reads ScrollController edge/visualEdge/intentState/writeSerial only; no layout or scroll writes. Local report with bounded sampling, settled 12 frames, no content or IDs; explicit opt-in query and dispose.
+
+## S3d v13.241 candidate
+LiveChatSnapshotPolicy.signature excludes only top-level dimension metadata; MediaController fixedRatios accepts dimensions at mount. Bill projection reuses media and prior expansion, ScrollController owns position.

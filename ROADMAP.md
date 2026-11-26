@@ -284,3 +284,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 - S4 v13.240 candidate: opt-in device diagnostic implemented; exact CI and native device evidence pending. Reports are local, no messages/IDs exported. Use 3 cycles per scenario.
 
 - S4 retest: scoped probe and utility entry, actual query test, native evidence pending.
+
+- S3d v13.241 candidate: late dimensional metadata neutral projection; preserve bill expansion/media and anchor on receipt update. Native and CI pending. Full media inventory arrival and class change require separate acceptance, not fixed by this patch.
