@@ -484,6 +484,37 @@ html[data-floating="1"] #app>[data-ui-slot~="conversation"]>.composer-frame::bef
 @media(max-width:767px) and (prefers-reduced-transparency:reduce),(max-width:767px) and (prefers-contrast:more){
  html[data-floating="1"] #app>[data-ui-slot~="conversation"]>[data-ui-slot~="panel-head"]::before{background:linear-gradient(to bottom,var(--paper) 0%,var(--paper) 75%,transparent)}
 }
+/* Surface mobile optics: paint-only extension of the locked Surface Parent.
+   One rim, no extra DOM, no glass on the composer's child actions. */
+@media (max-width:767px) and (hover:none) and (pointer:coarse),(max-width:767px) and (display-mode:standalone){
+ html[data-floating="1"]{
+  --surface-glass-tint:linear-gradient(155deg,rgba(255,255,255,.97),rgba(255,255,255,.88) 62%,rgba(248,248,248,.93));
+  --surface-glass-edge:rgba(0,0,0,.13);
+  --surface-glass-focus:rgba(0,0,0,.21);
+  --surface-glass-elevation:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -1px 1px rgba(0,0,0,.035),0 2px 8px rgba(0,0,0,.065);
+  --surface-glass-active:rgba(237,237,237,.96);
+ }
+ html[data-floating="1"] #app .panel-head>button[data-glass=g1]:not([data-upstream-glass=ready]){
+  --paint-material:var(--surface-glass-tint);--paint-edge:var(--surface-glass-edge);
+  --paint-elevation:var(--surface-glass-elevation);--paint-profile:glass-tint;
+ }
+ html[data-floating="1"] #app .panel-head>button[data-glass=g1]:not([data-upstream-glass=ready]):active:not(:disabled){--paint-material:var(--surface-glass-active)}
+ html[data-floating="1"] #app .composer[data-glass=g1]:focus-within{--paint-material:var(--surface-glass-tint)}
+ html[data-floating="1"] #app>[data-ui-slot~="conversation"] #jumpBottom::before{
+  background:var(--surface-glass-tint);border-color:var(--surface-glass-edge);box-shadow:var(--surface-glass-elevation);
+ }
+ html[data-floating="1"] #app>[data-ui-slot~="conversation"] #jumpBottom:active:not(:disabled)::before{background:var(--surface-glass-active)}
+ @supports ((-webkit-backdrop-filter:blur(12px)) or (backdrop-filter:blur(12px))){
+  html[data-floating="1"] #app:not([data-keyboard="true"]) .panel-head>button[data-glass=g1]:not([data-upstream-glass=ready]){
+   --paint-filter:blur(12px);--paint-profile:glass-blur;
+  }
+ }
+ @media(prefers-contrast:more),(prefers-reduced-transparency:reduce),(forced-colors:active){
+  html[data-floating="1"] #app>[data-ui-slot~="conversation"] #jumpBottom::before{
+   background:var(--paper);border-color:var(--surface-edge);box-shadow:none;
+  }
+ }
+}
 /* Match the page canvas to the app surface; never enlarge beyond WebKit's viewport.
    Existing safe-area and keyboard geometry owners remain unchanged. */
 @media(max-width:767px){

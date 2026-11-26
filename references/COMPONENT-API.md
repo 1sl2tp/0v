@@ -683,3 +683,7 @@ v13.217 follow-up: explicit ContentAPI links marked data-content-link; numeric t
 
 
 CONTENT-FORMAT-06: one dotted underline paint for Typography and ContentAPI; native detector links styled dotted as well. No custom conversion of ordinary numbers.
+
+
+## v13.217 mobile glass optics
+Surface.bind G1 consumers share mobile floating tint/edge/highlight/elevation; header and jump face, composer parent only (no nested glass). Header blur supported and keyboard closed, composer default remains static. Protected geometry and focus unchanged; desktop and accessibility fallback retained. See SURFACE-MOBILE-OPTICS.

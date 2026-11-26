@@ -733,3 +733,7 @@ E0 CI 45768740404 failed at audit-api-browser.cjs:131 because extracted ChatRead
 
 ### v13.217 — dotted underline only
 User clarified no solid underline. Reuse Typography decoration owner for semantic underline and explicit links; remove solid hover and allow Safari native detection with dotted scoped fallback. No automatic custom numeric linking. Inline syntax and no-solid CSS scan passed; browser style assertion added; CI/native pending. No changes to keyboard or DB.
+
+
+## v13.217 — mobile glass follow-up
+E0 source audit: existing G1 has flat tint and header elevation suppressed; user requests screenshot-like optics on web mobile. E1 shared Surface paint profile extension, one rim, no keyboard/composer geometry changes, exact four protected ranges unchanged versus PR head; mobile contrast and desktop regression added. Astryx pinned tokens and Apple WWDC25 219 read; CSS approximation, not native lensing. Same unreleased PR #199; CI, full audit, Pages and physical Safari pending. No database changes.

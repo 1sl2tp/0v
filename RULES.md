@@ -14,7 +14,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
-| Material / edge | SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung), SURFACE-API-01–05 | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
+| Material / edge | SURFACE-MOBILE-OPTICS-01–02, SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung), SURFACE-API-01–05 | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
 | Bill layout | GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
 | Geometry / Layout | GEO-API-01–08, GEO-ADAPT-03, DESKTOP-04, BOTTOM-04, COMP-04 | phép đo chỉ hợp với composer một hàng |
@@ -1620,3 +1620,8 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 - CHAT-RHYTHM-05 / CONTENT-FORMAT-05: ordinary numeric strings (money, account, date/time, product codes) remain plain display text; no implicit underline. Safari telephone=no at entry, fallback for x-apple-data-detectors. Only explicit ContentAPI links receive dotted link paint; explicit underline remains solid. Source Apple Phone Links documentation. Native Safari acceptance pending.
 
 - CONTENT-FORMAT-06: User correction supersedes CONTENT-FORMAT-05's detector suppression and solid underline. Typography underline, ContentAPI u, explicit links and Safari-detected links all use dotted 1px underline, .23em offset, inherited ink; hover stays dotted. Ordinary numeric text is not artificially converted into links by 0v. Native Safari verification pending.
+
+
+## SURFACE-MOBILE-OPTICS — v13.217
+- SURFACE-MOBILE-OPTICS-01: Web mobile touch/standalone <=767px floating: Surface uses shared gradient tint, one physical 1px edge, inset highlight and mild elevation for G1 header and composer; jump face consumes same tokens. Child composer controls remain unlayered; desktop, input geometry and KB-LOCK unchanged. Header blur 12px only where supported and keyboard is not open; default composer remains no blur (existing explicit liveglass experiment is not the default). Accessibility flat/contrast/forced colors retained. No claim of native refraction.
+- SURFACE-MOBILE-OPTICS-02: Read pinned Astryx tokens.stylex.ts blob 7ca09a989079c26627462bfe50abbcb08ec1328c (semantic surface and contrast) and Apple WWDC25 Meet Liquid Glass https://developer.apple.com/videos/play/wwdc2025/219/ (functional layer, no stacked glass, readable tint and accessibility). Static locked ranges compared before commit; browser mobile/desktop/reduced contrast regression and native Safari pending.

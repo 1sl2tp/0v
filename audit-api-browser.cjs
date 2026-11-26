@@ -5,6 +5,15 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try{
+ // Surface mobile optics: real computed CSS, no live data.
+ {
+ const p=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+ await p.goto(url+'?floating=1&kbmode=light');
+ const read=()=>p.evaluate(()=>{const composer=document.querySelector('.composer[data-glass=g1]'),header=document.querySelector('.conversation>.panel-head>button[data-glass=g1]'),jump=document.querySelector('#jumpBottom'),style=e=>getComputedStyle(e);return {composer:style(composer).getPropertyValue('--paint-profile').trim(),composerImage:style(composer).backgroundImage,composerBlur:style(composer).backdropFilter,headerImage:style(header).backgroundImage,headerShadow:style(header).boxShadow,jumpImage:getComputedStyle(jump,'::before').backgroundImage,composerBorder:style(composer).borderTopWidth}});
+ const m=await read();assert.equal(m.composer,'glass-tint');assert(m.composerImage.includes('linear-gradient'));assert.equal(m.composerBlur,'none');assert(m.headerImage.includes('linear-gradient'));assert.notEqual(m.headerShadow,'none');assert(m.jumpImage.includes('linear-gradient'));assert.equal(m.composerBorder,'1px');
+ await p.emulateMedia({contrast:'more'});const a=await read();assert.equal(a.composer,'accessible-flat');assert.equal(a.composerImage,'none');assert.equal(a.jumpImage,'none');await p.close();
+ const d=await browser.newPage({viewport:{width:1280,height:800}});await d.goto(url+'?floating=0&kbmode=light');assert.equal(await d.locator('.composer[data-glass=g1]').evaluate(e=>getComputedStyle(e).getPropertyValue('--paint-profile').trim()),'flat');await d.close();
+ }
  // Local printed orientation regression (synthetic, no customer data).
  {
  const p=await browser.newPage();await p.goto(url+'?kbmode=light');const method=require('node:fs').readFileSync('index.html','utf8').split(' printedOrientation(source){')[1].split(' clampZoom(value){')[0];
