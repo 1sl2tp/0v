@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.213)
+## 00. Chỉ mục rule đang có hiệu lực (v13.214)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1564,3 +1564,6 @@ User requests analysis of all registered bank examples and rules by region. Prio
 
 ### Individual sample review register
 See references/BILL-SAMPLE-REGIONS.md for the ten separate sample candidates and evidence limitations. Do not promote legacy metadata to verified coordinates.
+
+## v13.214 — LIVE-THREAD-BILL-AUTO-01 (0v only)
+User corrects scope: /bill.html is the manual lab; live conversation must read automatically next to original image. Reuse the same v0-bill-vision-manual prompt/region rules through an exact conversation+asset+message request. Server verifies user, signed AAL2 claims, active admin conversation scope, inbound sender and exact media; no client storage key, service role, grants or writes. Previously recognized bill candidates plus single incoming image in last 48h become eligible when visible in opened 0v thread; old unrelated galleries and outgoing images unchanged. Sequential one-request-at-a-time queue, same image on 429 only, >=60s or Retry-After, max three retries; successful results cached in same tab/account (up to 100), cleared on signout. Fresh fields never backfilled from old OCR; only existing independent ledger state is retained, no financial writes or CHAT changes. Unknown/nonbill stays ordinary gallery. Image may be rotated and Techcombank Tới/Đến is a label, not part of recipient name. Scope change stops retries; when page closed/suspended no guaranteed background run. Existing old financial status is not proof of fresh OCR accuracy. No durable server queue or real-time delivery added; this is automatic foreground reading. Sources: https://supabase.com/docs/reference/javascript/auth-getclaims and existing v0_admin_read/v0_admin_media SQL; https://ai.google.dev/gemini-api/docs/rate-limits. E1 policy/syntax fixtures only; full CI, release, Edge deployment and physical/real-image verification pending. No keyboard or other repo change. Based on pending region PR #195, not competing with its version.
