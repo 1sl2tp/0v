@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#f8f8f8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -756,8 +757,8 @@ html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][dat
 [data-content-parent] li[data-content-check=done]>span:first-child{color:#28643a}
 [data-content-parent] blockquote{margin:var(--gap-sm) 0;padding-inline-start:var(--gap-md);border-inline-start:3px solid var(--line);color:var(--muted)}
 [data-content-parent] strong{font-weight:var(--weight-semibold)}
-[data-content-parent] u,[data-content-parent] a{text-decoration:underline;text-underline-offset:.16em}
-[data-content-parent] a{color:var(--content-link)}
+[data-content-parent] u,[data-content-parent] a[data-content-link]{text-decoration:underline;text-underline-offset:.16em}
+[data-content-parent] a[data-content-link]{color:var(--content-link)}
 [data-content-parent] mark{background:var(--content-mark-bg);color:var(--content-mark-ink);border-radius:3px;padding-inline:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 [data-content-parent] code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.88em;background:var(--content-code-bg);border-radius:4px;padding:2px 4px}
 [data-content-parent] pre{margin-block:var(--gap-sm);padding:var(--gap-md);border:1px solid var(--line);border-radius:var(--control-radius);background:var(--content-code-bg);white-space:pre-wrap;overflow-wrap:anywhere}
@@ -792,12 +793,14 @@ html[data-floating] #app>[data-ui-slot~="conversation"] [data-ui-slot~="messages
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-content-continuation="true"]{margin-block-start:0;padding-block-start:0}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-content-time-shared="true"]{padding-block-end:0}
 [data-content-parent] u{text-decoration:underline solid;text-underline-offset:.16em}
-[data-content-parent] a{color:inherit;text-decoration-line:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:.23em}
-[data-content-parent] a::after{content:" ↗" / "";display:inline;font-size:.84em;text-decoration:none}
-[data-content-parent] a:focus-visible{outline:2px solid var(--control-focus);outline-offset:2px}
-[data-content-parent] a:hover{text-decoration-style:solid}
+[data-content-parent] a[data-content-link]{color:inherit;text-decoration-line:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:.23em}
+[data-content-parent] a[data-content-link]::after{content:" ↗" / "";display:inline;font-size:.84em;text-decoration:none}
+[data-content-parent] a[data-content-link]:focus-visible{outline:2px solid var(--control-focus);outline-offset:2px}
+[data-content-parent] a[data-content-link]:hover{text-decoration-style:solid}
 
 
+/* Safari data-detector fallback; explicit links and underline remain semantic. */
+#app a[x-apple-data-detectors]:not([data-content-link]){color:inherit!important;font:inherit!important;text-decoration:none!important}
 /* CHAT-RHYTHM: parent turn spacing independent of content type. */
 #app>[data-ui-slot~="conversation"] [data-ui-slot~="messages"]{--thread-base-gap:var(--gap-sm);--thread-run-gap:var(--gap-xs);--thread-turn-gap:var(--gap-md);--thread-break-gap:var(--gap-lg);row-gap:var(--thread-base-gap)}
 @media(max-width:767px){html[data-floating="1"] #app>[data-ui-slot~="conversation"] [data-ui-slot~="messages"]{--thread-base-gap:var(--app-message-gap);row-gap:var(--thread-base-gap)}}
@@ -2155,7 +2158,7 @@ const ContentAPI=Object.freeze({
   const align=rule.map(x=>x.startsWith(':')&&x.endsWith(':')?'center':x.endsWith(':')?'end':'start'),rows=[];let end=i+2;
   while(end<lines.length){const row=this.cells(lines[end]);if(!row||row.length!==head.length)break;rows.push(row);end++}return {head,align,rows,end}
  },
- appendInline(el,raw){for(const p of this.segments(raw)){if(!p.kind){el.append(document.createTextNode(p.text));continue}const node=document.createElement(p.kind);node.textContent=p.text;if(p.kind==='a'){try{const url=new URL(p.href);if(!['http:','https:'].includes(url.protocol))throw Error('unsafe');node.href=url.href;node.target='_blank';node.rel='noopener noreferrer'}catch{el.append(document.createTextNode(p.text));continue}}el.append(node)}},
+ appendInline(el,raw){for(const p of this.segments(raw)){if(!p.kind){el.append(document.createTextNode(p.text));continue}const node=document.createElement(p.kind);node.textContent=p.text;if(p.kind==='a'){try{const url=new URL(p.href);if(!['http:','https:'].includes(url.protocol))throw Error('unsafe');node.href=url.href;node.dataset.contentLink='true';node.target='_blank';node.rel='noopener noreferrer'}catch{el.append(document.createTextNode(p.text));continue}}el.append(node)}},
  status(el,value,tone='neutral'){if(!['neutral','loading','success','warning','error'].includes(tone))throw new TypeError('Unknown content state');el.dataset.contentStatus=tone;el.setAttribute('role','status');el.setAttribute('aria-busy',String(tone==='loading'));el.textContent=String(value||'');el.hidden=!value;return el},
  create(text){
   const source=canonicalText(text),root=View.text({tag:'div',name:'bubble',role:'chat',text:''});root.dataset.contentParent='true';

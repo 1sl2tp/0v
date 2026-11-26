@@ -677,3 +677,6 @@ v13.216 Message.describe/latest/hint/follow/markLatest: shared latest projection
 
 
 v13.217 Message.rhythm/newIncoming and LiveChatSnapshotPolicy.group/unread extend existing parents; Main/ScrollController unchanged. Deferred wake and fresh snapshot only.
+
+
+v13.217 follow-up: explicit ContentAPI links marked data-content-link; numeric text not automatically decorated; Safari detector fallback and actual parent dependency in CI.

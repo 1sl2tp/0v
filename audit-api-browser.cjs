@@ -128,13 +128,13 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  // CHAT read boundary: test actual source via injected synthetic host, never network.
  {
  const html=require('node:fs').readFileSync('index.html','utf8'),start=html.indexOf('const ChatReadAPI=(()=>{'),end=html.indexOf('/* MainDataController',start);
- const API=new Function(html.slice(start,end)+';return ChatReadAPI')();
+ const policy=html.slice(html.indexOf('const LiveChatSnapshotPolicy='),start);const API=new Function(policy+html.slice(start,end)+';return ChatReadAPI')();
  let state={accountId:'a',epoch:'e1',approved:true},calls=0,rows=[{id:'c',display_name:'Khách',conversation_id:'r',preview_text:'<b>text</b>'},{id:'empty',display_name:'Trống',conversation_id:null},{id:'locked',display_name:'Ẩn',locked_at:'yes'}],reply=[{id:'m',conversation_id:'r',sender_account_id:'a',body:'<script>text</script>',created_at:'2026-11-25T18:00:00Z'}];
  let resolve=null;
  const api=API.create({session:()=>state,readContacts:async()=>rows,readThread:async()=>{calls++;return resolve?await new Promise(r=>{resolve=r}):reply}});
  assert.deepEqual(Object.keys(api),['directory','thread','dispose']);
  await assert.rejects(api.thread('c'),/authorized directory/);assert.equal(calls,0);
- const dir=await api.directory();assert.deepEqual(dir.map(r=>r.id),['c','empty']);assert.equal(dir[0].preview,'<b>text</b>');assert(!Object.hasOwn(dir[0],'avatar_path'));
+ const dir=await api.directory();assert.deepEqual(dir.map(r=>r.id),['c','empty']);assert.equal(dir[0].preview,'<b>text</b>');assert(!Object.hasOwn(dir[0],'avatar_path'));rows=[{...rows[0],unread_count:3,has_unread:false},...rows.slice(1)];const counted=await api.directory();assert.equal(counted[0].unreadCount,3);assert.equal(counted[0].unread,true);
  assert.deepEqual(await api.thread('empty'),[]);assert.equal(calls,0);
  const msgs=await api.thread('c');assert.equal(msgs[0].mine,true);assert.equal(msgs[0].text,'<script>text</script>');assert.equal(msgs[0].time,'01:00');
  reply=[{...reply[0],conversation_id:'foreign'}];await assert.rejects(api.thread('c'),/scope/);

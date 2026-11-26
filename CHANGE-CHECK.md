@@ -725,3 +725,7 @@ E0 run 45767434670 / job 139731631220 Chromium computed alignItems flow-end (bro
 
 ## v13.217 — chat rhythm and live latest follow-up
 E0 screenshots v13.216: uniform broad gap, jump lacks count, group/unread uncertain. E1 Message parent turn spacing, unseen incoming IDs, deferred sync, fresh snapshot only, normalized groups and numeric unread. 13 policy assertions, inline syntax and four protected ranges checked. Added static/Chromium tests. Source receipts CHAT-RHYTHM-04; reviewed AGENTS/RULES/COMPONENT-API/ROADMAP. No DB/CHAT/media-send change. CI/Pages/device pending.
+
+
+### v13.217 — CI dependency and Safari number decoration
+E0 CI 45768740404 failed at audit-api-browser.cjs:131 because extracted ChatReadAPI now depends on LiveChatSnapshotPolicy; include actual parent source in test, not a mock or weakened assertion. Numeric unread precedence rechecked in synthetic host. User reports underline with numbers: interpreted as unwanted automatic Safari data detection; Apple documented telephone=no (https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html). Add global meta, scoped detected-link fallback; explicit ContentAPI http(s) links marked and retain dotted decoration, explicit u solid. Five ordinary numeric cases plus two explicit format cases and inline syntax checked; actual Safari/PWA behavior not yet tested. No keyboard, DB or old CHAT changes.
