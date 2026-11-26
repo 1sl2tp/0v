@@ -82,6 +82,10 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.getByRole('button',{name:'Xác nhận mã',exact:true}).click();
  await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).waitFor({state:'visible'});
  await pg.locator('#contacts [data-id=c] [data-avatar-state=image]').waitFor({state:'visible'});
+ // Live directory idempotent refresh: no avatar/row recreation on equal payload.
+ await pg.evaluate(()=>{window.stableContact=document.querySelector('#contacts [data-id=c]');window.stableAvatar=window.stableContact.querySelector('img');window.stableName=window.stableContact.querySelector('.identity b');window.stableStamp=window.stableContact.querySelector('.time');window.directoryBefore=window.calls.filter(x=>x==='directory').length;document.querySelector('#directoryRefresh').click()});
+ await pg.waitForFunction(()=>window.calls.filter(x=>x==='directory').length>window.directoryBefore);await pg.waitForFunction(()=>document.querySelector('#directoryRefresh').disabled===false);
+ assert(await pg.evaluate(()=>{const node=document.querySelector('#contacts [data-id=c]');return node===window.stableContact&&node.querySelector('img')===window.stableAvatar&&node.querySelector('.identity b')===window.stableName&&node.querySelector('.time')===window.stableStamp}));
  assert.equal(await pg.locator('#app .composer-frame').count(),1);assert.equal(await pg.locator('#app .crm').count(),1);
  await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tìm kiếm',exact:true}).click();await pg.getByLabel('Tìm kiếm danh bạ',{exact:true}).fill('khong-co');await pg.getByText('Không tìm thấy danh bạ phù hợp.',{exact:true}).waitFor({state:'visible'});await pg.getByLabel('Tìm kiếm danh bạ',{exact:true}).fill('Liên hệ');await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).waitFor({state:'visible'});await pg.getByRole('button',{name:'Đóng tìm kiếm',exact:true}).click();
  assert.equal(await pg.getByText('Khách hàng mẫu',{exact:true}).count(),0);
