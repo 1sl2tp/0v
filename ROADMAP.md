@@ -125,3 +125,5 @@ L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezo
 - v13.203 P05 E1: thumbnail priority and shared bounded session storage cache, throttled audit refresh. No visual exclusion, actual request metrics/CI/native pending.
 
 - v13.203 revision: one pass and same-tab checkpoint; manual refresh only; no automatic retry or repeated card rebuild. CI/live pending.
+
+- v13.204 P05 E1: bounded batches of 12, shared worker and first-batch display; real OCR and CI pending.
