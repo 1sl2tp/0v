@@ -275,3 +275,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 - S3a E1 candidate: A/B projection/replay/ACK use shared scoped scroll transaction; explicit local send owns follow, delayed ACK history regression pending CI.
 - S3b E1 candidate: bounded nearest surviving anchor and file/audio/video reservation; browser proof pending, actual Realtime subscription race and native keyboard/restore remain.
 - S4 TODO: Chromium/WebKit and actual Safari/PWA/Android E4, no premature DONE.
+
+- S3b retest: CI 45909511526 non-follow growth failure; preserve strict assertion and diagnostics; mock Realtime/viewport proof added, pending exact CI.
