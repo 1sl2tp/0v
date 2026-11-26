@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.188)
+## 00. Chỉ mục rule đang có hiệu lực (v13.189)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1467,3 +1467,5 @@ Theo yêu cầu 26/11: bản Pages mặc định dùng trang đăng nhập admin
 - LIVE-BILL-AUDIT-ANNOTATION-01: existing CardController.billPair; original image and OCR, explicit keep/fix/not present, note and pending/needs_fix/checked. Private annotation by receipt/admin/raw hash and optimistic revision; AAL2, exact scope, RLS and no direct grants, no matching/ledger change. Raw OCR flags remain visible. No keyboard changes.
 
 - LIVE-BILL-STANDALONE-01: dedicated URL ?live=1&view=bills uses the same authenticated parent, fullscreen CRM audit projection only, no directory/thread fetch, own route storage key, refresh/logout/back and automatic audit read after AAL2. Existing bill pair and media loader; audit scroll-root lazy observer and URL cleanup independent of thread. No data embedded in static page, no auth/financial/keyboard changes.
+
+- LIVE-BILL-ENTRY-01: /bill.html is a dedicated standalone document entry for Bill review, independent of query parameters and chat navigation. It uses the exact same Git blob as canonical index and release snapshot, not a second maintained implementation. Every release must sync bill.html to canonical index; CI must reject mismatch. Existing AAL2 and annotations unchanged; no financial writes.

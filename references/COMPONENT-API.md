@@ -546,3 +546,5 @@ LIVE-BILL-AUDIT-WORKSPACE-01: v0_admin_bill_audit() -> {account_id,total,rows} r
 LIVE-BILL-AUDIT-ANNOTATION-01: audit read adds raw_hash/review_state/review_revision/corrections/review_note; v0_save_bill_audit_annotation accepts per-field string/null, note, state, revision and raw hash. BillAuditList filters progress; existing CardController.billPair and Media loader. Financially inert annotations.
 
 LIVE-BILL-STANDALONE-01: ?live=1&view=bills is a dedicated full-screen route of mountLiveChat; it skips directory/thread bootstrap, invokes existing audit API after authentication, uses same annotation RPC and CardController.billPair. Audit media loader root and URL lifecycle scoped to audit. No duplicate implementation.
+
+LIVE-BILL-ENTRY-01: bill.html canonical alias activates the standalone Bill projection by pathname even with tracking parameters. Same original image, audit/annotation RPC and auth; no directory/thread bootstrap. All release entries share identical blob.
