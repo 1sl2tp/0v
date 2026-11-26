@@ -286,3 +286,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 - S4 retest: scoped probe and utility entry, actual query test, native evidence pending.
 
 - S3d v13.241 candidate: late dimensional metadata neutral projection; preserve bill expansion/media and anchor on receipt update. Native and CI pending. Full media inventory arrival and class change require separate acceptance, not fixed by this patch.
+
+- v13.241 Pages success 45913172927. S3e v13.242 candidate: parent structural projection queue, late inventory / classification and persisted pageshow fixture. Actual device S4 pending.
