@@ -1822,3 +1822,5 @@ S2: fixed media slot geometry in MediaController; 1–4 images and error/retry; 
 - S4: diagnostic must be explicit opt-in, read-only, local, bounded, no identifiers or text exported, no new scroll/keyboard owner.
 
 - SCROLL-01 S3d: dimension-only metadata must not recreate a mounted row; initial slot can use trusted width_px/height_px; actual receipt update preserves expanded state and parent anchor, never truncate fields to fake stability.
+
+- SCROLL-01 S3e: structural media/receipt projection waits for manual motion to settle; latest scoped job only, current anchor at commit, explicit jump drains parent queue. Do not delay ordinary append unless combined with pending structural projection.

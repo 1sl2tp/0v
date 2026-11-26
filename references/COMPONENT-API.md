@@ -797,3 +797,6 @@ mountScrollS4 reads ScrollController edge/visualEdge/intentState/writeSerial onl
 
 ## S3d v13.241 candidate
 LiveChatSnapshotPolicy.signature excludes only top-level dimension metadata; MediaController fixedRatios accepts dimensions at mount. Bill projection reuses media and prior expansion, ScrollController owns position.
+
+## S3e v13.242 candidate
+ScrollController.deferProjection / flushProjection / clearProjection own structural projection handoff; renderLiveSnapshot supplies scoped validity and media signature. Persisted pageshow reuses wakeLiveSync. No new scroll writer.
