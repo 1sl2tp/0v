@@ -2348,7 +2348,7 @@ function mountLiveChat(root){
  const prevAudit=Button.create({kind:'outline',text:'Trang trước',onClick:()=>{auditPage=Math.max(0,auditPage-1);renderAudit()}}),nextAudit=Button.create({kind:'outline',text:'Trang sau',onClick:()=>{auditPage++;renderAudit()}});
  const loadAudit=Button.create({kind:'outline',text:standaloneBills?'Làm mới danh sách ảnh':'Tải / làm mới toàn bộ bill',onClick:()=>void fetchAudit()});
  const auditScanStatus=text('caption','','p');auditScanStatus.setAttribute('role','status');
- const scanToggle=Button.create({kind:'outline',text:'Tạm dừng tự phân loại',onClick:()=>{localOcrPaused=!localOcrPaused;if(!localOcrPaused)localOcrError='';persistBillProgress();updateScanStatus();if(!localOcrPaused)startAutoOcr()}});
+ const scanToggle=Button.create({kind:'outline',text:'Chế độ đọc thủ công'});scanToggle.hidden=true;
  const standaloneUrl='./bill.html';
  const openAuditPage=Button.create({kind:'outline',text:'Mở trang rà soát riêng',onClick:()=>location.assign(standaloneUrl)});
  if(standaloneBills){
@@ -2361,12 +2361,11 @@ function mountLiveChat(root){
  function resetBillAudit(){localOcrResults.clear();localImageHashes.clear();localVisualHints.clear();auditBlobCache.clear();lastAuditRequest=0;progressRestored=false;progressSaveError=false;auditGroup='all';updateBillGroups({});localOcrPaused=false;localOcrError='';auditScanStatus.textContent='';const task=localOcrTask;localOcrTask=null;if(task?.worker)void task.worker.terminate().catch(()=>{});releaseAuditMedia();auditSequence++;auditRows=[];auditTotal=0;auditPage=0;auditLastLoaded=null;scanToggle.disabled=true;auditSearch.value='';auditList.replaceChildren();auditSummary.textContent='Chưa tải danh sách bill.';auditPager.textContent='';prevAudit.disabled=nextAudit.disabled=true;loadAudit.disabled=false}
  const eligibleOcr=r=>!!r.storage_key&&isLiveImage(r);
  let lastAuditRequest=0,progressRestored=false,progressSaveError=false;
- const billProgressPrefix='0v.bill.progress.classical.v1:';
+ const billProgressPrefix='0v.bill.progress.manual.v1:';
  const progressKey=()=>scope&&standaloneBills?billProgressPrefix+scope.accountId:null;
  function eraseBillProgress(){try{for(let i=sessionStorage.length-1;i>=0;i--){const k=sessionStorage.key(i);if(k?.startsWith(billProgressPrefix))sessionStorage.removeItem(k)}}catch{}}
- function persistBillProgress(){const k=progressKey();if(!k)return;try{const entries=auditRows.map(r=>{const result=localResult(r),hash=localImageHashes.get(r.id),hint=visualHint(r);return [r.id,r.storage_key,result&&result.kind!=='duplicate'?{kind:result.kind,reason:result.reason,readAt:result.readAt,confidence:result.confidence}:null,hash?.storageKey===r.storage_key?hash.hash:undefined,hint?{priority:hint.priority,kind:hint.kind,ms:hint.ms}:null,Boolean(hash?.storageKey===r.storage_key)]}).filter(e=>e[2]||e[4]||e[5]);sessionStorage.setItem(k,JSON.stringify({entries,paused:localOcrPaused,error:localOcrError}));progressSaveError=false}catch{progressSaveError=true}}
- function restoreBillProgress(rows){if(progressRestored)return;progressRestored=true;const k=progressKey();if(!k)return;try{const saved=JSON.parse(sessionStorage.getItem(k)||'null');if(!saved||!Array.isArray(saved.entries)||saved.entries.length>1000)return;const current=new Map(rows.map(r=>[r.id,r.storage_key]));for(const e of saved.entries){if(!Array.isArray(e)||e.length!==6||!current.has(e[0])||current.get(e[0])!==e[1])continue;const [id,key,result,hash,hint,checked]=e;if(result&&['bill','non_bill','unclassified'].includes(result.kind)&&typeof result.reason==='string'&&result.reason.length<=500&&(result.readAt===null||typeof result.readAt==='string'&&Number.isFinite(Date.parse(result.readAt))))localOcrResults.set(id,{kind:result.kind,reason:result.reason,readAt:result.readAt,confidence:result.confidence,storageKey:key,account:null});if(checked&&(hash===null||typeof hash==='string'&&/^[a-f0-9]{64}$/.test(hash)))localImageHashes.set(id,{storageKey:key,hash});if(hint&&[1,2].includes(hint.priority)&&['document-like','uncertain'].includes(hint.kind))localVisualHints.set(id,{priority:hint.priority,kind:hint.kind,ms:Number(hint.ms)||0,storageKey:key})}localOcrPaused=saved.paused===true;localOcrError=localOcrPaused&&typeof saved.error==='string'?saved.error.slice(0,200):''}catch{progressSaveError=true}}
-
+ function persistBillProgress(){const k=progressKey();if(!k)return false;try{const entries=auditRows.map(r=>{const result=localResult(r);return result?[r.id,r.storage_key,{kind:result.kind,reason:result.reason,readAt:result.readAt,confidence:result.confidence,raw:result.raw||'',corrected:result.corrected||'',verifiedAt:result.verifiedAt||null}]:null}).filter(Boolean);sessionStorage.setItem(k,JSON.stringify({entries}));progressSaveError=false;return true}catch{progressSaveError=true;return false}}
+ function restoreBillProgress(rows){if(progressRestored)return;progressRestored=true;const k=progressKey();if(!k)return;try{const saved=JSON.parse(sessionStorage.getItem(k)||'null');if(!saved||!Array.isArray(saved.entries)||saved.entries.length>1000)return;const current=new Map(rows.map(r=>[r.id,r.storage_key]));for(const e of saved.entries){if(!Array.isArray(e)||e.length!==3||current.get(e[0])!==e[1])continue;const [id,key,result]=e;if(result&&['bill','non_bill','unclassified'].includes(result.kind)&&typeof result.raw==='string'&&result.raw.length<=20000&&typeof result.corrected==='string'&&result.corrected.length<=20000)localOcrResults.set(id,{...result,storageKey:key})}}catch{progressSaveError=true}}
  const auditBlobCache=(()=>{const entries=new Map(),pending=new Map(),maxBytes=64*1024*1024;let bytes=0,epoch=0,requests=0,hits=0,joined=0;
   function clear(){epoch++;entries.clear();pending.clear();bytes=0;requests=hits=joined=0}
   async function get(key,owner,download){if(!owner||scope!==owner)throw Error('stale_scope');if(entries.has(key)){const blob=entries.get(key);entries.delete(key);entries.set(key,blob);hits++;return blob}if(pending.has(key)){joined++;return pending.get(key)}
@@ -2396,98 +2395,63 @@ function mountLiveChat(root){
    await new Promise(resolve=>setTimeout(resolve,0));
   }
  }
- function updateScanStatus(){
-  if(!standaloneBills)return;
-  const eligible=auditRows.filter(eligibleOcr),attempted=eligible.filter(r=>localResult(r)),read=attempted.filter(r=>localResult(r).readAt).length,dupes=attempted.filter(r=>localResult(r).kind==='duplicate').length,failed=attempted.length-read-dupes,pending=eligible.length-attempted.length,hashed=eligible.filter(r=>localImageHashes.get(r.id)?.storageKey===r.storage_key||localResult(r)?.kind==='duplicate').length;
-  const state=localOcrError?'Lỗi OCR: '+localOcrError:localOcrPaused?'Đã tạm dừng'+(localOcrTask?' sau ảnh đang đọc':''):localOcrTask?(localOcrTask.phase==='hash'?'Đang tìm ảnh trùng và sàng lọc hình ảnh':'Đang tự phân loại')+(localOcrTask.id?' · BILL-'+BillAuditList.code({id:localOcrTask.id}):' · khởi tạo OCR'):pending?'Chờ tự phân loại':'Đã xử lý danh sách ảnh có thể đọc';
-  auditScanStatus.textContent=state+' · '+attempted.length+'/'+eligible.length+' đã xử lý · '+hashed+' đã kiểm tra trùng · '+dupes+' trùng · '+localVisualHints.size+' sàng lọc hình ảnh · '+read+' đọc được · '+failed+' lỗi · '+(auditRows.length-eligible.length)+' ảnh không khả dụng · Storage '+auditBlobCache.stats().requests+' lượt tải, '+(auditBlobCache.stats().hits+auditBlobCache.stats().joined)+' lượt dùng lại';
-  const counts={all:auditRows.length,duplicate:0,bill:0,unclassified:0,non_bill:0};for(const r of auditRows)counts[localResult(r)?.kind||'unclassified']++;updateBillGroups(counts);if(progressSaveError)auditScanStatus.textContent+=' · Không lưu được tiến độ trong tab';
-  scanToggle.textContent=localOcrPaused?'Tiếp tục tự phân loại':'Tạm dừng tự phân loại';scanToggle.disabled=!scope||(!pending&&!localOcrTask);
- }
+ function updateScanStatus(){if(!standaloneBills)return;const verified=auditRows.filter(r=>localResult(r)?.verifiedAt).length,read=auditRows.filter(r=>localResult(r)?.readAt).length;auditScanStatus.textContent=(localOcrTask?'Đang đọc ảnh BILL-'+BillAuditList.code({id:localOcrTask.id}):localOcrError||'Chọn ảnh để đọc · không tự quét')+' · '+read+' đã đọc · '+verified+' đã xác minh'+(progressSaveError?' · Không lưu được tiến độ':'')}
  function redrawOcr(){const top=auditPanel.scrollTop;renderAudit();ScrollController.writeLocal(auditPanel,top);updateScanStatus()}
- function startAutoOcr(){
-  if(!standaloneBills||!scope||localOcrPaused||localOcrTask||document.hidden||loadAudit.disabled)return;
-  exactDuplicates();const pending=BillAuditList.localPending(auditRows,localOcrResults,eligibleOcr);
-  if(pending.length)void runLocalOcr(pending,true);else updateScanStatus()
- }
- async function classifyLocalImage(r){if(!localOcrTask&&eligibleOcr(r)&&localResult(r)?.kind!=='duplicate'){localOcrResults.delete(r.id);if(localImageHashes.get(r.id)?.hash===null)localImageHashes.delete(r.id);await runLocalOcr([r],false)}}
- async function runLocalOcr(rows,automatic){
-  if(!standaloneBills||!scope||localOcrTask||!rows.length)return;
-  const owner=scope,task={id:null,worker:null,phase:'hash'};localOcrTask=task;
+ async function classifyLocalImage(r){
+  if(!standaloneBills||!scope||localOcrTask||!eligibleOcr(r))return;
+  const owner=scope,task={id:r.id,worker:null,phase:'ocr'};localOcrTask=task;localOcrError='';
   const valid=()=>scope===owner&&localOcrTask===task;
-  let completed=0;
-  redrawOcr();
+  redrawOcr();const canvas=document.createElement('canvas');let stage='image';
   try{
-   let worker=null;
-   for(let offset=0;offset<rows.length;offset+=12){
-   if(!valid()||automatic&&(localOcrPaused||document.hidden))break;
-   task.phase='hash';task.id=null;updateScanStatus();
-   const batch=rows.slice(offset,offset+12);
-   exactDuplicates();await scanExactHashes(batch,task,valid,automatic);if(!valid()||automatic&&(localOcrPaused||document.hidden))return;
-   const candidates=batch.filter(r=>localResult(r)?.kind!=='duplicate'&&(!automatic||!localResult(r))).sort((a,b)=>(visualHint(b)?.priority||0)-(visualHint(a)?.priority||0));
-   if(!candidates.length)continue;
-   task.phase='ocr';task.id=null;updateScanStatus();
-   if(!worker){
-   const engine=await BillOCREngineAPI.loadDemo();if(!valid())return;
+   const data=await auditOriginal(r.storage_key,owner);if(!valid())return;
+   const blob=MediaController.imageBlob(data,r.mime_type);if(!blob)throw Error('image_type');
+   const url=URL.createObjectURL(blob),img=new Image();
+   try{img.src=url;await img.decode();if(!valid())return;const w=img.naturalWidth,h=img.naturalHeight;if(!w||!h||w*h>24000000)throw Error('image_size');const scale=Math.min(1,2400/Math.max(w,h));canvas.width=Math.max(1,Math.round(w*scale));canvas.height=Math.max(1,Math.round(h*scale));const ctx=canvas.getContext('2d');if(!ctx)throw Error('canvas');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height)}finally{URL.revokeObjectURL(url)}
+   stage='ocr';const engine=await BillOCREngineAPI.loadDemo();if(!valid())return;
    let timer,expired=false;
    const opening=Promise.resolve().then(()=>BillOCREngineAPI.demoFactory(engine)()).then(async w=>{if(expired||!valid()){await w.terminate().catch(()=>{});throw Error('ocr_start_cancelled')}return w});
-   try{worker=await Promise.race([opening,new Promise((_,reject)=>{timer=setTimeout(()=>{expired=true;reject(Error('ocr_start_timeout'))},90000)})])}finally{clearTimeout(timer)}
+   let worker;try{worker=await Promise.race([opening,new Promise((_,reject)=>{timer=setTimeout(()=>{expired=true;reject(Error('ocr_start_timeout'))},90000)})])}finally{clearTimeout(timer)}
    if(!valid()){await worker.terminate();return}task.worker=worker;
-   }
-   for(const r of candidates){
-    if(!valid()||automatic&&(localOcrPaused||document.hidden))break;
-    if(!auditRows.some(x=>x.id===r.id&&x.storage_key===r.storage_key)||automatic&&localResult(r))continue;
-    task.id=r.id;updateScanStatus();
-    const canvas=document.createElement('canvas');let stage='image';
-    try{
-     const data=await auditOriginal(r.storage_key,owner);
-     if(!valid())return;
-     const blob=MediaController.imageBlob(data,r.mime_type);if(!blob)throw Error('image_type');
-     const url=URL.createObjectURL(blob),img=new Image();
-     try{img.src=url;await img.decode();if(!valid())return;const w=img.naturalWidth,h=img.naturalHeight;if(!w||!h||w*h>24000000)throw Error('image_size');const scale=Math.min(1,2400/Math.max(w,h));canvas.width=Math.max(1,Math.round(w*scale));canvas.height=Math.max(1,Math.round(h*scale));const ctx=canvas.getContext('2d');if(!ctx)throw Error('canvas');ctx.drawImage(img,0,0,canvas.width,canvas.height)}finally{URL.revokeObjectURL(url)}
-     stage='ocr';let timer;let result;
-     try{result=(await Promise.race([worker.recognize(canvas,{}, {text:true,blocks:false}),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('ocr_timeout')),90000)})]))?.data}finally{clearTimeout(timer)}
-     if(!valid())return;if(typeof result?.text!=='string')throw Error('ocr_result');
-     const classified=BillAuditList.printedClassification(result.text,result.confidence);
-     localOcrResults.set(r.id,{...classified,storageKey:r.storage_key,readAt:new Date().toISOString(),confidence:Number.isFinite(result.confidence)?result.confidence:null});persistBillProgress();
-    }catch{
-     if(!valid())return;
-     localOcrResults.set(r.id,{kind:'unclassified',reason:stage==='image'?'Không tải/giải mã được ảnh gốc; thử lại':'OCR lỗi hoặc quá thời gian; thử lại',account:null,storageKey:r.storage_key,readAt:null});
-     persistBillProgress();if(stage==='ocr'){localOcrPaused=true;localOcrError='Worker không trả kết quả; bấm Tiếp tục để đọc ảnh còn lại.';persistBillProgress();break}
-    }finally{canvas.width=canvas.height=0}
-    completed++;updateScanStatus();
-    await new Promise(resolve=>setTimeout(resolve,0));
-   }
-   if(localOcrPaused||!valid())break;
-   if(offset===0)redrawOcr();
-   }
-  }catch(e){if(valid()){localOcrPaused=true;const message=String(e?.message||e||'unknown').replace(/[^\p{L}\p{N} ._:-]/gu,' ').slice(0,100);localOcrError='Không khởi tạo được OCR Legacy ('+message+'); kết quả tìm trùng vẫn giữ. Không chuyển sang LSTM.'}}
-  finally{
-   if(localOcrTask===task){
-    if(task.worker)await task.worker.terminate().catch(()=>{});
-    if(localOcrTask===task){localOcrTask=null;if(scope===owner){persistBillProgress();redrawOcr()}}
-   }
-  }
+   let result;try{result=(await Promise.race([worker.recognize(canvas,{}, {text:true,blocks:false}),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('ocr_timeout')),90000)})]))?.data}finally{clearTimeout(timer)}
+   if(!valid())return;if(typeof result?.text!=='string')throw Error('ocr_result');
+   const raw=result.text.slice(0,20000),classified=BillAuditList.printedClassification(raw,result.confidence);
+   localOcrResults.set(r.id,{...classified,raw,corrected:raw,verifiedAt:null,storageKey:r.storage_key,readAt:new Date().toISOString(),confidence:Number.isFinite(result.confidence)?result.confidence:null});
+  }catch(e){if(valid()){localOcrError=(stage==='image'?'Không tải/giải mã được ảnh':'OCR lỗi')+' · '+String(e?.message||e||'unknown').replace(/[^\p{L}\p{N} ._:-]/gu,' ').slice(0,100);if(!localResult(r))localOcrResults.set(r.id,{kind:'unclassified',reason:localOcrError,raw:'',corrected:'',verifiedAt:null,storageKey:r.storage_key,readAt:null,confidence:null})}}
+  finally{canvas.width=canvas.height=0;if(localOcrTask===task){if(task.worker)await task.worker.terminate().catch(()=>{});if(localOcrTask===task){localOcrTask=null;if(scope===owner){persistBillProgress();redrawOcr()}}}}
  }
+ function manualTemplate(raw){
+  const lines=raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),labels=[];
+  for(const line of lines){const tag=BillOCRFieldAPI.identify(line);if(tag&&['amount','account','name','date','datetime','time','memo','reference','sendingBank','receivingBank'].includes(tag.key))labels.push(tag.key)}
+  return [...new Set(labels)].join('|')
+ }
+ function manualSampleStore(signature,kind){
+  if(!signature||!scope)return;
+  const key='0v.bill.templates.classical.v1:'+scope.accountId;
+  try{const saved=JSON.parse(localStorage.getItem(key)||'{}');if(!saved||typeof saved!=='object'||Array.isArray(saved))return;const previous=saved[signature];saved[signature]={kind:previous&&previous.kind!==kind?'conflict':kind,count:Math.min(10000,(previous?.count||0)+1)};const bounded=Object.fromEntries(Object.entries(saved).slice(-200));localStorage.setItem(key,JSON.stringify(bounded))}catch{progressSaveError=true}
+ }
+ function manualSampleHint(raw){try{const key='0v.bill.templates.classical.v1:'+scope.accountId,signature=manualTemplate(raw);if(!signature||signature.split('|').length<3)return null;const sample=JSON.parse(localStorage.getItem(key)||'{}')[signature];return sample&&['bill','non_bill'].includes(sample.kind)?sample:null}catch{return null}}
  function renderAudit(){
   if(standaloneBills){
    const count=auditRows.length;
-   const kind=r=>localResult(r)?.kind||'unclassified',counts={all:count,duplicate:0,bill:0,unclassified:0,non_bill:0};for(const r of auditRows)counts[kind(r)]++;
-   const names=groupNames;updateBillGroups(counts);
-   const selectedRows=BillAuditList.imageOnlySelect(auditRows,auditSearch.value).filter(r=>auditGroup==='all'||kind(r)===auditGroup);
+   const selectedRows=BillAuditList.imageOnlySelect(auditRows,auditSearch.value);
    const pages=Math.max(1,Math.ceil(selectedRows.length/25));auditPage=Math.min(auditPage,pages-1);releaseAuditMedia();auditList.replaceChildren();
-   const readCount=auditRows.filter(r=>localResult(r)?.readAt).length;
-   auditSummary.textContent=count+' / '+auditTotal+' ảnh · '+readCount+' ảnh đã đọc OCR trong phiên này · '+selectedRows.length+' ảnh đang lọc. OCR Legacy (OEM 0), không dùng LSTM, Gemini hoặc OCR cũ.'+(auditLastLoaded?' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'')+(auditTotal>count?' · Danh sách chưa đầy đủ.':'');
+   auditSummary.textContent=count+' / '+auditTotal+' ảnh · OCR Legacy (OEM 0), không dùng LSTM, Gemini hoặc OCR cũ.'+(auditLastLoaded?' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'');
    for(const r of selectedRows.slice(auditPage*25,auditPage*25+25)){
     const pair=CardController.billPair('Ảnh gốc','Kết quả OCR mới'),ocr=CardController.create('business'),result=localResult(r);
     pair.pair.dataset.simpleBillReview='true';pair.right.append(ocr);
     CardController.row(ocr,'Mã ảnh','BILL-'+BillAuditList.code(r));
-    CardController.row(ocr,'Phân loại',names[kind(r)]);const hint=visualHint(r);if(hint)CardController.row(ocr,'Sàng lọc nhanh',(hint.kind==='document-like'?'Giống bố cục tài liệu · ưu tiên OCR':'Chưa rõ · không loại ảnh')+' · '+hint.ms+' ms');
-    if(result){CardController.row(ocr,'Kết quả',result.reason);if(result.duplicateOf)CardController.row(ocr,'Trùng với','BILL-'+BillAuditList.code({id:result.duplicateOf}));if(result.account)CardController.row(ocr,'STK đọc được',result.account);if(result.readAt)CardController.row(ocr,'Thời điểm OCR',new Date(result.readAt).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}))}
-    else CardController.row(ocr,'Trạng thái','Chưa OCR mới');
-    const read=Button.create({kind:'outline',text:localOcrTask?.id===r.id?'Đang đọc ảnh…':result?'Đọc lại ảnh':'Phân loại ảnh',onClick:()=>void classifyLocalImage(r)});
-    read.disabled=!!localOcrTask||!r.storage_key||!isLiveImage(r);if(kind(r)!=='duplicate')ocr.append(read);
-    if(r.storage_key&&isLiveImage(r))pair.left.append(mediaImageGroup([{...r,id:r.asset_id}],scope,choice,true,true));else pair.left.append(text('caption','Ảnh không khả dụng','p'));
+    if(result?.readAt){CardController.row(ocr,'OCR nguyên văn',result.raw||'(Không đọc được chữ)');CardController.row(ocr,'Độ tin cậy',result.confidence==null?'Chưa xác định':Math.round(result.confidence)+'%');const hint=manualSampleHint(result.raw);if(hint)CardController.row(ocr,'Mẫu đã xác minh','Cùng thứ tự nhãn · '+hint.count+' mẫu · chỉ tham khảo')}
+    else CardController.row(ocr,'Trạng thái',result?.reason||'Chưa OCR mới');
+    const read=Button.create({kind:'outline',text:localOcrTask?.id===r.id?'Đang đọc ảnh…':result?.readAt?'Đọc lại ảnh':'Đọc ảnh',onClick:()=>void classifyLocalImage(r)});
+    read.disabled=!!localOcrTask||!eligibleOcr(r);ocr.append(read);
+    if(result){
+     const edit=document.createElement('textarea');edit.setAttribute('aria-label','Sửa nội dung OCR');edit.value=result.corrected||'';edit.rows=6;edit.style.cssText='width:100%;box-sizing:border-box;resize:vertical;font:inherit;white-space:pre-wrap';edit.disabled=!!localOcrTask;
+     const select=document.createElement('select');select.setAttribute('aria-label','Loại ảnh xác minh');select.append(opt('unclassified','Chưa xác định'),opt('bill','Bill'),opt('non_bill','Không phải Bill'));select.value=result.kind;select.disabled=!!localOcrTask;
+     const confirm=Button.create({kind:'outline',text:result.verifiedAt?'✓ Đã lưu xác minh':'✓ Xác minh và lưu',onClick:()=>{if(!scope||localOcrTask||localResult(r)!==result||select.value==='unclassified')return;const corrected=edit.value.slice(0,20000);if(select.value==='bill'&&!corrected.trim())return;const previous={...result};Object.assign(result,{corrected,kind:select.value,verifiedAt:new Date().toISOString()});if(!persistBillProgress()){Object.assign(result,previous);updateScanStatus();return}if(!previous.verifiedAt||previous.corrected!==corrected||previous.kind!==select.value)manualSampleStore(manualTemplate(corrected),select.value);redrawOcr()}});
+     confirm.disabled=!!localOcrTask||select.value==='unclassified';select.addEventListener('change',()=>{confirm.disabled=!!localOcrTask||select.value==='unclassified';confirm.textContent='✓ Xác minh và lưu'});edit.addEventListener('input',()=>{confirm.textContent='✓ Xác minh và lưu'});
+     ocr.append(edit,select,confirm);if(result.verifiedAt)CardController.row(ocr,'Xác minh',new Date(result.verifiedAt).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}));
+    }
+    if(eligibleOcr(r))pair.left.append(mediaImageGroup([{...r,id:r.asset_id}],scope,choice,true,true));else pair.left.append(text('caption','Ảnh không khả dụng','p'));
     auditList.append(pair.pair);
    }
    auditPager.textContent='Trang '+(auditPage+1)+' / '+pages;prevAudit.disabled=auditPage===0;nextAudit.disabled=auditPage>=pages-1;return
@@ -2532,11 +2496,11 @@ function mountLiveChat(root){
  }
  function auditRefreshAllowed(){return !!scope&&standaloneBills&&!localOcrTask&&!document.hidden&&!loadAudit.disabled&&!auditPanel.querySelector('[data-ui-slot~="bill-audit-editor"]:not(:empty)')&&!document.querySelector('dialog[open]')&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)}
  function refreshAuditVisible(){if(auditRefreshAllowed())updateScanStatus()}
- async function fetchAudit({background=false}={}){if(!scope||loadAudit.disabled||background&&!auditRefreshAllowed())return;const owner=scope,seq=++auditSequence,oldTop=auditPanel.scrollTop;loadAudit.disabled=true;lastAuditRequest=Date.now();if(!background)auditSummary.textContent='Đang tải dữ liệu bill…';try{const result=await rpc('v0_admin_bill_audit',{});if(scope!==owner||seq!==auditSequence)return;if(result?.account_id!==owner.accountId||!Array.isArray(result.rows)||result.rows.length>1000||!Number.isInteger(result.total)||result.total<result.rows.length||(!standaloneBills&&result.rows.some(r=>!Array.isArray(r.flags)||r.amount_vnd!=null&&!/^[0-9]{1,18}$/.test(r.amount_vnd))))throw Error('invalid_bill_audit');if(background&&(document.hidden||auditPanel.querySelector('[data-ui-slot~="bill-audit-editor"]:not(:empty)')||document.querySelector('dialog[open]')||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)))return;const nextRows=standaloneBills?result.rows.map(r=>BillAuditList.imageOnly(r)):result.rows;if(standaloneBills)restoreBillProgress(nextRows);const changed=JSON.stringify(auditRows)!==JSON.stringify(nextRows)||auditTotal!==result.total;auditLastLoaded=new Date();if(changed||!background){auditRows=nextRows;auditTotal=result.total;if(standaloneBills)exactDuplicates();renderAudit();ScrollController.writeLocal(auditPanel,oldTop)}else{auditSummary.textContent=auditSummary.textContent.replace(/ · Tải dữ liệu lúc [^·]+/,'')+' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'})}}catch{if(scope===owner&&seq===auditSequence){if(!background)auditSummary.textContent='Không tải được bảng bill. Kiểm tra quyền admin MFA hoặc phiên bản API.';else if(!auditSummary.textContent.includes(' · Chưa cập nhật'))auditSummary.textContent+=' · Chưa cập nhật, kiểm tra kết nối.'}}finally{if(scope===owner&&seq===auditSequence){loadAudit.disabled=false;updateScanStatus();queueMicrotask(startAutoOcr)}}}
+ async function fetchAudit({background=false}={}){if(!scope||loadAudit.disabled||background&&!auditRefreshAllowed())return;const owner=scope,seq=++auditSequence,oldTop=auditPanel.scrollTop;loadAudit.disabled=true;lastAuditRequest=Date.now();if(!background)auditSummary.textContent='Đang tải dữ liệu bill…';try{const result=await rpc('v0_admin_bill_audit',{});if(scope!==owner||seq!==auditSequence)return;if(result?.account_id!==owner.accountId||!Array.isArray(result.rows)||result.rows.length>1000||!Number.isInteger(result.total)||result.total<result.rows.length||(!standaloneBills&&result.rows.some(r=>!Array.isArray(r.flags)||r.amount_vnd!=null&&!/^[0-9]{1,18}$/.test(r.amount_vnd))))throw Error('invalid_bill_audit');if(background&&(document.hidden||auditPanel.querySelector('[data-ui-slot~="bill-audit-editor"]:not(:empty)')||document.querySelector('dialog[open]')||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)))return;const nextRows=standaloneBills?result.rows.map(r=>BillAuditList.imageOnly(r)):result.rows;if(standaloneBills)restoreBillProgress(nextRows);const changed=JSON.stringify(auditRows)!==JSON.stringify(nextRows)||auditTotal!==result.total;auditLastLoaded=new Date();if(changed||!background){auditRows=nextRows;auditTotal=result.total;renderAudit();ScrollController.writeLocal(auditPanel,oldTop)}else{auditSummary.textContent=auditSummary.textContent.replace(/ · Tải dữ liệu lúc [^·]+/,'')+' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'})}}catch{if(scope===owner&&seq===auditSequence){if(!background)auditSummary.textContent='Không tải được bảng bill. Kiểm tra quyền admin MFA hoặc phiên bản API.';else if(!auditSummary.textContent.includes(' · Chưa cập nhật'))auditSummary.textContent+=' · Chưa cập nhật, kiểm tra kết nối.'}}finally{if(scope===owner&&seq===auditSequence){loadAudit.disabled=false;updateScanStatus()}}}
  document.addEventListener('visibilitychange',refreshAuditVisible);window.addEventListener('focus',refreshAuditVisible);
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)startAutoOcr()});
+
  for(const e of [auditFilters,auditSort,auditSearch])e.addEventListener(e===auditSearch?'input':'change',()=>{auditPage=0;renderAudit()});
- auditPanel.append(CardController.panel({title:'Rà soát Bill',children:standaloneBills?[auditBankGroup,loadAudit,scanToggle,auditScanStatus,auditSearch,auditSummary]:[openAuditPage,loadAudit,auditSearch,auditFilters,auditSort,auditSummary]}),auditList,Layout.slot({name:'bill-audit-pager',children:[prevAudit,auditPager,nextAudit]}));resetBillAudit();
+ auditPanel.append(CardController.panel({title:'Rà soát Bill',children:standaloneBills?[loadAudit,auditScanStatus,auditSearch,auditSummary]:[openAuditPage,loadAudit,auditSearch,auditFilters,auditSort,auditSummary]}),auditList,Layout.slot({name:'bill-audit-pager',children:[prevAudit,auditPager,nextAudit]}));resetBillAudit();
  draft.maxLength=8000;composer.hidden=true;
  liveCanSend=()=>!!scope&&!!selected&&!sending&&!DraftMedia.pending(selected)&&!DraftMedia.list(selected).length&&!!draft.value.trim();
  livePickerContext=()=>scope&&selected?scope:null;

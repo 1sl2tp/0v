@@ -642,5 +642,5 @@ User reports repeated scanning; source confirms session-only maps lost on F5 and
 
 - Additional same-tab explicit logout checkpoint purge; synthetic shared cache two concurrent reads + one reuse makes one download; clear forces a fresh request. 8 scripts parse. CI pending.
 
-## v13.204
-Read AGENTS/RULES/COMPONENT-API/ROADMAP and current queue. Previous full-list prepass blocked any OCR until all 600 original downloads. Batch of 12 with global exact hash tracking and shared worker; 8 scripts parse and static audit syntax checked; CI pending. Actual user's specific failure and Legacy asset startup unverified. No database or AI change.
+## v13.204 manual override
+User explicitly rejects bulk filtering. Main v13.203 used as clean base; failing unreleased batch code replaced. Read AGENTS/RULES/COMPONENT-API/ROADMAP and Astryx/Adobe pinned sources. Manual single OCR, raw text/edit/confirm, minimal label template, no automatic scan. 8 scripts parse; browser and static audit syntax checked, CI pending. No production data writes; session-only full text; local structural template hint not automatic recognition.
