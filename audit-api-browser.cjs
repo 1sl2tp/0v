@@ -73,7 +73,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:webkitFixture}));
  await pg.route('**/storage/v1/object/public/v21-avatars/fixture/avatar.jpg',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="gray"/></svg>'}));
  await pg.goto('https://1sl2tp.github.io/0v/?live=1&scrolls4=1');
- await pg.locator('[data-scroll-s4]').waitFor({state:'attached'});await pg.locator('[data-scroll-s4] summary').click();await pg.locator('[data-scroll-s4]').getByRole('button',{name:'Tắt S4',exact:true}).click();assert.equal(await pg.locator('[data-scroll-s4]').count(),0);
+ await pg.locator('[data-scroll-s4]').waitFor({state:'attached'}).catch(async e=>{console.error('S4 bootstrap diagnostic',errors,await pg.evaluate(()=>({screen:document.querySelector('#app')?.dataset.screen,app:!!document.querySelector('#app'),probe:!!document.querySelector('[data-scroll-s4]')})));throw e});await pg.locator('[data-scroll-s4] summary').click();await pg.locator('[data-scroll-s4]').getByRole('button',{name:'Tắt S4',exact:true}).click();assert.equal(await pg.locator('[data-scroll-s4]').count(),0);
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  await pg.waitForFunction(()=>Array.isArray(window.calls));
  assert.deepEqual(await pg.evaluate(()=>window.calls),[]);

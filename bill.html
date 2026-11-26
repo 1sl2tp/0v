@@ -4402,7 +4402,7 @@ const BankReviewQueueAPI=(()=>{
 })();
 
 /* END SHARED BILL APIS */
-if(isLive){mountLiveChat(app);return}
+if(isLive){mountLiveChat(app);if(new URLSearchParams(location.search).get('scrolls4')==='1')mountScrollS4();return}
 let filter='Tất cả';const MainData=MainDataController.create(people,{kh:['Cho lấy sản phẩm A 2, sản phẩm B 3.','Đã tiếp nhận, mình sẽ kiểm tra hàng.'],ncc:['Mình gửi báo giá mới hôm nay.','Đã nhận thông tin báo giá.'],nv:['Mình đã kiểm hàng.','Đã nhận thông tin.'],nhom:['Cả nhóm cập nhật yêu cầu nhé.','Đã ghi nhận.']});
 if(new URLSearchParams(location.search).get('apicheck')==='1')window.mainDataAudit=()=>MainData.status();
 /* Demo CRM data: stable module IDs, numeric amounts, separate contact ownership. */
@@ -5793,7 +5793,6 @@ function mountScrollS4(){
  copy.onclick=async()=>{if(!result)return;try{await navigator.clipboard.writeText(JSON.stringify(result,null,2));summary.textContent='S4 · Đã sao chép'}catch{summary.textContent='S4 · Chọn và sao chép kết quả bên dưới'}};
  return Object.freeze({begin,finish,report:()=>result,dispose:()=>close.click()});
 }
-if(isLive&&new URLSearchParams(location.search).get('scrolls4')==='1')mountScrollS4();
 
 })();
 </script>
