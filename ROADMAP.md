@@ -103,3 +103,5 @@ L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezo
 - v13.194 P05: scoped saved-review progress and honest AI completion label; E1 source and synthetic check; CI/Pages pending; production Batch invocation remains blocked.
 
 - v13.195 P05: explicit unavailable Batch controls and read-only sync, E1 source and syntax; actual Batch production remains BLOCKED; CI/Pages pending.
+
+- v13.196 P05 E1: single unavailable all-Bill control and estimated group counts; 7 tests; real Batch execution and durable campaign remain BLOCKED. CI/Pages pending.
