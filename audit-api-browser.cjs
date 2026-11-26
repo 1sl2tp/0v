@@ -108,7 +108,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.locator('[data-simple-bill-review]').first().waitFor({state:'visible'});
  assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls||0),0);
  const review=pg.locator('[data-simple-bill-review]').first();await review.getByRole('button',{name:'Đọc ảnh',exact:true}).click();
- await review.getByLabel('Sửa nội dung OCR').waitFor();assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls),1);
+ await review.getByRole('button',{name:'Sửa thông tin',exact:true}).waitFor();assert.equal(await review.getByText('OCR nguyên văn',{exact:true}).count(),0);assert.equal(await review.locator('textarea').count(),0);assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls),1);
  for(const label of ['Số tiền','Ngày','Giờ','Tên TK nhận','STK nhận','Nội dung'])assert.ok(await review.getByText(label,{exact:true}).count());
  assert.ok(await review.getByText('100000',{exact:true}).count());assert.ok(await review.getByText('123459999',{exact:true}).count());
  await review.getByRole('button',{name:'Đọc lại ảnh',exact:true}).click();await pg.waitForFunction(()=>window.ocrFixtureCalls===2);await review.getByRole('button',{name:'Đọc lại ảnh',exact:true}).waitFor();assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls),2);

@@ -2365,7 +2365,7 @@ function mountLiveChat(root){
  const progressKey=()=>scope&&standaloneBills?billProgressPrefix+scope.accountId:null;
  function eraseBillProgress(){try{for(let i=sessionStorage.length-1;i>=0;i--){const k=sessionStorage.key(i);if(k?.startsWith(billProgressPrefix)||k?.startsWith('0v.bill.progress.manual.v1:'))sessionStorage.removeItem(k)}}catch{}}
  function persistBillProgress(){const k=progressKey();if(!k)return false;try{const entries=auditRows.map(r=>{const result=localResult(r);return result?[r.id,r.storage_key,{kind:result.kind,reason:result.reason,readAt:result.readAt,confidence:result.confidence,fields:result.fields||null,model:result.model||null,raw:result.raw||'',corrected:result.corrected||'',verifiedAt:result.verifiedAt||null}]:null}).filter(Boolean);sessionStorage.setItem(k,JSON.stringify({entries}));progressSaveError=false;return true}catch{progressSaveError=true;return false}}
- function restoreBillProgress(rows){if(progressRestored)return;progressRestored=true;const k=progressKey();if(!k)return;try{const saved=JSON.parse(sessionStorage.getItem(k)||'null');if(!saved||!Array.isArray(saved.entries)||saved.entries.length>1000)return;const current=new Map(rows.map(r=>[r.id,r.storage_key]));for(const e of saved.entries){if(!Array.isArray(e)||e.length!==3||current.get(e[0])!==e[1])continue;const [id,key,result]=e;if(result&&['bill','non_bill','unclassified'].includes(result.kind)&&typeof result.raw==='string'&&result.raw.length<=20000&&typeof result.corrected==='string'&&result.corrected.length<=20000)localOcrResults.set(id,{...result,storageKey:key})}}catch{progressSaveError=true}}
+ function restoreBillProgress(rows){if(progressRestored)return;progressRestored=true;const k=progressKey();if(!k)return;try{sessionStorage.removeItem('0v.bill.progress.manual.v1:'+scope.accountId);const saved=JSON.parse(sessionStorage.getItem(k)||'null');if(!saved||!Array.isArray(saved.entries)||saved.entries.length>1000)return;const current=new Map(rows.map(r=>[r.id,r.storage_key]));for(const e of saved.entries){if(!Array.isArray(e)||e.length!==3||current.get(e[0])!==e[1])continue;const [id,key,result]=e;if(result&&['bill','non_bill','unclassified'].includes(result.kind)&&typeof result.raw==='string'&&result.raw.length<=20000&&typeof result.corrected==='string'&&result.corrected.length<=20000)localOcrResults.set(id,{...result,storageKey:key})}}catch{progressSaveError=true}}
  const auditBlobCache=(()=>{const entries=new Map(),pending=new Map(),maxBytes=64*1024*1024;let bytes=0,epoch=0,requests=0,hits=0,joined=0;
   function clear(){epoch++;entries.clear();pending.clear();bytes=0;requests=hits=joined=0}
   async function get(key,owner,download){if(!owner||scope!==owner)throw Error('stale_scope');if(entries.has(key)){const blob=entries.get(key);entries.delete(key);entries.set(key,blob);hits++;return blob}if(pending.has(key)){joined++;return pending.get(key)}
@@ -2466,25 +2466,37 @@ function mountLiveChat(root){
    const pages=Math.max(1,Math.ceil(selectedRows.length/25));auditPage=Math.min(auditPage,pages-1);releaseAuditMedia();auditList.replaceChildren();
    auditSummary.textContent=count+' / '+auditTotal+' ảnh · AI Vision · Gemini · chỉ đọc khi bấm nút.'+(auditLastLoaded?' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'');
    for(const r of selectedRows.slice(auditPage*25,auditPage*25+25)){
-    const pair=CardController.billPair('Ảnh gốc','Kết quả OCR mới'),ocr=CardController.create('business'),result=localResult(r);
+    const pair=CardController.billPair('Ảnh gốc','Kết quả AI'),ocr=CardController.create('business'),result=localResult(r);
     pair.pair.dataset.simpleBillReview='true';pair.right.append(ocr);
     CardController.row(ocr,'Mã ảnh','BILL-'+BillAuditList.code(r));
-    const extracted=result?.verifiedAt?manualBillFields(result.corrected):result?.fields||{};
+    const extracted=result?.fields||{},fieldRows=new Map(),editInputs=new Map();
     for(const [key,label] of [['amount','Số tiền'],['date','Ngày'],['time','Giờ'],['name','Tên TK nhận'],['account','STK nhận'],['memo','Nội dung']]){
      let value=extracted[key];if(key==='date'&&value&&/^\d{4}-\d{2}-\d{2}$/.test(value))value=value.split('-').reverse().join('/');
-     CardController.row(ocr,label,value==null?(result?.readAt?'Chưa đọc được':'Chưa đọc ảnh'):String(value).replace(/\s+/g,' '));
+     fieldRows.set(key,{label,row:CardController.row(ocr,label,value==null?(result?.readAt?'Chưa đọc được':'Chưa đọc ảnh'):String(value).replace(/\s+/g,' '))});
     }
     if(extracted.account&&extracted.account!=='2901181999999')CardController.row(ocr,'Đối chiếu STK','Cần kiểm tra số tài khoản đọc được');
-    if(result?.readAt){CardController.row(ocr,'Kết quả AI',result.raw||'(Không đọc được chữ)');CardController.row(ocr,'Bộ đọc',result.model||'Gemini');CardController.row(ocr,'Xác minh',result.verifiedAt?'Đã xác minh':'Chưa xác minh');const hint=manualSampleHint(result.raw);if(hint)CardController.row(ocr,'Mẫu đã xác minh','Cùng thứ tự nhãn · '+hint.count+' mẫu · chỉ tham khảo')}
+    if(result?.readAt){CardController.row(ocr,'Xác minh',result.verifiedAt?'Đã xác minh':'Chưa xác minh')}
     else CardController.row(ocr,'Trạng thái',result?.reason||'Chưa OCR mới');
     const read=Button.create({kind:'outline',text:localOcrTask?.id===r.id?'Đang đọc ảnh…':result?.readAt?'Đọc lại ảnh':'Đọc ảnh',onClick:()=>void classifyLocalImage(r)});
     read.disabled=!!localOcrTask||!eligibleOcr(r);ocr.append(read);
     if(result){
-     const edit=document.createElement('textarea');edit.setAttribute('aria-label','Sửa nội dung OCR');edit.value=result.corrected||'';edit.rows=6;edit.style.cssText='width:100%;box-sizing:border-box;resize:vertical;font:inherit;white-space:pre-wrap';edit.disabled=!!localOcrTask;
      const select=document.createElement('select');select.setAttribute('aria-label','Loại ảnh xác minh');select.append(opt('unclassified','Chưa xác định'),opt('bill','Bill'),opt('non_bill','Không phải Bill'));select.value=result.kind;select.disabled=!!localOcrTask;
-     const confirm=Button.create({kind:'outline',text:result.verifiedAt?'✓ Đã lưu xác minh':'✓ Xác minh và lưu',onClick:()=>{if(!scope||localOcrTask||localResult(r)!==result||select.value==='unclassified')return;const corrected=edit.value.slice(0,20000);if(select.value==='bill'&&!corrected.trim())return;const previous={...result};Object.assign(result,{corrected,kind:select.value,verifiedAt:new Date().toISOString()});if(!persistBillProgress()){Object.assign(result,previous);updateScanStatus();return}if(!previous.verifiedAt||previous.corrected!==corrected||previous.kind!==select.value)manualSampleStore(manualTemplate(corrected),select.value);redrawOcr()}});
-     confirm.disabled=!!localOcrTask||select.value==='unclassified';select.addEventListener('change',()=>{confirm.disabled=!!localOcrTask||select.value==='unclassified';confirm.textContent='✓ Xác minh và lưu'});edit.addEventListener('input',()=>{confirm.textContent='✓ Xác minh và lưu'});
-     ocr.append(edit,select,confirm);if(result.verifiedAt)CardController.row(ocr,'Xác minh',new Date(result.verifiedAt).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}));
+     const confirm=Button.create({kind:'outline',text:result.verifiedAt?'✓ Đã lưu xác minh':'✓ Xác minh và lưu',onClick:()=>{
+      if(!scope||localOcrTask||localResult(r)!==result||select.value==='unclassified')return;
+      const fields=Object.fromEntries([...fieldRows].map(([key])=>[key,(editInputs.get(key)?.value??extracted[key]??'').trim().replace(/\s+/g,' ').slice(0,key==='memo'?1000:120)||null]));
+      if(select.value==='bill'&&!Object.values(fields).some(Boolean))return;
+      const corrected=[...fieldRows].filter(([key])=>fields[key]).map(([key,{label}])=>label+': '+fields[key]).join('\n');
+      const previous={...result};Object.assign(result,{fields,corrected,kind:select.value,verifiedAt:new Date().toISOString()});
+      if(!persistBillProgress()){Object.assign(result,previous);updateScanStatus();return}
+      redrawOcr();
+     }});
+     const edit=Button.create({kind:'outline',text:'Sửa thông tin',onClick:()=>{
+      if(localOcrTask||editInputs.size)return;
+      for(const [key,{label,row}] of fieldRows){const input=Input.create({type:'text',label:'Sửa '+label,value:extracted[key]||''});input.maxLength=key==='memo'?1000:120;input.style.width='100%';input.style.minWidth='0';input.addEventListener('input',()=>{confirm.textContent='✓ Xác minh và lưu'});row.lastElementChild.replaceWith(input);editInputs.set(key,input)}
+      edit.disabled=true;confirm.textContent='✓ Xác minh và lưu';
+     }});edit.disabled=!!localOcrTask;
+     confirm.disabled=!!localOcrTask||select.value==='unclassified';select.addEventListener('change',()=>{confirm.disabled=!!localOcrTask||select.value==='unclassified';confirm.textContent='✓ Xác minh và lưu'});
+     ocr.append(edit,select,confirm);
     }
     if(eligibleOcr(r))pair.left.append(mediaImageGroup([{...r,id:r.asset_id}],scope,choice,true,true));else pair.left.append(text('caption','Ảnh không khả dụng','p'));
     auditList.append(pair.pair);
