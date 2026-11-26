@@ -570,3 +570,6 @@ Pure count projection (0..1000) at max 50 records; returns planned number/count,
 
 ## v13.197 — standalone image review
 Existing BillAuditList.effective/select, CardController.billPair and mediaImageGroup; two columns, all loaded records, search and read-only refresh. Existing integrated audit preserved. No new data API.
+
+## v13.198 — BillAuditList.imageGroup / imageGroups
+Pure display grouping based on stored audit_kind and sender-bank aliases, no OCR inference; groups contain every row exactly once. Native select with counts; standalone only, same CardController pair.

@@ -107,3 +107,5 @@ L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezo
 - v13.196 P05 E1: single unavailable all-Bill control and estimated group counts; 7 tests; real Batch execution and durable campaign remain BLOCKED. CI/Pages pending.
 
 - v13.197 P05 E1: standalone simple image/content review per user; remove Batch UI; existing stored results only, actual reread remains blocked. CI/Pages pending.
+
+- v13.198 P05 E1: bank-group selector and headings in standalone review, unknown/nonbill distinct. Uses stored OCR only; CI/Pages pending.

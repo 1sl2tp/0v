@@ -612,3 +612,6 @@ Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Card/Adobe SelectionMa
 
 ## v13.197 — two-column image review
 Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Card/Adobe SelectionManager. User overrides prior Batch plan UI; remove disabled Batch controls and finance/review/editor controls from standalone projection, all loaded audit image records and clear stored-result provenance; old route remains alias. 8 inline scripts parse; static projection check passed; full CI/Pages/native pending. No production writes or new OCR execution; current API scope may not cover all images.
+
+## v13.198 — bank grouping
+Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Card/Adobe SelectionManager with source indexes. LIVE-BILL-BANK-GROUP-01, 8 synthetic rows covering aliases, missing, nonbill precedence, unverified, other transfer, receiving-only and legacy; 8 inline scripts parse. CI/Pages/native pending. Unknown aliases stay unclassified; stored OCR only, no new reads or financial writes.
