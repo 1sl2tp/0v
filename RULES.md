@@ -1494,3 +1494,6 @@ User requests a standalone image/content view. Supersedes Batch controls/plan in
 
 ## v13.198 — LIVE-BILL-BANK-GROUP-01
 Standalone image review groups existing classified transfer images by sending_bank only; exact normalized aliases, unknown/unverified/missing classification => Chưa phân loại, explicit non_bill => Không phải Bill with precedence. Never infer bank from recipient or memo. Stable group order, newest within group, counts over loaded rows, group selector and headers, existing search/page/media lifecycle. All images retained; no new AI or DB writes; recognized bank alias list is incomplete by design.
+
+## v13.198 — LIVE-BILL-FRESH-ONLY-01 (user override before release)
+Supersedes stored-result and bank-group presentation in standalone only. Existing authorized RPC response is immediately projected to image metadata (id, asset_id, storage_key, mime_type, kind, sent_at); no stored OCR, annotations, bank, classification, status, or prior read timestamps in standalone state, display, search or grouping. All are unclassified until genuinely new AI evidence exists. Current backend still returns legacy data to the client; no claim of a new media-only endpoint. No AI execution, no DB writes. Integrated audit unchanged. New-result feed not available; never fabricate results.

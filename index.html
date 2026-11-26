@@ -1947,6 +1947,8 @@ const BillAuditList=Object.freeze({
  labels:Object.freeze({amount:'Thiếu số tiền',short_account:'STK thiếu một số 9',missing_account:'Thiếu STK nhận',other_account:'STK khác',missing_name:'Thiếu tên nhận',other_name:'Tên nhận khác',date:'Thiếu/lỗi dữ liệu ngày',time:'Thiếu dữ liệu giờ',memo:'Thiếu nội dung',direction:'Nhầm chiều giao dịch',memo_recipient:'Nghi lấy người nhận từ nội dung',time_conflict:'Mâu thuẫn ngày giờ'}),
  code(r){const id=String(r.id||'');return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)?id.slice(0,8).toUpperCase():id},
  kind(r){return r.audit_kind|| (r.status==='non_bill'?'non_bill':'bill')},
+ imageOnly(r){return {id:r.id,asset_id:r.asset_id,storage_key:r.storage_key,mime_type:r.mime_type,kind:r.kind,sent_at:r.sent_at}},
+ imageOnlySelect(rows,query=''){const q=query.trim().toUpperCase();return rows.filter(r=>!q||[r.id,BillAuditList.code(r),'BILL-'+BillAuditList.code(r)].some(x=>String(x??'').toUpperCase().includes(q))).sort((a,b)=>String(b.sent_at??'').localeCompare(String(a.sent_at??''))||String(b.id).localeCompare(String(a.id)))},
  imageGroup(r){
   const kind=BillAuditList.kind(r);
   if(kind==='non_bill')return 'Không phải Bill';
@@ -2292,6 +2294,7 @@ function mountLiveChat(root){
  for(const btn of root.querySelectorAll('[data-filter]'))btn.addEventListener('click',()=>{filter=btn.dataset.filter;for(const x of root.querySelectorAll('[data-filter]'))x.classList.toggle('active',x===btn);renderDirectory()});
  const auditPanel=$live('#moduleContent'),auditFilters=document.createElement('select'),auditSort=document.createElement('select'),auditBankGroup=document.createElement('select'),auditSearch=Input.create({type:'search',label:'Tìm bill',placeholder:'Mã bill, tên, tiền, STK, mã giao dịch'});
  auditBankGroup.setAttribute('aria-label','Nhóm ngân hàng / phân loại ảnh');
+ if(standaloneBills){auditSearch.placeholder='Tìm mã ảnh';auditSearch.setAttribute('aria-label','Tìm mã ảnh')}
  auditFilters.setAttribute('aria-label','Lọc nhóm lỗi');auditSort.setAttribute('aria-label','Sắp xếp bill');let auditRows=[],auditTotal=0,auditPage=0,auditSequence=0,auditLastLoaded=null;
  const auditSummary=text('caption','Chưa tải danh sách bill.','p'),auditList=Layout.slot({name:'bill-audit-list',children:[]}),auditPager=text('caption','','span');
  const opt=(value,label)=>{const e=document.createElement('option');e.value=value;e.textContent=label;return e};
@@ -2299,7 +2302,7 @@ function mountLiveChat(root){
  const choices=[['flagged','Có dấu hiệu rà soát'],['bills','Tất cả bill'],['audit_pending','Chưa rà soát'],['audit_needs_fix','Đã ghi lỗi'],['audit_checked','Đã kiểm tra ảnh'],['clean','Không có cờ dữ liệu'],['review','Cần xác minh'],['received','Trạng thái đã thu'],['amount_read','Chờ đối soát'],['duplicate','Bill trùng'],['non_bill','Ảnh không phải bill'],['other_transfer','Ảnh chuyển khoản sai STK'],['unverified','Chưa đủ bằng chứng nhận diện bill'],['all','Tất cả bản ghi'],...Object.entries(BillAuditList.labels)];
  auditFilters.append(...choices.map(x=>opt(...x)));auditSort.append(opt('errors','Nhiều lỗi nhất'),opt('newest','Mới nhất'),opt('amount','Số tiền lớn nhất'));
  const prevAudit=Button.create({kind:'outline',text:'Trang trước',onClick:()=>{auditPage=Math.max(0,auditPage-1);renderAudit()}}),nextAudit=Button.create({kind:'outline',text:'Trang sau',onClick:()=>{auditPage++;renderAudit()}});
- const loadAudit=Button.create({kind:'outline',text:standaloneBills?'Đồng bộ kết quả đã lưu':'Tải / làm mới toàn bộ bill',onClick:()=>void fetchAudit()});
+ const loadAudit=Button.create({kind:'outline',text:standaloneBills?'Làm mới danh sách ảnh':'Tải / làm mới toàn bộ bill',onClick:()=>void fetchAudit()});
  const standaloneUrl='./bill.html';
  const openAuditPage=Button.create({kind:'outline',text:'Mở trang rà soát riêng',onClick:()=>location.assign(standaloneUrl)});
  if(standaloneBills){
@@ -2310,42 +2313,32 @@ function mountLiveChat(root){
    $live('[data-ui-slot~="crm-footer"]').textContent='Rà soát OCR độc lập · Không ghi thu';
  }
  function resetBillAudit(){releaseAuditMedia();auditSequence++;auditRows=[];auditTotal=0;auditPage=0;auditLastLoaded=null;auditSearch.value='';auditBankGroup.replaceChildren(opt('all','Tất cả ảnh'));auditList.replaceChildren();auditSummary.textContent='Chưa tải danh sách bill.';auditPager.textContent='';prevAudit.disabled=nextAudit.disabled=true;loadAudit.disabled=false}
- function renderAudit(){const currentRows=auditRows.map(r=>BillAuditList.effective(r));let selectedRows=BillAuditList.select(currentRows,standaloneBills?'all':auditFilters.value,standaloneBills?'newest':auditSort.value,auditSearch.value);
+ function renderAudit(){
   if(standaloneBills){
-   const previous=auditBankGroup.value||'all',groups=BillAuditList.imageGroups(currentRows);
-   auditBankGroup.replaceChildren(opt('all','Tất cả ảnh ('+currentRows.length+')'),...groups.map(g=>opt(g.name,g.name+' ('+g.items.length+')')));
-   auditBankGroup.value=[...auditBankGroup.options].some(o=>o.value===previous)?previous:'all';
-   selectedRows=BillAuditList.imageGroups(selectedRows).filter(g=>auditBankGroup.value==='all'||g.name===auditBankGroup.value).flatMap(g=>g.items)
+   const count=auditRows.length,previous=auditBankGroup.value||'all';
+   auditBankGroup.replaceChildren(opt('all','Tất cả ảnh ('+count+')'),opt('unclassified','Chưa phân loại ('+count+')'),opt('non_bill','Không phải Bill (0)'));
+   auditBankGroup.value=['all','unclassified','non_bill'].includes(previous)?previous:'all';
+   const selectedRows=auditBankGroup.value==='non_bill'?[]:BillAuditList.imageOnlySelect(auditRows,auditSearch.value);
+   const pages=Math.max(1,Math.ceil(selectedRows.length/25));auditPage=Math.min(auditPage,pages-1);releaseAuditMedia();auditList.replaceChildren();
+   auditSummary.textContent=count+' / '+auditTotal+' ảnh trong danh sách · '+selectedRows.length+' ảnh đang lọc. Chưa có kết quả AI đọc mới; không sử dụng OCR cũ.'+(auditLastLoaded?' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'')+(auditTotal>count?' · Danh sách chưa đầy đủ.':'');
+   if(selectedRows.length)auditList.append(text('body','Chưa phân loại','h3'));
+   for(const r of selectedRows.slice(auditPage*25,auditPage*25+25)){
+    const pair=CardController.billPair('Ảnh gốc','Kết quả AI mới'),ocr=CardController.create('business');
+    pair.pair.dataset.simpleBillReview='true';pair.right.append(ocr);
+    CardController.row(ocr,'Mã ảnh','BILL-'+BillAuditList.code(r));
+    const copyId=Button.create({kind:'outline',text:'Sao chép mã',onClick:async()=>{try{await navigator.clipboard.writeText(String(r.id));copyId.textContent='Đã sao chép'}catch{copyId.textContent='Không sao chép được'}}});ocr.append(copyId);
+    CardController.row(ocr,'Trạng thái','Chưa AI đọc mới');
+    if(r.storage_key&&isLiveImage(r))pair.left.append(mediaImageGroup([{...r,id:r.asset_id}],scope,choice,true,true));else pair.left.append(text('caption','Ảnh không khả dụng','p'));
+    auditList.append(pair.pair);
+   }
+   auditPager.textContent='Trang '+(auditPage+1)+' / '+pages;prevAudit.disabled=auditPage===0;nextAudit.disabled=auditPage>=pages-1;return
   }
-  const pages=Math.max(1,Math.ceil(selectedRows.length/25));auditPage=Math.min(auditPage,pages-1);releaseAuditMedia();auditList.replaceChildren();
+  const currentRows=auditRows.map(r=>BillAuditList.effective(r)),selectedRows=BillAuditList.select(currentRows,auditFilters.value,auditSort.value,auditSearch.value),pages=Math.max(1,Math.ceil(selectedRows.length/25));auditPage=Math.min(auditPage,pages-1);releaseAuditMedia();auditList.replaceChildren();
   const progress=BillAuditList.progress(currentRows),billRows=currentRows.filter(r=>BillAuditList.kind(r)==='bill'),flagged=billRows.filter(r=>r.flags.length).length;const counts=Object.fromEntries(Object.keys(BillAuditList.labels).map(k=>[k,billRows.filter(r=>r.flags.includes(k)).length]));for(const k of ['non_bill','other_transfer','unverified'])counts[k]=auditRows.filter(r=>BillAuditList.kind(r)===k).length;
   for(const e of auditFilters.options){const c=choices.find(x=>x[0]===e.value);if(c)e.textContent=c[1]+(Object.hasOwn(counts,e.value)?' ('+counts[e.value]+')':'')}
   auditSummary.textContent=String(auditRows.length)+' / '+auditTotal+' bản ghi · '+billRows.length+' bill · '+progress.saved+'/'+progress.total+' đã lưu kết quả rà soát · '+progress.pending+' chưa lưu · '+flagged+' có dấu hiệu · '+counts.non_bill+' không phải bill · '+counts.other_transfer+' sai STK · '+counts.unverified+' chưa xác định · '+selectedRows.length+' kết quả. Trường trống chưa khẳng định không có trên ảnh; không ghi thu.'+(auditLastLoaded?' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'')+(auditTotal>auditRows.length?' Dữ liệu vượt giới hạn 1.000, cần phân trang máy chủ.':'');
   const show=v=>v===null||v===undefined||v===''?'Không có':String(v);
-  if(standaloneBills)auditSummary.textContent=auditRows.length+' / '+auditTotal+' ảnh trong danh sách · '+selectedRows.length+' kết quả tìm kiếm. Hiển thị dữ liệu OCR đã lưu; chưa có lượt AI đọc mới toàn bộ.'+(auditLastLoaded?' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'')+(auditTotal>auditRows.length?' · Danh sách chưa đầy đủ.':'');
-  let lastImageGroup=null;
   for(const r of selectedRows.slice(auditPage*25,auditPage*25+25)){
-   if(standaloneBills){
-    const imageGroup=BillAuditList.imageGroup(r);if(lastImageGroup!==imageGroup){auditList.append(text('body',imageGroup,'h3'));lastImageGroup=imageGroup}
-    const pair=CardController.billPair('Ảnh gốc','Nội dung đọc được'),ocr=CardController.create('business');
-    pair.pair.dataset.simpleBillReview='true';pair.right.append(ocr);
-    CardController.row(ocr,'Mã ảnh','BILL-'+BillAuditList.code(r));
-    const copyId=Button.create({kind:'outline',text:'Sao chép mã',onClick:async()=>{try{await navigator.clipboard.writeText(String(r.id));copyId.textContent='Đã sao chép'}catch{copyId.textContent='Không sao chép được'}}});ocr.append(copyId);
-    if(r.storage_key&&isLiveImage(r))pair.left.append(mediaImageGroup([{...r,id:r.asset_id}],scope,choice,true,true));else pair.left.append(text('caption','Ảnh không khả dụng','p'));
-    const kind=BillAuditList.kind(r),kindLabel={bill:'Bill',non_bill:'Không phải Bill',other_transfer:'Ảnh chuyển khoản khác',unverified:'Chưa xác định'};
-    CardController.row(ocr,'Phân loại đã lưu',kindLabel[kind]||'Chưa xác định');
-    const stamp=value=>{const d=new Date(value||'');return Number.isFinite(d.getTime())?d.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',hour12:false}):'Chưa xác định'};
-    CardController.row(ocr,'Thời điểm OCR đã lưu',stamp(r.ocr_scanned_at));
-    if(r.result_saved_at)CardController.row(ocr,'Lưu rà soát gần nhất',stamp(r.result_saved_at));
-    if(kind!=='non_bill'){
-     for(const [key,label] of [['amount_vnd','Số tiền'],['date_raw','Ngày giao dịch'],['clock','Giờ giao dịch'],['account_raw','STK nhận'],['recipient','Tên TK nhận'],['memo','Nội dung'],['reference','Mã giao dịch'],['trace','Mã tra soát'],['sending_bank','NH gửi'],['receiving_bank','NH nhận']]){
-      const missing=r[key]==null||r[key]==='',absent=r.review_state==='checked'&&Object.hasOwn(r.corrections||{},key)&&r.corrections[key]===null;
-      CardController.row(ocr,label,missing?(absent?'Không có trên ảnh':'Chưa xác định'):String(r[key]));
-      if(missing&&!absent)ocr.lastElementChild?.lastElementChild?.classList.add('bill-missing');
-     }
-    }
-    auditList.append(pair.pair);continue;
-   }
    const card=CardController.create('business'),kind=BillAuditList.kind(r),kindLabels={non_bill:'Ảnh không phải bill',other_transfer:'Sai STK nhận',unverified:'Chưa xác định',bill:show(r.status)};CardController.header(card,show(r.customer),kindLabels[kind]+(r.has_ledger?' · Có bút toán':''));const flags=kind==='non_bill'?[]:r.flags;
    CardController.row(card,'Mã bill', 'BILL-'+BillAuditList.code(r));
    const copyId=Button.create({kind:'outline',text:'Sao chép mã bill',onClick:async()=>{try{await navigator.clipboard.writeText(String(r.id));copyId.textContent='Đã sao chép mã'}catch{copyId.textContent='Không sao chép được';}}});card.append(copyId);
@@ -2380,7 +2373,7 @@ function mountLiveChat(root){
  }
  function auditRefreshAllowed(){return !!scope&&standaloneBills&&!document.hidden&&!loadAudit.disabled&&!auditPanel.querySelector('[data-ui-slot~="bill-audit-editor"]:not(:empty)')&&!document.querySelector('dialog[open]')&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)}
  function refreshAuditVisible(){if(auditRefreshAllowed())void fetchAudit({background:true})}
- async function fetchAudit({background=false}={}){if(!scope||loadAudit.disabled||background&&!auditRefreshAllowed())return;const owner=scope,seq=++auditSequence,oldTop=auditPanel.scrollTop;loadAudit.disabled=true;if(!background)auditSummary.textContent='Đang tải dữ liệu bill…';try{const result=await rpc('v0_admin_bill_audit',{});if(scope!==owner||seq!==auditSequence)return;if(result?.account_id!==owner.accountId||!Array.isArray(result.rows)||result.rows.length>1000||!Number.isInteger(result.total)||result.total<result.rows.length||result.rows.some(r=>!Array.isArray(r.flags)||r.amount_vnd!=null&&!/^[0-9]{1,18}$/.test(r.amount_vnd)))throw Error('invalid_bill_audit');if(background&&(document.hidden||auditPanel.querySelector('[data-ui-slot~="bill-audit-editor"]:not(:empty)')||document.querySelector('dialog[open]')||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)))return;const changed=JSON.stringify(auditRows)!==JSON.stringify(result.rows)||auditTotal!==result.total;auditLastLoaded=new Date();if(changed||!background){auditRows=result.rows;auditTotal=result.total;renderAudit();ScrollController.writeLocal(auditPanel,oldTop)}else{auditSummary.textContent=auditSummary.textContent.replace(/ · Tải dữ liệu lúc [^·]+/,'')+' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'})}}catch{if(scope===owner&&seq===auditSequence){if(!background)auditSummary.textContent='Không tải được bảng bill. Kiểm tra quyền admin MFA hoặc phiên bản API.';else if(!auditSummary.textContent.includes(' · Chưa cập nhật'))auditSummary.textContent+=' · Chưa cập nhật, kiểm tra kết nối.'}}finally{if(scope===owner&&seq===auditSequence)loadAudit.disabled=false}}
+ async function fetchAudit({background=false}={}){if(!scope||loadAudit.disabled||background&&!auditRefreshAllowed())return;const owner=scope,seq=++auditSequence,oldTop=auditPanel.scrollTop;loadAudit.disabled=true;if(!background)auditSummary.textContent='Đang tải dữ liệu bill…';try{const result=await rpc('v0_admin_bill_audit',{});if(scope!==owner||seq!==auditSequence)return;if(result?.account_id!==owner.accountId||!Array.isArray(result.rows)||result.rows.length>1000||!Number.isInteger(result.total)||result.total<result.rows.length||(!standaloneBills&&result.rows.some(r=>!Array.isArray(r.flags)||r.amount_vnd!=null&&!/^[0-9]{1,18}$/.test(r.amount_vnd))))throw Error('invalid_bill_audit');if(background&&(document.hidden||auditPanel.querySelector('[data-ui-slot~="bill-audit-editor"]:not(:empty)')||document.querySelector('dialog[open]')||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)))return;const nextRows=standaloneBills?result.rows.map(r=>BillAuditList.imageOnly(r)):result.rows;const changed=JSON.stringify(auditRows)!==JSON.stringify(nextRows)||auditTotal!==result.total;auditLastLoaded=new Date();if(changed||!background){auditRows=nextRows;auditTotal=result.total;renderAudit();ScrollController.writeLocal(auditPanel,oldTop)}else{auditSummary.textContent=auditSummary.textContent.replace(/ · Tải dữ liệu lúc [^·]+/,'')+' · Tải dữ liệu lúc '+auditLastLoaded.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'})}}catch{if(scope===owner&&seq===auditSequence){if(!background)auditSummary.textContent='Không tải được bảng bill. Kiểm tra quyền admin MFA hoặc phiên bản API.';else if(!auditSummary.textContent.includes(' · Chưa cập nhật'))auditSummary.textContent+=' · Chưa cập nhật, kiểm tra kết nối.'}}finally{if(scope===owner&&seq===auditSequence)loadAudit.disabled=false}}
  document.addEventListener('visibilitychange',refreshAuditVisible);window.addEventListener('focus',refreshAuditVisible);
  for(const e of [auditFilters,auditSort,auditBankGroup,auditSearch])e.addEventListener(e===auditSearch?'input':'change',()=>{auditPage=0;renderAudit()});
  auditPanel.append(CardController.panel({title:'Rà soát Bill',children:standaloneBills?[loadAudit,auditBankGroup,auditSearch,auditSummary]:[openAuditPage,loadAudit,auditSearch,auditFilters,auditSort,auditSummary]}),auditList,Layout.slot({name:'bill-audit-pager',children:[prevAudit,auditPager,nextAudit]}));resetBillAudit();

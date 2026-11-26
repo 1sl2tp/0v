@@ -573,3 +573,6 @@ Existing BillAuditList.effective/select, CardController.billPair and mediaImageG
 
 ## v13.198 — BillAuditList.imageGroup / imageGroups
 Pure display grouping based on stored audit_kind and sender-bank aliases, no OCR inference; groups contain every row exactly once. Native select with counts; standalone only, same CardController pair.
+
+## v13.198 — BillAuditList.imageOnly / imageOnlySelect
+Standalone ingress allowlist metadata only; search by image ID, sort by sent_at. No use of legacy fields. Bank-group helpers are dormant until an independently verified new-result source exists.

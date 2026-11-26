@@ -109,3 +109,5 @@ L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezo
 - v13.197 P05 E1: standalone simple image/content review per user; remove Batch UI; existing stored results only, actual reread remains blocked. CI/Pages pending.
 
 - v13.198 P05 E1: bank-group selector and headings in standalone review, unknown/nonbill distinct. Uses stored OCR only; CI/Pages pending.
+
+- v13.198 E1 revision: user requires image-only baseline; all loaded images unclassified until new OCR; no prior fields or classification used in standalone. New-result backend remains unavailable.
