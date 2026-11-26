@@ -113,3 +113,5 @@ L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezo
 - v13.198 E1 revision: user requires image-only baseline; all loaded images unclassified until new OCR; no prior fields or classification used in standalone. New-result backend remains unavailable.
 
 - v13.199 P05 E1: local explicit single-image classification from original, printed-text heuristic and suffix rule, uncertain group; new OCR results in page memory only. No external AI or ledger; CI/Pages/native pending.
+
+- v13.200 P05 E1: automatic sequential local OCR of all loaded original images; actual counts, pause/resume, single worker; session-only; CI/Pages/native pending.

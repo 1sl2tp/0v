@@ -621,3 +621,6 @@ LIVE-BILL-FRESH-ONLY-01. Standalone state stripped to six metadata keys from exi
 
 ## v13.199 — standalone local print classifier
 Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Card/Adobe SelectionManager; existing Tesseract source/field labels inspected. LIVE-BILL-LOCAL-PRINT-01. 11 synthetic text cases and 8 inline scripts parse. No image sent to Gemini, no batch, no DB changes. OCR model assets load via existing pinned CDN worker; actual OCR accuracy, handwritten images, mobile device and Pages not verified. Results memory-only, F5 clears. CI pending.
+
+## v13.200 — auto OCR start
+E0 user screenshot v13.199 shows 600 unclassified, code only manual button. Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Button/Adobe SelectionManager (independent state and stable keys), existing Tesseract worker factory. LIVE-BILL-AUTO-LOCAL-01. E1 auto queue with one reused worker, actual attempt counts, scope/visibility/pause guard, per-image failure and fatal worker pause. 8 scripts parsed, queue fixture passed in connector; full node audit/CI/Pages/native and real 600-image accuracy pending. No old OCR, Gemini, keyboard, DB or collection changes. F5 still clears session results. Rollback v13.199.

@@ -579,3 +579,7 @@ Standalone ingress allowlist metadata only; search by image ID, sort by sent_at.
 
 ## v13.199 — BillAuditList.printedClassification
 Pure OCR text classification with explicit recipient label from BillOCRFieldAPI.identify, numeric suffix, contextual printed-text proxy and confidence. Local single-image OCR reuses BillOCREngineAPI.loadDemo/demoFactory; single flight, bounded image size, session-only results. No verified handwriting classifier or production database persistence.
+
+
+## v13.200 — LIVE-BILL-AUTO-LOCAL-01
+User override of single-image start: after successful standalone audit fetch automatically enqueue all loaded eligible image metadata, independent of current filter or page. One worker per scan, sequential, no old OCR, no external AI or financial writes. Attempted failures remain unclassified; image errors continue, worker errors pause, explicit resume, manual reread after scan, hidden tab pauses after current image, logout invalidates scope. Progress is actual attempts and successful reads; redraw every three, preserve scroll. Session memory only; no cross-F5 persistence; no claim of handwriting accuracy. Integrated audit and keyboard unchanged.
