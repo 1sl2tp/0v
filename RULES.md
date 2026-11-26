@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.223)
+## 00. Chỉ mục rule đang có hiệu lực (v13.224)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -16,7 +16,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
 | Material / edge | SURFACE-MOBILE-OPTICS-01–02, SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung), SURFACE-API-01–05 | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
-| Bill layout | GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
+| Bill layout | LIVE-BILL-PAIR-01, GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
 | Geometry / Layout | GEO-API-01–08, GEO-ADAPT-03, DESKTOP-04, BOTTOM-04, COMP-04 | phép đo chỉ hợp với composer một hàng |
 Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu không được nêu rõ. Khi sửa một owner, phải đối chiếu các owner khác và ghi kết quả chưa kiểm chứng.
 
@@ -1681,3 +1681,7 @@ User request: one new authoritative reader writes bill facts; existing collectio
 
 ## BILL-FLOW — Quy trình nghiệp vụ chung CHAT / 0v (2026-11-26)
 Nguồn cha duy nhất: [CHAT docs/BILL_SINGLE_READER.md](https://github.com/1sl2tp/chat/blob/main/docs/BILL_SINGLE_READER.md), phần BILL-FLOW-01–08 (đề xuất mở rộng tại [CHAT #426](https://github.com/1sl2tp/chat/pull/426) trước khi merge). Không sao chép rule đối soát hay tạo API ghi thu thứ hai trong 0v. Live 0v chỉ đọc kết quả canonical receipt; lab đọc thử không ghi sổ. Khi sửa thông tin bill đã xác minh, owner backend phải cập nhật evidence đồng nhất, tái đánh giá completeness, xóa preview cũ không còn hợp lệ và đưa bill chưa thu vào đối soát lại bằng API cha; không tự ghi received, không tạo ledger mới cho bill đã thu. Cần lưu lịch sử cũ/mới và kiểm thử revision/duplicate/late notice. Đây là mục liên kết tài liệu, không đổi UI hoặc version, không tuyên bố API recheck tổng quát đã phát hành. Việc đọc bill #425 đã triển khai; #426 vẫn phải qua CI và triển khai riêng.
+
+
+## v13.224 — LIVE-BILL-PAIR-01
+User reports image/info columns uneven and inline rotate redundant after automatic orientation. Live BillReceiptProjection uses shared CardController.billPair and MediaController.gallery; equal-width columns, 24px compact heading tracks, 8px shared gap, equal content frame top/bottom when available width >=308px. Image frame fits the information card, contain entire photo without stretching or cropping, same radius/border; a short or landscape image may have neutral letterboxing. Narrow width stacks naturally, loaded photo keeps its intrinsic aspect ratio. Keep auto orientation and existing full-screen viewer rotation; remove only inline rotate action for loaded single bill. Preserve load/retry, zoom, scroll ownership and all financial facts. Source: pinned Astryx Card 32208a1cca96f5c7bf11c2a34be07e0aca7ae83a (min-width, radius and clipping), Stack c56d72759ad2f6f86102228e22c3123530b32894 (cross-axis stretch); MUI Card.js verified blob b8d19527bcc8ec03a58ddeb1cedd47ead57e036b on master (blob mistaken for commit initially). CSS scoped to live pair only; no new dependencies or viewer behavior. Acceptance: image/card aligned top and bottom <=1px at two-column width, no inline rotate, viewer rotate remains, full photo visible, narrow stacked layout no overflow, no keyboard/DB changes. CI and native Safari pending.
