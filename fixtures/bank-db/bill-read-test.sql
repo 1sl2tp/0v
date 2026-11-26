@@ -97,6 +97,7 @@ BEGIN
  result:=public.v0_admin_bill_audit();
  a:=(SELECT x FROM jsonb_array_elements(result->'rows') x WHERE x->>'asset_id'='50000000-0000-0000-0000-000000000001');
  IF a->>'review_state' IS DISTINCT FROM 'needs_fix' OR a->'corrections'->>'account_raw' IS DISTINCT FROM '1234567890123' OR a->>'account_raw' IS DISTINCT FROM '290118199999' OR a->>'review_revision' IS DISTINCT FROM '1' THEN RAISE EXCEPTION 'annotation isolation'; END IF;
+ IF NOT (a ? 'ocr_scanned_at') OR a->>'result_saved_at' IS NULL THEN RAISE EXCEPTION 'audit read timestamps absent'; END IF;
  IF has_table_privilege(current_user,'v0_private.bill_audit_annotations','SELECT') OR has_table_privilege(current_user,'v0_private.bill_audit_annotations','INSERT') THEN RAISE EXCEPTION 'annotation table access'; END IF;
  result:=public.v0_admin_media('30000000-0000-0000-0000-000000000001');
  IF jsonb_array_length(result->'assets')<>10 THEN RAISE EXCEPTION 'asset count'; END IF;

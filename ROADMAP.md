@@ -97,3 +97,5 @@ L08 / v13.190: stable bill identifiers and exact UUID copy for review feedback.
 L08 / v13.191: latest saved OCR review result becomes primary audit display; original OCR expandable. Full CI and Pages pending.
 
 L08 / v13.192: standalone Bill foreground/heartbeat refresh and current data timestamp; pending CI/Pages.
+
+L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezone; CI/RPC/Pages pending.
