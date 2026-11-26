@@ -528,3 +528,5 @@ LIVE-BILL-BANK-PROOF-UI-01: BillReceiptProjection uses bank_verified_account onl
 LIVE-BILL-DIGIT-RECHECK-UI-01: BillReceiptProjection prefers strict linked bank proof; otherwise accepts exact focused OCR projection for truncated-tail only; retains original and displays no bank confirmation.
 
 LIVE-BILL-MEMO-LINE-01: BillReceiptProjection converts runs of whitespace to one space for displayed memo only. Image transcription remains literal, business comparison retains existing normalization and guards.
+
+LIVE-BILL-RECIPIENT-GATE-01: BillReceiptProjection.read returns null unless normalized beneficiary name matches and full configured account is supported by literal OCR or existing validated correction. Return main receipt fields first; optional source metadata remains in compactBillDetails. No new component or financial mutation.
