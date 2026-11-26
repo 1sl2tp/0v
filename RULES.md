@@ -1696,3 +1696,7 @@ Same authorized room with a usable snapshot and existing message nodes: retain t
 
 ### LIVE-BILL-PAIR-01 — Cascade correction
 CI 45810507799 reported left content 2px vs right 493px despite equal width. Base bill-pair section alignment came after container variant and overrode it. Keep base rules first and live variant immediately after, with matching selector specificity for its two-column container rule. No !important or separate child geometry writer. Keep original geometry assertion unchanged. E2 pending exact head.
+
+
+### LIVE-BILL-PAIR-01 — Single-image sizing cascade
+Exact head 28234c6: API CI 45811305172 failed at photoHeight>0 after frame equality assertions passed; DB fixture 45811305166 passed. Existing single-gallery selectors have higher specificity than earlier bill image override and impose intrinsic auto height. Within the existing wide live bill container, explicitly size the single tile and contained image to the positioned gallery frame; no new owner, no !important, narrow layout unchanged. Fixture now supplies a real local SVG and intrinsic ratio; retains original assertions and adds image-to-frame height equality. Re-read Astryx Stack blob c56d72759ad2f6f86102228e22c3123530b32894 and MUI ImageListItem blob aeac6e4e7949b187ddad1815fc0bfff4973ba50c. No keyboard or production changes. Full CI and native Safari pending; no local full-repo audit.
