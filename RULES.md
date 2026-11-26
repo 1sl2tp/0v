@@ -1693,3 +1693,6 @@ MediaController prepares original image dimensions and optional bill orientation
 
 ## v13.224 — LIVE-ROOM-LIFECYCLE-01
 Same authorized room with a usable snapshot and existing message nodes: retain the MediaController DOM and object URLs on back/reopen; Main owns route/scroll positioning, contact selection still opens latest. Do not replay cached metadata over a retained tree. A new request generation invalidates previous thread/media reads, including refresh post-directory second projection; changing account/room clears scoped media. Identical message projection does not recompute flow or write scroll. Cold/expired/evicted cache remains async. No new owner or financial operation. Acceptance: same gallery node, same image nodes and object URLs after returning to same room; existing late-growth and user-scroll tests; stale generation checks; CI and device gate.
+
+### LIVE-BILL-PAIR-01 — Cascade correction
+CI 45810507799 reported left content 2px vs right 493px despite equal width. Base bill-pair section alignment came after container variant and overrode it. Keep base rules first and live variant immediately after, with matching selector specificity for its two-column container rule. No !important or separate child geometry writer. Keep original geometry assertion unchanged. E2 pending exact head.
