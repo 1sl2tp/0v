@@ -93,3 +93,5 @@ L08 / v13.189: dedicated /bill.html entry, source and version synchronized with 
 L08 v13.189 (before release): separate nonbill, wrong account, uncertain and target suffix; hash duplicate evidence not OCR error. CI/migration pending.
 
 L08 / v13.190: stable bill identifiers and exact UUID copy for review feedback.
+
+L08 / v13.191: latest saved OCR review result becomes primary audit display; original OCR expandable. Full CI and Pages pending.
