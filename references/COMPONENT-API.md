@@ -775,3 +775,7 @@ ScrollController is sole live intent/position owner; Layout and KeyboardControll
 
 ## v13.236 candidate — SCROLL-01 S1a
 ScrollController.edgeMetrics(extent,height,rawTop) returns clamped top/max/gap, actual end vs near threshold. intentState and tailPolicy separate passive events from focus; live geometry only schedules existing frame, no recurring focus observer. S1b/CI/native pending.
+
+
+## SCROLL-01 S1b candidate
+ScrollController.beginManual/manualScroll/scheduleManualSettle tracks same-extent movement and quiet settlement; savedPosition and visualEdge expose intent/anchor and physical/visual geometry. Restore uses existing anchor fallback. No keyboard owner edits.
