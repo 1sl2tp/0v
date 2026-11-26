@@ -755,3 +755,7 @@ E0 source inspection: text-first partial snapshot inherited knownIds, but final 
 
 ## v13.233 — DurableAlertController pre-effect permit
 `authorize(row,input,options)` pure transition; `beginEffect(db,id,input,options)` atomic IndexedDB fixture transaction returns `{row,allowed}`; only `allowed:true` authorizes one attempt, `finish` requires permit. Changed route before effect allows replan with same identity, confirmed read cancels, uncertain never auto-replays. Existing NotificationController remains sole route policy. Production server and service worker pending.
+
+
+## v13.234 — ScrollController tail frame
+`imagePaint` queues late live paints during explicit follow; existing `scheduleJump` drains valid queued paints before clamped tail reconciliation. `renderLiveSnapshot` retains follow even when extent temporarily differs; no additional scroll owner. User away anchor unchanged. Native Safari pending.
