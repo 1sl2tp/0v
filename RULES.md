@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.220)
+## 00. Chỉ mục rule đang có hiệu lực (v13.221)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1665,3 +1665,7 @@ User requests shared ChatGPT Drive profile + scrollbar + Web/PWA edges + single 
 
 ## LIVE-DIRECTORY-STABLE — v13.220 follow-up
 - Actual live renderDirectory previously replaced every contact/avatar/name/time on each reload, latest hint, filter, ACK. Contact.reconcile now keys by account ID, delegates Collection.project, reuses Contact nodes, updates name/preview/time/unread via Contact.update and image via Avatar.update (unchanged source leaves existing image/fallback; changed URL replaces only image internals). Hidden filtered contacts retain node; removed accounts removed, onSelect resolves current row rather than captured stale record. Equal payload no full list reset; reorder only when necessary, preserve visible anchor via ScrollController. Header Avatar.update also idempotent. ChatReadAPI uses FormatAPI.time on normalized explicit instant. No read authority changes. Existing Message keyed reconciliation retained; media/signature and thread reopen not fixed in this pass. Top/bottom/keyboard protected ranges unchanged. Study pinned Adobe SelectionManager d6ff15c5b5efd7f9be685f87f46c3ed251c093f5, useSelectableCollection 739a9433b098c081ce872815f10fbc83ba07172c, Virtualizer 3959c1cc7666f0384d31af2c770c6902662cdcb1 (stable key and anchor). Add live fixture row/avatar/name/time identity regression; CI and native still pending. No production data.
+
+
+## v13.221 — LIVE-THREAD-BILL-NEW-ONLY
+Explicit user request supersedes v13.214 48h/known-receipt eligibility and quota retry. Authorized session starts at billNewAfter; valid incoming image/message/room IDs, strictly newer timestamp, no receipt/cache. One automatic attempt per asset reserved before model request, no automatic retry; quota cooldown and manual lab separate. New multiple images handled one image at a time; historical galleries grouped. Cache bill/nonbill/unclassified in existing scoped session storage. F5 skips previous timestamps, switching room does not reset attempts. Existing 64MB/64-item blob cache reused; object URLs may be recreated. Device clock cutoff can miss offline or skewed messages; no background scans or durable cross-device claim. No DB/Edge/financial writes, protected keyboard ranges unchanged apart from version labels. References prior CACHE-API-SOURCES/SYNC-API-SOURCES (stable scoped identity, stale guards), existing ThreadBillAutoPolicy; local policy fixture pass, CI/device pending. Release v13.220 merged separately after exact-head CI.

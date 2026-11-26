@@ -785,3 +785,11 @@ Run 45778781330 job 139768852394 reached Chromium assertion at line 123. New man
 
 ### LIVE-DIRECTORY-STABLE — isolated format fixture correction
 Run 45781965239 job 139779345971 passed live login, directory, avatar identity, messages and logout. Isolated ChatReadAPI fixture then failed because its extracted code omitted real shared FormatAPI/TimeAPI/DecimalAPI declarations. Load the same production declarations before evaluating ChatReadAPI; no mock or weakened assertions. No runtime changes. Require both exact-head workflows.
+
+
+## v13.221 — LIVE-THREAD-BILL-NEW-ONLY
+Explicit user request supersedes v13.214 48h/known-receipt eligibility and quota retry. Authorized session starts at billNewAfter; valid incoming image/message/room IDs, strictly newer timestamp, no receipt/cache. One automatic attempt per asset reserved before model request, no automatic retry; quota cooldown and manual lab separate. New multiple images handled one image at a time; historical galleries grouped. Cache bill/nonbill/unclassified in existing scoped session storage. F5 skips previous timestamps, switching room does not reset attempts. Existing 64MB/64-item blob cache reused; object URLs may be recreated. Device clock cutoff can miss offline or skewed messages; no background scans or durable cross-device claim. No DB/Edge/financial writes, protected keyboard ranges unchanged apart from version labels. References prior CACHE-API-SOURCES/SYNC-API-SOURCES (stable scoped identity, stale guards), existing ThreadBillAutoPolicy; local policy fixture pass, CI/device pending. Release v13.220 merged separately after exact-head CI.
+
+
+### v13.221 release gate correction
+CI 45791277398 job 139810633118 failed solely on version rule index still v13.220. Update active index to v13.221, keep exact tests and runtime unchanged. Bank fixture passed; rerun both exact head checks.
