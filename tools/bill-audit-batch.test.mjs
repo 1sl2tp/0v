@@ -13,3 +13,8 @@ const quota=await auditBatch({...opts,version:'quota',now:100,read:async()=>{thr
 assert.equal(quota.calls,1);assert.equal(quota.blockedUntil,120100);
 assert.equal((await auditBatch({...opts,version:'quota',now:101})).calls,0);
 console.log('synthetic audit batch checks passed');
+
+const bad=await auditBatch({...opts,rows:[{id:'bad',assetId:'a',hash:'bad'}]});assert.equal(bad.invalid,1);assert.equal(bad.calls,0);
+const denied=await auditBatch({...opts,version:'denied',rows:[rows[0]],read:async()=>({originalVerified:false})});assert.equal(denied.calls,1);
+assert.equal((await auditBatch({...opts,version:'denied',rows:[rows[0]]})).terminal,1);
+assert.equal((await auditBatch({...opts,version:'denied',rows:[duplicate]})).calls,0);
