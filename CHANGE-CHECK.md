@@ -606,3 +606,6 @@ Read AGENTS/RULES/COMPONENT-API/ROADMAP, Astryx Card and Adobe SelectionManager 
 
 ## v13.195 — Batch control shell
 Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Button / Adobe SelectionManager. LIVE-BILL-BATCH-CONTROLS-01. Backend absent verified in prior round. Two disabled start controls, existing read-only sync action, clear unavailable label; no false progress, no paid job or finance changes. 8 inline scripts parsed; static source guard passed; CI/Pages/device pending.
+
+## v13.196 — single Batch plan control
+Read AGENTS/RULES/COMPONENT-API/ROADMAP and pinned Astryx Card/Adobe SelectionManager. LIVE-BILL-BATCH-PLAN-01; replaces two buttons with one disabled button, read-only dynamic estimated groups, clears on session reset. 7 synthetic plan cases and 8 script syntax checks passed. No submission, backend change or finances; durable one-click workflow not available. CI/Pages/native pending.

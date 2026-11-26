@@ -564,3 +564,6 @@ Returns total/saved/pending/latest over loaded Bill scope, excludes non-bill, di
 
 ## v13.195 — Batch controls
 Existing CardController.panel and Button.create with native disabled; only existing fetchAudit is actionable. No duplicate runtime owner. No dispatch, no production changes.
+
+## v13.196 — BillAuditList.batchPlan(pending)
+Pure count projection (0..1000) at max 50 records; returns planned number/count, not actual jobs. Existing CardController rows and one disabled native Button; saved-result sync remains read-only. No endpoint calls added.
