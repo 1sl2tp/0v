@@ -779,3 +779,7 @@ ScrollController.edgeMetrics(extent,height,rawTop) returns clamped top/max/gap, 
 
 ## SCROLL-01 S1b candidate
 ScrollController.beginManual/manualScroll/scheduleManualSettle tracks same-extent movement and quiet settlement; savedPosition and visualEdge expose intent/anchor and physical/visual geometry. Restore uses existing anchor fallback. No keyboard owner edits.
+
+
+## v13.237 candidate — SCROLL-01 S2a
+MediaController.fixedRatios/fixedGallery/fixedImageState reserve display geometry from trusted metadata/default and update stable slot contents only. Existing cache and deferred paint ownership retained; bill/audit path unchanged. S2b and CI/device pending.

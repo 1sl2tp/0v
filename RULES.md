@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.236)
+## 00. Chỉ mục rule đang có hiệu lực (v13.237)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1809,3 +1809,6 @@ S2: fixed media slot geometry in MediaController; 1–4 images and error/retry; 
 
 
 - SCROLL-01 S1b candidate: scoped user gesture evidence and quiet settlement; physical movement at unchanged extent to actual end rearms follow. Saved explicit intent and reading anchor; visual-edge diagnostics only. Native verification pending.
+
+
+- SCROLL-01 S2a candidate: MediaController.fixedGallery/fixedRatios/fixedImageState owns ordinary live image slots, immutable display ratio through decode/error/retry; no collapse of failed slots. Existing bill/audit projection separate; S2b pending. Native verification pending.
