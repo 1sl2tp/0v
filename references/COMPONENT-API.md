@@ -767,3 +767,7 @@ Existing synthetic live adapter reused with mobile WebKit tap, two late paints a
 
 ## v13.235 candidate — ScrollController follow handoff
 Existing jump frame hands queued work to scheduleImagePaint after loss of follow, including no-scroll cancellation. Mobile live scrollport edge bounce disabled where supported. No new owner, native acceptance pending.
+
+
+## SCROLL-01 target parent contract (migration pending)
+ScrollController is sole live intent/position owner; Layout and KeyboardController expose actual visible interval and existing reserves, Message supplies latest identity, MediaController immutable display slots, Realtime/Cache keyed payload only. See RULES.md SCROLL-01a–h; no new owner or claim of completed runtime migration. S0 CI first.

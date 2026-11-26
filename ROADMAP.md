@@ -264,3 +264,11 @@ User requests original image audit. Existing authenticated standalone lab strips
 
 
 - v13.235 candidate / LIVE-MEDIA-JUMP-04: source inspection shows queued image paint can become orphaned if explicit follow is cancelled before scheduled jump frame without a subsequent scroll event. Existing jump frame hands off queued media to existing deferred image scheduler when not following/interacting, not navigating; no new scheduler or scroll owner. Mobile live message scrollport only sets overscroll-behavior-y:none to reduce edge bounce where supported (MDN https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTop; WebKit issue https://bugs.webkit.org/show_bug.cgi?id=187449 for historical momentum caveat; not proof of user's cause). Keep native scrolling, touch, keyboard and layout; four protected keyboard ranges byte-identical before version labels. Add synthetic queue/cancel-without-scroll regression in Chromium and WebKit, CSS computed assertion. Classic scripts and test syntax passed; no real WebKit/physical Safari test yet. Read pinned Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894 and Adobe Virtualizer 3959c1cc7666f0384d31af2c770c6902662cdcb1. Depends on #221 test-only QA; do not merge this draft until #221 is accepted, main reconciled and exact-head CI passes. Rollback v13.234; no production data or Push changes.
+
+
+## SCROLL-01 — approved priority migration (P02/P03/L04/L06)
+- S0 DOING: resolve #221/#222 CI WebKit image failure, release only exact-head green.
+- S1 TODO: central intent/edge metric, event matrix and one-shot focus; no keyboard geometry change.
+- S2 TODO: fixed MediaController image slots, unknown dimensions and partial retry, existing bill geometry.
+- S3 TODO: A/B/ACK/restore/keyboard anchor integration; video/file reservation.
+- S4 TODO: Chromium/WebKit and actual Safari/PWA/Android E4, no premature DONE.
