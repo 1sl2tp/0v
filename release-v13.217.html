@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#f8f8f8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -555,7 +554,7 @@ dialog[data-popup-parent] [data-type-role=number],dialog[data-popup-parent] [dat
 [data-type-weight=medium],#app [data-type-weight=medium]{font-weight:var(--weight-medium)}
 [data-type-weight=semibold],#app [data-type-weight=semibold]{font-weight:var(--weight-semibold)}
 [data-type-weight=bold],#app [data-type-weight=bold]{font-weight:var(--weight-bold)}
-[data-type-decoration=underline],#app [data-type-decoration=underline]{text-decoration:underline}
+[data-type-decoration=underline],#app [data-type-decoration=underline],#app [data-content-parent] u,#app [data-content-parent] a[data-content-link]{text-decoration-line:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:.23em}
 [data-type-decoration=strike],#app [data-type-decoration=strike]{text-decoration:line-through}
 [data-type-decoration=italic],#app [data-type-decoration=italic]{font-style:italic}
 [data-ui-slot~="type-lab"]{display:grid;gap:var(--gap-md);margin-top:var(--gap-md)}
@@ -757,7 +756,7 @@ html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][dat
 [data-content-parent] li[data-content-check=done]>span:first-child{color:#28643a}
 [data-content-parent] blockquote{margin:var(--gap-sm) 0;padding-inline-start:var(--gap-md);border-inline-start:3px solid var(--line);color:var(--muted)}
 [data-content-parent] strong{font-weight:var(--weight-semibold)}
-[data-content-parent] u,[data-content-parent] a[data-content-link]{text-decoration:underline;text-underline-offset:.16em}
+
 [data-content-parent] a[data-content-link]{color:var(--content-link)}
 [data-content-parent] mark{background:var(--content-mark-bg);color:var(--content-mark-ink);border-radius:3px;padding-inline:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 [data-content-parent] code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.88em;background:var(--content-code-bg);border-radius:4px;padding:2px 4px}
@@ -792,15 +791,15 @@ html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][dat
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-ui-slot~="messages"]>[data-ui-slot~="day"]{display:none}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-content-continuation="true"]{margin-block-start:0;padding-block-start:0}
 html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][data-content-time-shared="true"]{padding-block-end:0}
-[data-content-parent] u{text-decoration:underline solid;text-underline-offset:.16em}
-[data-content-parent] a[data-content-link]{color:inherit;text-decoration-line:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:.23em}
+
+[data-content-parent] a[data-content-link]{color:inherit}
 [data-content-parent] a[data-content-link]::after{content:" ↗" / "";display:inline;font-size:.84em;text-decoration:none}
 [data-content-parent] a[data-content-link]:focus-visible{outline:2px solid var(--control-focus);outline-offset:2px}
-[data-content-parent] a[data-content-link]:hover{text-decoration-style:solid}
+
 
 
 /* Safari data-detector fallback; explicit links and underline remain semantic. */
-#app a[x-apple-data-detectors]:not([data-content-link]){color:inherit!important;font:inherit!important;text-decoration:none!important}
+#app a[x-apple-data-detectors]:not([data-content-link]){color:inherit!important;font:inherit!important;text-decoration:underline dotted 1px!important;text-underline-offset:.23em!important}
 /* CHAT-RHYTHM: parent turn spacing independent of content type. */
 #app>[data-ui-slot~="conversation"] [data-ui-slot~="messages"]{--thread-base-gap:var(--gap-sm);--thread-run-gap:var(--gap-xs);--thread-turn-gap:var(--gap-md);--thread-break-gap:var(--gap-lg);row-gap:var(--thread-base-gap)}
 @media(max-width:767px){html[data-floating="1"] #app>[data-ui-slot~="conversation"] [data-ui-slot~="messages"]{--thread-base-gap:var(--app-message-gap);row-gap:var(--thread-base-gap)}}

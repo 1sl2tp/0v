@@ -1601,7 +1601,7 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 - CONTENT-PRESENTATION-01: A incoming plain full-width, B outgoing right-aligned gray bubble max 86%, 18px radius, 8/12 padding. Row stays full-width, same logical message ID/order. Media/bill retains owner. Supersedes CONTENT-AB-01 visual only.
 - CONTENT-PRESENTATION-02: Contact.preview strips leading legacy Bạn: display prefix only; optimistic and fetched hints no longer synthesize it. Actual stored content, group/filter, unread and directory time unchanged.
 - CONTENT-PRESENTATION-03: Hide clock/date dividers visually in thread only; retain metadata, accessibility labels, grouping logic, chronology and bank times. Visible send error remains.
-- CONTENT-PRESENTATION-04: Links inherit ink, dotted 1px underline .23em offset and external arrow; explicit underline solid. Native content inherits Typography. Reference user screenshot and Astryx Text / github-markdown-css from CONTENT-FORMAT-04; not official CSS. Native pending.
+- CONTENT-PRESENTATION-04: Links inherit ink, dotted 1px underline .23em offset and external arrow; explicit underline dotted (updated by CONTENT-FORMAT-06). Native content inherits Typography. Reference user screenshot and Astryx Text / github-markdown-css from CONTENT-FORMAT-04; not official CSS. Native pending.
 
 
 ## v13.216 — LATEST-MESSAGE parent integration
@@ -1618,3 +1618,5 @@ CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtu
 - CHAT-RHYTHM-04: coalesced dirty wake while blocked; trailing refresh, no new timer cadence/RPC type; reproject fresh snapshot only. Sources Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894, Adobe Virtualizer 3959c1cc7666f0384d31af2c770c6902662cdcb1, Matrix timeline 93c6ce4a8151aa3c93c2aef36d22cf3f7341904b. CI/device pending.
 
 - CHAT-RHYTHM-05 / CONTENT-FORMAT-05: ordinary numeric strings (money, account, date/time, product codes) remain plain display text; no implicit underline. Safari telephone=no at entry, fallback for x-apple-data-detectors. Only explicit ContentAPI links receive dotted link paint; explicit underline remains solid. Source Apple Phone Links documentation. Native Safari acceptance pending.
+
+- CONTENT-FORMAT-06: User correction supersedes CONTENT-FORMAT-05's detector suppression and solid underline. Typography underline, ContentAPI u, explicit links and Safari-detected links all use dotted 1px underline, .23em offset, inherited ink; hover stays dotted. Ordinary numeric text is not artificially converted into links by 0v. Native Safari verification pending.

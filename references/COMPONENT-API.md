@@ -680,3 +680,6 @@ v13.217 Message.rhythm/newIncoming and LiveChatSnapshotPolicy.group/unread exten
 
 
 v13.217 follow-up: explicit ContentAPI links marked data-content-link; numeric text not automatically decorated; Safari detector fallback and actual parent dependency in CI.
+
+
+CONTENT-FORMAT-06: one dotted underline paint for Typography and ContentAPI; native detector links styled dotted as well. No custom conversion of ordinary numbers.

@@ -729,3 +729,7 @@ E0 screenshots v13.216: uniform broad gap, jump lacks count, group/unread uncert
 
 ### v13.217 — CI dependency and Safari number decoration
 E0 CI 45768740404 failed at audit-api-browser.cjs:131 because extracted ChatReadAPI now depends on LiveChatSnapshotPolicy; include actual parent source in test, not a mock or weakened assertion. Numeric unread precedence rechecked in synthetic host. User reports underline with numbers: interpreted as unwanted automatic Safari data detection; Apple documented telephone=no (https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html). Add global meta, scoped detected-link fallback; explicit ContentAPI http(s) links marked and retain dotted decoration, explicit u solid. Five ordinary numeric cases plus two explicit format cases and inline syntax checked; actual Safari/PWA behavior not yet tested. No keyboard, DB or old CHAT changes.
+
+
+### v13.217 — dotted underline only
+User clarified no solid underline. Reuse Typography decoration owner for semantic underline and explicit links; remove solid hover and allow Safari native detection with dotted scoped fallback. No automatic custom numeric linking. Inline syntax and no-solid CSS scan passed; browser style assertion added; CI/native pending. No changes to keyboard or DB.
