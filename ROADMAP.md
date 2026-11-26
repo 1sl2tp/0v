@@ -244,3 +244,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 - v13.228 #214: E1 repair active rule version index; prior static CI only version false; browser CI not reached. Repeat exact-head checks pending.
 
 - L04 v13.229 E1: LIVE-READ-ACK-02 monotonic confirmed receipt; stale directory/ACK guard; CI pending. Bill P05.1 fixture merged 5a7ca7e, real image adapter remains blocked.
+
+- L04 v13.229 E2: PR #215 CI 45856567686/45856567792 passed, merged a5e0549. v13.230 E1: user-reported jump arrow jitter prioritized over oversized read coverage; one scroll transaction; CI and native pending.
