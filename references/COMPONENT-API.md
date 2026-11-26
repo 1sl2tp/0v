@@ -544,3 +544,5 @@ LIVE-BILL-JOURNAL-MEMO-01: legacy admin_media review-only BIDV SMB-TkThe notific
 LIVE-BILL-AUDIT-WORKSPACE-01: v0_admin_bill_audit() -> {account_id,total,rows} read-only, max 1000, private AAL2 scope; BillAuditList.select derives sorting/filter/search, CardController and existing media loader render. No collection authority. Explicit missing data, account review separately.
 
 LIVE-BILL-AUDIT-ANNOTATION-01: audit read adds raw_hash/review_state/review_revision/corrections/review_note; v0_save_bill_audit_annotation accepts per-field string/null, note, state, revision and raw hash. BillAuditList filters progress; existing CardController.billPair and Media loader. Financially inert annotations.
+
+LIVE-BILL-STANDALONE-01: ?live=1&view=bills is a dedicated full-screen route of mountLiveChat; it skips directory/thread bootstrap, invokes existing audit API after authentication, uses same annotation RPC and CardController.billPair. Audit media loader root and URL lifecycle scoped to audit. No duplicate implementation.
