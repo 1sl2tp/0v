@@ -1540,3 +1540,6 @@ User explicitly supersedes standalone classical/LSTM OCR: one explicit authentic
 
 ### v13.208 — standalone presentation revision
 User requests removing raw OCR text. Only six structured values, image, ID, manual read, verification status, optional inline per-field edit and verify. No raw or duplicate AI transcript displayed; old local OCR checkpoint removed for current account on initial load. No old DB data or ledger deleted. Verified edits retain structured values, no reparsing. Browser regression checks no raw label/textarea. CI pending.
+
+## v13.208 — backend hotfix 2: manual Vision timeout
+Observed 502 at 33494 ms on 2026-11-26 04:36:42 UTC with ai_timeout. Keep Gemini 3.5 Flash, explicit MINIMAL thinking, 75s provider timeout instead of 30s, one model request only; retain original image and authorization. Log only model/status/duration/error class, never contents. Supabase idle limit 150s; Google Gemini thinking docs consulted. No frontend version or ledger change; actual successful read pending. Rollback prior function source.

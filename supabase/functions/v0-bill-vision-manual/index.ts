@@ -41,14 +41,15 @@ Deno.serve(async req=>{
   const {data:file,error:downloadError}=await db.storage.from("v21-media").download(row.storage_key);
   if(downloadError||!file||file.size<1||file.size>12*1024*1024)return reply({error:"image_unavailable"},422);
   const bytes=new Uint8Array(await file.arrayBuffer());let binary="";for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
-  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),30000);
+  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),75000),started=Date.now();
   try{
-   const response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{method:"POST",headers:{"content-type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt},{inlineData:{mimeType:row.mime_type==="image/jpg"?"image/jpeg":row.mime_type,data:btoa(binary)}}]}],generationConfig:{temperature:0,responseMimeType:"application/json",maxOutputTokens:2048}}),signal:ctl.signal});
+   const response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{method:"POST",headers:{"content-type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt},{inlineData:{mimeType:row.mime_type==="image/jpg"?"image/jpeg":row.mime_type,data:btoa(binary)}}]}],generationConfig:{temperature:0,thinkingConfig:{thinkingLevel:"MINIMAL"},responseMimeType:"application/json",maxOutputTokens:2048}}),signal:ctl.signal});
+   console.info('bill_vision_http',JSON.stringify({model,status:response.status,elapsed_ms:Date.now()-started}));
    if(!response.ok)return reply({error:response.status===429?"ai_quota":"ai_http_"+response.status},502);
    const payload=await response.json(),raw=payload?.candidates?.[0]?.content?.parts?.filter((p:any)=>!p.thought&&typeof p.text==="string").map((p:any)=>p.text).join("").trim();
    if(!raw||raw.length>12000)return reply({error:"ai_invalid_response"},502);
    const result=parseModel(JSON.parse(raw));
    return reply({...result,receipt_id:id,model,model_requests:1,read_completed_at:new Date().toISOString(),ledger_written:false});
-  }catch{return reply({error:ctl.signal.aborted?"ai_timeout":"ai_invalid_response"},502)}finally{clearTimeout(timer)}
+  }catch(e){console.info('bill_vision_failure',JSON.stringify({model,kind:ctl.signal.aborted?'timeout':'response_or_transport',elapsed_ms:Date.now()-started}));return reply({error:ctl.signal.aborted?"ai_timeout":"ai_invalid_response"},502)}finally{clearTimeout(timer)}
  }catch{return reply({error:"read_failed"},500)}
 });

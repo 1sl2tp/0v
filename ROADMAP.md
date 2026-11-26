@@ -135,3 +135,6 @@ L08 / v13.193: persisted per-bill OCR and result save timestamps, Vietnam timezo
 - v13.208 P05 E1: replace standalone manual LSTM with one-shot authenticated Gemini Vision read, six fields; CI, endpoint tests and live accuracy pending.
 
 - v13.208 presentation revision: remove raw OCR and duplicate AI text; six fields only, optional field edits; CI pending.
+
+## v13.208 — backend hotfix 2: manual Vision timeout
+Observed 502 at 33494 ms on 2026-11-26 04:36:42 UTC with ai_timeout. Keep Gemini 3.5 Flash, explicit MINIMAL thinking, 75s provider timeout instead of 30s, one model request only; retain original image and authorization. Log only model/status/duration/error class, never contents. Supabase idle limit 150s; Google Gemini thinking docs consulted. No frontend version or ledger change; actual successful read pending. Rollback prior function source.
