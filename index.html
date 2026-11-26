@@ -2495,6 +2495,7 @@ const Main=Object.freeze({
  directoryMenu(root){
   const trigger=root.querySelector('#directoryMenuButton'),click=selector=>()=>root.querySelector(selector)?.click(),status=root.querySelector('[data-live-directory-status]')?.textContent||'';
   const entries=[['Gửi tin nhắn / tìm người',click('#searchToggle')],['Công việc',click('.directory .panel-head [data-go=crm]')],['Màu chat',click('#bubblePaletteButton')],['Làm mới danh bạ',click('#directoryRefresh')],['Đăng xuất',click('#directoryLogout')]];
+  if(isLive)entries.splice(entries.length-1,0,['S4 · Đo cuộn',()=>mountScrollS4()]);
   const closeRun=(dialog,run)=>{dialog.addEventListener('close',run,{once:true});Popup.close(dialog)};
   const dialog=Popup.open({type:'menu',title:'Tiện ích',description:['v13.240',status].filter(Boolean).join(' · '),actions:entries.map(([text,run])=>({kind:'text',text,onClick:d=>closeRun(d,run)})),onDispose:()=>trigger?.setAttribute('aria-expanded','false')});
   if(dialog){dialog.dataset.directoryMenu='true';trigger.setAttribute('aria-expanded','true');for(const btn of dialog.querySelectorAll('button'))btn.dataset.releaseReadonly='true'}
@@ -5753,6 +5754,47 @@ if(new URLSearchParams(location.search).get('chatread')==='fixture'){
  else api.dispose();
 }
 
+/* SCROLL-01 S4 opt-in local diagnostic. No messages, customer IDs, URLs, network or scroll writes in report. */
+function mountScrollS4(){
+ const existing=document.querySelector('[data-scroll-s4]');if(existing){existing.open=true;return;}
+ const panel=document.createElement('details');panel.dataset.scrollS4='true';panel.style.cssText='position:fixed;top:calc(env(safe-area-inset-top) + 4px);right:6px;z-index:10040;max-width:min(340px,92vw);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 2px 12px #0002';
+ const summary=document.createElement('summary');summary.textContent='S4 · Đo cuộn';summary.style.cursor='pointer';
+ const select=document.createElement('select');select.setAttribute('aria-label','Tình huống đo S4');
+ for(const [value,label] of [['jump','Mũi tên xuống cuối'],['keyboard','Mở/đóng bàn phím'],['history','Đọc lịch sử + Realtime'],['media','Ảnh/video/tệp tải'],['restore','Khôi phục hội thoại'],['manual','Cuộn tay']]){const o=document.createElement('option');o.value=value;o.textContent=label;select.append(o)}
+ const start=document.createElement('button'),stop=document.createElement('button'),copy=document.createElement('button'),close=document.createElement('button'),out=document.createElement('pre');
+ start.textContent='Bắt đầu đo';stop.textContent='Dừng đo';copy.textContent='Sao chép kết quả';close.textContent='Tắt S4';stop.disabled=true;copy.disabled=true;
+ out.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:35vh;overflow:auto;margin:4px 0';out.textContent='Chọn tình huống, bắt đầu rồi thao tác trong hội thoại. Tự dừng sau 20 giây. Đo tại máy, không ghi nội dung tin.';
+ const controls=document.createElement('div');controls.append(start,stop,copy,close);panel.append(summary,select,controls,out);document.body.append(panel);
+ let raf=0,run=null,result=null;
+ const round=n=>Math.round(n*100)/100;
+ function sample(t){
+  const e=ScrollController.edge(),v=ScrollController.visualEdge(),state=ScrollController.intentState();
+  const r=messages.getBoundingClientRect(),vv=window.visualViewport,frame=app.querySelector('.composer-frame')?.getBoundingClientRect();
+  const eligible=e.visible&&!app.hidden&&app.dataset.screen==='chat'&&!navigationPending&&!document.hidden&&run.epoch===navigationEpoch&&run.room===active;
+  // Reference only, never export the element, message identity or text.
+  if(eligible&&state==='READING_HISTORY'&&run.lastState!=='READING_HISTORY'){const a=ScrollController.captureReadingAnchor(messages);run.anchor=a?{node:messages.querySelector('[data-live-message-id="'+CSS.escape(a.id)+'"]'),offset:a.offset}:null}
+  if(!eligible||state!=='READING_HISTORY')run.anchor=null;
+  const anchorDelta=run.anchor?.node?.isConnected?Math.abs(run.anchor.node.getBoundingClientRect().top-r.top-run.anchor.offset):null;
+  return {t,eligible,state,top:e.top,gap:e.gap,extent:e.max,height:messages.clientHeight,visualGap:v.visualGap,viewport:vv?.height??innerHeight,composer:frame?.top??null,anchorDelta,writes:ScrollController.writeSerial,keyboard:app.dataset.keyboard==='true'};
+ }
+ function tick(t){if(!run)return;if(run.epoch!==navigationEpoch||run.room!==active){finish('navigation');return}const s=sample(t);run.rows.push(s);run.lastState=s.eligible?s.state:null;if(t-run.start>=20000||run.rows.length>=2400){finish('limit');return}raf=requestAnimationFrame(tick)}
+ function finish(reason='manual'){
+  if(!run)return;cancelAnimationFrame(raf);raf=0;const q=run;run=null;
+  const rows=q.rows.filter(x=>x.eligible),intervals=[],steps=[],stable=[],tail=rows.filter(x=>x.state==='FOLLOW_LATEST'),history=rows.filter(x=>x.anchorDelta!==null);
+  for(let i=1;i<rows.length;i++){const a=rows[i-1],b=rows[i],dt=b.t-a.t;if(dt>0)intervals.push(dt);if(a.state===b.state&&a.extent===b.extent&&a.height===b.height&&a.viewport===b.viewport){if(b.state!=='USER_SCROLLING')steps.push(Math.abs(b.top-a.top));if(b.state==='FOLLOW_LATEST')stable.push(b)}}
+  const final=rows.slice(-12),last=final.at(-1),settled=final.length===12&&last.state!=='USER_SCROLLING'&&final.every(x=>x.state===last.state&&x.extent===last.extent&&x.height===last.height&&x.viewport===last.viewport&&x.composer===last.composer),max=a=>a.length?round(Math.max(...a)):null;
+  result={version:'v13.240',scenario:q.scenario,mode:matchMedia('(display-mode:standalone)').matches||navigator.standalone?'PWA':'Web',platform:navigator.platform||'unknown',browser:navigator.userAgent,reason,frames:rows.length,keyboardFrames:rows.filter(x=>x.keyboard).length,durationMs:round((q.rows.at(-1)?.t??q.start)-q.start),ownerWrites:ScrollController.writeSerial-q.writes,slowFrames:intervals.filter(x=>x>25).length,maxFrameMs:max(intervals),maxStableTopStepPx:max(steps),maxStableFollowGapPx:max(stable.map(x=>x.gap)),maxHistoryAnchorDriftPx:max(history.map(x=>x.anchorDelta)),tailFrames:tail.length,settled12:settled,settledWrites:settled?last.writes-final[0].writes:null,settledGapPx:settled&&last.state==='FOLLOW_LATEST'?max(final.map(x=>x.gap)):null,settledVisualGapPx:settled&&last.state==='FOLLOW_LATEST'?(last.visualGap===null?null:round(last.visualGap)):null,measurement:'CSS px; owner writes only; frame sampling overhead; not native compositor trace'};
+  out.textContent=JSON.stringify(result,null,2);summary.textContent='S4 · Đã đo';panel.open=true;start.disabled=false;select.disabled=false;stop.disabled=true;copy.disabled=false;
+ }
+ function begin(){if(run||app.hidden||app.dataset.screen!=='chat'){out.textContent='Mở một hội thoại trước khi đo.';return}result=null;copy.disabled=true;start.disabled=true;select.disabled=true;stop.disabled=false;run={scenario:select.value,start:performance.now(),writes:ScrollController.writeSerial,rows:[],anchor:null,lastState:null,epoch:navigationEpoch,room:active};summary.textContent='S4 · Đang đo';panel.open=false;raf=requestAnimationFrame(tick)}
+ start.onclick=begin;stop.onclick=()=>finish();close.onclick=()=>{if(run)finish('closed');document.removeEventListener('visibilitychange',visibility);panel.remove()};
+ function visibility(){if(document.hidden&&run)finish('hidden')}
+ document.addEventListener('visibilitychange',visibility);
+ copy.onclick=async()=>{if(!result)return;try{await navigator.clipboard.writeText(JSON.stringify(result,null,2));summary.textContent='S4 · Đã sao chép'}catch{summary.textContent='S4 · Chọn và sao chép kết quả bên dưới'}};
+ return Object.freeze({begin,finish,report:()=>result,dispose:()=>close.click()});
+}
+if(isLive&&new URLSearchParams(location.search).get('scrolls4')==='1')mountScrollS4();
+
 })();
 </script>
 <pre id="geometryDebug" hidden></pre><script>
@@ -5835,46 +5877,6 @@ if(new URLSearchParams(location.search).get('perfcheck')==='1'){
 }
 
 
-/* SCROLL-01 S4 opt-in local diagnostic. No messages, customer IDs, URLs, network or scroll writes in report. */
-function mountScrollS4(){
- const existing=document.querySelector('[data-scroll-s4]');if(existing)return;
- const panel=document.createElement('details');panel.dataset.scrollS4='true';panel.style.cssText='position:fixed;top:calc(env(safe-area-inset-top) + 4px);right:6px;z-index:10040;max-width:min(340px,92vw);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 2px 12px #0002';
- const summary=document.createElement('summary');summary.textContent='S4 · Đo cuộn';summary.style.cursor='pointer';
- const select=document.createElement('select');select.setAttribute('aria-label','Tình huống đo S4');
- for(const [value,label] of [['jump','Mũi tên xuống cuối'],['keyboard','Mở/đóng bàn phím'],['history','Đọc lịch sử + Realtime'],['media','Ảnh/video/tệp tải'],['restore','Khôi phục hội thoại'],['manual','Cuộn tay']]){const o=document.createElement('option');o.value=value;o.textContent=label;select.append(o)}
- const start=document.createElement('button'),stop=document.createElement('button'),copy=document.createElement('button'),close=document.createElement('button'),out=document.createElement('pre');
- start.textContent='Bắt đầu đo';stop.textContent='Dừng đo';copy.textContent='Sao chép kết quả';close.textContent='Tắt S4';stop.disabled=true;copy.disabled=true;
- out.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:35vh;overflow:auto;margin:4px 0';out.textContent='Chọn tình huống, bắt đầu rồi thao tác trong hội thoại. Tự dừng sau 20 giây. Đo tại máy, không ghi nội dung tin.';
- const controls=document.createElement('div');controls.append(start,stop,copy,close);panel.append(summary,select,controls,out);document.body.append(panel);
- let raf=0,run=null,result=null;
- const round=n=>Math.round(n*100)/100;
- function sample(t){
-  const e=ScrollController.edge(),v=ScrollController.visualEdge(),state=ScrollController.intentState();
-  const r=messages.getBoundingClientRect(),vv=window.visualViewport,frame=app.querySelector('.composer-frame')?.getBoundingClientRect();
-  const eligible=e.visible&&!app.hidden&&app.dataset.screen==='chat'&&!navigationPending&&!document.hidden;
-  // Reference only, never export the element, message identity or text.
-  if(eligible&&state==='READING_HISTORY'&&run.lastState!=='READING_HISTORY'){const a=ScrollController.captureReadingAnchor(messages);run.anchor=a?{node:messages.querySelector('[data-live-message-id="'+CSS.escape(a.id)+'"]'),offset:a.offset}:null}
-  if(!eligible||state!=='READING_HISTORY')run.anchor=null;
-  const anchorDelta=run.anchor?.node?.isConnected?Math.abs(run.anchor.node.getBoundingClientRect().top-r.top-run.anchor.offset):null;
-  return {t,eligible,state,top:e.top,gap:e.gap,extent:e.max,height:messages.clientHeight,visualGap:v.visualGap,viewport:vv?.height??innerHeight,composer:frame?.top??null,anchorDelta,writes:ScrollController.writeSerial,keyboard:app.dataset.keyboard==='true'};
- }
- function tick(t){if(!run)return;const s=sample(t);run.rows.push(s);run.lastState=s.eligible?s.state:null;if(t-run.start>=20000||run.rows.length>=2400){finish('limit');return}raf=requestAnimationFrame(tick)}
- function finish(reason='manual'){
-  if(!run)return;cancelAnimationFrame(raf);raf=0;const q=run;run=null;
-  const rows=q.rows.filter(x=>x.eligible),intervals=[],steps=[],stable=[],tail=rows.filter(x=>x.state==='FOLLOW_LATEST'),history=rows.filter(x=>x.anchorDelta!==null);
-  for(let i=1;i<rows.length;i++){const a=rows[i-1],b=rows[i],dt=b.t-a.t;if(dt>0)intervals.push(dt);if(a.state===b.state&&a.extent===b.extent&&a.height===b.height&&a.viewport===b.viewport){if(b.state!=='USER_SCROLLING')steps.push(Math.abs(b.top-a.top));if(b.state==='FOLLOW_LATEST')stable.push(b)}}
-  const final=rows.slice(-12),last=final.at(-1),settled=final.length===12&&final.every(x=>x.state===last.state&&x.extent===last.extent&&x.height===last.height&&x.viewport===last.viewport&&x.composer===last.composer),max=a=>a.length?round(Math.max(...a)):null;
-  result={version:'v13.240',scenario:q.scenario,mode:matchMedia('(display-mode:standalone)').matches||navigator.standalone?'PWA':'Web',platform:navigator.platform||'unknown',browser:navigator.userAgent,reason,frames:rows.length,keyboardFrames:rows.filter(x=>x.keyboard).length,durationMs:round((q.rows.at(-1)?.t??q.start)-q.start),ownerWrites:ScrollController.writeSerial-q.writes,slowFrames:intervals.filter(x=>x>25).length,maxFrameMs:max(intervals),maxStableTopStepPx:max(steps),maxStableFollowGapPx:max(stable.map(x=>x.gap)),maxHistoryAnchorDriftPx:max(history.map(x=>x.anchorDelta)),tailFrames:tail.length,settled12:settled,settledWrites:settled?last.writes-final[0].writes:null,settledGapPx:settled&&last.state==='FOLLOW_LATEST'?max(final.map(x=>x.gap)):null,settledVisualGapPx:settled&&last.state==='FOLLOW_LATEST'?round(last.visualGap??0):null,measurement:'CSS px; owner writes only; frame sampling overhead; not native compositor trace'};
-  out.textContent=JSON.stringify(result,null,2);summary.textContent='S4 · Đã đo';panel.open=true;start.disabled=false;select.disabled=false;stop.disabled=true;copy.disabled=false;
- }
- function begin(){if(run||app.hidden||app.dataset.screen!=='chat'){out.textContent='Mở một hội thoại trước khi đo.';return}result=null;copy.disabled=true;start.disabled=true;select.disabled=true;stop.disabled=false;run={scenario:select.value,start:performance.now(),writes:ScrollController.writeSerial,rows:[],anchor:null,lastState:null};summary.textContent='S4 · Đang đo';panel.open=false;raf=requestAnimationFrame(tick)}
- start.onclick=begin;stop.onclick=()=>finish();close.onclick=()=>{if(run)finish('closed');document.removeEventListener('visibilitychange',visibility);panel.remove()};
- function visibility(){if(document.hidden&&run)finish('hidden')}
- document.addEventListener('visibilitychange',visibility);
- copy.onclick=async()=>{if(!result)return;try{await navigator.clipboard.writeText(JSON.stringify(result,null,2));summary.textContent='S4 · Đã sao chép'}catch{summary.textContent='S4 · Chọn và sao chép kết quả bên dưới'}};
- return Object.freeze({begin,finish,report:()=>result,dispose:()=>close.click()});
-}
-if(isLive&&new URLSearchParams(location.search).get('scrolls4')==='1')mountScrollS4();
 
 </script>
 </body></html>
