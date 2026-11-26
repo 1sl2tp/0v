@@ -272,5 +272,6 @@ User requests original image audit. Existing authenticated standalone lab strips
 - S1b E1 candidate: manual settle/rearm, saved intent and ID/offset, visual-edge diagnostic; exact CI, deleted-anchor fallback and native keyboard/history verification pending.
 - S2a E1 candidate: ordinary live fixed slots and 1–4 geometry tests; CI pending.
 - S2b E1 candidate: single live bill fixed state/portrait narrow frame and existing equal-height wide frame; wide/narrow CI proof pending. Audit geometry separately scoped. Verify real metadata availability and cold inventory changes.
-- S3 TODO: A/B/ACK/restore/keyboard anchor integration; video/file reservation.
+- S3a E1 candidate: A/B projection/replay/ACK use shared scoped scroll transaction; explicit local send owns follow, delayed ACK history regression pending CI.
+- S3b TODO: deleted-anchor fallback, native keyboard/restore, Realtime race fixture and video/file reservation.
 - S4 TODO: Chromium/WebKit and actual Safari/PWA/Android E4, no premature DONE.
