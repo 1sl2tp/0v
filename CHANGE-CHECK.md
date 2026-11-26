@@ -647,3 +647,6 @@ User explicitly rejects bulk filtering. Main v13.203 used as clean base; failing
 
 ## v13.205 six-field review
 E0 user requests six fields on standalone page. v13.204 both CI checks passed and merged. E1 reuse existing OCR parser, no new OCR engine or UI owner; add CardController rows and browser assertions. CI, deployment and real-image reading pending. No backend or ledger change. Rollback v13.204.
+
+## v13.206 LSTM manual OCR
+E0 user approves upgrade after noisy Legacy read. v13.205 both CI checks passed and merged. Reviewed pinned upstream Tesseract API/performance/createWorker; keep demo OEM0 isolated, change live owner to OEM1, one worker, bounded upscale and parse-only receipt layout. Added synthetic test for two explicit reads with one worker; CI/Pages/live OCR performance and accuracy pending. No backend or financial mutation. Rollback v13.205.
