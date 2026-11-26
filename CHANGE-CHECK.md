@@ -721,3 +721,19 @@ E0 PR run 45766905066 job 139729872121: static audit and snapshot success, Chrom
 
 ### v13.216 — shared latest-message parent + CI correction
 E0 run 45767434670 / job 139731631220 Chromium computed alignItems flow-end (browser alias for flex-end), after specificity correction. Accept equivalent aliases only while retaining exact physical left/right edge check. E1 extend existing Message parent describe/latest/hint/follow/markLatest; live text and received attachments share projection with fixture; no new RPC, no database/old CHAT, no fake media send. 10 policy cases and all inline syntax, four protected ranges exact; added static and Chromium marker assertion. Source receipts in LATEST-MESSAGE-04. Full Node/Chromium/Pages/native pending.
+
+
+## v13.217 — chat rhythm and live latest follow-up
+E0 screenshots v13.216: uniform broad gap, jump lacks count, group/unread uncertain. E1 Message parent turn spacing, unseen incoming IDs, deferred sync, fresh snapshot only, normalized groups and numeric unread. 13 policy assertions, inline syntax and four protected ranges checked. Added static/Chromium tests. Source receipts CHAT-RHYTHM-04; reviewed AGENTS/RULES/COMPONENT-API/ROADMAP. No DB/CHAT/media-send change. CI/Pages/device pending.
+
+
+### v13.217 — CI dependency and Safari number decoration
+E0 CI 45768740404 failed at audit-api-browser.cjs:131 because extracted ChatReadAPI now depends on LiveChatSnapshotPolicy; include actual parent source in test, not a mock or weakened assertion. Numeric unread precedence rechecked in synthetic host. User reports underline with numbers: interpreted as unwanted automatic Safari data detection; Apple documented telephone=no (https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html). Add global meta, scoped detected-link fallback; explicit ContentAPI http(s) links marked and retain dotted decoration, explicit u solid. Five ordinary numeric cases plus two explicit format cases and inline syntax checked; actual Safari/PWA behavior not yet tested. No keyboard, DB or old CHAT changes.
+
+
+### v13.217 — dotted underline only
+User clarified no solid underline. Reuse Typography decoration owner for semantic underline and explicit links; remove solid hover and allow Safari native detection with dotted scoped fallback. No automatic custom numeric linking. Inline syntax and no-solid CSS scan passed; browser style assertion added; CI/native pending. No changes to keyboard or DB.
+
+
+## v13.217 — mobile glass follow-up
+E0 source audit: existing G1 has flat tint and header elevation suppressed; user requests screenshot-like optics on web mobile. E1 shared Surface paint profile extension, one rim, no keyboard/composer geometry changes, exact four protected ranges unchanged versus PR head; mobile contrast and desktop regression added. Astryx pinned tokens and Apple WWDC25 219 read; CSS approximation, not native lensing. Same unreleased PR #199; CI, full audit, Pages and physical Safari pending. No database changes.
