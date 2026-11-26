@@ -277,3 +277,6 @@ User requests original image audit. Existing authenticated standalone lab strips
 - S4 TODO: Chromium/WebKit and actual Safari/PWA/Android E4, no premature DONE.
 
 - S3b retest: CI 45909511526 non-follow growth failure; preserve strict assertion and diagnostics; mock Realtime/viewport proof added, pending exact CI.
+
+- S3b evidence: dc21898 Chromium 0px attachment/anchor drift; Realtime fixture locator ambiguity fixed, retest. S3c settled viewport trace and Realtime history assertions pending.
+- S4 acceptance protocol: on actual iOS Safari and installed PWA, Android Chrome/PWA, test 3 cycles each of entry, jump, keyboard open/close at tail, manual history with incoming/ACK, slow/error/retry media, F5/restore; record browser/device/OS/build and frame/anchor evidence. Do not equate simulated viewport or headless WebKit with native keyboard/momentum/compositor. Targets: settled tail gap <=2px, visual gap >=0, stable anchor <=1px when not clamped, one owner write per batched jump, zero redundant writes after settle; no real customer messages modified by QA.
