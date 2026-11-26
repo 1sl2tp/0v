@@ -664,3 +664,13 @@ User screenshot v13.213: composer 82%, last message under input when focused, di
 
 ### v13.215 release repair
 CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtures individually passed. Restore all four protected ranges byte-for-byte to last passing candidate 53b66a9; separate live-only tail adapter outside protected ranges uses existing ScrollController.end/followEnd, no viewport geometry writer. Explicit pointer/touch/wheel/blur cancels tail intent; room/epoch guard. Count 12 Unicode cases, do not remove assertions. Full exact-head CI pending, native iPhone pending.
+
+
+## v13.216 ContentAPI
+Existing line/segments/create extended with tableAt/appendInline/status; semantic display shared by live and demo. Scoped formatting, not new parallel owner. Input/keyboard and business data untouched. CI/native pending.
+
+
+v13.216 follow-up: Contact.preview owns prefix cleanup; Message keeps date/time; visual rule hides them. ContentAPI owns dotted links. A/B paint updated, media and keyboard retained.
+
+
+v13.216 Message.describe/latest/hint/follow/markLatest: shared latest projection for text, attachments and mixed; type-independent tail, parent delegates actual scroll to ScrollController. Media sending live not implemented. CI/native pending.

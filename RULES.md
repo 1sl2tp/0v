@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.215)
+## 00. Chỉ mục rule đang có hiệu lực (v13.216)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -10,7 +10,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Popup | POP-01–04, POPUP-API-01–06 | tạo vòng đời dialog riêng ở màn hình |
 | Button / Icon | BTN-01–04, BUTTON-API-01–05 | tạo nút/icon riêng rẽ trong màn hình |
 | Input / text / zoom | INPUT-TEXT-01–07, INPUT-API-01–06 | normalizeDraft khi input/compositionend, định dạng số mỗi phím |
-| Typography | TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
+| Typography | LATEST-MESSAGE-01–04 (message projection/edge), CONTENT-PRESENTATION-01–04 (thread/preview visual, supersedes CONTENT-AB-01 paint), CONTENT-FORMAT-01–04 (document display), TYPE-HARMONY-01–04 (ưu tiên chat/Card/Table), PARENT-RUNTIME-02 (trị số còn lại), TYPE-02–03, TYPE-API-01–02/04–06; TYPE-01 và TYPE-API-03 chỉ giữ nguyên tắc ngoài trị số đã thay | trị số cũ TYPE-01/TYPE-API-03, UI-07, APP-DETAIL-03, APP-RHYTHM-02, DESKTOP-03 |
 | Composer geometry | COMP-01–04, BOTTOM-01–02, APP-SHELL-03 | OPT-01–02 và BOTTOM-03 cũ về chiều cao nhiều dòng; IN-IOS-04 giới hạn cũ chỉ giữ cho textarea |
 | Keyboard / viewport | VIEW-01–06, KB-CORE-01–07, KB-LEARN-01–05, KB-CLOSE-01–06, KB-LOCK-01–06, KB-02/05/07/08 (focus, scroll, hành vi, nghiệm thu) | KB-01/03/04/06 phiên bản cũ; FL inset, KB-APP bridge, VP-SAFE/KB-RESTORE/KB-FAST về khung gốc, inset và transform; VP-SAMPLE vòng lấy mẫu 800ms; không dùng lại |
 | Scroll | KB-05, SC-16, FL-10, KB-RESTORE-02 | các ghi scroll trực tiếp ngoài controller (trừ QA) |
@@ -1588,3 +1588,24 @@ User screenshot v13.213: composer 82%, last message under input when focused, di
 
 ### v13.215 release repair
 CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtures individually passed. Restore all four protected ranges byte-for-byte to last passing candidate 53b66a9; separate live-only tail adapter outside protected ranges uses existing ScrollController.end/followEnd, no viewport geometry writer. Explicit pointer/touch/wheel/blur cancels tail intent; room/epoch guard. Count 12 Unicode cases, do not remove assertions. Full exact-head CI pending, native iPhone pending.
+
+
+## v13.216 — CONTENT-FORMAT
+- CONTENT-FORMAT-01: existing ContentAPI owns message display. Heading ratios 1.294/1.176/1.059 (~22/20/18px at 17px), 600, line 1.3; body inherited. Native list indent 1.5em, 4px item gap, nesting up to 3, read-only checklist. Quote 3px border; table 14/20, 8px cell padding, local horizontal overflow. No Input/Keyboard changes.
+- CONTENT-FORMAT-02: explicit bold, italic, strike, ==mark==, <u>underline</u>, code, http(s) links, headings, list, quote, divider, strict pipe tables. No arbitrary HTML execution, no unsafe links or amount inference. Source stored unchanged, code not capitalized. Keep legacy quantity emphasis.
+- CONTENT-FORMAT-03: semantic status and actual AI queue loading, aria-busy/reduced motion; highlight not financial approval. No DB or cache changes. Palette is project choice; full dark mode outside scope.
+- CONTENT-FORMAT-04: pure policy checks, syntax, keyboard lock, CI and native visual verification. Astryx Text da954186ff862485cbf0e1964cb2bec15f43b9bb and Stack c56d72759ad2f6f86102228e22c3123530b32894; sindresorhus/github-markdown-css github-markdown.css blob 2d308c762a8bca86ab43275f959575e68779b6ad. Semantic roles, shared spacing, native list/table/quote. No copied runtime or official ChatGPT CSS.
+
+
+## v13.216 — CONTENT-PRESENTATION (follow-up)
+- CONTENT-PRESENTATION-01: A incoming plain full-width, B outgoing right-aligned gray bubble max 86%, 18px radius, 8/12 padding. Row stays full-width, same logical message ID/order. Media/bill retains owner. Supersedes CONTENT-AB-01 visual only.
+- CONTENT-PRESENTATION-02: Contact.preview strips leading legacy Bạn: display prefix only; optimistic and fetched hints no longer synthesize it. Actual stored content, group/filter, unread and directory time unchanged.
+- CONTENT-PRESENTATION-03: Hide clock/date dividers visually in thread only; retain metadata, accessibility labels, grouping logic, chronology and bank times. Visible send error remains.
+- CONTENT-PRESENTATION-04: Links inherit ink, dotted 1px underline .23em offset and external arrow; explicit underline solid. Native content inherits Typography. Reference user screenshot and Astryx Text / github-markdown-css from CONTENT-FORMAT-04; not official CSS. Native pending.
+
+
+## v13.216 — LATEST-MESSAGE parent integration
+- LATEST-MESSAGE-01: Message.describe(message,attachments,known) owns text/media/mixed/empty/unknown and preview; media type delegates to MediaController, no raw-content rewrite. Same projection for live and fixture, no separate CSS for latest kind.
+- LATEST-MESSAGE-02: Message.latest/hint/markLatest own chronological pointer projection, stable message ID and monotonic preview updates; do not mark status before actual ACK. Live cache and authoritative directory remain existing sources; no new requests or duplicate store. Unknown media without evidence has no synthetic preview.
+- LATEST-MESSAGE-03: Message.follow centralizes visible outgoing-send follow and pinned incoming/ACK follow; reading above stays in place on incoming/ACK. ScrollController owns actual writes; keyboard lock unchanged. Latest row marker is type-independent. Real media sending still unavailable; no fake ACK.
+- LATEST-MESSAGE-04: explicit user request, scope only local projection and existing live reads/text send; test text/image/video/file/mixed/unknown/stale/scroll and marker. Source: Matrix event-timeline-set.ts 93c6ce4a8151aa3c93c2aef36d22cf3f7341904b; Redux Toolkit unsorted_state_adapter.ts 81d97994c84c491c2b19aedb3582f9d224d15cdb; Adobe Virtualizer.ts 3959c1cc7666f0384d31af2c770c6902662cdcb1; Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894. E2/E3/E4 pending.

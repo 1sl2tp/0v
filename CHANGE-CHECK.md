@@ -701,3 +701,23 @@ User screenshot v13.213: composer 82%, last message under input when focused, di
 
 ### v13.215 release repair
 CI 45764922069 failed keyboardBaseline and textInputContract, all 12 input fixtures individually passed. Restore all four protected ranges byte-for-byte to last passing candidate 53b66a9; separate live-only tail adapter outside protected ranges uses existing ScrollController.end/followEnd, no viewport geometry writer. Explicit pointer/touch/wheel/blur cancels tail intent; room/epoch guard. Count 12 Unicode cases, do not remove assertions. Full exact-head CI pending, native iPhone pending.
+
+
+## v13.216 — user-requested rich content candidate stacked on #197
+Read AGENTS, active typography/CONTENT-AB rules, COMPONENT-API, ROADMAP and source evidence: Astryx Text da954186ff862485cbf0e1964cb2bec15f43b9bb and Stack c56d72759ad2f6f86102228e22c3123530b32894; sindresorhus/github-markdown-css github-markdown.css blob 2d308c762a8bca86ab43275f959575e68779b6ad. Semantic roles, shared spacing, native list/table/quote. No copied runtime or official ChatGPT CSS. E1 ten policy assertions, inline script syntax and four keyboard ranges exact. No full node audit/browser executed in connector. CI/Pages/native pending. No production data, backend or old CHAT changes. No claim of all-screen normalization or device acceptance.
+
+
+### v13.216 follow-up — presentation and CI correction
+E0 run 45766048105 static version check false: RULE index stale v13.215; contentABContract true. Corrected index, scoped A/B visual policy, dotted links, hide thread clock/date (retain DOM metadata/send error), prefix cleanup via Contact.preview, scoped native family inheritance. Updated browser assertions for hidden clocks/new surfaces. Three preview cases, syntax and four locked keyboard ranges pass in connector. Real CI/device pending. No DB, CHAT, bank timestamp, keyboard or cache mutation.
+
+
+### v13.216 CI follow-up
+E0 API PR run 45766529230 / job 139728648984: audit-design.cjs line 356 extraction used old Contact.create-first literal; Contact.preview now first method, so end index -1 included HTML. Fix audit boundary to stable Contact object declaration; preserve tests. BillAuditList extraction and sample sort executed successfully. Connector auditDesign 130 checks, pass=false; not equivalent to Node CI; no runtime, snapshot, keyboard or database changes. Full CI/Pages/native pending.
+
+
+### v13.216 — fix outgoing alignment specificity
+E0 PR run 45766905066 job 139729872121: static audit and snapshot success, Chromium six viewport matrix passed, line 458 outgoing align actual flow-start expected flex-end. Generic row selector has higher specificity than party B selector. Fix B selector to include same message slot, later wins; strengthen browser test with actual edge alignment. No changes to locked keyboard ranges, DB or old CHAT. Same pending release; CI/Pages/native pending.
+
+
+### v13.216 — shared latest-message parent + CI correction
+E0 run 45767434670 / job 139731631220 Chromium computed alignItems flow-end (browser alias for flex-end), after specificity correction. Accept equivalent aliases only while retaining exact physical left/right edge check. E1 extend existing Message parent describe/latest/hint/follow/markLatest; live text and received attachments share projection with fixture; no new RPC, no database/old CHAT, no fake media send. 10 policy cases and all inline syntax, four protected ranges exact; added static and Chromium marker assertion. Source receipts in LATEST-MESSAGE-04. Full Node/Chromium/Pages/native pending.
