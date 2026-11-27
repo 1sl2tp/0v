@@ -45,7 +45,7 @@ class PrivateDB:
             with conn:
                 with conn.cursor() as cur:
                     cur.execute("SET LOCAL ROLE v0_qr_worker")
-                    cur.execute("SELECT set_config('request.jwt.claim.sub', '', true), set_config('request.jwt.claims', %s, true)",(json.dumps(self.claims),))
+                    cur.execute("SELECT set_config('request.jwt.claim', '', true), set_config('request.jwt.claim.sub', '', true), set_config('request.jwt.claims', %s, true)",(json.dumps(self.claims),))
                     cur.execute(sql,params)
                     return cur.fetchone()[0]
         finally:

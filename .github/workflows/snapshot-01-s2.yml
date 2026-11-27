@@ -15,6 +15,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright
+      - run: sudo apt-get update
       - run: npx playwright install --with-deps chromium webkit
       - run: node tests/snapshot-01-durable-browser.cjs
       - run: node tests/live-cache-read-tail-browser.cjs
