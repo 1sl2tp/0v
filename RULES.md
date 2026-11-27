@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.266)
+## 00. Chỉ mục rule đang có hiệu lực (v13.267)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1964,3 +1964,8 @@ E2 PR #278 exact head 6c9b086: 3/3 successful; browser job 140448029809 Chromium
 
 ### INPUT-UNIFIED-01a v13.266 candidate
 Draft.bind(el,context) creates a text transaction adapter for each current QuickMessage attachment. capture() issues immutable session/room/navigation epoch/revision/original text/selection token. valid() rejects stale tokens, composition, disabled/read-only; insert(token,{text,mode}) uses native setRangeText, exact slash replacement or captured selection, max 8000, consumes successful token and emits one input event; applying guard blocks recursive slash triggers. No focus, resize, viewport, send, media, storage or financial writes. Existing native typing remains owner; no claim that native undo is preserved across programmatic setRangeText. QuickMessage uses adapter for templates and verified STK text only; QR stays blocked. Existing draft restore and send paths unchanged. Attachment migration, profile policy, undo/native E4 and full matrix remain pending.
+
+
+## MEDIA-DISPLAY-01 — v13.267 candidate (user approved 2026-11-27)
+- Preserve each message ID, original asset order, receipt, sender, timestamp and viewer boundary; never merge separate messages or resend them for display. Same-party consecutive ordinary image-only messages in the existing Message.rhythm run receive a compact 3px visual gap. Break on text, mixed media, bill, file, other party, date or existing >10-minute break. Existing 1–4 gallery layout within each original message stays intact.
+- Ordinary single image fixed slots: metadata-derived profile (portrait <.85, landscape >1.2, balanced otherwise); portrait width <=260px and reserved height <=420px at bounded existing ratio; balanced <=280px; landscape uses existing <=320px. Single remains contain, full viewer unchanged. Missing metadata uses existing 4:3 fixed fallback, no post-decode dimension correction. Existing paired bank-bill card stays unchanged; long non-bank invoice images use single contain. No transport, DB, cache, scroll writer, keyboard or financial changes. Physical review required; these size caps are initial design choices, not a device measurement.
