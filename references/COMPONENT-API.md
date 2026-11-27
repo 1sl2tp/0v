@@ -800,3 +800,5 @@ LiveChatSnapshotPolicy.signature excludes only top-level dimension metadata; Med
 
 ## S3e v13.242 candidate
 ScrollController.deferProjection / flushProjection / clearProjection own structural projection handoff; renderLiveSnapshot supplies scoped validity and media signature. Persisted pageshow reuses wakeLiveSync. No new scroll writer.
+
+- SCROLL-01 S4: restore session pause/resume read-only; frameIntervals exclude discontinuous/hidden samples; restoreObserved requires foreground samples; anchor missing reported separately. No new scroll or keyboard owner.
