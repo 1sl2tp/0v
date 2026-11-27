@@ -48,7 +48,7 @@ begin
  on conflict(message_id) do nothing;
  if not found then return mid; end if;
  select enabled_at into enabled from v0_private.callback_settings where singleton;
- select exists(select 1 from public.v21_accounts a where a.id=lk.chat_account_id and a.role='user' and a.contact_group='customer' and a.deleted_at is null and a.locked_at is null)
+ select exists(select 1 from public.v21_accounts a where a.id=lk.chat_account_id and a.role='user' and a.deleted_at is null and a.locked_at is null)
  and exists(select 1 from public.v21_accounts a where a.id=lk.linked_by_account_id and a.role='admin' and a.deleted_at is null and a.locked_at is null) into eligible;
  -- Fail closed until explicitly enabled. Do not auto-reply to delayed/history replay.
  if eligible and enabled is not null and p_event_at>=enabled and p_event_at>=now()-interval '5 minutes' then

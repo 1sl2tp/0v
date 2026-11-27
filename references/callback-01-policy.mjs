@@ -18,7 +18,7 @@ export function missedCallPolicy(event,context){
  event.direction!=='incoming'||event.accepted!==false||!uuid.test(event.id??'')||
  event.conversationId!==context.conversationId||event.contactId!==context.contactId)
  return {visible:false,reply:null};
- const reply=context.group==='KH'&&context.serverEligible===true
+ const reply=context.zaloLinked===true&&context.serverEligible===true
  ?{clientId:'0v:'+event.id.toLowerCase(),body:replyText,contactId:event.contactId}:null;
  return {visible:true,reply};
 }
