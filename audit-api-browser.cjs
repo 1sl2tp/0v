@@ -373,6 +373,10 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  console.log('NOTIFY-01 live ACK after leaving room: badge confirmed zero');
  // Restore the chat route for subsequent bill round-trip/F5 assertions.
  await contact.evaluate(e=>e.click());await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
+ // Wait for the bounded Main navigation commit, not merely cached DOM visibility.
+ const savedChatRoute=()=>pg.evaluate(()=>{const v=JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null');return {screen:v?.screen,contact:v?.contact,bottom:v?.bottom}});
+ await pg.waitForFunction(()=>{const v=JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null');return v?.screen==='chat'&&v.contact==='c'&&document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert});
+ const chatRouteBeforeBills=await savedChatRoute();assert.equal(chatRouteBeforeBills.screen,'chat');assert.equal(chatRouteBeforeBills.contact,'c');
 
  await pg.goto('https://1sl2tp.github.io/0v/?live=1&view=bills');
  await pg.locator('[data-simple-bill-review]').first().waitFor({state:'visible'});
@@ -388,7 +392,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.reload();await pg.locator('[data-simple-bill-review]').first().getByRole('button',{name:'✓ Đã lưu xác minh',exact:true}).waitFor();assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls||0),0);
  await pg.getByRole('button',{name:'Làm mới danh sách ảnh',exact:true}).click();await pg.waitForFunction(()=>window.calls.filter(x=>x==='bill-audit').length===2);assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls||0),0);
  assert.deepEqual(errors,[]);
- await pg.goto('https://1sl2tp.github.io/0v/');await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
+ assert.deepEqual(await savedChatRoute(),chatRouteBeforeBills,'standalone bill route must not overwrite saved chat route');
+ await pg.goto('https://1sl2tp.github.io/0v/');await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'}).catch(async e=>{console.error('NOTIFY-01 bill roundtrip diagnostic',JSON.stringify(await pg.evaluate(()=>({saved:JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null')?.screen,screen:document.querySelector('#app')?.dataset.screen,hidden:document.querySelector('#app')?.hidden,inert:document.querySelector('#composer')?.inert,logged:sessionStorage.getItem('fixture-logged')==='1',messages:document.querySelectorAll('#messages [data-live-message-id]').length,calls:window.calls,bootVisible:!document.querySelector('#liveBoot')?.hidden}))),errors);throw e});assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');
  await pg.getByRole('button',{name:'Về danh bạ',exact:true}).click();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
