@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.243)
+## 00. Chỉ mục rule đang có hiệu lực (v13.244)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1826,3 +1826,9 @@ S2: fixed media slot geometry in MediaController; 1–4 images and error/retry; 
 - SCROLL-01 S3e: structural media/receipt projection waits for manual motion to settle; latest scoped job only, current anchor at commit, explicit jump drains parent queue. Do not delay ordinary append unless combined with pending structural projection.
 
 - SCROLL-01 S4 restore chỉ tạm dừng bộ đo khi hidden; resume cùng room/epoch, tối đa 120 giây chờ, không đo khoảng nền như frame. Anchor nội bộ tìm lại theo ID nếu DOM bị thay; báo thiếu mẫu, không ghi scroll, không export ID.
+
+
+## NOTIFY-01 / GEO-MOBILE-01 / RULE-AUDIT-01 (v13.244)
+- NOTIFY-01a: ReadStateController là cha nhận xác nhận đọc đúng account/room, không phụ thuộc màn hình lúc phản hồi; chỉ server quyết định số chưa đọc. Contact chỉ chiếu badge và filter; không xóa khi mở phòng, không đếm own/replay/edit/media. Từ chối ACK sai scope/đếm sai/mốc lùi. Directory request cũ hoặc bắt đầu trước ACK không được ghi đè; re-fetch qua sync cha. Dwell/coverage và prefix server giữ nguyên; diagnostics không chứa ID/nội dung. Native và backend thực cần xác minh, không sửa ledger.
+- GEO-MOBILE-01a: Kế thừa GEO-API/GEO-ADAPT/FAMILY/KB-LOCK/SCROLL-01; lập inventory owner cho viewport/safe area, header, danh bạ/filter/badge, media/bill, composer, popup, scroll; Geometry chỉ đo, không ghi DOM. Web/PWA portrait/landscape 320/375/390/430/768 và desktop hẹp, Chromium/WebKit + thiết bị thật, keyboard/IME/picker/resume/F5. Kiểm tra tràn/chồng/gap/anchor/điểm cuối và bảo vệ vùng keyboard. Issue #232; chưa nghiệm thu.
+- RULE-AUDIT-01a: Mỗi tính năng phải khai báo parent/role/profile, owner mỗi thuộc tính, kiểm tra siblings/dependency/conflict, protected diff, test và bằng chứng; thiếu parent hoặc test thì chưa đạt. CI xanh trước merge, Pages xác minh riêng; lịch quét định kỳ báo lỗi/tiến trình mới, không tự merge. Mỗi báo cáo kết thúc bằng nút Làm tiếp nếu hỗ trợ, hoặc câu lệnh có scope/issue/commit. Không tuyên bố thiết bị thật từ giả lập.
