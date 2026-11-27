@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: PGPASSWORD=fixture psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f references/cache-lifecycle-01/media-revisions-fixture.sql
-  public-proof-258:
+  public-proof-259:
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
@@ -40,8 +40,8 @@ jobs:
           python - <<'PY'
           import urllib.request,json,hashlib,time
           origin='https://1sl2tp.github.io/0v/'
-          expected='v13.258'
-          blob='039b4964e15033109a1b06a3e4cd44c42b846bde'
+          expected='v13.259'
+          blob='80a4941cab5fc94b2d509136854f75acee1aea13'
           def read(path):
               req=urllib.request.Request(origin+path+'?_proof='+str(time.time_ns()),headers={'Cache-Control':'no-cache','User-Agent':'0v-public-proof'})
               with urllib.request.urlopen(req,timeout=15) as r:
@@ -51,7 +51,7 @@ jobs:
               return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
           manifest=json.loads(read('version.json'))
           index=read('index.html')
-          snapshot=read('release-v13.258.html')
+          snapshot=read('release-v13.259.html')
           bill=read('bill.html')
           print(json.dumps({'expected':expected,'publicVersion':manifest.get('version'),'publicManifestBlob':manifest.get('gitBlobSha'),'indexBlob':git_blob(index),'snapshotBlob':git_blob(snapshot),'billBlob':git_blob(bill)}))
           assert manifest.get('version')==expected and manifest.get('gitBlobSha')==blob and git_blob(index)==blob and git_blob(snapshot)==blob and git_blob(bill)==blob
