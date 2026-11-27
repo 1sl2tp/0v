@@ -48,6 +48,8 @@ BEGIN
             ELSE btrim(r.raw_read->>'transfer_time_printed_vn') END
             = CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
           THEN CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END END,
+        'bank_clock_vn',bank_clock.clock_vn,'bank_clock_date',bank_clock.clock_date,
+        'bank_clock_source',CASE WHEN bank_clock.clock_vn IS NOT NULL THEN 'independent_agribank_credit_notification' END,
         'receiving_account',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_account,200) END,'receiving_name',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_name,200) END,
         'ocr_rechecked_account',CASE WHEN memo_only.flag THEN NULL WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999' AND ar.reviewed_account='2901181999999' THEN ar.reviewed_account WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
           AND r.raw_read->'account_digit_recheck'->>'source'='independent_focused_vision'
@@ -80,6 +82,34 @@ BEGIN
       AND v.customer_account_id=r.customer_account_id AND v.raw_read_hash=md5(r.raw_read::text)
     LEFT JOIN v0_private.bill_account_review ar ON ar.media_asset_id=r.media_asset_id AND ar.message_id=r.message_id
       AND ar.customer_account_id=r.customer_account_id AND ar.raw_read_hash=md5(r.raw_read::text)
+
+    LEFT JOIN LATERAL (
+      SELECT to_char(n.transfer_at AT TIME ZONE 'Asia/Ho_Chi_Minh','HH24:MI') AS clock_vn,
+        to_char(n.transfer_at AT TIME ZONE 'Asia/Ho_Chi_Minh','YYYY-MM-DD') AS clock_date
+      FROM public.chat_bank_app_collection_links k
+      JOIN public.taphoa_agribank_notifications n ON n.id=k.notification_id
+      JOIN public.taphoa_debt_ledger l ON l.id=k.ledger_id AND l.customer_account_id=r.customer_account_id AND l.entry_type='collection'
+      WHERE k.receipt_id=r.id AND k.ledger_id=r.ledger_id AND r.status='received'
+        AND l.amount_vnd=-(r.amount_vnd::numeric/1000) AND r.amount_vnd>0
+        AND nullif(btrim(r.raw_read->>'transfer_time_printed_vn'),'') IS NULL
+        AND coalesce(r.raw_read->>'time_date_conflict','false')='false'
+        AND coalesce(r.raw_read->>'clock_text_conflict','false')='false'
+        AND coalesce(r.raw_read->>'printed_date_invalid','false')='false'
+        AND coalesce(r.raw_read->>'date_swap_suspected','false')='false'
+        AND coalesce(r.raw_read->>'ocr_iso_date_conflict','false')='false'
+        AND r.raw_read#>>'{manual_datetime_correction,source}'='independent_agribank_credit_notification'
+        AND r.raw_read#>>'{manual_datetime_correction,reason}'='bank_noclock_current_01'
+        AND r.raw_read#>>'{manual_datetime_correction,bank_time_precision}'='minute'
+        AND r.raw_read#>>'{manual_datetime_correction,bank_notice_id}'=n.id::text
+        AND n.package_name='com.vnpay.Agribank3g' AND n.status='credit_candidate'
+        AND n.is_own_transfer=false AND n.bank_credit_account='2901181999999'
+        AND n.amount_vnd=r.amount_vnd
+        AND n.transfer_at AT TIME ZONE 'Asia/Ho_Chi_Minh'=r.transfer_at_vn
+        AND date_trunc('minute',r.transfer_at_vn)=r.transfer_at_vn
+        AND r.raw_read->>'transfer_date_vn'=to_char(r.transfer_at_vn,'YYYY-MM-DD')
+        AND r.raw_read->>'transfer_date_printed_vn'=to_char(r.transfer_at_vn,'DD/MM/YYYY')
+      LIMIT 1
+    ) bank_clock ON true
     -- Legacy OCR misclassified a sender debit as an incoming notification.
     -- Recover display only from the original explicit debit amount and agreeing
     -- short printed date/clock. Never change the receipt status or ledger.
