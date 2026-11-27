@@ -190,4 +190,31 @@ DO $$ BEGIN BEGIN PERFORM public.v0_admin_media('30000000-0000-0000-0000-0000000
 RESET ROLE;
 DO $$ BEGIN IF (SELECT raw_read->>'transfer_content' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001') IS DISTINCT FROM 'fixture' THEN RAISE EXCEPTION 'original receipt mutated'; END IF; END $$;
 DO $$ BEGIN IF EXISTS (SELECT 1 FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000008' AND (amount_vnd IS NOT NULL OR ledger_id IS NOT NULL OR status<>'review')) THEN RAISE EXCEPTION 'legacy recovery mutated financial record'; END IF; END $$;
+
+-- Focused evidence integration, synthetic table matches queue key only.
+UPDATE public.v21_accounts SET locked_at=NULL WHERE id='00000000-0000-0000-0000-000000000002';
+CREATE TABLE v0_private.bill_focused_reread(receipt_id uuid,raw_hash text,image_sha256 text,field text,state text,evidence jsonb,unique(receipt_id,raw_hash,field));
+ALTER TABLE v0_private.bill_focused_reread ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON v0_private.bill_focused_reread FROM PUBLIC,anon,authenticated,service_role;
+\ir ../../references/0v-admin-media-focused-evidence-candidate.sql
+UPDATE public.chat_bank_bill_receipts SET image_sha256=repeat('a',64),raw_read='{"transfer_success_visible":true,"recipient_account_visible":"290118199999","account_digit_recheck_state":"timeout"}',receiving_account='290118199999',receiving_name='BUI XUAN TUNG' WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+INSERT INTO v0_private.bill_focused_reread SELECT id,md5(raw_read::text),image_sha256,'account','verified','{"account":{"first_visible":"290118199999","second_visible":"2901181999999","source":"independent_focused_vision","digit_count":13,"trailing_nines":6}}' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+INSERT INTO v0_private.bill_focused_reread SELECT id,md5(raw_read::text),image_sha256,'small_text','verified','{"date":"25/11/2026","clock":"21:52","memo":"fixture focused"}' FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);
+DO $focused$
+DECLARE actual jsonb; saved jsonb;
+BEGIN
+ SELECT to_jsonb(r) INTO saved FROM public.chat_bank_bill_receipts r WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+ actual:=public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt';
+ IF actual->>'ocr_rechecked_account' IS DISTINCT FROM '2901181999999' OR actual->>'date_vn' IS DISTINCT FROM '25/11/2026' OR actual->>'time_vn' IS DISTINCT FROM '21:52' OR actual->>'transfer_content' IS DISTINCT FROM 'fixture focused' OR actual->>'has_ledger' IS DISTINCT FROM 'true' THEN RAISE EXCEPTION 'focused projection mismatch: %',actual; END IF;
+ UPDATE v0_private.bill_focused_reread SET evidence='{"date":"26/11/2026","clock":"21:53","memo":"fixture focused"}' WHERE field='small_text';
+ actual:=public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt';
+ IF actual->>'date_vn' IS NOT NULL OR actual->>'time_vn' IS NOT NULL THEN RAISE EXCEPTION 'conflicting clock accepted';END IF;
+ UPDATE v0_private.bill_focused_reread SET raw_hash='stale';
+ actual:=public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt';
+ IF actual->>'ocr_rechecked_account' IS NOT NULL OR actual->>'transfer_content' IS NOT NULL THEN RAISE EXCEPTION 'stale proof accepted';END IF;
+ IF saved IS DISTINCT FROM (SELECT to_jsonb(r) FROM public.chat_bank_bill_receipts r WHERE media_asset_id='50000000-0000-0000-0000-000000000001') THEN RAISE EXCEPTION 'receipt mutated';END IF;
+ RAISE NOTICE 'focused display integration and stale/conflict/ledger guards passed';
+END $focused$;
+
 ROLLBACK;
