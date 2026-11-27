@@ -23,7 +23,11 @@ jobs:
           --health-retries 12
     steps:
       - uses: actions/checkout@v4
-      - run: python3 -m unittest discover -s fixtures/media-send -p 'test_*.py'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --only-binary=:all: -r fixtures/media-send/requirements.lock
+      - run: python -m unittest discover -s fixtures/media-send -p 'test_*.py'
       - run: sudo apt-get update && sudo apt-get install -y postgresql-client
       - run: psql -X -v ON_ERROR_STOP=1 -f fixtures/media-send/test.sql
         env:
@@ -34,3 +38,5 @@ jobs:
           PGPASSWORD: fixture_only
 
       - run: bash fixtures/media-send/race.sh
+
+      - run: PGPASSWORD=fixture_only psql -h localhost -U postgres -d media_fixture_ci -X -v ON_ERROR_STOP=1 -f fixtures/media-send/rls-test.sql
