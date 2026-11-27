@@ -816,3 +816,6 @@ LiveChatSnapshotPolicy.callbackIds / canProjectPartial retain scoped verified pr
 
 ## CACHE-LIFECYCLE-01 (v13.251 candidate)
 Existing auditBlobCache owns binary reuse, in-flight dedup, max 2 active jobs, scope cancellation and encrypted durable tier for chat/bill/audit/export; renderer paints RAM-ready slots independently. Current snapshot writes dedup for 5 min, full network reconciliation remains. No changes to four protected keyboard ranges.
+
+## CACHE-LIFECYCLE-01 B candidate v13.252
+`ThreadDeltaPolicy` validates scoped authoritative revision maps and changed rows; `readDeltaThread` opt-in (`delta=1`) uses existing ChatReadAPI normalization and shares the media inventory. Explicit older button expands window by 20, up to 100. Stored verified snapshots preserve delta revisions; no new viewport/scroll writer. `cachecheck=1` enables aggregate counts and byte estimates via `crmCacheStats()`, no content. IndexedDB expiry sweep on activation and throttled LRU touch. Production SQL not deployed.
