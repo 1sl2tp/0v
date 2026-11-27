@@ -826,3 +826,13 @@ ScrollController `edge().max` is the only live end target. `visualEdge()` is mea
 - v13.254 candidate: ScrollController.captureMovingJump owns early press acceptance, not a new scroll writer; auditBlobCache stats extend aggregate metrics, fixed gallery slots resolve independently through existing MediaController/ScrollController.
 
 - S7 follow-up: keep existing jump button as sibling of #messages, isolate scroll root stacking context, center button without transform, touch-action:none only on explicit command. No viewport/overflow toggle, no new writer, same quiet handoff. Browser hit-test at command center plus synthetic both-direction early-event probe; cannot certify native iOS event delivery. Fixed-image audit updated to require per-slot ready/finished-error guards and retry only unresolved slots; existing geometry assertions retained. Avoid repeat error-state paints. Four protected ranges identical; index and bill identical. Exact-head CI and native cache/gesture acceptance pending.
+
+
+## BANK-NOCLOCK-CURRENT-01 candidate
+Existing server recovery owns eligibility and locked financial writer owns posting. BillReceiptProjection consumes verified status/ledger and separately sourced bank clock; raw printed clock remains absent. No client write or parallel owner. Contract proposed only; runtime/read schema unchanged.
+
+- Narrow fallback is a server-only candidate. Use original immutable sent_at, independent verified bank clock, full account, exact substantive memo and global complete competition/consumption checks; existing locked RPC must validate under lock, not a client posting path. Specification fixture: references/bank-noclock-current-fixture.sql; no runtime implementation yet.
+
+
+## LIVE-BILL-BANK-CLOCK-01
+Private admin_media supplies optional bank_clock {source,date,time} from linked financial proof; BillReceiptProjection validates and renders via CardController. Printed time_vn remains original. No client reconciliation/writer, new grant, or duplicate API. Delta/cache consume existing receipt projection, no second fetch.

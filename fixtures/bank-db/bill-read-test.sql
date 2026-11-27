@@ -152,6 +152,37 @@ DO $clock_fixture$ DECLARE saved jsonb; saved_at timestamp; literal text; prec t
  END LOOP;
  UPDATE public.chat_bank_bill_receipts SET raw_read=saved,transfer_at_vn=saved_at WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
 END $clock_fixture$;
+-- Independent linked bank time must remain distinct from absent printed OCR.
+DO $bank_clock_fixture$ DECLARE saved jsonb; actual jsonb; raw jsonb; c text; BEGIN
+ SELECT raw_read INTO saved FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+ raw:=saved||jsonb_build_object('transfer_time_printed_vn',null,'manual_datetime_correction',jsonb_build_object('source','independent_agribank_credit_notification','reason','bank_noclock_current_01','bank_time_precision','minute','bank_notice_id',1));
+ FOR c IN SELECT unnest(ARRAY['valid','wrong_notice','wrong_source','wrong_reason','wrong_day','conflict','printed_clock','no_ledger','wrong_amount','review','own_transfer','wrong_bank_time','wrong_ledger_amount','missing_link']) LOOP
+  UPDATE public.chat_bank_bill_receipts SET raw_read=raw,ledger_id=1,status='received',amount_vnd=26000 WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+  UPDATE public.taphoa_agribank_notifications SET is_own_transfer=false,transfer_at='2026-11-25 21:52:00+07' WHERE id=1;
+  UPDATE public.taphoa_debt_ledger SET amount_vnd=-26 WHERE id=1;
+  IF c='wrong_notice' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=jsonb_set(raw_read,'{manual_datetime_correction,bank_notice_id}','2') WHERE ledger_id=1;
+  ELSIF c='wrong_source' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=jsonb_set(raw_read,'{manual_datetime_correction,source}','"device"') WHERE ledger_id=1;
+  ELSIF c='wrong_reason' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=jsonb_set(raw_read,'{manual_datetime_correction,reason}','"other"') WHERE ledger_id=1;
+  ELSIF c='wrong_day' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=jsonb_set(raw_read,'{transfer_date_vn}','"2026-11-24"') WHERE ledger_id=1;
+  ELSIF c='conflict' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=raw_read||'{"clock_text_conflict":true}' WHERE ledger_id=1;
+  ELSIF c='printed_clock' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=raw_read||'{"transfer_time_printed_vn":"21:52"}' WHERE ledger_id=1;
+  ELSIF c='no_ledger' THEN UPDATE public.chat_bank_bill_receipts SET ledger_id=null WHERE ledger_id=1;
+  ELSIF c='wrong_amount' THEN UPDATE public.chat_bank_bill_receipts SET amount_vnd=27000 WHERE ledger_id=1;
+  ELSIF c='review' THEN UPDATE public.chat_bank_bill_receipts SET status='review' WHERE ledger_id=1;
+  ELSIF c='own_transfer' THEN UPDATE public.taphoa_agribank_notifications SET is_own_transfer=true WHERE id=1;
+  ELSIF c='wrong_bank_time' THEN UPDATE public.taphoa_agribank_notifications SET transfer_at='2026-11-25 21:53:00+07' WHERE id=1;
+  ELSIF c='wrong_ledger_amount' THEN UPDATE public.taphoa_debt_ledger SET amount_vnd=-27 WHERE id=1;
+  ELSIF c='missing_link' THEN DELETE FROM public.chat_bank_app_collection_links WHERE ledger_id=1;
+  END IF;
+  actual:=public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt';
+  IF c='valid' THEN
+   IF actual->>'time_vn' IS NOT NULL OR actual->'bank_clock' IS DISTINCT FROM '{"source":"independent_agribank_credit_notification","date":"2026-11-25","time":"21:52"}'::jsonb THEN RAISE EXCEPTION 'verified bank clock projection: %',actual; END IF;
+  ELSIF actual->>'bank_clock' IS NOT NULL THEN RAISE EXCEPTION 'bank clock leaked for %',c; END IF;
+ END LOOP;
+ UPDATE public.chat_bank_bill_receipts SET raw_read=saved,ledger_id=1,status='received',amount_vnd=26000 WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+ INSERT INTO public.chat_bank_app_collection_links SELECT id,1,ledger_id FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+ RAISE NOTICE 'bank clock 14 projection cases passed';
+END $bank_clock_fixture$;
 UPDATE public.v21_accounts SET locked_at=now() WHERE id='00000000-0000-0000-0000-000000000002';
 SET LOCAL ROLE authenticated;
 SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);
