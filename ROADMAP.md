@@ -455,3 +455,7 @@ PR #281 corrected head 29d3f00 5/5 passed and merged fa85174. User requests sepa
 
 ### BILL-ROOT02-UI-01 (v13.268 candidate)
 E1 read-only comparison button on standalone bill page, source-bound 10 fields, no auto calls. E2 CI, E3 release/Pages, E4 real Admin MFA and Gemini, E5 independently annotated originals pending. Depends on #282 and chat #451. Never replace production reader based on synthetic tests.
+
+
+### MOBILE-CONTENT-01 / MOBILE-BILL-LAYOUT-01 — v13.269
+User requests mobile-only review: screenshots show excessive text whitespace, uneven consecutive text, image grouping, quantities and image load placeholders. Source: competing pretty wrap / 70% bubble cap, document vs short run gap; fixed image idle CTA, observer-only wake, forced two columns on narrow bill. Candidate only, native screenshot review pending. Existing Message/ContentAPI/Media/Layout owners reused; no backend or financial changes. Four KB ranges byte-identical, 7 classic scripts compile. E2 CI, E3 Pages, E4 native pending. Rollback v13.268.
