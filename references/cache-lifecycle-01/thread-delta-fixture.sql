@@ -36,6 +36,7 @@ declare room uuid:='00000000-0000-4000-8000-000000000001'; cold jsonb; warm json
 begin
  select payload into cold from delta_results where stage='cold';select payload into warm from delta_results where stage='warm';
  if jsonb_array_length(cold#>'{messages,upserts}')<>30 or (cold->>'available')::int<>50 or not (cold#>'{messages,revisions}' ? 'm050') or cold#>'{messages,revisions}' ? 'm020' then raise exception 'cold window';end if;
+ if jsonb_array_length(cold#>'{assets,upserts}')<>6 or not (cold#>'{assets,revisions}' ? 'a025') or not (cold#>'{assets,revisions}' ? 'a050') or (cold#>'{assets,revisions}' ? 'a020') then raise exception 'cold media membership';end if;
  if jsonb_array_length(warm#>'{messages,upserts}')<>0 or jsonb_array_length(warm#>'{assets,upserts}')<>0 then raise exception 'warm retransmission';end if;
  km:=cold#>'{messages,revisions}';ka:=cold#>'{assets,revisions}';
  legacy:=octet_length(public.v0_admin_read('thread',room)::text)+octet_length(public.v0_admin_media(room)::text);
@@ -55,7 +56,7 @@ begin
  select payload into edited from delta_results where stage='edited';
  raise notice 'DELTA_EDIT_COUNTS messages=% assets=%',jsonb_array_length(edited#>'{messages,upserts}'),jsonb_array_length(edited#>'{assets,upserts}');
  raise notice 'DELTA_LATE_MEMBERSHIP message=% asset=%',edited#>'{messages,revisions}' ? 'm049',edited#>'{assets,revisions}' ? 'late';
- if jsonb_array_length(edited#>'{messages,upserts}')<>1 or jsonb_array_length(edited#>'{assets,upserts}')<>1 then raise exception 'edited/late media';end if;
+ if not (edited#>'{assets,revisions}' ? 'late') or not (edited#>'{assets,revisions}' ? 'a050') or jsonb_array_length(edited#>'{messages,upserts}')<>1 or jsonb_array_length(edited#>'{assets,upserts}')<>1 then raise exception 'edited/late media';end if;
 end $$;
 insert into delta_results select 'older',public.v0_admin_thread_delta('00000000-0000-4000-8000-000000000001',50,payload#>'{messages,revisions}',payload#>'{assets,revisions}') from delta_results where stage='edited';
 do $$ begin if (select jsonb_array_length(payload#>'{messages,upserts}') from delta_results where stage='older')<>20 then raise exception 'history batch';end if;end $$;
