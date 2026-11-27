@@ -861,3 +861,7 @@ Private admin_media supplies optional bank_clock {source,date,time} from linked 
 - QUICK-03: Validate aliases, reserve business commands, cap templates and body, explicit create/edit/delete, preserve four KB-LOCK ranges. CI fixture only, no real messages or finance writes.
 
 - QUICK-04: Per-tab sessionStorage envelope schema 1 keyed to approved account, validates template and recipient fields at restore, replaces old account envelope, clears on explicit logout. F5 in same session retains templates; never claim durable multi-device persistence. Storage errors degrade to memory only. Demo never uses live envelope. No media or finance mutation.
+
+
+## v13.264 — LIVE-BILL-FOCUSED-01c
+BillReceiptProjection uses 'Chưa xác định từ ảnh' for unestablished printed clock while displaying independent verified bank time separately. No changes to provenance, writes, geometry or keyboard ownership.
