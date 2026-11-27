@@ -308,3 +308,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 
 - v13.249 candidate SNAPSHOT-01: user screenshots v13.248 show cold/prewarmed text-only fallback, missing callback until metadata and image loader; source confirms prewarm stores empty inventory, callback state not in snapshot, partial projection before classification. Preserve verified callback IDs, gate incomplete partial, complete bounded prewarm inventory, classify callback structural, suppress background projection during callback modal, native selection/paste action. Four KB protected regions byte identical. Actual iOS paste/scroll and durable bytes after F5 remain pending.
 - #244 geometry failure 45926491663 at width 320, popup rect still 25..365 (previous width 390), test now waits existing PopupController scheduled viewport frame via waitForFunction; persistent overflow still fails. No independent geometry writer added.
+
+- SNAPSHOT-01 S2 (#245) — v13.250 candidate: encrypted bounded cache for chat images, confirmed bill/audit excluded; CI, production storage.info compatibility, native paste/scroll and Pages proof pending.
