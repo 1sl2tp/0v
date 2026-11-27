@@ -819,3 +819,6 @@ Existing auditBlobCache owns binary reuse, in-flight dedup, max 2 active jobs, s
 
 ## CACHE-LIFECYCLE-01 B candidate v13.252
 `ThreadDeltaPolicy` validates scoped authoritative revision maps and changed rows; `readDeltaThread` opt-in (`delta=1`) uses existing ChatReadAPI normalization and shares the media inventory. Explicit older button expands window by 20, up to 100. Stored verified snapshots preserve delta revisions; no new viewport/scroll writer. `cachecheck=1` enables aggregate counts and byte estimates via `crmCacheStats()`, no content. IndexedDB expiry sweep on activation and throttled LRU touch. Production SQL not deployed.
+
+## SCROLL-01 S6 — Tail owner v13.253 candidate
+ScrollController `edge().max` is the only live end target. `visualEdge()` is measurement only. `flushTailFrame()` drains pending projection (explicit arrow) and prepared media before one reconciliation. ResizeObserver and follow projection request shared frame, never write directly. Same target may retry twice; then release follow and trace conflict. Existing keyboard owners unchanged.
