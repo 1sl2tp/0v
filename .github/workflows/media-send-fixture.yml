@@ -32,3 +32,5 @@ jobs:
           PGUSER: postgres
           PGDATABASE: media_fixture_ci
           PGPASSWORD: fixture_only
+
+      - run: bash fixtures/media-send/race.sh
