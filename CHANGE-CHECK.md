@@ -1088,3 +1088,7 @@ Exact head PNG unittest 3/3 passed, SQL syntax failed line 77: JS replace collap
 
 ### Stage D — QR image decode and authenticated RLS fixture
 Exact 3781954 all 4 workflows green: private SQL job 140400497211 Python 5 tests, permission/replay/rollback, concurrent same ACK one message/asset. Browser job 140400498212 F5 on both engines passed. Add actual SET ROLE authenticated RLS fixture with deliberately permissive legacy policy, own pending upload, no pending read, wrong path denial, committed read, no overwrite/delete, foreign-session denial. Add Python server verifier candidate composing verified PNG bytes, Pillow decode and ZXing exact one QR, exact recipient TLV; reject transparent images and wrong account. Pin dependencies from PyPI zxing-cpp 3.2.0.post1 and Pillow 13.0.0 (wheel-only CI). Internal verify_ticket adapter uses injected trusted exact-object loader; no real Storage download, server credential, network endpoint or DB attestation path yet. No production changes, no HTML or KB edits, no feature release. Need run exact-head CI and security/trigger fixtures before deployment.
+
+
+### MEDIA-SEND-01 stage D CI correction
+Exact head 81b1898: API 45969162251, Bank 45969162370, SNAPSHOT 45969162235 success; media workflow 45969155334 failed as invalid workflow, zero jobs. YAML plain scalar pip command contains ': ' in --only-binary=:all: -r. Use literal block, retain all tests. Both dependency versions verified on PyPI. No runtime, SQL production or keyboard edits. New CI required.
