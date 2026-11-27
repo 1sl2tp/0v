@@ -367,6 +367,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.waitForFunction(()=>!document.querySelector('.contact[data-id=c] .unread-count'));
  assert.equal(await contact.getAttribute('data-contact-unread'),'false');
  console.log('NOTIFY-01 live ACK after leaving room: badge confirmed zero');
+ // Restore the chat route for subsequent bill round-trip/F5 assertions.
+ await contact.evaluate(e=>e.click());await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
 
  await pg.goto('https://1sl2tp.github.io/0v/?live=1&view=bills');
  await pg.locator('[data-simple-bill-review]').first().waitFor({state:'visible'});
