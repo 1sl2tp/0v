@@ -28,11 +28,11 @@ const sdk='('+function(admin,peer,room,ids){
  await contact.waitFor({state:'visible'});
  await page.waitForFunction(()=>window.crmCacheStats?.().ram.prepareCalls===2&&window.fixture?.downloads===2,{},{timeout:20000});
  await page.waitForFunction(()=>window.crmCacheStats?.().ram.bytes>0&&window.fixture?.bytes>0);
- const warm=await page.evaluate(()=>({downloads:fixture.downloads,bytes:fixture.bytes,stats:crmCacheStats()}));
+ const warm=await page.evaluate(()=>({downloads:fixture.downloads,bytes:fixture.bytes,stats:crmCacheStats(),srcs:[...document.querySelectorAll('#messages [data-image-state=ready] img')].map(x=>x.src)}));
  await contact.click();
  await page.locator('#messages [data-live-message-id="'+ids[3]+'"]').waitFor({state:'attached'});
  await page.waitForFunction(()=>document.querySelectorAll('#messages [data-image-state=ready]').length===2,{},{timeout:10000});
- const opened=await page.evaluate(()=>({downloads:fixture.downloads,bytes:fixture.bytes,stats:crmCacheStats()}));
+ const opened=await page.evaluate(()=>({downloads:fixture.downloads,bytes:fixture.bytes,stats:crmCacheStats(),srcs:[...document.querySelectorAll('#messages [data-image-state=ready] img')].map(x=>x.src)}));
  assert.equal(opened.downloads,warm.downloads);assert.equal(opened.bytes,warm.bytes);
  await page.waitForFunction(()=>typeof window.fixtureReleaseSeen==='function',{},{timeout:15000});
  assert.deepEqual((await page.evaluate(()=>fixture.seen.at(-1))).sort(),ids.slice(0,3).sort());
@@ -42,7 +42,7 @@ const sdk='('+function(admin,peer,room,ids){
  await page.locator('.conversation .panel-head [data-go=contacts]').evaluate(e=>e.click());
  await contact.click();
  await page.waitForFunction(()=>document.querySelectorAll('#messages [data-image-state=ready]').length===2,{},{timeout:10000});
- const reopened=await page.evaluate(()=>({downloads:fixture.downloads,bytes:fixture.bytes,stats:crmCacheStats()}));
- assert.equal(reopened.downloads,opened.downloads);assert.equal(reopened.bytes,opened.bytes);
+ const reopened=await page.evaluate(()=>({downloads:fixture.downloads,bytes:fixture.bytes,stats:crmCacheStats(),srcs:[...document.querySelectorAll('#messages [data-image-state=ready] img')].map(x=>x.src)}));
+ assert.equal(reopened.downloads,opened.downloads);assert.equal(reopened.bytes,opened.bytes);assert.deepEqual(reopened.srcs,opened.srcs);assert.equal(reopened.stats.ram.prepareCalls,opened.stats.ram.prepareCalls);assert.equal(reopened.stats.ram.displayCreated,2);assert(reopened.stats.ram.decodedBytes<=24*1024*1024);console.log('CACHE-RESOLVE-03 '+engine.name()+' stable URL/reuse',JSON.stringify({displayCreated:reopened.stats.ram.displayCreated,displayReuse:reopened.stats.ram.displayReuse,decodedBytes:reopened.stats.ram.decodedBytes}));
  console.log('CACHE/NOTIFY '+engine.name()+' synthetic prewarm/open/reopen',JSON.stringify({coldDownloads:warm.downloads,coldBytes:warm.bytes,openExtra:opened.downloads-warm.downloads,reopenExtra:reopened.downloads-opened.downloads,reopenExtraBytes:reopened.bytes-opened.bytes,readAck:true}));
  }finally{await browser.close()}}})().catch(e=>{console.error(e);process.exitCode=1});
