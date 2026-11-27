@@ -804,3 +804,5 @@ ScrollController.deferProjection / flushProjection / clearProjection own structu
 - SCROLL-01 S4: restore session pause/resume read-only; frameIntervals exclude discontinuous/hidden samples; restoreObserved requires foreground samples; anchor missing reported separately. No new scroll or keyboard owner.
 
 - NOTIFY-01: ReadStateController.liveAck(current,ack,accountId,room) validates scope/count/monotonic receipt and projects confirmed unread only; liveDirectoryCurrent(request,latest,revision,currentRevision) rejects stale snapshot. Adapter owns transport, Contact owns rendering, NotificationController owns alert policy, not count. GEO-MOBILE-01 uses existing geometry owners; RULE-AUDIT-01 requires ownership/regression evidence before new feature acceptance.
+
+- v13.245 candidate COMPOSER-01 #235: stable mobile live composer draft width across focus/blur using existing CSS selector, retain 82% empty and 94% active/nonempty; single/multiline browser regression at 735/390px. Native evidence and full CI pending; branch based on v13.244 candidate 021d25b, must integrate final release head before merge.
