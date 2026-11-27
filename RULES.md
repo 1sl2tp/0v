@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.269)
+## 00. Chỉ mục rule đang có hiệu lực (v13.270)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -17,7 +17,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Material / edge | SURFACE-MOBILE-OPTICS-01–02, SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung), SURFACE-API-01–05 | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
 | Bill layout | MOBILE-BILL-LAYOUT-01, LIVE-BILL-PAIR-01, GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
-| Geometry / Layout | GEO-API-01–08, GEO-ADAPT-03, DESKTOP-04, BOTTOM-04, COMP-04 | phép đo chỉ hợp với composer một hàng |
+| Geometry / Layout | MOBILE-DIRECTORY-01, GEO-API-01–08, GEO-ADAPT-03, DESKTOP-04, BOTTOM-04, COMP-04 | phép đo chỉ hợp với composer một hàng |
 Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu không được nêu rõ. Khi sửa một owner, phải đối chiếu các owner khác và ghi kết quả chưa kiểm chứng.
 
 ## 01. Quản trị
@@ -1981,3 +1981,8 @@ Owner: BillAuditList / CardController / BillRoot02Comparison. Chỉ trang bill �
 ## MOBILE-CONTENT-01 — v13.269
 - Scope mobile <=767px: Message owns A/B and rhythm; Typography/ContentAPI owns wrap and explicit quantity decoration. Incoming short text fits content, outgoing short bubble cap 86% (document cap retained), natural text wrapping without pretty balancing; same-party run gap 6px, turn 12px, existing day/time break unchanged. Original line breaks and IDs remain. Quantity with explicit unit or SL marker uses existing strong semantic node and dotted underline in mobile only; never infer bare numeric codes/amounts.
 - Ordinary consecutive image-only messages retain identity, order and viewer. Message.flow projects runs of up to four independent messages, compact 3px within group and normal 6px gap at next group; break on text, bill, sender/day/time boundary. Media parent keeps fixed slots and existing cache/observer; visible connected mobile slots receive a single next-frame wake guarded by existing busy/current scope; idle text not painted, real errors retain retry. No promise of zero cold downloads; measure real warm cache and image readiness separately. No backend, cache policy, scroll writer or keyboard changes. Desktop CSS unchanged; shared metadata additive. E2/E3/E4 pending.
+
+## MOBILE-DIRECTORY-01 — v13.270 / #287
+- Live mobile <=767px: Main/Layout owns compact toolbar, horizontal filter overflow (all existing groups remain available), search disclosure and row profile. Contact row 64px, Avatar directory 44px, existing Typography roles, stable 72px time track and full remaining preview track; selected Surface retains separated inset. Initial design values, subject to browser and device evidence. No desktop geometry change, no new parent.
+- Contact owns unread display and existing keyed reconciliation. Mobile shows 99+ while preserving full count/accessible label; badge clears via existing read state. If a visible reading anchor is promoted to the top, prefer a stationary visible neighbor using the existing ScrollController.writeLocal; never add another writer. Keep search focus, read state, IDs, sorting and backend unchanged.
+- Test both engines 320/375/390/430, long text, stable row geometry, 0/1/123 unread, existing search, filter, realtime and scroll fixtures. Native E4 and direct Pages checks remain separate. Preserve 4 KB-LOCK ranges byte-identical. No financial/SQL/cache policy changes. Rollback v13.269.

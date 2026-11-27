@@ -95,8 +95,8 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).waitFor({state:'visible'});
  await pg.locator('#contacts [data-id=c] [data-avatar-state=image]').waitFor({state:'visible'});
 
- // MOBILE-DIRECTORY-01 E0: record live-directory baseline in both browser engines.
- // Fixture only. Do not change UI or assert unapproved pixel targets at baseline.
+ // MOBILE-DIRECTORY-01 E1: enforce the mobile live directory profile in both browser engines.
+ // Fixture only. Approved visual profile; physical-device validation remains separate.
  const directoryBaseline=[];
  const directoryViewport=pg.viewportSize();
  for(const width of [320,375,390,430]){
@@ -115,11 +115,17 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
      finally{preview.textContent=oldPreview;stamp.textContent=oldTime}
      return {width:innerWidth,directory:rect(directory),head:rect(head),filters:rect(filters),search:rect(search),list:rect(list),overflow:directory.scrollWidth-directory.clientWidth,filterOverflow:filters.scrollWidth-filters.clientWidth,rows:[...list.querySelectorAll(':scope > .contact:not([hidden])')].map(e=>rect(e).h),before,after,previewStyle:css(preview),nameStyle:css(name),timeStyle:css(stamp),sameRow:row===list.querySelector('[data-id=c]')};
    });
-   assert(result.sameRow&&result.before.row.h>0&&result.before.avatar.w>0,JSON.stringify(result));
+   const {before:a,after:b}=result;
+   const near=(x,y)=>Math.abs(x-y)<=1;
+   assert(result.sameRow&&near(a.row.h,64)&&near(a.avatar.w,44)&&near(a.avatar.h,44)&&result.rows.every(h=>near(h,64)),JSON.stringify(result));
+   assert(result.overflow<=1&&a.name.right<=a.time.x+1&&a.preview.right<=a.row.right+1&&result.previewStyle.whiteSpace==='nowrap'&&result.previewStyle.textOverflow==='ellipsis',JSON.stringify(result));
+   for(const k of ['row','avatar','name','preview','time'])for(const prop of ['x','y','w','h'])assert(near(a[k][prop],b[k][prop]),JSON.stringify({width,k,prop,result}));
+   const badgeProof=await pg.evaluate(()=>{const row=document.querySelector('#contacts [data-id=c]'),old=row.querySelector('.unread-count'),prior=old?(old.dataset.unreadKind==='dot'?'•':Number(old.textContent)):0;const measure=()=>row.getBoundingClientRect().height;const initial=measure();try{Contact.update(row,{unread:1});const first=row.querySelector('.unread-count');Contact.update(row,{unread:123});const second=row.querySelector('.unread-count'),after=measure(),content=getComputedStyle(second,'::after').content;Contact.update(row,{unread:0});return {same:first===second,initial,after,overflow:second.dataset.unreadOverflow,full:second.getAttribute('aria-label'),content,cleared:!row.querySelector('.unread-count')}}finally{Contact.update(row,{unread:prior})}});
+   assert(badgeProof.same&&near(badgeProof.initial,badgeProof.after)&&badgeProof.overflow==='true'&&badgeProof.full.includes('123')&&badgeProof.content.includes('99+')&&badgeProof.cleared,JSON.stringify(badgeProof));
    directoryBaseline.push(result);
  }
  if(directoryViewport)await pg.setViewportSize(directoryViewport);
- console.log('MOBILE-DIRECTORY-01 E0 live directory geometry (fixture)',JSON.stringify(directoryBaseline));
+ console.log('MOBILE-DIRECTORY-01 E1 live directory geometry (fixture)',JSON.stringify(directoryBaseline));
 
  // S5: actual scroll owner, 8 seconds after a jump, with three delayed paint batches.
  const s5LateProbe=async()=>{await pg.waitForFunction(()=>window.__fixtureScrollState().edge.atEnd);const result=await pg.evaluate(async()=>{const m=document.querySelector('#messages'),row=m.querySelector('[data-live-message-id="old-22"]'),button=document.querySelector('#jumpBottom');if(!row)throw Error('Missing S5 fixture row');const wait=ms=>new Promise(r=>setTimeout(r,ms)),frames=async n=>{for(let i=0;i<n;i++)await new Promise(requestAnimationFrame)};const original=row.style.minHeight;let probe=null;const batches=[];try{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0;await frames(4);await wait(250);probe=window.__fixtureMountScrollS4();if(!probe)throw Error('S5 probe not mounted');probe.begin();const start=performance.now();button.click();await frames(8);for(const [at,grow] of [[500,false],[2000,true],[5000,false]]){await wait(Math.max(0,start+at-performance.now()));window.__fixtureQueuePaint(row,()=>{if(grow)row.style.minHeight=(row.getBoundingClientRect().height+40)+'px';else row.dataset.s5FixturePaint=String(at)},()=>row.isConnected);await frames(8);batches.push({at,grow,gap:window.__fixtureScrollState().edge.gap})}await wait(Math.max(0,start+8100-performance.now()));await frames(4);probe.finish('fixture-s5');return {batches,report:probe.report()}}finally{probe?.dispose();row.style.minHeight=original;delete row.dataset.s5FixturePaint}});const r=result.report;assert(result.batches.every(x=>x.gap<=2)&&r.durationMs>=8000&&r.settled12&&r.settledWrites===0&&r.settledGapPx<=2&&r.maxStableTopStepPx<=1&&r.trace.some(e=>e.kind==='jump')&&r.trace.filter(e=>e.kind==='paint-drained').length>=3&&r.trace.filter(e=>e.kind==='write').length===2&&r.traceDropped===0,JSON.stringify(result));console.log('SCROLL-01 S5 delayed paint 8s',JSON.stringify(result));await pg.waitForFunction(()=>window.__fixtureScrollState().edge.atEnd)};

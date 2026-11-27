@@ -459,3 +459,6 @@ E1 read-only comparison button on standalone bill page, source-bound 10 fields, 
 
 ### MOBILE-CONTENT-01 / MOBILE-BILL-LAYOUT-01 — v13.269
 User requests mobile-only review: screenshots show excessive text whitespace, uneven consecutive text, image grouping, quantities and image load placeholders. Source: competing pretty wrap / 70% bubble cap, document vs short run gap; fixed image idle CTA, observer-only wake, forced two columns on narrow bill. Candidate only, native screenshot review pending. Existing Message/ContentAPI/Media/Layout owners reused; no backend or financial changes. Four KB ranges byte-identical, 7 classic scripts compile. E2 CI, E3 Pages, E4 native pending. Rollback v13.268.
+
+### MOBILE-DIRECTORY-01 v13.270 candidate / #287, #288
+User approved 12 mobile directory requirements; main v13.269 and successful Pages workflow 46080216549 for 00d78c6 verified; direct HTTP and native E4 unavailable. Baseline probe c08f6d5 still pending at time of candidate. Reuse Main/Layout, Avatar, Typography, Contact, Surface, ScrollController. Candidate code and test assertions prepared; CI pending, no production changes. Native E4 and speed measurements of v13.269 stay pending. Next: inspect baseline and candidate CI, fix regressions, verify release; then MOBILE-NAV-01 proposal.
