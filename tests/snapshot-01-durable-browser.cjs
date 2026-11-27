@@ -5,7 +5,7 @@ const html=fs.readFileSync('index.html','utf8');
 const before=fs.readFileSync('release-v13.253.html','utf8');
 const ranges=[['// KeyboardController:','/* Opt-in dynamic'],['let preFocusAnchor=null;','// The form-width ResizeObserver'],['function composerMode(','draft.addEventListener(\'input\',resizeDraft)'],['/* Surface Parent:','/* FL owner:']];
 for(const [a,b] of ranges){const part=s=>s.slice(s.indexOf(a),s.indexOf(b,s.indexOf(a)));assert(part(html).length>0);assert.equal(part(html),part(before),a)}
-assert.equal(html,fs.readFileSync('release-v13.254.html','utf8'));
+const manifest=JSON.parse(fs.readFileSync('version.json','utf8'));assert.equal(html,fs.readFileSync(manifest.snapshot,'utf8'));
 assert(html.includes('downloadLiveMedia,true)'));assert(html.includes('auditBlobCache.get(key,owner,downloadLiveMedia,true)'));assert(html.includes("MediaController.fixedImageState(fixed.tiles[i],'ready',items[i])"));
 const start=html.indexOf(' const durableImageCache=(()=>{'),end=html.indexOf(' const auditBlobCache=(()=>{',start);
 assert(start>=0&&end>start);
