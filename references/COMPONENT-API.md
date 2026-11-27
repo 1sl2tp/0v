@@ -813,3 +813,6 @@ LiveChatSnapshotPolicy.callbackIds / canProjectPartial retain scoped verified pr
 
 ## SNAPSHOT-01 S2 candidate
 `auditBlobCache.get(key,owner,download,durable=false)` and `.image(key,owner,mime,bill,download,durable=false)` retain RAM dedup; durableImageCache is internal storage tier, not a rendering owner. Chat image only, excludes known bill/audit; storage.info authorization + revision required before read, encrypted bounded IDB; fallback to authorized download. Existing MediaController and ScrollController.imagePaint own projection. Four KB ranges remain unchanged.
+
+## CACHE-LIFECYCLE-01 (v13.251 candidate)
+Existing auditBlobCache owns binary reuse, in-flight dedup, max 2 active jobs, scope cancellation and encrypted durable tier for chat/bill/audit/export; renderer paints RAM-ready slots independently. Current snapshot writes dedup for 5 min, full network reconciliation remains. No changes to four protected keyboard ranges.
