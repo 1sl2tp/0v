@@ -1,5 +1,5 @@
 -- MEDIA-SEND-01 stage A: PRIVATE SQL CANDIDATE. Never apply directly to production.
--- Single PNG image first; no public RPC, storage policy or verifier credentials.
+-- Single PNG image first; no public RPC or verifier credentials; candidate storage policy is not deployed.
 begin;
 create table v0_private.media_send_ticket (
  account_id uuid not null, client_id text not null, auth_user uuid not null, session_id uuid not null,
@@ -38,7 +38,7 @@ begin
   insert into public.v21_conversations(member_a,member_b) values(least(me,p_contact),greatest(me,p_contact)) on conflict(member_a,member_b) do nothing;
   select c.id into strict room from public.v21_conversations c where c.member_a=least(me,p_contact) and c.member_b=greatest(me,p_contact);
   insert into v0_private.media_send_ticket(account_id,client_id,auth_user,session_id,contact_id,room_id,asset_id,body,size_bytes,sha256,storage_key,expires_at)
-  values(me,p_client,auth.uid(),sid,p_contact,room,p_asset,body_text,p_size,p_hash,me::text||'/'||room::text||'/'||p_asset::text||'.png',clock_timestamp()+interval '15 minutes') returning * into t;
+  values(me,p_client,auth.uid(),sid,p_contact,room,p_asset,body_text,p_size,p_hash,me::text||'/'||room::text||'/0v-ticket/'||p_asset::text||'.png',clock_timestamp()+interval '15 minutes') returning * into t;
  end if;
  return jsonb_build_object('account_id',me,'conversation_id',t.room_id,'asset_id',t.asset_id,'storage_key',t.storage_key,'message_id',t.message_id,'expires_at',t.expires_at);
 end $$;
@@ -70,4 +70,38 @@ begin
  return jsonb_build_object('account_id',me,'conversation_id',t.room_id,'message_id',mid,'asset_id',t.asset_id);
 end $$;
 revoke all on function v0_private.media_send_actor(),v0_private.media_send_contact(uuid,uuid),v0_private.media_send_prepare(uuid,text,uuid,text,bigint,text),v0_private.media_send_commit(text) from public,anon,authenticated,service_role;
+
+-- Candidate only: reserved third segment; existing legacy paths unaffected.
+create function v0_private.media_send_upload_allowed(p_name text,p_owner text)
+returns boolean language plpgsql stable security definer set search_path='' as $
+declare me uuid;
+begin
+ if auth.uid() is null or p_owner is distinct from auth.uid()::text then return false; end if;
+ begin me:=v0_private.media_send_actor(); exception when insufficient_privilege then return false; end;
+ return exists(select 1 from v0_private.media_send_ticket t
+ join public.v21_conversations c on c.id=t.room_id
+ where t.account_id=me and t.auth_user=auth.uid() and t.session_id=(auth.jwt()->>'session_id')::uuid
+ and t.storage_key=p_name and t.message_id is null and t.verified_object_id is null and t.expires_at>now()
+ and c.member_a=least(me,t.contact_id) and c.member_b=greatest(me,t.contact_id)
+ and v0_private.media_send_contact(me,t.contact_id));
+end $;
+create function v0_private.media_send_published(p_name text)
+returns boolean language sql stable security definer set search_path='' as $
+ select auth.uid() is not null and exists(select 1 from v0_private.media_send_ticket t join public.v21_media_assets a on a.id=t.asset_id and a.message_id=t.message_id and a.storage_key=t.storage_key and a.deleted_at is null join public.v21_messages m on m.id=t.message_id and m.deleted_at is null where t.storage_key=p_name and t.message_id is not null)
+$;
+revoke all on function v0_private.media_send_upload_allowed(text,text),v0_private.media_send_published(text) from public,anon,authenticated,service_role;
+grant execute on function v0_private.media_send_upload_allowed(text,text),v0_private.media_send_published(text) to authenticated;
+-- Restrictive guards matter: existing permissive CHAT policies must not bypass tickets.
+create policy v0_media_ticket_insert on storage.objects for insert to authenticated
+ with check(bucket_id='v21-media' and split_part(name,'/',3)='0v-ticket' and v0_private.media_send_upload_allowed(name,owner_id));
+create policy v0_media_ticket_insert_guard on storage.objects as restrictive for insert to authenticated
+ with check(bucket_id is distinct from 'v21-media' or split_part(name,'/',3)<>'0v-ticket' or v0_private.media_send_upload_allowed(name,owner_id));
+create policy v0_media_ticket_read_guard on storage.objects as restrictive for select to authenticated
+ using(bucket_id is distinct from 'v21-media' or split_part(name,'/',3)<>'0v-ticket' or v0_private.media_send_published(name));
+create policy v0_media_ticket_update_guard on storage.objects as restrictive for update to authenticated
+ using(bucket_id is distinct from 'v21-media' or split_part(name,'/',3)<>'0v-ticket')
+ with check(bucket_id is distinct from 'v21-media' or split_part(name,'/',3)<>'0v-ticket');
+create policy v0_media_ticket_delete_guard on storage.objects as restrictive for delete to authenticated
+ using(bucket_id is distinct from 'v21-media' or split_part(name,'/',3)<>'0v-ticket');
+
 commit;

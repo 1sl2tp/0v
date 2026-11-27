@@ -10,6 +10,7 @@ create table public.v21_conversations(id uuid primary key default gen_random_uui
 create table public.v21_messages(id uuid primary key default gen_random_uuid(),conversation_id uuid,sender_account_id uuid,client_id text,body text,deleted_at timestamptz, unique(sender_account_id,client_id));
 create table public.v21_media_assets(id uuid primary key,conversation_id uuid,message_id uuid,owner_account_id uuid,kind text,mime_type text,size_bytes bigint,storage_key text,content_hash text,width_px int,height_px int,sort_index int,deleted_at timestamptz);
 create table storage.objects(id uuid primary key,bucket_id text,name text,version text,owner_id text,metadata jsonb,archived_at timestamptz,is_delete_marker boolean default false);
+alter table storage.objects enable row level security;
 \ir ../../references/0v-admin-read.sql
 \ir ../../references/0v-admin-media-send-candidate.sql
 do $$
@@ -23,6 +24,7 @@ begin
  perform set_config('fixture.jwt',jsonb_build_object('session_id',sid,'aal','aal2')::text,true);
  if has_function_privilege('authenticated','v0_private.media_send_prepare(uuid,text,uuid,text,bigint,text)','execute') or has_table_privilege('authenticated','v0_private.media_send_ticket','select') then raise exception 'unsafe_grant'; end if;
  t:=v0_private.media_send_prepare(peer,key,asset,'',10,h);
+ if not v0_private.media_send_upload_allowed(t->>'storage_key',au::text) or v0_private.media_send_upload_allowed(t->>'storage_key',peer::text) or v0_private.media_send_upload_allowed('wrong/path/0v-ticket/file.png',au::text) or v0_private.media_send_published(t->>'storage_key') then raise exception 'ticket_policy_failed'; end if;
  if t is distinct from v0_private.media_send_prepare(peer,key,asset,'',10,h) or exists(select 1 from public.v21_messages) then raise exception 'prepare_replay'; end if;
  begin perform v0_private.media_send_prepare(peer,key,asset,'changed',10,h); raise exception 'unexpected_success'; exception when raise_exception then if sqlerrm<>'manifest_conflict' then raise; end if; end;
  begin perform v0_private.media_send_commit(key); raise exception 'unexpected_success'; exception when raise_exception then if sqlerrm<>'bytes_not_verified' then raise; end if; end;
@@ -30,6 +32,7 @@ begin
  insert into storage.objects values(obj,'v21-media',t->>'storage_key','v1',au::text,'{"size":10,"mimetype":"image/png"}',null,false);
  update v0_private.media_send_ticket set verified_object_id=obj,verified_object_version='v1',verified_width=40,verified_height=40 where client_id=key;
  ack:=v0_private.media_send_commit(key);
+ if v0_private.media_send_upload_allowed(t->>'storage_key',au::text) or not v0_private.media_send_published(t->>'storage_key') then raise exception 'published_policy_failed'; end if;
  if ack is distinct from v0_private.media_send_commit(key) or (select count(*) from public.v21_messages)<>1 or (select count(*) from public.v21_media_assets)<>1 then raise exception 'duplicate_send'; end if;
  t:=v0_private.media_send_prepare(peer,key2,asset2,'',10,h);
  insert into storage.objects values(obj2,'v21-media',t->>'storage_key','v1',au::text,'{"size":10,"mimetype":"image/png"}',null,false);
