@@ -830,3 +830,5 @@ ScrollController `edge().max` is the only live end target. `visualEdge()` is mea
 
 ## BANK-NOCLOCK-CURRENT-01 candidate
 Existing server recovery owns eligibility and locked financial writer owns posting. BillReceiptProjection consumes verified status/ledger and separately sourced bank clock; raw printed clock remains absent. No client write or parallel owner. Contract proposed only; runtime/read schema unchanged.
+
+- Narrow fallback is a server-only candidate. Use original immutable sent_at, independent verified bank clock, full account, exact substantive memo and global complete competition/consumption checks; existing locked RPC must validate under lock, not a client posting path. Specification fixture: references/bank-noclock-current-fixture.sql; no runtime implementation yet.
