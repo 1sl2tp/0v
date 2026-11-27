@@ -18,3 +18,7 @@ Observed old RPC supports image/audio/file, max 12 assets, 15 MiB each; file all
 - Partial upload, logout, room switch, cancellation, expired ticket and cleanup -> no committed message or dangling accessible objects.
 - Transaction rollback and trigger side effects tested with synthetic accounts and disabled external delivery; validate real Zalo/Push/Bank contract separately before go-live.
 - Schema grants/RLS review, isolated DB fixture and browser fixture, explicit production rollout separate from UI release. Existing legacy API untouched.
+
+
+### MEDIA-SEND-01 stage A (post v13.263, backend candidate only)
+PR #275 204cf4e all 4 workflows passed, merged 727bb7a; Pages workflow 45966717814 success, public manifest inaccessible from agent. Read live catalog schema and existing v0_admin_read/actions, MEDIA-SEND-CONTRACT, Supabase MFA and Storage docs. Added private one-PNG prepare/commit SQL candidate, no public grants, RLS enabled, AAL2/session/contact/room checks, manifest lock, verified-object version/owner check, canonical atomic message+asset and replay. Verifier fields set only by trusted future byte-verification adapter; fixture uses fake attestation. No actual storage upload, QR decode, public RPC, cleanup or trigger test; no production changes. Fixture tests denial, replay and rollback; actual browser F5 CRUD synthetic fixture added. No index/bill/snapshot or keyboard changes; no UI version bump because backend not shipped. CI pending; next stage bytes verifier, narrow storage policy and public adapter after staging.

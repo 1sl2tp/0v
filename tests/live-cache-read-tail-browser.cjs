@@ -56,6 +56,26 @@ const sdk='('+function(admin,peer,room,ids){
  try{await page.waitForFunction(()=>document.querySelectorAll('#messages [data-image-state=ready]').length===2&&window.crmCacheStats?.().displayReadyCount>=2,{},{timeout:20000})}catch(error){
   console.error('CACHE-ROOM F5 diagnostic '+engine.name(),JSON.stringify(await page.evaluate(account=>({view:JSON.parse(sessionStorage.getItem('0v.view.v1:'+account)||'null'),room:document.querySelector('#messages')?.dataset.liveRoom,tiles:[...document.querySelectorAll('#messages [data-image-state]')].map(t=>({state:t.dataset.imageState,complete:t.querySelector('img')?.complete,width:t.querySelector('img')?.naturalWidth})),stats:window.crmCacheStats?.(),fixture:{downloads:window.fixture?.downloads,batches:window.fixture?.batches,metadata:window.fixture?.metadata}}),admin)));throw error
  }
+
+ // QUICK-MESSAGE-01: exercise actual live popup, create a synthetic template, reload, select it.
+ const qdraft=page.locator('#draft'),qdialog=()=>page.locator('dialog[open]');
+ await qdraft.fill('/');
+ await qdialog().getByRole('button',{name:'Quản lý mẫu tin nhắn',exact:true}).click();
+ await qdialog().getByRole('button',{name:'Tạo mẫu mới',exact:true}).click();
+ await qdialog().getByLabel('Lệnh (không có dấu /)',{exact:true}).fill('kiemthu');
+ await qdialog().getByLabel('Nội dung tin nhắn',{exact:true}).fill('Mẫu kiểm thử F5');
+ await qdialog().getByRole('button',{name:'Lưu mẫu',exact:true}).click();
+ await qdialog().getByRole('button',{name:'/kiemthu · Sửa / xóa',exact:true}).waitFor();
+ await qdialog().getByRole('button',{name:'Đóng',exact:true}).click();
+ await qdraft.fill('');
+ await page.reload();
+ await page.waitForFunction(()=>document.querySelector('#app')?.dataset.screen==='chat'&&!document.querySelector('#composer')?.inert);
+ await qdraft.fill('/');
+ await qdialog().getByRole('button',{name:'/kiemthu · Mẫu kiểm thử F5',exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector('#draft')?.value==='Mẫu kiểm thử F5');
+ await qdraft.fill('');
+ await page.waitForFunction(()=>document.querySelectorAll('#messages [data-image-state=ready]').length===2&&window.crmCacheStats?.().displayReadyCount>=2);
+ console.log('QUICK-MESSAGE-01 '+engine.name()+' actual UI F5 template restore/insert passed (synthetic)');
  const restored=await page.evaluate(()=>({stats:crmCacheStats(),downloads:fixture.downloads,batches:fixture.batches,metadata:fixture.metadata}));
  assert.equal(restored.downloads,0);assert.equal(restored.batches,1);assert.equal(restored.metadata,0);assert.equal(restored.stats.batchHits,2);assert.equal(restored.stats.ram.decodeCount,2);assert(restored.stats.displayReadyCount>=2);
  console.log('CACHE-ROOM '+engine.name()+' real HTML F5 two groups',JSON.stringify({batches:restored.batches,metadata:restored.metadata,downloads:restored.downloads,batchMs:restored.stats.batchMs,decodeMs:restored.stats.ram.decodeMs,prepareMs:restored.stats.ram.prepareMs,displayReadyMs:restored.stats.displayReadyMs,displayRequestMs:restored.stats.displayRequestMs,displayReadyCount:restored.stats.displayReadyCount}));
