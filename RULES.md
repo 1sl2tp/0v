@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.253)
+## 00. Chỉ mục rule đang có hiệu lực (v13.254)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1867,3 +1867,7 @@ All active linked Zalo users; trusted server metadata only; Contact/Message/Popu
 - SCROLL-01 S6 momentum handoff (user reports static arrow smooth, arrow while coasting shakes): an explicit jump during manual/native motion is a room/epoch-scoped pending request; do not clear actual scroll activity or acquire follow until existing manual settle sees no touch and quiet scroll events. New manual input/navigation cancels pending; no new viewport writer or forced CSS/overflow toggle. After quiet, one shared frame owns the jump, with existing two-attempt same-target bound. Quiet interval is a heuristic, not proof of native compositor cancellation. Chromium/WebKit simulated ongoing movement must produce zero owner writes during motion and one on settle; native iPhone acceptance remains open.
 
 - SCROLL-01 S6 observed geometry: scroll/ResizeObserver callbacks may record the physical target and reset its budget on an actually observed changed extent/height, but never write position. Shared frame remains the only tail writer. Regression grow/shrink waits for both physical arrival and owner observation before next rendered cycle; a clamp alone without an observed geometry change does not reset budget. Keep same-target recoil limit, momentum handoff and protected keyboard ranges.
+
+## SCROLL-01 S7 / CACHE-LIFECYCLE-01 C (v13.254 candidate)
+- S7: accept primary touch press on the explicit jump control while motion is active even without a later click; pointerdown and touchstart route through ScrollController.captureMovingJump, cancel only accepted event default, retain click for stationary/keyboard/mouse. Existing pending room/epoch and quiet settle owns the actual jump; never write during motion. If iOS suppresses all events, cannot claim capture; native E4 mandatory.
+- Cache C: each fixed slot resolves independently after RAM/authorized IndexedDB/network and decode; paint goes through existing ScrollController.imagePaint, no ready slot reset, pending siblings not misclassified as errors. Non-fixed audit layout unchanged. Add aggregate metadata check/unavailable, durable read bytes, RAM hit bytes and decode/prepared reuse counts; no payload/ID logging; no weakening of storage.info or encryption, no expanded limits. Actual response blob bytes are not wire overhead. Native measurements pending.
