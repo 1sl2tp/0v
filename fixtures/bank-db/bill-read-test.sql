@@ -13,7 +13,7 @@ CREATE TABLE public.v21_messages(id uuid PRIMARY KEY,conversation_id uuid,delete
 CREATE TABLE public.v21_media_assets(id uuid PRIMARY KEY,message_id uuid,conversation_id uuid,owner_account_id uuid,kind text,mime_type text,storage_key text,width_px integer,height_px integer,file_name text,sort_index integer,deleted_at timestamptz,created_at timestamptz DEFAULT now());
 CREATE TABLE public.v21_read_states(conversation_id uuid,account_id uuid,last_read_at timestamptz);
 CREATE TABLE public.taphoa_debt_ledger(id bigint PRIMARY KEY,customer_account_id uuid,entry_type text,amount_vnd numeric);
-CREATE TABLE public.chat_bank_bill_receipts(id uuid DEFAULT gen_random_uuid() PRIMARY KEY,media_asset_id uuid UNIQUE,message_id uuid,customer_account_id uuid,status text,amount_vnd bigint,ledger_id bigint REFERENCES public.taphoa_debt_ledger(id),raw_read jsonb,transfer_at_vn timestamp,receiving_account text,receiving_name text,transfer_reference text,sending_bank text,receiving_bank text);
+CREATE TABLE public.chat_bank_bill_receipts(id uuid DEFAULT gen_random_uuid() PRIMARY KEY,media_asset_id uuid UNIQUE,message_id uuid,customer_account_id uuid,status text,amount_vnd bigint,ledger_id bigint REFERENCES public.taphoa_debt_ledger(id),raw_read jsonb,sent_at timestamptz,transfer_at_vn timestamp,receiving_account text,receiving_name text,transfer_reference text,sending_bank text,receiving_bank text);
 CREATE TABLE public.taphoa_agribank_notifications(id bigint PRIMARY KEY,package_name text,status text,is_own_transfer boolean,bank_credit_account text,amount_vnd bigint,transfer_at timestamptz);
 CREATE TABLE public.chat_bank_app_collection_links(receipt_id uuid,notification_id bigint,ledger_id bigint);
 ALTER TABLE public.chat_bank_bill_receipts ENABLE ROW LEVEL SECURITY;
@@ -152,6 +152,27 @@ DO $clock_fixture$ DECLARE saved jsonb; saved_at timestamp; literal text; prec t
  END LOOP;
  UPDATE public.chat_bank_bill_receipts SET raw_read=saved,transfer_at_vn=saved_at WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
 END $clock_fixture$;
+
+-- Verified independent bank clock: synthetic receipt only, reuse existing row after baseline tests.
+UPDATE public.chat_bank_bill_receipts SET status='received',ledger_id=1,amount_vnd=26000,receiving_account='2901181999999',receiving_name='BUI XUAN TUNG',sent_at='2026-11-25 21:52:28+07',transfer_at_vn='2026-11-25 21:52',raw_read='{"transfer_date_printed_vn":"25/11/2026","transfer_date_vn":"2026-11-25","transfer_time_printed_vn":null,"transfer_content":"fixture","manual_datetime_correction":{"source":"independent_agribank_credit_notification","reason":"bank_noclock_current_01","bank_time_precision":"minute","bank_notice_id":1}}' WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+UPDATE public.v21_messages SET created_at='2026-11-25 21:52:28+07' WHERE id='40000000-0000-0000-0000-000000000001';
+SET LOCAL ROLE authenticated;
+SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);
+DO $verify$ DECLARE b jsonb; a jsonb; BEGIN
+ SELECT x->'bill_receipt' INTO b FROM jsonb_array_elements(public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets') x WHERE x->>'id'='50000000-0000-0000-0000-000000000001';
+ IF b->>'time_vn' IS NOT NULL OR b#>>'{bank_clock,time_vn}' IS DISTINCT FROM '21:52' OR b#>>'{bank_clock,sent_time_vn}' IS DISTINCT FROM '21:52:28' OR b#>>'{bank_clock,source}' IS DISTINCT FROM 'agribank_linked_credit' THEN RAISE EXCEPTION 'bank clock proof separation'; END IF;
+ SELECT x INTO a FROM jsonb_array_elements(public.v0_admin_bill_audit()->'rows') x WHERE x->>'asset_id'='50000000-0000-0000-0000-000000000001';
+ IF a->>'clock' IS NOT NULL OR a->'bank_clock' IS DISTINCT FROM b->'bank_clock' OR a->'flags' ? 'time' THEN RAISE EXCEPTION 'audit bank clock projection'; END IF;
+ IF has_function_privilege(current_user,'v0_private.bill_verified_bank_clock(public.chat_bank_bill_receipts,timestamptz)','EXECUTE') THEN RAISE EXCEPTION 'helper direct permission'; END IF;
+END $verify$;
+RESET ROLE;
+UPDATE public.taphoa_agribank_notifications SET amount_vnd=27000 WHERE id=1;
+SET LOCAL ROLE authenticated;
+DO $verify$ DECLARE b jsonb; BEGIN
+ SELECT x->'bill_receipt' INTO b FROM jsonb_array_elements(public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets') x WHERE x->>'id'='50000000-0000-0000-0000-000000000001';
+ IF b->'bank_clock' IS DISTINCT FROM 'null'::jsonb THEN RAISE EXCEPTION 'wrong amount bank proof'; END IF;
+END $verify$;
+RESET ROLE;
 UPDATE public.v21_accounts SET locked_at=now() WHERE id='00000000-0000-0000-0000-000000000002';
 SET LOCAL ROLE authenticated;
 SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);

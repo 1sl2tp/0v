@@ -826,3 +826,14 @@ ScrollController `edge().max` is the only live end target. `visualEdge()` is mea
 - v13.254 candidate: ScrollController.captureMovingJump owns early press acceptance, not a new scroll writer; auditBlobCache stats extend aggregate metrics, fixed gallery slots resolve independently through existing MediaController/ScrollController.
 
 - S7 follow-up: keep existing jump button as sibling of #messages, isolate scroll root stacking context, center button without transform, touch-action:none only on explicit command. No viewport/overflow toggle, no new writer, same quiet handoff. Browser hit-test at command center plus synthetic both-direction early-event probe; cannot certify native iOS event delivery. Fixed-image audit updated to require per-slot ready/finished-error guards and retry only unresolved slots; existing geometry assertions retained. Avoid repeat error-state paints. Four protected ranges identical; index and bill identical. Exact-head CI and native cache/gesture acceptance pending.
+
+
+## BANK-NOCLOCK-CURRENT-01 candidate
+Existing server recovery owns eligibility and locked financial writer owns posting. BillReceiptProjection consumes verified status/ledger and separately sourced bank clock; raw printed clock remains absent. No client write or parallel owner. Contract proposed only; runtime/read schema unchanged.
+
+- Narrow fallback is a server-only candidate. Use original immutable sent_at, independent verified bank clock, full account, exact substantive memo and global complete competition/consumption checks; existing locked RPC must validate under lock, not a client posting path. Specification fixture: references/bank-noclock-current-fixture.sql; no runtime implementation yet.
+
+
+## v13.255 — BANK-NOCLOCK-CURRENT-01 display
+- Shared CHAT PR #430 merged 2f05f23, all three CI passed, actual RPC 79 assertions, SQL deployed, Edge v68 verified; live single receipt and link verified separately. This supersedes mandatory missing-hour review ONLY when independent verified linked credit and actual collection exist; all other cases retain existing financial review. No posting authority in 0v.
+- One private read-only SQL owner validates receipt, ledger ownership/type/amount, exact credit link/account/date/time/source and original send time. Both existing media and audit APIs return bank_clock (source, date, minute, sent time), never fill OCR time or expose raw bank IDs. Existing AAL2/session/room restrictions retained, helper no direct client grants. Standalone image-only OCR workspace unchanged. Delta revision already includes receipt JSON; no new request or image download path. Missing raw clock remains visible but no error for verified collection. Keep original printed clock and review when evidence absent/invalid. Four keyboard ranges unchanged. CI and read RPC deployment/Pages acceptance pending; no financial mutations in this PR.
