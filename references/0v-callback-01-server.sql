@@ -71,9 +71,9 @@ grant usage on schema v0_private to service_role;
 grant execute on function v0_private.zalo_missed_call_ingress(text,text,timestamptz) to service_role;
 -- Service-only authenticated bridge ingress; never callable by browser.
 create function public.v0_zalo_missed_call_ingress(p_zalo_id text,p_zalo_message_id text,p_event_at timestamptz)
-returns uuid language sql volatile security invoker set search_path='' as $
+returns uuid language sql volatile security invoker set search_path='' as $callback_rpc$
  select v0_private.zalo_missed_call_ingress(p_zalo_id,p_zalo_message_id,p_event_at)
-$$;
+$callback_rpc$;
 revoke all on function public.v0_zalo_missed_call_ingress(text,text,timestamptz) from public,anon,authenticated,service_role;
 grant execute on function public.v0_zalo_missed_call_ingress(text,text,timestamptz) to service_role;
 
