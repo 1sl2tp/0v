@@ -2,6 +2,7 @@ name: Verify public Pages v13.248
 on:
   pull_request:
     branches: [main]
+    paths: ['.github/workflows/public-proof-248.yml']
   workflow_dispatch:
 permissions:
   contents: read
