@@ -94,6 +94,33 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  await pg.getByRole('button',{name:'Xác nhận mã',exact:true}).click();
  await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).waitFor({state:'visible'});
  await pg.locator('#contacts [data-id=c] [data-avatar-state=image]').waitFor({state:'visible'});
+
+ // MOBILE-DIRECTORY-01 E0: record live-directory baseline in both browser engines.
+ // Fixture only. Do not change UI or assert unapproved pixel targets at baseline.
+ const directoryBaseline=[];
+ const directoryViewport=pg.viewportSize();
+ for(const width of [320,375,390,430]){
+   await pg.setViewportSize({width,height:844});
+   await pg.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+   const result=await pg.evaluate(()=>{
+     const directory=document.querySelector('#app > .directory'),list=document.querySelector('#contacts'),row=list?.querySelector('[data-id=c]');
+     if(!directory||!row)throw Error('Missing live directory fixture');
+     const name=row.querySelector('.identity b'),preview=row.querySelector('.identity small'),stamp=row.querySelector('.time'),avatar=row.querySelector('.avatar'),badge=row.querySelector('.unread-count'),head=directory.querySelector('.panel-head'),filters=directory.querySelector('.filters'),search=directory.querySelector('.search-zone');
+     const rect=e=>{if(!e)return null;const r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}};
+     const css=e=>{if(!e)return null;const s=getComputedStyle(e);return {font:s.fontSize,line:s.lineHeight,weight:s.fontWeight,whiteSpace:s.whiteSpace,overflow:s.overflow,textOverflow:s.textOverflow,display:s.display}};
+     const measure=()=>({row:rect(row),name:rect(name),preview:rect(preview),time:rect(stamp),avatar:rect(avatar),badge:rect(badge)});
+     const before=measure(),oldPreview=preview.textContent,oldTime=stamp.textContent;
+     let after;
+     try{preview.textContent='Tin nhắn kiểm thử rất dài '.repeat(12);stamp.textContent='T7 23:59';after=measure()}
+     finally{preview.textContent=oldPreview;stamp.textContent=oldTime}
+     return {width:innerWidth,directory:rect(directory),head:rect(head),filters:rect(filters),search:rect(search),list:rect(list),overflow:directory.scrollWidth-directory.clientWidth,filterOverflow:filters.scrollWidth-filters.clientWidth,rows:[...list.querySelectorAll(':scope > .contact:not([hidden])')].map(e=>rect(e).h),before,after,previewStyle:css(preview),nameStyle:css(name),timeStyle:css(stamp),sameRow:row===list.querySelector('[data-id=c]')};
+   });
+   assert(result.sameRow&&result.before.row.h>0&&result.before.avatar.w>0,JSON.stringify(result));
+   directoryBaseline.push(result);
+ }
+ if(directoryViewport)await pg.setViewportSize(directoryViewport);
+ console.log('MOBILE-DIRECTORY-01 E0 live directory geometry (fixture)',JSON.stringify(directoryBaseline));
+
  // S5: actual scroll owner, 8 seconds after a jump, with three delayed paint batches.
  const s5LateProbe=async()=>{await pg.waitForFunction(()=>window.__fixtureScrollState().edge.atEnd);const result=await pg.evaluate(async()=>{const m=document.querySelector('#messages'),row=m.querySelector('[data-live-message-id="old-22"]'),button=document.querySelector('#jumpBottom');if(!row)throw Error('Missing S5 fixture row');const wait=ms=>new Promise(r=>setTimeout(r,ms)),frames=async n=>{for(let i=0;i<n;i++)await new Promise(requestAnimationFrame)};const original=row.style.minHeight;let probe=null;const batches=[];try{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0;await frames(4);await wait(250);probe=window.__fixtureMountScrollS4();if(!probe)throw Error('S5 probe not mounted');probe.begin();const start=performance.now();button.click();await frames(8);for(const [at,grow] of [[500,false],[2000,true],[5000,false]]){await wait(Math.max(0,start+at-performance.now()));window.__fixtureQueuePaint(row,()=>{if(grow)row.style.minHeight=(row.getBoundingClientRect().height+40)+'px';else row.dataset.s5FixturePaint=String(at)},()=>row.isConnected);await frames(8);batches.push({at,grow,gap:window.__fixtureScrollState().edge.gap})}await wait(Math.max(0,start+8100-performance.now()));await frames(4);probe.finish('fixture-s5');return {batches,report:probe.report()}}finally{probe?.dispose();row.style.minHeight=original;delete row.dataset.s5FixturePaint}});const r=result.report;assert(result.batches.every(x=>x.gap<=2)&&r.durationMs>=8000&&r.settled12&&r.settledWrites===0&&r.settledGapPx<=2&&r.maxStableTopStepPx<=1&&r.trace.some(e=>e.kind==='jump')&&r.trace.filter(e=>e.kind==='paint-drained').length>=3&&r.trace.filter(e=>e.kind==='write').length===2&&r.traceDropped===0,JSON.stringify(result));console.log('SCROLL-01 S5 delayed paint 8s',JSON.stringify(result));await pg.waitForFunction(()=>window.__fixtureScrollState().edge.atEnd)};
 
