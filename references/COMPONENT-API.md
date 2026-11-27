@@ -802,3 +802,5 @@ LiveChatSnapshotPolicy.signature excludes only top-level dimension metadata; Med
 ScrollController.deferProjection / flushProjection / clearProjection own structural projection handoff; renderLiveSnapshot supplies scoped validity and media signature. Persisted pageshow reuses wakeLiveSync. No new scroll writer.
 
 - SCROLL-01 S4: restore session pause/resume read-only; frameIntervals exclude discontinuous/hidden samples; restoreObserved requires foreground samples; anchor missing reported separately. No new scroll or keyboard owner.
+
+- NOTIFY-01: ReadStateController.liveAck(current,ack,accountId,room) validates scope/count/monotonic receipt and projects confirmed unread only; liveDirectoryCurrent(request,latest,revision,currentRevision) rejects stale snapshot. Adapter owns transport, Contact owns rendering, NotificationController owns alert policy, not count. GEO-MOBILE-01 uses existing geometry owners; RULE-AUDIT-01 requires ownership/regression evidence before new feature acceptance.
