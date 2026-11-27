@@ -1099,3 +1099,7 @@ PR #281 corrected head 29d3f00 5/5 passed and merged fa85174. User requests sepa
 
 ## v13.268 — BILL-ROOT02-UI-01
 E0: API v0-bill-reader-root02 v1 deployed, no browser CORS; admin_bill_audit returns conversation_id but imageOnly intentionally excludes old OCR. E1: separate in-memory source projection for comparison only, existing session, read-only single-flight button, 10-field literal comparison, model calls/time, no OCR writes. Four protected keyboard ranges byte-identical to v13.267 candidate. index/bill/snapshot and manifest synchronized. Stacked on #282 to avoid version collision; merge predecessor first, then backend #451 CORS/MFA, then this PR after CI. No SQL #284, ledger, production OCR or keyboard changes. Native/real Gemini pending.
+
+
+## v13.269 mobile-only correction
+RULE-GATE, GEO-MOBILE-01, CONTENT-FLOW-02, MEDIA-DISPLAY-01, MOBILE-CONTENT-01, MOBILE-BILL-LAYOUT-01, KB-LOCK, GOV-04. Read pinned Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894, MUI Card b8d19527bcc8ec03a58ddeb1cedd47ead57e036b, Adobe Virtualizer 3959c1cc7666f0384d31af2c770c6902662cdcb1; parent owns spacing, layout separate from identity, visible view wake and stable anchors. No dependency imported. Seven classic scripts compile, four locked keyboard source ranges byte-identical. No backend or data writes. UI values initial design, not measured physical phone. CI and Pages pending; rollback v13.268.
