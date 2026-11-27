@@ -2,7 +2,10 @@
 const {chromium,webkit}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const origin='https://1sl2tp.github.io/0v/';
-const html=fs.readFileSync('index.html','utf8');
+const sourceHTML=fs.readFileSync('index.html','utf8'),fixtureBoundary='function appShellActive(){';
+assert.equal(sourceHTML.split(fixtureBoundary).length,2);
+// Only the intercepted synthetic HTML exposes internal owners. No production global.
+const html=sourceHTML.replace(fixtureBoundary,'window.__fixtureOwners=()=>({Message,ContentAPI,MediaController,ScrollController});\n'+fixtureBoundary);
 const admin='00000000-0000-4000-8000-000000000001',peer='00000000-0000-4000-8000-000000000002',room='30000000-0000-4000-8000-000000000001';
 const ids=[1,2,3,4].map(i=>'40000000-0000-4000-8000-00000000000'+i);
 const sdk='('+function(admin,peer,room,ids){
@@ -56,5 +59,23 @@ const sdk='('+function(admin,peer,room,ids){
  const restored=await page.evaluate(()=>({stats:crmCacheStats(),downloads:fixture.downloads,batches:fixture.batches,metadata:fixture.metadata}));
  assert.equal(restored.downloads,0);assert.equal(restored.batches,1);assert.equal(restored.metadata,0);assert.equal(restored.stats.batchHits,2);assert.equal(restored.stats.ram.decodeCount,2);assert(restored.stats.displayReadyCount>=2);
  console.log('CACHE-ROOM '+engine.name()+' real HTML F5 two groups',JSON.stringify({batches:restored.batches,metadata:restored.metadata,downloads:restored.downloads,batchMs:restored.stats.batchMs,decodeMs:restored.stats.ram.decodeMs,prepareMs:restored.stats.ram.prepareMs,displayReadyMs:restored.stats.displayReadyMs,displayRequestMs:restored.stats.displayRequestMs,displayReadyCount:restored.stats.displayReadyCount}));
+ const stageReport=await page.evaluate(()=>({stats:crmCacheStats(),tiles:[...document.querySelectorAll('#messages [data-image-state=ready]')].map(t=>({phase:t.dataset.imagePhase,complete:t.querySelector('img')?.complete,width:t.querySelector('img')?.naturalWidth,hidden:t.querySelector('[data-fixed-image-status]')?.hidden})),queued:document.querySelectorAll('#messages [data-live-fixed-image][data-media-paint-pending]').length}));
+ assert.equal(stageReport.tiles.length,2);assert(stageReport.tiles.every(t=>t.phase==='ready'&&t.complete&&t.width>0&&t.hidden));assert.equal(stageReport.queued,0);assert(stageReport.stats.phases.cache?.count>=2);assert(stageReport.stats.phases.decode?.count>=2);assert(stageReport.stats.phases.paint?.count>=2);
+ const layout=await page.evaluate(async()=>{
+  const {Message,ContentAPI,MediaController,ScrollController}=window.__fixtureOwners();
+  const row=(p,t,mode='chat',kind='text',day='d')=>({dataset:{contentParty:p,contentTime:t,contentMode:mode,contentKind:kind,messageDay:day}});
+  const results=[];for(const minute of [0,5,10,11]){const a=row('A','09:00','document'),b=row('A','09:'+String(minute).padStart(2,'0'));Message.flow(a,b);results.push([b.dataset.messageRhythm,b.dataset.contentDocumentRun||null])}
+  const a=row('A','09:00'),b=row('B','09:01');Message.flow(a,b);const turn=b.dataset.contentShortTurn;
+  const cross=row('A','09:01','document','text','next');Message.flow(a,cross);
+  const call=row('A','09:01');call.dataset.liveCallback='true';Message.flow(a,call);
+  const host=document.createElement('div');host.dataset.liveFixedImage='true';host.style.cssText='position:fixed;top:0;left:0;width:240px;pointer-events:none;z-index:-1';const g=MediaController.fixedGallery([{width:48,height:96}],()=>{});host.append(g.grid);document.body.append(host);const t=g.tiles[0],rect=()=>{const r=t.getBoundingClientRect();return [r.width,r.height]},before=rect(),writer=ScrollController.writeSerial;
+  MediaController.fixedImageState(t,'loading');MediaController.fixedImagePhase(t,'cache');const cacheLabel=t.querySelector('[data-fixed-image-status]').textContent;
+  const canvas=document.createElement('canvas');canvas.width=48;canvas.height=96;canvas.getContext('2d').fillRect(0,0,48,96);const src=canvas.toDataURL('image/png');await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('fixed img timeout')),5000);MediaController.fixedImageState(t,'ready',{src,width:48,height:96,lazy:false,onDisplayReady:()=>{clearTimeout(timer);resolve()},onDisplayError:()=>{clearTimeout(timer);reject(Error('fixed img error'))}})});
+  const after=rect(),ready=t.dataset.imageState,phase=t.dataset.imagePhase;
+  const invalid=MediaController.fixedGallery([{width:48,height:96}],()=>{});host.append(invalid.grid);const e=invalid.tiles[0];await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('fixed error timeout')),5000);MediaController.fixedImageState(e,'ready',{src:'data:image/png;base64,invalid',width:48,height:96,lazy:false,onDisplayReady:()=>{clearTimeout(timer);reject(Error('invalid marked ready'))},onDisplayError:()=>{clearTimeout(timer);resolve()}})});
+  const error=e.dataset.imageState;host.remove();const prose=ContentAPI.create('Một đoạn văn ngắn có từ cuối dòng.');return {results,turn,cross:cross.dataset.messageRhythm,call:call.dataset.messageRhythm,short:ContentAPI.presentation('Ok em.'),long:ContentAPI.presentation('Dòng nội dung '.repeat(25)),prose:prose.dataset.contentWrap,before,after,ready,phase,error,cacheLabel,writerDelta:ScrollController.writeSerial-writer}
+ });
+ assert.deepEqual(layout.results,[['run','true'],['run','true'],['run','true'],['break',null]]);assert.equal(layout.turn,'true');assert.equal(layout.cross,'break');assert.equal(layout.call,'break');assert.equal(layout.short,'chat');assert.equal(layout.long,'document');assert.equal(layout.prose,'prose');assert.deepEqual(layout.before,layout.after);assert.equal(layout.ready,'ready');assert.equal(layout.phase,'ready');assert.equal(layout.error,'error');assert.equal(layout.cacheLabel,'Đọc ảnh đã lưu…');
+ console.log('CACHE-RESOLVE-04c / CONTENT-FLOW-02 '+engine.name(),JSON.stringify({phases:stageReport.stats.phases,tiles:stageReport.tiles,layout}));
  console.log('CACHE/NOTIFY '+engine.name()+' synthetic prewarm/open/reopen',JSON.stringify({coldDownloads:warm.downloads,coldBytes:warm.bytes,openExtra:opened.downloads-warm.downloads,reopenExtra:reopened.downloads-opened.downloads,reopenExtraBytes:reopened.bytes-opened.bytes,readAck:true}));
  }finally{await browser.close()}}})().catch(e=>{console.error(e);process.exitCode=1});
