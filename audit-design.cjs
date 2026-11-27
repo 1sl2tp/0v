@@ -442,6 +442,18 @@ quick.forget(quickStorage);
 result.checks.quickReload=Boolean(storedQuick&&reloadQuick.resolve('test').text==='saved'&&reloadQuick.resolve('stk').text.includes('12345678')&&isolatedQuick&&quickMem.size===0);
 result.pass=result.pass&&result.checks.quickReload;
 
+
+// BILL-ROOT02-UI-01: compare old literal values without mutation or financial claims.
+const root02Source=billAuditSrc.slice(billAuditSrc.indexOf('const BillRoot02Comparison='),billAuditSrc.indexOf('const BillAuditList='));
+const root02=new Function(root02Source+';return BillRoot02Comparison')();
+const root02Old=root02.baseline({sending_bank:'MB',memo:'A\nB',amount_text:'1,000 VND'});
+const root02Data={version:'BANK-READER-ROOT-02-v5',financial_action:false,requests:1,elapsed_ms:200,image_sha256:'a'.repeat(64),first:{fields:Object.fromEntries(root02.fields.map(([k])=>[k,{state:'missing',text:null}]))}};
+root02Data.first.fields.memo={state:'clear',text:'A\nB'};
+root02Data.first.fields.sending_bank={state:'clear',text:'BIDV'};
+const root02Before=JSON.stringify(root02Old),root02Rows=root02.compare(root02Old,root02Data);
+result.checks.billRoot02Comparison=root02Rows.length===10&&root02Rows.find(x=>x.key==='memo').relation==='same'&&root02Rows.find(x=>x.key==='sending_bank').relation==='different'&&root02Rows.find(x=>x.key==='amount').relation==='review'&&JSON.stringify(root02Old)===root02Before&&!root02.valid({...root02Data,requests:2})&&!root02.valid({...root02Data,financial_action:true})&&!root02.valid({...root02Data,version:'v4'})&&!root02.valid({...root02Data,image_sha256:'invalid'})&&billAuditSrc.includes("client.functions.invoke('v0-bill-reader-root02',{body:{conversation_id:source.conversation_id,asset_id:r.asset_id}})")&&billAuditSrc.includes('root02Sources.clear();root02Results.clear()');
+result.pass=result.pass&&result.checks.billRoot02Comparison;
+
 console.log(JSON.stringify(result,null,2));process.exitCode=result.pass?0:1;
 
 result.checks.billFreshnessSource=billAuditSrc.includes('function auditRefreshAllowed()')&&billAuditSrc.includes('refreshAuditVisible()')&&billAuditSrc.includes('ScrollController.writeLocal(auditPanel,oldTop)')&&billAuditSrc.includes('Chưa xác định')&&billAuditSrc.includes('Tải dữ liệu lúc');result.pass=result.pass&&result.checks.billFreshnessSource;
