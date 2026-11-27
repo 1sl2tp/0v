@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.252)
+## 00. Chỉ mục rule đang có hiệu lực (v13.253)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1856,3 +1856,8 @@ All active linked Zalo users; trusted server metadata only; Contact/Message/Popu
 ## CACHE-LIFECYCLE-01 B — v13.252 candidate
 - Experimental `delta=1` only: existing authorized ChatReadAPI normalizes delta rows; revision maps + changed records; 30 initially unless a larger local window exists, explicit history +20 up to 100; reuse media inventory in same read. Missing RPC falls back to legacy for session, authorization errors do not fall back. No new geometry writer; history through ScrollController. Candidate SQL not deployed until isolated DB tests and review.
 - `cachecheck=1` exposes aggregate counters only (JSON UTF-8 request/response estimate, actual Blob bytes, RAM and durable hits); no IDs/text/token in report. Expired IndexedDB records swept on authenticated activation; retain 12h/32 MiB limits.
+
+## SCROLL-01 S6 — Single tail target and writer (v13.253 candidate)
+- Physical end is exactly max(0, scrollHeight-clientHeight). The last message trailing edge and the composer-frame top minus 12 CSS px are visual acceptance only; never compute a competing scroll target or subtract existing reserve twice. Short thread max=0. No keyboard, composer, CSS or visual viewport ownership changes.
+- Explicit arrow establishes scoped FOLLOW_LATEST and queues the existing shared frame. Flush valid pending projection and ready image paint first, then one clamped tail adjustment. ResizeObserver and follow projection only schedule; no immediate competing tail write. Pending history anchor cannot override explicit jump. Manual gesture/navigation cancels intent.
+- At most two repair attempts per unchanged max/clientHeight in the same follow intent; on repeated displacement stop follow and trace tail-conflict instead of fighting browser momentum indefinitely. Genuine extent changes reset retry budget. Keep native iPhone acceptance separate; synthetic fixture cannot prove reported shaking is fixed.
