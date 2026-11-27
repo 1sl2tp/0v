@@ -2969,7 +2969,7 @@ function mountLiveChat(root){
   }});return {button,holder}
  }
  async function classifyLocalImage(r){
-  if(!standaloneBills||!scope||localOcrTask||!eligibleOcr(r))return;
+  if(!standaloneBills||!scope||localOcrTask||root02Flight||!eligibleOcr(r))return;
   const owner=scope,task={id:r.id,worker:null,phase:'ai'};localOcrTask=task;localOcrError='';
   const valid=()=>scope===owner&&localOcrTask===task;redrawOcr();
   try{
@@ -3033,9 +3033,9 @@ function mountLiveChat(root){
  function root02CompareCard(r,owner){
   const card=CardController.create('business'),source=root02Sources.get(r.id),prior=root02Results.get(r.id);
   card.dataset.root02Comparison='true';
-  const current=()=>scope===owner&&!!owner&&root02Sources.get(r.id)===source&&auditRows.some(x=>x.id===r.id&&x.asset_id===r.asset_id&&x.storage_key===r.storage_key);
+  const current=()=>scope===owner&&!!owner&&root02Sources.get(r.id)===source&&source?.asset_id===r.asset_id&&source?.storage_key===r.storage_key&&auditRows.some(x=>x.id===r.id&&x.asset_id===r.asset_id&&x.storage_key===r.storage_key);
   const button=Button.create({kind:'outline',text:'Đọc thử v5',onClick:async()=>{
-   if(root02Flight||!current()||!source?.conversation_id)return;
+   if(root02Flight||localOcrTask||loadAudit.disabled||!current()||!source?.conversation_id)return;
    const flight={owner,id:r.id};root02Flight=flight;for(const b of auditList.querySelectorAll('[data-root02-read]'))b.disabled=true;
    status.textContent='Đang đọc thử ảnh gốc…';output.replaceChildren();
    try{
@@ -3046,14 +3046,14 @@ function mountLiveChat(root){
     root02Results.set(r.id,{source,data}); 
    }catch(e){if(current()&&root02Flight===flight)root02Results.set(r.id,{source,error:e.message})}
    finally{if(root02Flight===flight){root02Flight=null;if(scope===owner){const top=auditPanel.scrollTop;renderAudit();ScrollController.writeLocal(auditPanel,top)}}}
-  }});button.dataset.root02Read='true';button.dataset.releaseReadonly='true';button.disabled=!!root02Flight||!eligibleOcr(r)||!source?.conversation_id||!owner;
+  }});button.dataset.root02Read='true';button.dataset.releaseReadonly='true';button.disabled=!!root02Flight||!!localOcrTask||!eligibleOcr(r)||!source?.conversation_id||!owner;
   const status=make('p','module-note','Chỉ đọc khi bấm · không lưu kết quả · không ghi thu'),output=make('div');
   card.append(button,status,output);
   if(prior?.source===source&&prior.data){
    status.textContent='Gemini '+prior.data.requests+' lượt · '+prior.data.elapsed_ms+' ms · '+prior.data.first.kind+' · chỉ so sánh';
    for(const row of BillRoot02Comparison.compare(source.old,prior.data)){
     const state=({clear:'Rõ',missing:'Không thấy',unclear:'Chưa rõ',ambiguous:'Mơ hồ'})[row.state];
-    const value=CardController.row(output,row.label,'Cũ: '+(row.before??'—')+'\nMới: '+(row.after??'—')+'\n'+state+' · '+({same:'Trùng nguyên văn',different:'Khác nguyên văn',review:'Cần xác minh'})[row.relation]);value.lastElementChild.style.whiteSpace='pre-wrap';
+    const value=CardController.row(output,row.label,'OCR cũ (máy chủ): '+(row.before??'—')+'\nMới: '+(row.after??'—')+'\n'+state+' · '+({same:'Trùng nguyên văn',different:'Khác nguyên văn',review:'Cần xác minh'})[row.relation]);value.lastElementChild.style.whiteSpace='pre-wrap';
    }
   }else if(prior?.source===source&&prior.error){status.textContent=({'quota_exhausted':'Đã chạm giới hạn lượt gọi hoặc chưa đủ 10 giây','quota_unavailable':'Quota hoặc Gemini chưa sẵn sàng','reader_timeout':'Gemini quá thời gian','reader_failed':'Gemini chưa trả kết quả hợp lệ','invalid_media':'Không đọc được ảnh gốc trong phạm vi API','admin_required':'Cần phiên Admin MFA','authentication_required':'Cần đăng nhập','invalid_reader_result':'Kết quả không đúng hợp đồng v5'})[prior.error]||'Không gọi được API đọc thử · không tự thử lại'}
   else if(root02Flight?.id===r.id)status.textContent='Đang đọc thử ảnh gốc…';
