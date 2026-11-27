@@ -5,7 +5,7 @@ const origin='https://1sl2tp.github.io/0v/';
 const sourceHTML=fs.readFileSync('index.html','utf8'),fixtureBoundary='function appShellActive(){';
 assert.equal(sourceHTML.split(fixtureBoundary).length,2);
 // Only the intercepted synthetic HTML exposes internal owners. No production global.
-const html=sourceHTML.replace(fixtureBoundary,'window.__fixtureOwners=()=>({Message,ContentAPI,MediaController,ScrollController});\n'+fixtureBoundary);
+const html=sourceHTML.replace(fixtureBoundary,'window.__fixtureOwners=()=>({Message,ContentAPI,MediaController,ScrollController,Geometry,FamilyRegistry,auditGeometry,readOwnerRuntime:()=>Object.keys(OwnerRuntime)});\n'+fixtureBoundary);
 const admin='00000000-0000-4000-8000-000000000001',peer='00000000-0000-4000-8000-000000000002',room='30000000-0000-4000-8000-000000000001';
 const ids=[1,2,3,4].map(i=>'40000000-0000-4000-8000-00000000000'+i);
 const sdk='('+function(admin,peer,room,ids){
@@ -89,5 +89,30 @@ const sdk='('+function(admin,peer,room,ids){
  const wrap=await page.evaluate(()=>{const {ContentAPI}=window.__fixtureOwners(),samples=['Chiều em qua lấy 110 thùng hàng của chị nhé.','Danh sách hàng hôm nay cần giao trước buổi chiều, chị kiểm tra số lượng giúp em.','Mặt hàng 454g số lượng 110 thùng, tổng 1.824.000 đ.','https://example.test/'+ 'x'.repeat(85),'Tiếng Việt đầy đủ dấu 😀 và hàng mới về.'],host=document.createElement('div');host.style.cssText='position:fixed;left:-2000px;top:0;font-size:16px;line-height:26px';document.body.append(host);try{const results=[];for(const width of [240,290,340,620]){host.style.width=width+'px';for(const sample of samples){const node=ContentAPI.create(sample);host.replaceChildren(node);const rect=node.getBoundingClientRect(),computed=getComputedStyle(node),overflow=node.scrollWidth>node.clientWidth+1;const walker=document.createTreeWalker(node,NodeFilter.SHOW_TEXT),lines=new Map();while(walker.nextNode()){const t=walker.currentNode;for(const m of t.data.matchAll(/\S+/gu)){const r=document.createRange();r.setStart(t,m.index);r.setEnd(t,m.index+m[0].length);for(const box of r.getClientRects()){const y=Math.round(box.top);lines.set(y,(lines.get(y)||0)+1)}}}results.push({width,mode:computed.textWrapStyle||computed.textWrap,lines:lines.size,last:[...lines.values()].at(-1)||0,overflow,textPreserved:node.textContent===sample})}}return {supported:CSS.supports('text-wrap','pretty'),results}}finally{host.remove()}});
  assert(wrap.results.every(x=>!x.overflow&&x.textPreserved));console.log('CONTENT-FLOW-02 wrapping sample '+engine.name(),JSON.stringify(wrap));
  await page.evaluate(()=>{fixture.parityMode='hold';window.fixtureParityPending=crmCacheParity()});await page.waitForFunction(()=>typeof window.fixtureReleaseParity==='function');assert.equal((await page.evaluate(()=>crmCacheParity())).status,'busy');await page.locator('.conversation .panel-head [data-go=contacts]').evaluate(e=>e.click());const cancelled=await page.evaluate(async()=>{window.fixtureReleaseParity();return await window.fixtureParityPending});assert.equal(cancelled.status,'cancelled');assert.equal(cancelled.matched,0);console.log('CACHE-RESOLVE-04a '+engine.name(),JSON.stringify({reports:parity.out,cancelled,downloadDelta:parity.after.downloads-parity.before.downloads}));
+ // GEO-MOBILE-01 / RULE-AUDIT-01: live route evidence, never log contact IDs or message contents.
+ const matrix=[],originalViewport=page.viewportSize();
+ const capture=async label=>page.evaluate(label=>{
+  const {Geometry,FamilyRegistry,auditGeometry,readOwnerRuntime}=window.__fixtureOwners(),app=document.querySelector('#app'),visible=e=>!!e&&e.getClientRects().length>0&&e.getBoundingClientRect().width>0&&e.getBoundingClientRect().height>0&&getComputedStyle(e).visibility!=='hidden';
+  const boxes={};for(const [name,selector,parent] of [['directory','.directory','#app'],['directoryHeader','.directory>.panel-head','.directory'],['contacts','#contacts','.directory'],['conversation','.conversation','#app'],['chatHeader','.conversation>.panel-head','.conversation'],['chatView','.conversation>.chat-view','.conversation'],['messages','#messages','.conversation'],['frame','.composer-frame','.conversation'],['composer','#composer','.composer-frame'],['draft','#draft','#composer'],['S4','[data-scroll-s4]',null]]){
+   const e=document.querySelector(selector),p=parent&&document.querySelector(parent);if(!visible(e))continue;const r=Geometry.rect(e),cs=getComputedStyle(e);boxes[name]={width:r.width,height:r.height,inside:p&&visible(p)?Geometry.inside(p,e):null,slot:e.dataset.uiSlot||null,parent:e.dataset.parentApi||null,profile:e.dataset.layoutProfile||e.dataset.inputKind||null,overflowX:e.scrollWidth-e.clientWidth,overflowY:e.scrollHeight-e.clientHeight,position:cs.position}
+  }
+  const audited=new Set(document.querySelectorAll('#app, #app *, dialog[data-popup-parent], dialog[data-popup-parent] *')),s4=document.querySelector('[data-scroll-s4]'),raw=s4?[...s4.querySelectorAll('button,select')]:[];
+  const probe=fn=>{try{return {available:true,value:fn()}}catch(e){return {available:false,error:e.name}}};
+  const owner=probe(()=>readOwnerRuntime().length),family=probe(()=>{const a=FamilyRegistry.audit();return {total:a.total,issues:a.issues.length,pending:a.pending.length}}),geo=probe(()=>{const a=auditGeometry();return {checks:a.checks.length,issues:a.issues.reduce((out,x)=>(out[x.code]=(out[x.code]||0)+1,out),{})}});
+  return {label,screen:app.dataset.screen,width:innerWidth,height:innerHeight,boxes,owner,family,geo,publicAudit:{family:typeof window.familyAudit==='function',owner:typeof window.ownerAudit==='function',geometry:typeof window.auditGeometry==='function'},diagnostic:{exists:!!s4,controls:raw.length,inAudit:raw.filter(e=>audited.has(e)).length,declared:raw.filter(e=>!!e.dataset.parentApi).length}}
+ },label);
+ try{for(const [width,height] of [[320,844],[375,844],[390,844],[430,844],[768,844],[844,390]]){
+  await page.setViewportSize({width,height});
+  await page.locator('.conversation .panel-head [data-go=contacts]').evaluate(e=>e.click());
+  await page.waitForFunction(()=>document.querySelector('#app').dataset.screen==='contacts');
+  await page.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});
+  const dir=await capture('directory');assert(dir.boxes.directory&&dir.boxes.contacts);matrix.push(dir);
+  await contact.evaluate(e=>e.click());await page.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&document.querySelector('#messages [data-image-state=ready]'));
+  await page.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});
+  const chat=await capture('chat');assert(chat.boxes.conversation&&chat.boxes.messages&&chat.boxes.frame&&chat.boxes.draft);matrix.push(chat);
+ }}finally{await page.setViewportSize(originalViewport)}
+ assert.equal(matrix.length,12);assert(matrix.every(r=>Object.values(r.boxes).every(b=>Number.isFinite(b.width)&&Number.isFinite(b.height)&&b.width>0&&b.height>0)));
+ // Report gaps as E0 inventory, not a false pass. No runtime API exposed, no geometry writer added.
+ console.log('GEO-MOBILE-01 RULE-AUDIT-01 live inventory '+engine.name(),JSON.stringify(matrix));
  console.log('CACHE/NOTIFY '+engine.name()+' synthetic prewarm/open/reopen',JSON.stringify({coldDownloads:warm.downloads,coldBytes:warm.bytes,openExtra:opened.downloads-warm.downloads,reopenExtra:reopened.downloads-opened.downloads,reopenExtraBytes:reopened.bytes-opened.bytes,readAck:true}));
  }finally{await browser.close()}}})().catch(e=>{console.error(e);process.exitCode=1});
