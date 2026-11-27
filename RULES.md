@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.267)
+## 00. Chỉ mục rule đang có hiệu lực (v13.268)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1969,3 +1969,6 @@ Draft.bind(el,context) creates a text transaction adapter for each current Quick
 ## MEDIA-DISPLAY-01 — v13.267 candidate (user approved 2026-11-27)
 - Preserve each message ID, original asset order, receipt, sender, timestamp and viewer boundary; never merge separate messages or resend them for display. Same-party consecutive ordinary image-only messages in the existing Message.rhythm run receive a compact 3px visual gap. Break on text, mixed media, bill, file, other party, date or existing >10-minute break. Existing 1–4 gallery layout within each original message stays intact.
 - Ordinary single image fixed slots: metadata-derived profile (portrait <.85, landscape >1.2, balanced otherwise); portrait width <=260px and reserved height <=420px at bounded existing ratio; balanced <=280px; landscape uses existing <=320px. Single remains contain, full viewer unchanged. Missing metadata uses existing 4:3 fixed fallback, no post-decode dimension correction. Existing paired bank-bill card stays unchanged; long non-bank invoice images use single contain. No transport, DB, cache, scroll writer, keyboard or financial changes. Physical review required; these size caps are initial design choices, not a device measurement.
+
+## BILL-ROOT02-UI-01 — Nghiệm thu bộ đọc cha độc lập (v13.268)
+Owner: BillAuditList / CardController / BillRoot02Comparison. Chỉ trang bill độc lập; dùng phiên Admin MFA hiện có, conversation_id và asset_id từ RPC đã phân quyền. Một thao tác chủ động, một request, không tự thử lại; khóa đọc cũ/mới khi có tác vụ. Không chuyển OCR cũ vào prompt. So sánh nguyên văn 10 trường với OCR máy chủ; khác không đồng nghĩa sai, thiếu không đồng nghĩa ảnh không có. Kết quả v5 chỉ trong bộ nhớ theo phiên và nguồn, xóa khi đăng xuất/đổi nguồn. Không lưu xác minh, không ghi thu, không chạm keyboard. Nghiệm thu E2 CI, E3 Pages, E4 Admin thật + Gemini, 10 trường có nhãn ảnh gốc. Backend chat #451 phải phát hành trước UI.
