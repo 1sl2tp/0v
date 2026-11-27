@@ -33,6 +33,9 @@ begin
  update v0_private.media_send_ticket set verified_object_id=obj,verified_object_version='v1',verified_width=40,verified_height=40 where client_id=key;
  ack:=v0_private.media_send_commit(key);
  if v0_private.media_send_upload_allowed(t->>'storage_key',au::text) or not v0_private.media_send_published(t->>'storage_key') then raise exception 'published_policy_failed'; end if;
+ perform set_config('fixture.uid',peer::text,true);
+ if v0_private.media_send_published(t->>'storage_key') then raise exception 'foreign_read_probe'; end if;
+ perform set_config('fixture.uid',au::text,true);
  if ack is distinct from v0_private.media_send_commit(key) or (select count(*) from public.v21_messages)<>1 or (select count(*) from public.v21_media_assets)<>1 then raise exception 'duplicate_send'; end if;
  t:=v0_private.media_send_prepare(peer,key2,asset2,'',10,h);
  insert into storage.objects values(obj2,'v21-media',t->>'storage_key','v1',au::text,'{"size":10,"mimetype":"image/png"}',null,false);
