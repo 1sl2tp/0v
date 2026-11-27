@@ -84,10 +84,10 @@ begin
  and t.storage_key=p_name and t.message_id is null and t.verified_object_id is null and t.expires_at>now()
  and c.member_a=least(me,t.contact_id) and c.member_b=greatest(me,t.contact_id)
  and v0_private.media_send_contact(me,t.contact_id));
-end $media$1
+end $media$;
 create function v0_private.media_send_published(p_name text)
 returns boolean language sql stable security definer set search_path='' as $media$
- select auth.uid() is not null and exists(select 1 from v0_private.media_send_ticket t join public.v21_media_assets a on a.id=t.asset_id and a.message_id=t.message_id and a.storage_key=t.storage_key and a.deleted_at is null join public.v21_messages m on m.id=t.message_id and m.deleted_at is null join public.v21_conversations c on c.id=t.room_id join public.v21_accounts viewer on viewer.id in(c.member_a,c.member_b) and viewer.auth_user_id=auth.uid() and viewer.deleted_at is null and viewer.locked_at is null join auth.sessions s on s.user_id=viewer.auth_user_id and s.id::text=auth.jwt()->>'session_id' and (s.not_after is null or s.not_after>now()) where t.storage_key=p_name and t.message_id is not null)
+ select auth.uid() is not null and exists(select 1 from v0_private.media_send_ticket t join public.v21_media_assets a on a.id=t.asset_id and a.message_id=t.message_id and a.storage_key=t.storage_key and a.deleted_at is null join public.v21_messages m on m.id=t.message_id and m.deleted_at is null join public.v21_conversations c on c.id=t.room_id join public.v21_accounts viewer on viewer.id in(c.member_a,c.member_b) and viewer.auth_user_id=auth.uid() and viewer.deleted_at is null and viewer.locked_at is null join auth.sessions s on s.user_id=viewer.auth_user_id and s.id::text=(auth.jwt()->>'session_id') and (s.not_after is null or s.not_after>now()) where t.storage_key=p_name and t.message_id is not null)
 $media$;
 revoke all on function v0_private.media_send_upload_allowed(text,text),v0_private.media_send_published(text) from public,anon,authenticated,service_role;
 grant execute on function v0_private.media_send_upload_allowed(text,text),v0_private.media_send_published(text) to authenticated;
