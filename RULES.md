@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.251)
+## 00. Chỉ mục rule đang có hiệu lực (v13.252)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1852,3 +1852,7 @@ All active linked Zalo users; trusted server metadata only; Contact/Message/Popu
 - One cache parent for chat image, bill preview, audit, original export. Same account/path RAM and in-flight dedup; authenticated revision validation before encrypted IndexedDB reuse. Bill is sensitive: session-only key, encrypted bytes, no offline or permanent-storage guarantee; same 12h/32 MiB/64 entries/8 MiB limit as S2. Sign-out/denial/account change purge; never cache credentials in IndexedDB. Missing revision or unavailable storage falls back to authorized download.
 - Max two binary requests concurrently across UI consumers; queued stale scope rejected. Visible warm slots render independently, only missing slots enter loading. Existing geometry/scroll owners unchanged. Identical text/media snapshot not rewritten within 5 min. Current full RPC safety reconciliation remains; true server delta requires separate revision/cursor API, not inferred from message timestamps.
 - Next: measure cache hits, network misses, eviction, room switch, visibility, text edit/delete delta, and real iPhone. Do not claim cold/missing/evicted media can be instant.
+
+## CACHE-LIFECYCLE-01 B — v13.252 candidate
+- Experimental `delta=1` only: existing authorized ChatReadAPI normalizes delta rows; revision maps + changed records; 30 initially unless a larger local window exists, explicit history +20 up to 100; reuse media inventory in same read. Missing RPC falls back to legacy for session, authorization errors do not fall back. No new geometry writer; history through ScrollController. Candidate SQL not deployed until isolated DB tests and review.
+- `cachecheck=1` exposes aggregate counters only (JSON UTF-8 request/response estimate, actual Blob bytes, RAM and durable hits); no IDs/text/token in report. Expired IndexedDB records swept on authenticated activation; retain 12h/32 MiB limits.
