@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.245)
+## 00. Chỉ mục rule đang có hiệu lực (v13.247)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1834,3 +1834,7 @@ S2: fixed media slot geometry in MediaController; 1–4 images and error/retry; 
 - RULE-AUDIT-01a: Mỗi tính năng phải khai báo parent/role/profile, owner mỗi thuộc tính, kiểm tra siblings/dependency/conflict, protected diff, test và bằng chứng; thiếu parent hoặc test thì chưa đạt. CI xanh trước merge, Pages xác minh riêng; lịch quét định kỳ báo lỗi/tiến trình mới, không tự merge. Mỗi báo cáo kết thúc bằng nút Làm tiếp nếu hỗ trợ, hoặc câu lệnh có scope/issue/commit. Không tuyên bố thiết bị thật từ giả lập.
 
 - COMPOSER-01 (GEO-MOBILE-01): empty/unfocused mobile live composer 82%; focused or nonempty textarea or attachments 94%. Blur with content must not change width, line-mode or frame height absent actual viewport change. Measured compact line stays single; real wrap/newline expands via existing composerMode/resizeDraft. No new keyboard owner; all four KB-LOCK ranges unchanged.
+
+
+### CALLBACK-01 — Zalo missed call
+All active linked Zalo users; trusted server metadata only; Contact/Message/Popup/Input/Button owners. Phone in scoped memory only, no keyboard or scroll owner changes. Auto-reply disabled until backend acceptance.
