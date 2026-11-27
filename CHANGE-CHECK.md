@@ -964,3 +964,5 @@ SCROLL-01 E0: user approved parent scroll/geometry redesign. Reviewed active RUL
 - v13.243 candidate: S4-only runtime edits (apart from version literals), synthetic hidden/visible + persisted lifecycle and replacement anchor fixtures, report coverage counts; no keyboard/DB/ledger changes. Actual native evidence pending.
 
 - v13.244 NOTIFY-01 candidate: ACK remains applicable to original room after navigation in same session; stale in-flight directory responses rejected by request/revision; parent status for invalid/stale/blocked/partial/confirmed and adapter RPC failure; pure contract tests. No SQL/ledger/keyboard changes; live browser and Pages evidence pending. GEO-MOBILE-01 and RULE-AUDIT-01 documented, no geometry runtime changes.
+
+- v13.245 candidate COMPOSER-01 #235: stable mobile live composer draft width across focus/blur using existing CSS selector, retain 82% empty and 94% active/nonempty; single/multiline browser regression at 735/390px. Native evidence and full CI pending; branch based on v13.244 candidate 021d25b, must integrate final release head before merge.
