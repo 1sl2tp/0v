@@ -978,3 +978,5 @@ SCROLL-01 E0: user approved parent scroll/geometry redesign. Reviewed active RUL
 - v13.252 native report: arrow still shakes. Source evidence shows follow reconciliation in ResizeObserver, projection completion and scheduled frame. v13.253 candidate centralizes live tail repair in shared frame and prevents repeated same-target writes. Physical end vs visible edge explicitly separated; four keyboard ranges exact. CI and native acceptance pending.
 
 - v13.253 b5d80a8 CI: S5 Chromium 490 frames, 0 stable jitter, S6 rejection two writes passed; third repeated grow failed after native shrink clamp left stale target budget. Update target before atEnd; add repeated grow/shrink and unchanged-target recoil tests; native acceptance and exact-head CI pending.
+
+- User isolated arrow shake to tapping while scrolling/coasting; static arrow smooth. Source showed clearManual()/scrollingUntil=0 before native motion stops. Candidate queues scoped jump via existing manual settle, adds two-engine simulated momentum regression (zero writes during motion, one after quiet); static S5/S6 tests retained. Four keyboard ranges byte-identical; exact-head CI and iPhone pending.
