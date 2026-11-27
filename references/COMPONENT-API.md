@@ -865,3 +865,7 @@ Private admin_media supplies optional bank_clock {source,date,time} from linked 
 
 ## v13.264 — LIVE-BILL-FOCUSED-01c
 BillReceiptProjection uses 'Chưa xác định từ ảnh' for unestablished printed clock while displaying independent verified bank time separately. No changes to provenance, writes, geometry or keyboard ownership.
+
+
+## v13.265 — SCROLL-01 S8 / INPUT-UNIFIED contract
+ScrollController.jumpVisible({near,visible,moving,following,ready}) is a pure presentation predicate; beginManual hides immediately and shared settle reprojects. Hidden jump button has no early touch capture listener; existing internal pendingJump remains defensive. Native scrollend only schedules existing settle. No geometry/scroll writer change. INPUT-UNIFIED-01–03 proposed child adapters: Input profiles own typing traits; draft transaction owns validated room/session/revision, text selection or attachment operations; DraftMedia remains attachment store, QuickMessageAPI registry only, MediaController validates, Popup menu, KeyboardController exclusively focus/viewport, existing submit owns send/ACK. Phase-specific migration and native validation pending; no new public API yet.

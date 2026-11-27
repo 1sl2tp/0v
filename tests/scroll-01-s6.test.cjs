@@ -50,3 +50,8 @@ test('native shrink observation updates target before shared frame without a pos
  for(let n=0;n<5;n++){m.scrollHeight=1540;S.flushTailFrame();assert.equal(m.scrollTop,740);const writes=f.counts().writes;m.scrollHeight=1500;m.scrollTop=700;S.userMoved();assert.equal(S.tail.target,'700:800');assert.equal(S.tail.attempts,0);assert.equal(f.counts().writes,writes)}
  assert.equal(f.counts().writes,6);assert(S.tail);
 });
+
+
+test('S8 arrow presentation only for a stationary reading state',()=>{
+ const S=fixture().controller,base={near:false,visible:true,moving:false,following:false,ready:true};assert.equal(S.jumpVisible(base),true);for(const delta of [{near:true},{visible:false},{moving:true},{following:true},{ready:false}])assert.equal(S.jumpVisible({...base,...delta}),false);assert(html.includes("['touchend','touchcancel','scrollend']"));assert(!html.includes('ScrollController.captureMovingJump()'));
+});
