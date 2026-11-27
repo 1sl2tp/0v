@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.263)
+## 00. Chỉ mục rule đang có hiệu lực (v13.264)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1949,3 +1949,7 @@ Reuse L08 admin_media and BillReceiptProjection. Read shared queue only for veri
 
 ### LIVE-BILL-FOCUSED-01b — cache evidence regression (test only)
 Live admin_media projection and v0_admin_thread_delta inspected: delta hashes complete asset JSON including bill receipt, default legacy refresh reads admin_media; active foreground wake every 30s / online / visibility / message realtime. Existing snapshot signatures include receipt and save changed data; media key omits receipt fields and reuses same DOM/URL for unchanged bill image variant; ScrollController defers structural updates during native motion. Five current verified STK proofs plus one unresolved clock (independent bank proof) from PILOT. Add real HTML synthetic SDK browser test for proof update via online wake, correct bank-clock/status, same image node/URL, zero extra downloads/bytes/prepare calls. No public globals or runtime changes; fixture only. No new geometry/keyboard owner; RULE-GATE, KB-LOCK, CACHE, ROADMAP apply; physical phone not yet verified. AUTO gate remains pending. Existing text 'Không in trên bill' may overstate lack of OCR evidence; needs separate reviewed wording correction if image absence unconfirmed.
+
+
+### LIVE-BILL-FOCUSED-01c — v13.264 clock evidence wording
+E2 PR #278 exact head 6c9b086: 3/3 successful; browser job 140448029809 Chromium/WebKit synthetic SDK reports same image DOM/URL and zero additional downloads, bytes or decode preparation. Merged b23839e. In BillReceiptProjection only, change 'Không in trên bill' to 'Chưa xác định từ ảnh' when independent Agribank clock is verified but printed clock is not established. Preserve separate bank time and printed clock, all financial/eligibility and cache rules. No new API or UI geometry, no data writes. RULE-GATE, GOV-04, RELEASE, LIVE-BILL-BANK-CLOCK-01, CACHE and KB-LOCK apply; AGENTS, RULES, COMPONENT-API, ROADMAP reviewed. Runtime delta is only this string and displayed version labels; keyboard behavior unchanged. Regression asserts exact label and independent clock; audit fixture updated. Snapshot/index/bill identical; E2/E3/E4 for v13.264 pending. AUTO remains gated on device and ledger verification. Rollback v13.263.

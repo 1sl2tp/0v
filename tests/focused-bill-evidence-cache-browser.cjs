@@ -42,6 +42,6 @@ const sdk='('+function(admin,peer,room,ids){
  await page.waitForFunction(()=>{const b=document.querySelector('#messages [data-live-bill-pair]');return b?.textContent.includes('2901181999999')&&b.textContent.includes('Giờ Agribank')&&!b.textContent.includes('STK chưa đủ bằng chứng')},{},{timeout:20000});
  const after=await page.evaluate(()=>{const img=document.querySelector('#messages [data-live-bill-pair] img');return {same:img===window.fixtureBillImage,src:img.src,downloads:fixture.downloads,bytes:fixture.bytes,prepare:crmCacheStats().ram.prepareCalls}});
  assert.equal(after.same,true);assert.equal(after.src,before.src);assert.equal(after.downloads,before.downloads);assert.equal(after.bytes,before.bytes);assert.equal(after.prepare,before.prepare);
- assert.match(await bill.textContent(),/Đã ghi thu/);assert.match(await bill.textContent(),/Giờ trên ảnh/);assert.match(await bill.textContent(),/21:52/);
+ assert.match(await bill.textContent(),/Đã ghi thu/);assert.match(await bill.textContent(),/Giờ trên ảnh/);assert.match(await bill.textContent(),/Chưa xác định từ ảnh/);assert.doesNotMatch(await bill.textContent(),/Không in trên bill/);assert.match(await bill.textContent(),/21:52/);
  console.log('LIVE-BILL-FOCUSED cache '+engine.name()+' same image DOM, same URL, zero extra downloads/bytes/decode preparation, separate bank clock passed');
  }finally{await browser.close()}}})().catch(e=>{console.error(e);process.exitCode=1});
