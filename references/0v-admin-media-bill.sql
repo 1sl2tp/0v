@@ -42,8 +42,12 @@ BEGIN
           AND coalesce(r.raw_read->>'clock_text_conflict','false')='false'
           AND r.raw_read->>'transaction_time_precision' IN ('minute','second')
           AND jsonb_typeof(r.raw_read->'transfer_time_printed_vn')='string'
-          AND r.raw_read->>'transfer_time_printed_vn'=CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
-          THEN r.raw_read->>'transfer_time_printed_vn' END,
+          -- Literal H:mm and HH:mm are equivalent; preserve precision and reject conflicts.
+          AND CASE WHEN btrim(r.raw_read->>'transfer_time_printed_vn') ~ '^[0-9]:[0-5][0-9](:[0-5][0-9])?$'
+            THEN '0'||btrim(r.raw_read->>'transfer_time_printed_vn')
+            ELSE btrim(r.raw_read->>'transfer_time_printed_vn') END
+            = CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
+          THEN CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END END,
         'receiving_account',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_account,200) END,'receiving_name',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_name,200) END,
         'ocr_rechecked_account',CASE WHEN memo_only.flag THEN NULL WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999' AND ar.reviewed_account='2901181999999' THEN ar.reviewed_account WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
           AND r.raw_read->'account_digit_recheck'->>'source'='independent_focused_vision'

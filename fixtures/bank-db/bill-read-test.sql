@@ -142,6 +142,16 @@ SET LOCAL ROLE authenticated;
 SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);
 DO $test$ BEGIN IF NOT EXISTS(SELECT 1 FROM jsonb_array_elements(public.v0_admin_bill_audit()->'rows') x WHERE x->>'asset_id'='50000000-0000-0000-0000-000000000007' AND x->>'status'='duplicate' AND x->>'audit_kind'='non_bill' AND jsonb_array_length(x->'flags')=0) THEN RAISE EXCEPTION 'duplicate nonbill origin classification'; END IF; END $test$;
 RESET ROLE;
+-- Reuse one isolated receipt; production raw OCR and financial state are never changed.
+DO $clock_fixture$ DECLARE saved jsonb; saved_at timestamp; literal text; prec text; expected text; actual text; BEGIN
+ SELECT raw_read,transfer_at_vn INTO saved,saved_at FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+ FOR literal,prec,expected IN SELECT * FROM (VALUES ('8:18','minute','08:18'),('08:18','minute','08:18'),('8:18:00','second','08:18:00'),('8:19','minute',NULL),('8:18:00','minute',NULL),('8:18','second',NULL),('24:18','minute',NULL),(NULL,'minute',NULL)) v LOOP
+  UPDATE public.chat_bank_bill_receipts SET transfer_at_vn='2026-11-27 08:18:00',raw_read=saved||jsonb_build_object('transfer_date_printed_vn','27 thg 11, 2026','transfer_date_vn','2026-11-27','transfer_time_printed_vn',literal,'transaction_time_precision',prec,'time_date_conflict',false,'clock_text_conflict',false) WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+  actual:=public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt'->>'time_vn';
+  IF actual IS DISTINCT FROM expected THEN RAISE EXCEPTION 'printed clock % precision % expected % got %',literal,prec,expected,actual; END IF;
+ END LOOP;
+ UPDATE public.chat_bank_bill_receipts SET raw_read=saved,transfer_at_vn=saved_at WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+END $clock_fixture$;
 UPDATE public.v21_accounts SET locked_at=now() WHERE id='00000000-0000-0000-0000-000000000002';
 SET LOCAL ROLE authenticated;
 SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);

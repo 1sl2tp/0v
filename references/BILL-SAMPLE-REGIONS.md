@@ -15,3 +15,5 @@ Status: candidate rules, not visually verified. Exact ten IDs supplied by user; 
 | BILL-36652584 | MSB receipt | app_screenshot | complete_receipt | Independently mark logo, amount, date, time, name, account, memo; keep name/account roles distinct from sender. Verify line order from source before making fixed geometry. |
 
 Review data per field: original box [ymin,xmin,ymax,xmax] normalized 0..1000, printed label, value role, line order, region boundary, human confirmation. Do not store raw transaction values in shared prompt or rules. One explicit AI call per image; review only; no auto scan or ledger mutation.
+
+- TECHCOMBANK photographed receipt: `Ngày thực hiện` below `Lời nhắn`, above `Mã giao dịch`; literal date `D thg M, YYYY lúc H:mm`. Preserve original evidence; normalize one-digit hour only when it agrees with the stored timestamp at declared precision. No ledger or receipt status change.
