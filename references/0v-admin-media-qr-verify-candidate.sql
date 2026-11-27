@@ -7,6 +7,13 @@ create table v0_private.media_qr_recipient(
  recipient_number text not null check(recipient_number ~ '^[0-9]{1,19}$'),
  revision uuid not null default gen_random_uuid()
 );
+create function v0_private.media_qr_rotate_revision() returns trigger language plpgsql set search_path='' as $rotate$
+begin
+ new.revision:=gen_random_uuid();
+ return new;
+end $rotate$;
+revoke all on function v0_private.media_qr_rotate_revision() from public,anon,authenticated,service_role;
+create trigger media_qr_recipient_revision before update on v0_private.media_qr_recipient for each row execute function v0_private.media_qr_rotate_revision();
 alter table v0_private.media_qr_recipient enable row level security;
 revoke all on v0_private.media_qr_recipient from public,anon,authenticated,service_role;
 alter table v0_private.media_send_ticket add column qr_recipient_revision uuid;

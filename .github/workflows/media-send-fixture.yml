@@ -43,3 +43,5 @@ jobs:
       - run: PGPASSWORD=fixture_only psql -h localhost -U postgres -d media_fixture_ci -X -v ON_ERROR_STOP=1 -f fixtures/media-send/rls-test.sql
 
       - run: PGPASSWORD=fixture_only psql -h localhost -U postgres -d media_fixture_ci -X -v ON_ERROR_STOP=1 -f fixtures/media-send/trigger-test.sql
+
+      - run: PGPASSWORD=fixture_only psql -h localhost -U postgres -d media_fixture_ci -X -v ON_ERROR_STOP=1 -f fixtures/media-send/qr-attest-test.sql
