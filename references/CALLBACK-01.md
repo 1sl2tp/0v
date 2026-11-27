@@ -1,0 +1,7 @@
+# CALLBACK-01 — contract stage, issue #238
+
+Source audit: chat bridge/zalo/src/incoming-message.mjs normalizes chat.recommended misscall into plain text; call-notification.test.mjs explicitly expects no call metadata. Do not infer trusted events from body. Persist typed provenance at ingestion, stable server UUID per source event (not a raw Zalo message ID). Existing chat migration 20261021062000_call186_ios_phone_missed_push.sql defines private phones and missed-call push outbox. Existing 0v references/0v-admin-actions.sql deduplicates text by sender + client_id and validates room/body. The pure policy uses the server event UUID as stable 0v client ID. It is not a server worker or a guarantee of end-to-end delivery.
+
+Integrate with existing Contact/Message/Sending/Popup/Layout owners; preload authorized phone in selected contact scope, dial synchronously from trusted click; if new number needs saving, offer explicit Gọi after confirmed save (Safari may block asynchronous tel). Preserve secondary phone and reject stale contact/session. No SIM history. Server must authorize contact, verify incoming event and current active Zalo linkage regardless of contact group (user amendment 27/11), exclude historical events and atomically enqueue/send once, including cross-client/retry. Do not send on rendering or from untrusted client group flags. No database migration or production send enabled here. Native call and backend integration pending. No keyboard/scroll changes.
+
+Run: node --test tests/callback-01-policy.test.mjs
