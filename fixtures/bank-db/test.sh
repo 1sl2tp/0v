@@ -18,3 +18,6 @@ echo 'PostgreSQL fixture serial, rollback and concurrent duplicate checks passed
 
 psql -X -v ON_ERROR_STOP=1 -f fixtures/bank-db/bill-read-test.sql
 echo '0v isolated bill-read permission and projection checks passed'
+
+psql -X -v ON_ERROR_STOP=1 -f fixtures/bank-db/callback-01-test.sql
+echo 'CALLBACK-01 server fixture passed'

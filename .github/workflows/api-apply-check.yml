@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: node --test tests/callback-01-policy.test.mjs
       - run: node audit-design.cjs
       - name: Verify snapshot and version
         run: |
@@ -22,6 +23,8 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright
           npx playwright install --with-deps chromium webkit
+      - name: Verify CALLBACK-01 on Chromium and WebKit
+        run: node tests/callback-01-browser.cjs
       - name: Verify API 1–7 on real Chromium
         run: node audit-api-browser.cjs
       - name: Verify live mobile jump on WebKit
