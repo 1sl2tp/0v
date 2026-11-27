@@ -48,6 +48,30 @@ BEGIN
             ELSE btrim(r.raw_read->>'transfer_time_printed_vn') END
             = CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
           THEN CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END END,
+        'bank_clock',CASE WHEN r.status='received' AND r.transfer_at_vn IS NOT NULL
+          AND nullif(btrim(r.raw_read->>'transfer_time_printed_vn'),'') IS NULL
+          AND r.raw_read#>>'{manual_datetime_correction,source}'='independent_agribank_credit_notification'
+          AND r.raw_read#>>'{manual_datetime_correction,reason}' IN ('bank_noclock_current_01','missing_image_clock_exact_bank_sender_memo')
+          AND r.raw_read#>>'{manual_datetime_correction,bank_time_precision}'='minute'
+          AND coalesce(r.raw_read->>'time_date_conflict','false')='false'
+          AND coalesce(r.raw_read->>'clock_text_conflict','false')='false'
+          AND coalesce(r.raw_read->>'printed_date_invalid','false')='false'
+          AND coalesce(r.raw_read->>'date_swap_suspected','false')='false'
+          AND coalesce(r.raw_read->>'ocr_iso_date_conflict','false')='false'
+          AND r.raw_read->>'transfer_date_vn'=to_char(r.transfer_at_vn,'YYYY-MM-DD')
+          AND r.amount_vnd>0
+          AND EXISTS(SELECT 1 FROM public.chat_bank_app_collection_links k
+            JOIN public.taphoa_agribank_notifications n ON n.id=k.notification_id
+            JOIN public.taphoa_debt_ledger l ON l.id=k.ledger_id AND l.customer_account_id=r.customer_account_id
+              AND l.entry_type='collection' AND l.amount_vnd=-(r.amount_vnd::numeric/1000)
+            WHERE k.receipt_id=r.id AND k.ledger_id=r.ledger_id
+              AND r.raw_read#>>'{manual_datetime_correction,bank_notice_id}'=n.id::text
+              AND n.package_name='com.vnpay.Agribank3g' AND n.status='credit_candidate'
+              AND n.is_own_transfer=false AND n.bank_credit_account='2901181999999'
+              AND n.amount_vnd=r.amount_vnd
+              AND n.transfer_at AT TIME ZONE 'Asia/Ho_Chi_Minh'=r.transfer_at_vn)
+          THEN jsonb_build_object('source','independent_agribank_credit_notification',
+            'date',to_char(r.transfer_at_vn,'YYYY-MM-DD'),'time',to_char(r.transfer_at_vn,'HH24:MI')) END,
         'receiving_account',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_account,200) END,'receiving_name',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_name,200) END,
         'ocr_rechecked_account',CASE WHEN memo_only.flag THEN NULL WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999' AND ar.reviewed_account='2901181999999' THEN ar.reviewed_account WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
           AND r.raw_read->'account_digit_recheck'->>'source'='independent_focused_vision'
