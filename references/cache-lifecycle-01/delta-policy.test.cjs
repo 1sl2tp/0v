@@ -1,0 +1,30 @@
+const assert=require('node:assert/strict');
+const {test}=require('node:test');
+const {apply,known,nextLimit}=require('./delta-policy.cjs');
+const accountId='a',room='r',limit=30,scope={accountId,room,limit},v1='1'.repeat(64),v2='2'.repeat(64);
+const m=(id,body='text')=>({id,body,conversation_id:room}),a=(id,message_id)=>({id,message_id,storage_key:id+'.png'});
+const item=(row,rev=v1)=>({id:row.id,rev,row}),sec=(rows,upserts=rows)=>({revisions:Object.fromEntries(rows.map(x=>[x.id,x.rev])),upserts});
+const response=(messages,assets)=>({account_id:accountId,room,limit,messages,assets});
+test('cold, warm, add, edit, remove, late media: only changed rows travel',()=>{
+ const first=item(m('m1')),img=item(a('a1','m1'));
+ const s=apply(null,response(sec([first]),sec([img])),scope);
+ assert.deepEqual(known(s),{p_known_messages:{m1:v1},p_known_assets:{a1:v1}});
+ const unchanged=apply(s,response(sec([first],[]),sec([img],[])),scope);
+ assert.equal(unchanged.messages.get('m1'),s.messages.get('m1'));
+ const edit=item(m('m1','edited'),v2),fresh=item(m('m2')),late=item(a('a2','m2'));
+ const next=apply(unchanged,response(sec([edit,fresh]),sec([img,late],[late])),scope);
+ assert.equal(next.messages.get('m1').row.body,'edited');
+ assert.equal(next.assets.get('a1'),img);
+ const removed=apply(next,response(sec([fresh],[]),sec([late],[])),scope);
+ assert.equal(removed.messages.has('m1'),false);assert.equal(removed.assets.has('a1'),false);
+ assert.equal(next.messages.size,2);
+});
+test('bad scope, missing row, orphan asset and stale revision fail atomically',()=>{
+ const first=item(m('m1')),s=apply(null,response(sec([first]),sec([])),scope);
+ assert.throws(()=>apply(s,{...response(sec([first],[]),sec([])),room:'other'},scope));
+ assert.throws(()=>apply(s,response(sec([item(m('m1'),v2)],[]),sec([])),scope));
+ assert.throws(()=>apply(s,response(sec([first],[]),sec([item(a('bad','missing'))])),scope));
+ assert.throws(()=>apply(s,response(sec([item({...m('m1'),conversation_id:'other'},v2)]),sec([])),scope));
+ assert.equal(s.messages.get('m1'),first);
+});
+test('window grows by 20, capped at legacy 100',()=>assert.deepEqual([30,50,70,90,100].map(nextLimit),[50,70,90,100,100]));
