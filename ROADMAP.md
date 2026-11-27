@@ -290,3 +290,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 - v13.241 Pages success 45913172927. S3e v13.242 candidate: parent structural projection queue, late inventory / classification and persisted pageshow fixture. Actual device S4 pending.
 
 - v13.243 candidate: Issue #230 S4 lifecycle/anchor coverage; exact CI and native PWA evidence pending.
+
+- v13.244 candidate NOTIFY-01 #203: parent scoped ACK, directory freshness, diagnostic states. Next: actual browser RPC fixture, verify deployed RPC/coverage and cross-device/Push without production mutation. GEO-MOBILE-01 #232: inventory, geometry matrix and RULE-AUDIT-01 gate next, no KB changes.
