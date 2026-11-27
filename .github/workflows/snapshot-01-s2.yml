@@ -2,7 +2,7 @@ name: SNAPSHOT-01 durable cache and prior Pages proof
 on:
   pull_request:
     branches: [main]
-    paths: ['.github/workflows/snapshot-01-s2.yml', 'tests/snapshot-01-durable-browser.cjs', 'tests/live-cache-read-tail-browser.cjs']
+    paths: ['.github/workflows/snapshot-01-s2.yml', 'tests/snapshot-01-durable-browser.cjs', 'tests/live-cache-read-tail-browser.cjs', 'references/cache-lifecycle-01/media-revisions-candidate.sql', 'references/cache-lifecycle-01/media-revisions-fixture.sql']
 permissions:
   contents: read
 jobs:
@@ -18,7 +18,20 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - run: node tests/snapshot-01-durable-browser.cjs
       - run: node tests/live-cache-read-tail-browser.cjs
-  public-proof-256:
+  metadata-sql:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: fixture
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: PGPASSWORD=fixture psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f references/cache-lifecycle-01/media-revisions-fixture.sql
+  public-proof-257:
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
@@ -27,8 +40,8 @@ jobs:
           python - <<'PY'
           import urllib.request,json,hashlib,time
           origin='https://1sl2tp.github.io/0v/'
-          expected='v13.256'
-          blob='febf65496b5e65afbd78886acfb0a24e854f909b'
+          expected='v13.257'
+          blob='97ae1d0577914c0308fafc2f9d9b81ed51e4892a'
           def read(path):
               req=urllib.request.Request(origin+path+'?_proof='+str(time.time_ns()),headers={'Cache-Control':'no-cache','User-Agent':'0v-public-proof'})
               with urllib.request.urlopen(req,timeout=15) as r:
@@ -38,7 +51,7 @@ jobs:
               return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
           manifest=json.loads(read('version.json'))
           index=read('index.html')
-          snapshot=read('release-v13.256.html')
+          snapshot=read('release-v13.257.html')
           bill=read('bill.html')
           print(json.dumps({'expected':expected,'publicVersion':manifest.get('version'),'publicManifestBlob':manifest.get('gitBlobSha'),'indexBlob':git_blob(index),'snapshotBlob':git_blob(snapshot),'billBlob':git_blob(bill)}))
           assert manifest.get('version')==expected and manifest.get('gitBlobSha')==blob and git_blob(index)==blob and git_blob(snapshot)==blob and git_blob(bill)==blob
