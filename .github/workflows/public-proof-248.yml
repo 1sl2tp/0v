@@ -1,4 +1,4 @@
-name: Verify public Pages v13.248
+name: Verify public Pages v13.255
 on:
   pull_request:
     branches: [main]
@@ -16,8 +16,8 @@ jobs:
           python - <<'PY'
           import urllib.request, json, hashlib, time
           origin='https://1sl2tp.github.io/0v/'
-          expected='v13.248'
-          blob='4b07e7db9c9a293a25c03e8338aac70aa9d2a25d'
+          expected='v13.255'
+          blob='539aacbc282dd2b56cd6438539607c889cb3f140'
           def read(path):
               req=urllib.request.Request(origin+path+'?_proof='+str(time.time_ns()),headers={'Cache-Control':'no-cache','User-Agent':'0v-public-proof'})
               with urllib.request.urlopen(req,timeout=15) as r:
@@ -27,7 +27,8 @@ jobs:
               return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
           manifest=json.loads(read('version.json'))
           index=read('index.html')
-          snapshot=read('release-v13.248.html')
-          print(json.dumps({'expected':expected,'publicVersion':manifest.get('version'),'publicManifestBlob':manifest.get('gitBlobSha'),'indexBlob':git_blob(index),'snapshotBlob':git_blob(snapshot)}))
-          assert manifest.get('version')==expected and manifest.get('gitBlobSha')==blob and git_blob(index)==blob and git_blob(snapshot)==blob, 'Public version or bytes do not match'
+          snapshot=read('release-v13.255.html')
+          bill=read('bill.html')
+          print(json.dumps({'expected':expected,'publicVersion':manifest.get('version'),'publicManifestBlob':manifest.get('gitBlobSha'),'indexBlob':git_blob(index),'snapshotBlob':git_blob(snapshot),'billBlob':git_blob(bill)}))
+          assert manifest.get('version')==expected and manifest.get('gitBlobSha')==blob and git_blob(index)==blob and git_blob(snapshot)==blob and git_blob(bill)==blob, 'Public version or bytes do not match'
           PY
