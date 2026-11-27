@@ -822,3 +822,5 @@ Existing auditBlobCache owns binary reuse, in-flight dedup, max 2 active jobs, s
 
 ## SCROLL-01 S6 — Tail owner v13.253 candidate
 ScrollController `edge().max` is the only live end target. `visualEdge()` is measurement only. `flushTailFrame()` drains pending projection (explicit arrow) and prepared media before one reconciliation. ResizeObserver and follow projection request shared frame, never write directly. Same target may retry twice; then release follow and trace conflict. Existing keyboard owners unchanged.
+
+- v13.254 candidate: ScrollController.captureMovingJump owns early press acceptance, not a new scroll writer; auditBlobCache stats extend aggregate metrics, fixed gallery slots resolve independently through existing MediaController/ScrollController.
