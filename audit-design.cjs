@@ -414,6 +414,16 @@ const quick=new Function(quickSource+';return QuickMessageAPI')(),qa=quick.creat
 result.checks.quickMessagePolicy=qa.resolve('stk').blocked&&qa.resolve('qr').blocked&&qa.resolve('no').blocked&&qa.save('test','hello')&&!qa.save('stk','bad')&&!qa.save('test','other')&&qa.save('test2','changed','test')&&qa.resolve('test2').text==='changed'&&qb.resolve('test2').blocked&&qa.remove('test2')&&qa.resolve('test2').blocked&&!qa.configure({institution:'Bank',number:'12345678',name:'Test'})&&qa.configure({institution:'Bank',number:'12345678',name:'Test',confirmed:true})&&qa.resolve('stk').text.includes('12345678')&&qb.resolve('stk').blocked;
 result.checks.quickMessagePolicy=Boolean(result.checks.quickMessagePolicy);result.pass=result.pass&&result.checks.quickMessagePolicy;
 
+
+const quickMem=new Map(),quickStorage={getItem:k=>quickMem.get(k)||null,setItem:(k,v)=>quickMem.set(k,v),removeItem:k=>quickMem.delete(k)};
+const qs=quick.create({account:'fixture-A',storage:quickStorage});
+const storedQuick=qs.save('test','saved')&&qs.configure({institution:'Bank',number:'12345678',name:'Test',confirmed:true})&&qs.storageStatus()==='reload-safe';
+const reloadQuick=quick.create({account:'fixture-A',storage:quickStorage}),otherQuick=quick.create({account:'fixture-B',storage:quickStorage});
+const isolatedQuick=!!otherQuick.resolve('stk').blocked&&!!otherQuick.resolve('test').blocked;
+quick.forget(quickStorage);
+result.checks.quickReload=Boolean(storedQuick&&reloadQuick.resolve('test').text==='saved'&&reloadQuick.resolve('stk').text.includes('12345678')&&isolatedQuick&&quickMem.size===0);
+result.pass=result.pass&&result.checks.quickReload;
+
 console.log(JSON.stringify(result,null,2));process.exitCode=result.pass?0:1;
 
 result.checks.billFreshnessSource=billAuditSrc.includes('function auditRefreshAllowed()')&&billAuditSrc.includes('refreshAuditVisible()')&&billAuditSrc.includes('ScrollController.writeLocal(auditPanel,oldTop)')&&billAuditSrc.includes('Chưa xác định')&&billAuditSrc.includes('Tải dữ liệu lúc');result.pass=result.pass&&result.checks.billFreshnessSource;

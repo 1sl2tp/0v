@@ -2563,20 +2563,33 @@ const QuickMessageAPI=(()=>{
  ]);
  const alias=value=>typeof value==='string'&&/^[a-z][a-z0-9_-]{0,23}$/.test(value.trim().toLowerCase())?value.trim().toLowerCase():null;
  const reserved=new Set(['stk','qr','no','don','thu','gia']);
- function create(){
-  const items=new Map(defaults.map(x=>[x.alias,x.body]));let bank=null;
+ const storageKey='0v.quick-message.v1';
+ function recipient(value){const name=String(value?.name||'').trim(),number=String(value?.number||'').trim(),institution=String(value?.institution||'').trim();return name&&name.length<=100&&institution&&institution.length<=100&&/^\d{6,24}$/.test(number)&&!/[\r\n]/.test(name+institution)?{name,number,institution}:null}
+ function restore(raw,account){
+  if(!raw||raw.schema!==1||raw.account!==account||!Array.isArray(raw.items)||raw.items.length>50)return null;
+  const items=new Map();for(const entry of raw.items){const id=alias(entry?.alias),body=entry?.body;if(!id||reserved.has(id)||items.has(id)||typeof body!=='string'||!body.trim()||body.length>8000)return null;items.set(id,body)}
+  const bank=raw.bank===null?null:recipient(raw.bank);if(raw.bank!==null&&!bank)return null;
+  return {items,bank};
+ }
+ function create({account=null,storage=null}={}){
+  let saved=null;try{if(account&&storage)saved=restore(JSON.parse(storage.getItem(storageKey)||'null'),account)}catch{}
+  const items=saved?.items||new Map(defaults.map(x=>[x.alias,x.body]));let bank=saved?.bank||null,stored=false;
+  function persist(){stored=false;if(!account||!storage)return;try{const value=JSON.stringify({schema:1,account,items:[...items].map(([alias,body])=>({alias,body})),bank});storage.setItem(storageKey,value);stored=storage.getItem(storageKey)===value}catch{}}
+  if(account&&storage){if(saved)stored=true;else persist()}
+
   return Object.freeze({
    list(){return [...items].map(([alias,body])=>({alias,body}))},
-   save(key,body,prior=null){const id=alias(key),old=prior===null?null:alias(prior),value=typeof body==='string'?body.trim():'';if(!id||reserved.has(id)||!value||value.length>8000||(old!==null&&!items.has(old))||(items.has(id)&&id!==old)||(!items.has(id)&&items.size>=50&&old===null))return false;if(old!==null)items.delete(old);items.set(id,value);return true},
-   remove(key){return items.delete(alias(key))},
-   configure(value){const name=String(value?.name||'').trim(),number=String(value?.number||'').trim(),institution=String(value?.institution||'').trim();if(value?.confirmed!==true||!name||name.length>100||!institution||institution.length>100||!/^\d{6,24}$/.test(number)||/[\r\n]/.test(name+institution))return false;bank={name,number,institution};return true},
+   save(key,body,prior=null){const id=alias(key),old=prior===null?null:alias(prior),value=typeof body==='string'?body.trim():'';if(!id||reserved.has(id)||!value||value.length>8000||(prior!==null&&!old)||(old!==null&&!items.has(old))||(items.has(id)&&id!==old)||(!items.has(id)&&items.size>=50&&old===null))return false;if(old!==null)items.delete(old);items.set(id,value);persist();return true},
+   remove(key){const removed=items.delete(alias(key));if(removed)persist();return removed},
+   storageStatus(){return stored?'reload-safe':'memory-only'},
+   configure(value){const verified=recipient(value);if(value?.confirmed!==true||!verified)return false;bank=verified;persist();return true},
    bank(){return bank?{...bank}:null},
    resolve(key){const id=alias(key);if(id==='stk')return bank?{text:'Ngân hàng: '+bank.institution+'\nSố tài khoản: '+bank.number+'\nChủ tài khoản: '+bank.name}:{blocked:'Chưa xác minh thông tin tài khoản'};if(id==='qr')return {blocked:'API gửi ảnh QR chưa kết nối'};if(reserved.has(id))return {blocked:'Chưa kết nối dữ liệu nghiệp vụ'};return items.has(id)?{text:items.get(id)}:{blocked:'Không tìm thấy mẫu'}}
   });
  }
  function attach(draft,context){
   const stores=new WeakMap();let opened=null;
-  function capture(){const x=context();if(!x?.session||!x.room)return null;let store=stores.get(x.session);if(!store){store=create();stores.set(x.session,store)}return {...x,store}}
+  function capture(){const x=context();if(!x?.session||!x.room)return null;let store=stores.get(x.session);if(!store){let storage=null;try{if(x.session.approved===true&&x.session.accountId)storage=sessionStorage}catch{}store=create({account:storage?x.session.accountId:null,storage});stores.set(x.session,store)}return {...x,store}}
   function valid(x){const now=context();return now?.session===x.session&&now.room===x.room&&draft.value===x.original}
   function next(d,run){d.addEventListener('close',run,{once:true});Popup.close(d)}
   function input(label,value='',multiline=false){return Input.create({type:multiline?'multiline':'text',parent:'standalone',label,value,placeholder:label})}
@@ -2588,7 +2601,7 @@ const QuickMessageAPI=(()=>{
   }
   function manage(x){
    if(!valid(x))return;
-   Popup.open({type:'menu',title:'Quản lý mẫu tin nhắn',description:'Chỉ lưu trong phiên đang đăng nhập.',actions:[{text:'Tạo mẫu mới',onClick:d=>next(d,()=>edit(x,null))},...x.store.list().map(entry=>({text:'/'+entry.alias+' · Sửa / xóa',onClick:d=>next(d,()=>edit(x,entry))})),{text:'Cấu hình STK',onClick:d=>next(d,()=>configure(x))}]});
+   Popup.open({type:'menu',title:'Quản lý mẫu tin nhắn',description:x.store.storageStatus()==='reload-safe'?'Lưu qua F5 trong phiên này; không đồng bộ thiết bị.':'Chỉ lưu trong bộ nhớ; F5 có thể mất mẫu.',actions:[{text:'Tạo mẫu mới',onClick:d=>next(d,()=>edit(x,null))},...x.store.list().map(entry=>({text:'/'+entry.alias+' · Sửa / xóa',onClick:d=>next(d,()=>edit(x,entry))})),{text:'Cấu hình STK',onClick:d=>next(d,()=>configure(x))}]});
   }
   function configure(x){
    if(!valid(x))return;
@@ -2604,7 +2617,8 @@ const QuickMessageAPI=(()=>{
   function trigger(e){if(opened||Input.isComposing(draft,e)||e?.inputType==='deleteContentBackward'||!/^\/[a-z0-9_-]*$/i.test(draft.value))return;const x=capture();if(!x)return;const key=draft.value.slice(1).toLowerCase();if(key&& !['stk','qr',...x.store.list().map(v=>v.alias)].includes(key))return;x.original=draft.value;menu(x)}
   draft.addEventListener('input',trigger);draft.addEventListener('compositionend',trigger);
  }
- return Object.freeze({alias,create,attach});
+ function forget(storage){try{storage?.removeItem(storageKey)}catch{}}
+ return Object.freeze({alias,create,attach,forget});
 })();
 
 const Main=Object.freeze({
@@ -3321,7 +3335,7 @@ function mountLiveChat(root){
   }catch{if(scope===owner&&pending.get(id)?.key===key){pending.set(id,{key,body,message:LiveChatSnapshotPolicy.localMessage(key,body,at,true)});liveDirectoryHints.delete(id);renderDirectory();if(selected===id){if(!draft.value.trim())draft.value=body;const node=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]');const meta=node?.querySelector('[data-ui-slot~="meta"]');if(meta){meta.textContent='!';meta.dataset.sendError='true'};setSendStatus('Chưa xác nhận gửi. Bấm Gửi để thử lại cùng tin.')}else if(!drafts.get(id))drafts.set(id,body)}}
   finally{if(scope===owner){sending=false;updateComposer();if(liveSyncDirty)wakeLiveSync(owner)}}
  }
- async function signout(){eraseBillProgress();const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();try{const result=await client?.auth.signOut({scope:'local'});if(result?.error)throw result.error;show('guest');status.textContent='Đã đăng xuất.'}catch{bootStatus.textContent='Chưa xác nhận đăng xuất. Thử lại.';retryBoot.hidden=false}}
+ async function signout(){try{QuickMessageAPI.forget(sessionStorage)}catch{}eraseBillProgress();const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();try{const result=await client?.auth.signOut({scope:'local'});if(result?.error)throw result.error;show('guest');status.textContent='Đã đăng xuất.'}catch{bootStatus.textContent='Chưa xác nhận đăng xuất. Thử lại.';retryBoot.hidden=false}}
  login.addEventListener('submit',e=>{e.preventDefault();void connect(true)});
  // Restore only this origin's authenticated admin session, never import a CHAT token.
  void connect(false);
