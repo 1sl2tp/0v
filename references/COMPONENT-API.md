@@ -810,3 +810,6 @@ ScrollController.deferProjection / flushProjection / clearProjection own structu
 
 ## v13.249 SNAPSHOT-01 candidate
 LiveChatSnapshotPolicy.callbackIds / canProjectPartial retain scoped verified presentation metadata; no phone in cache. Prewarm complete media inventory + callback ID only. Message structural callback changes use existing ScrollController.deferProjection. Popup/Input/Button unchanged parent; explicit clipboard read on Dán số, manual fallback, defer live background projection while callback form open. All four KB ranges unchanged. Native paste/jitter and persistent image bytes still require acceptance.
+
+## SNAPSHOT-01 S2 candidate
+`auditBlobCache.get(key,owner,download,durable=false)` and `.image(key,owner,mime,bill,download,durable=false)` retain RAM dedup; durableImageCache is internal storage tier, not a rendering owner. Chat image only, excludes known bill/audit; storage.info authorization + revision required before read, encrypted bounded IDB; fallback to authorized download. Existing MediaController and ScrollController.imagePaint own projection. Four KB ranges remain unchanged.
