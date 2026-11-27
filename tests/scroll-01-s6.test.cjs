@@ -35,3 +35,12 @@ test('unchanged physical target cannot be retried indefinitely after native disp
 test('observer and follow projection must not directly reconcile tail',()=>{
  assert(!src.includes("this.reconcileTail('content-resize')"));assert(!src.includes("this.reconcileTail('projection-tail')"));assert(html.includes('ScrollController.flushTailFrame()'));
 });
+
+test('repeated grow and native clamp shrink reset budget only for changed geometry',()=>{
+ const f=fixture(),S=f.controller,m=f.messages;S.flushTailFrame();
+ for(let n=0;n<5;n++){m.scrollHeight=1540;S.flushTailFrame();assert.equal(m.scrollTop,740);assert(S.tail);m.scrollHeight=1500;m.scrollTop=700;S.flushTailFrame();assert(S.tail);assert.equal(S.tail.attempts,0)}
+ assert.equal(f.counts().writes,6);assert.equal(f.trace.filter(x=>x[0]==='tail-conflict').length,0);
+});
+test('successful arrival alone does not replenish same geometry conflict budget',()=>{
+ const f=fixture(),S=f.controller,m=f.messages;S.flushTailFrame();S.flushTailFrame();m.scrollTop=0;S.flushTailFrame();S.flushTailFrame();m.scrollTop=0;S.flushTailFrame();assert.equal(f.counts().writes,2);assert.equal(S.tail,null);
+});
