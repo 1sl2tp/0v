@@ -313,3 +313,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 
 ## CACHE-LIFECYCLE-01
 Stage A v13.251: unified binary cache, bounded queue, warm slots, dedup snapshot writes. Stage B: backend authoritative per-room revision/cursor with edit/delete tombstones and media inventory delta; retain 100 recent messages locally; first window 30, older 20 on demand (proposed), prefetch at most 3 conversations only when idle. Stage C: measure request/byte counts, cache hit ratio, expiry and eviction; no UI reset for data already loaded. Revalidate current permissions; no stale cross-account content. Full native iPhone/PWA evidence pending.
+
+- CACHE-LIFECYCLE-01 B v13.252: opt-in integrated adapter + 30/20 bounded window, request/response estimate and actual blob counters, expired cache sweep and LRU touch; isolated SQL and adapter CI pending. True indexed server cursor beyond 100 and native iPhone/PWA still pending. Keep production default legacy until SQL/authorization acceptance.
