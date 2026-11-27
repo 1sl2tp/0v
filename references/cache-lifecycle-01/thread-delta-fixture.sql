@@ -47,12 +47,14 @@ end $$;
 -- Separate SQL statements: emulate committed changes between independent RPC calls.
 update fixture.messages set body='edited fixture' where id='m050';
 insert into fixture.assets values('late','m049','fixture/late.png',1);
+do $ begin if not exists(select 1 from fixture.assets where id='late' and message_id='m049') then raise exception 'fixture insert missing';end if;if not exists(select 1 from jsonb_array_elements(public.v0_admin_media('00000000-0000-4000-8000-000000000001')->'assets') x where x->>'id'='late') then raise exception 'upstream media RPC missing late asset';end if;end $;
 insert into delta_results select 'edited',public.v0_admin_thread_delta('00000000-0000-4000-8000-000000000001',30,payload#>'{messages,revisions}',payload#>'{assets,revisions}') from delta_results where stage='cold';
 do $$
 declare edited jsonb;
 begin
  select payload into edited from delta_results where stage='edited';
  raise notice 'DELTA_EDIT_COUNTS messages=% assets=%',jsonb_array_length(edited#>'{messages,upserts}'),jsonb_array_length(edited#>'{assets,upserts}');
+ raise notice 'DELTA_LATE_MEMBERSHIP message=% asset=%',edited#>'{messages,revisions}' ? 'm049',edited#>'{assets,revisions}' ? 'late';
  if jsonb_array_length(edited#>'{messages,upserts}')<>1 or jsonb_array_length(edited#>'{assets,upserts}')<>1 then raise exception 'edited/late media';end if;
 end $$;
 insert into delta_results select 'older',public.v0_admin_thread_delta('00000000-0000-4000-8000-000000000001',50,payload#>'{messages,revisions}',payload#>'{assets,revisions}') from delta_results where stage='edited';
