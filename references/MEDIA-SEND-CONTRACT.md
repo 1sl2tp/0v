@@ -49,3 +49,7 @@ Exact c94bb6d MEDIA-SEND job 140418303148 success: 11 Python tests, RLS, concurr
 
 
 Stage G: e8027ae MEDIA-SEND passed 13 Python tests and worker role fixture, bank and snapshot passed. API CI failed before browser tests due apt package lists; refresh apt indexes before Playwright. Read actual auth.uid()/auth.jwt() catalog: clear legacy claim and sub before binding validated transaction claims. User requests private recipient setup and a sample QR; real STK/QR not committed to public repository. No production config, no new HTML, no KB change. Exact-head CI pending.
+
+
+### Stage G — shared private recipient configuration (candidate)
+Add own-recipient read-only API with active AAL2 admin gate; no browser writes or public access to recipient table. Name, institution, BIN, account and revision are shared between /stk and QR target. Real user account and QR generated privately outside repo; no production row provisioned yet. Synthetic tests only. Mock HTTPS Storage fetch -> real QR decode -> attestation, with short/extra/redirect/MIME denial; hosted integration still pending. API CI dependency fix e7132a1; auth legacy claim cleared transaction-locally. No HTML or KB changes. UI read wiring and private provisioning after CI and server deployment acceptance.
