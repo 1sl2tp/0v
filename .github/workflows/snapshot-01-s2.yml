@@ -17,7 +17,7 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright
       - run: npx playwright install --with-deps chromium webkit
       - run: node tests/snapshot-01-durable-browser.cjs
-  public-proof-249:
+  public-proof-250:
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
@@ -26,8 +26,8 @@ jobs:
           python - <<'PY'
           import urllib.request,json,hashlib,time
           origin='https://1sl2tp.github.io/0v/'
-          expected='v13.249'
-          blob='59f3abf2403cc357167b91bf628dedcb5f06a693'
+          expected='v13.250'
+          blob='01b32d0f178de8e3cb067a3cdb4faf6ee74564fa'
           def read(path):
               req=urllib.request.Request(origin+path+'?_proof='+str(time.time_ns()),headers={'Cache-Control':'no-cache','User-Agent':'0v-public-proof'})
               with urllib.request.urlopen(req,timeout=15) as r:
@@ -37,7 +37,7 @@ jobs:
               return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
           manifest=json.loads(read('version.json'))
           index=read('index.html')
-          snapshot=read('release-v13.249.html')
+          snapshot=read('release-v13.250.html')
           print(json.dumps({'expected':expected,'publicVersion':manifest.get('version'),'publicManifestBlob':manifest.get('gitBlobSha'),'indexBlob':git_blob(index),'snapshotBlob':git_blob(snapshot)}))
           assert manifest.get('version')==expected and manifest.get('gitBlobSha')==blob and git_blob(index)==blob and git_blob(snapshot)==blob
           PY

@@ -310,3 +310,6 @@ User requests original image audit. Existing authenticated standalone lab strips
 - #244 geometry failure 45926491663 at width 320, popup rect still 25..365 (previous width 390), test now waits existing PopupController scheduled viewport frame via waitForFunction; persistent overflow still fails. No independent geometry writer added.
 
 - SNAPSHOT-01 S2 (#245) — v13.250 candidate: encrypted bounded cache for chat images, confirmed bill/audit excluded; CI, production storage.info compatibility, native paste/scroll and Pages proof pending.
+
+## CACHE-LIFECYCLE-01
+Stage A v13.251: unified binary cache, bounded queue, warm slots, dedup snapshot writes. Stage B: backend authoritative per-room revision/cursor with edit/delete tombstones and media inventory delta; retain 100 recent messages locally; first window 30, older 20 on demand (proposed), prefetch at most 3 conversations only when idle. Stage C: measure request/byte counts, cache hit ratio, expiry and eviction; no UI reset for data already loaded. Revalidate current permissions; no stale cross-account content. Full native iPhone/PWA evidence pending.
