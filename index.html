@@ -499,7 +499,8 @@ html[data-floating="1"] #app>[data-ui-slot~="conversation"]>.composer-frame::bef
  }
  /* LIVE-THREAD-BOUNDARY-01: paint and hit-test inside existing measured reserves. */
  html[data-floating="1"] #app[data-live-chat="true"]>[data-ui-slot~="conversation"] [data-ui-slot~="messages"]{clip-path:inset(var(--app-top-reserve) 0 var(--composer-reserve) 0)}
- html[data-floating="1"] #app[data-live-chat="true"]>[data-ui-slot~="conversation"]>.composer-frame>.composer:has(>textarea:focus){width:94%}
+ /* COMPOSER-01: nonempty draft retains the active width after blur; same owner and breakpoint. */
+ html[data-floating="1"] #app[data-live-chat="true"]>[data-ui-slot~="conversation"]>.composer-frame>.composer:has(>textarea:focus,>textarea:not(:placeholder-shown)){width:94%}
  /* Keyboard state is semantic, never a viewport geometry switch. Bottom padding is owned by composer-frame tokens. */
 }
 /* Safari and standalone share the same visible safe-area tokens. */
