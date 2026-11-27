@@ -152,6 +152,29 @@ DO $clock_fixture$ DECLARE saved jsonb; saved_at timestamp; literal text; prec t
  END LOOP;
  UPDATE public.chat_bank_bill_receipts SET raw_read=saved,transfer_at_vn=saved_at WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
 END $clock_fixture$;
+
+-- No-clock independent bank proof; use existing synthetic receipt after legacy tests.
+DO $noclock$ DECLARE saved jsonb; actual jsonb; c text; BEGIN
+ SELECT raw_read INTO saved FROM public.chat_bank_bill_receipts WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+ FOREACH c IN ARRAY ARRAY['valid','wrong_notice','wrong_amount','wrong_ledger','review','conflict','printed','wrong_date'] LOOP
+  UPDATE public.chat_bank_bill_receipts SET status='received',ledger_id=1,amount_vnd=26000,transfer_at_vn='2026-11-25 21:52',
+   raw_read=(saved-'transfer_time_printed_vn')||jsonb_build_object('transfer_time_printed_vn',null,'manual_datetime_correction',jsonb_build_object('source','independent_agribank_credit_notification','reason','bank_noclock_current_01','bank_time_precision','minute','bank_notice_id',1))
+   WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+  IF c='wrong_notice' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=jsonb_set(raw_read,'{manual_datetime_correction,bank_notice_id}','99') WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+  ELSIF c='wrong_amount' THEN UPDATE public.chat_bank_bill_receipts SET amount_vnd=27000 WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+  ELSIF c='wrong_ledger' THEN UPDATE public.chat_bank_bill_receipts SET ledger_id=2 WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+  ELSIF c='review' THEN UPDATE public.chat_bank_bill_receipts SET status='review' WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+  ELSIF c='conflict' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=raw_read||'{"clock_text_conflict":true}' WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+  ELSIF c='printed' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=raw_read||'{"transfer_time_printed_vn":"21:52"}' WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+  ELSIF c='wrong_date' THEN UPDATE public.chat_bank_bill_receipts SET raw_read=raw_read||'{"transfer_date_vn":"2026-11-24"}' WHERE media_asset_id='50000000-0000-0000-0000-000000000001'; END IF;
+  actual:=public.v0_admin_media('30000000-0000-0000-0000-000000000001')->'assets'->0->'bill_receipt';
+  IF c='valid' THEN
+   IF actual->>'bank_clock_vn' IS DISTINCT FROM '21:52' OR actual->>'bank_clock_date' IS DISTINCT FROM '2026-11-25' OR actual->>'bank_clock_source' IS DISTINCT FROM 'independent_agribank_credit_notification' OR actual->>'time_vn' IS NOT NULL THEN RAISE EXCEPTION 'valid no-clock proof %',actual; END IF;
+  ELSIF actual->>'bank_clock_vn' IS NOT NULL OR actual->>'bank_clock_date' IS NOT NULL OR actual->>'bank_clock_source' IS NOT NULL THEN RAISE EXCEPTION 'invalid no-clock proof %',c; END IF;
+ END LOOP;
+ UPDATE public.chat_bank_bill_receipts SET status='received',ledger_id=1,amount_vnd=26000,transfer_at_vn='2026-11-25 21:52',raw_read=saved WHERE media_asset_id='50000000-0000-0000-0000-000000000001';
+ RAISE NOTICE 'BANK-NOCLOCK-CURRENT-01 projection 8 cases passed';
+END $noclock$;
 UPDATE public.v21_accounts SET locked_at=now() WHERE id='00000000-0000-0000-0000-000000000002';
 SET LOCAL ROLE authenticated;
 SELECT set_config('fixture.uid','10000000-0000-0000-0000-000000000001',true),set_config('fixture.jwt','{"session_id":"20000000-0000-0000-0000-000000000001","aal":"aal2"}',true);
