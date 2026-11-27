@@ -452,3 +452,6 @@ PR #280 exact head 875b124 five workflows passed, merged dae2e50; Pages workflow
 
 ### v13.267 E1 MEDIA-DISPLAY-01
 PR #281 corrected head 29d3f00 5/5 passed and merged fa85174. User requests separate in-thread layout lesson while INPUT-UNIFIED-01b remains next. Read active RULES/COMPONENT/ROADMAP and pinned Astryx Stack (alignment and gap) and Adobe Virtualizer (stable anchor); no upstream runtime copied. Read actual source/destination inventory: 55 original single messages, 54 portrait/1 landscape, forwarded 55 assets in five transport messages, exact dimensions preserved. No existing messages edited or resent. Single profile at slot creation, compact presentation-only image run from existing Message.flow, no group wrapper or new owner. Isolated contract checks passed; inline scripts and audit/browser syntax compiled; four KB ranges byte-identical. Browser geometry probes added for both engines; full CI/E4 pending. Rollback v13.266. INPUT-UNIFIED media/QR/profile work remains pending.
+
+### BILL-ROOT02-UI-01 (v13.268 candidate)
+E1 read-only comparison button on standalone bill page, source-bound 10 fields, no auto calls. E2 CI, E3 release/Pages, E4 real Admin MFA and Gemini, E5 independently annotated originals pending. Depends on #282 and chat #451. Never replace production reader based on synthetic tests.
