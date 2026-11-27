@@ -836,3 +836,5 @@ Existing server recovery owns eligibility and locked financial writer owns posti
 
 ## LIVE-BILL-BANK-CLOCK-01
 Private admin_media supplies optional bank_clock {source,date,time} from linked financial proof; BillReceiptProjection validates and renders via CardController. Printed time_vn remains original. No client reconciliation/writer, new grant, or duplicate API. Delta/cache consume existing receipt projection, no second fetch.
+
+- v13.256 candidate: ReadStateController.tailReadIds validates a complete bounded unread window for settled visible tail read-through; existing live ACK remains sole server-confirmed projection. warmSnapshotImages calls existing auditBlobCache.image, no new cache/render owner. Native and CI pending.
