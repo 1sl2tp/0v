@@ -32,9 +32,11 @@ begin
     select x, x->>'id' as id, encode(sha256(convert_to(x::text,'UTF8')),'hex') as rev
     from jsonb_array_elements(selected) x
   ), a as (
-    select x, x->>'id' as id, encode(sha256(convert_to(x::text,'UTF8')),'hex') as rev
-    from jsonb_array_elements(med->'assets') x
-    where exists(select 1 from m where m.id=x->>'message_id')
+    -- Qualify the outer asset row: unqualified x inside EXISTS resolves to m.x.
+    select asset.row_data as x, asset.row_data->>'id' as id,
+      encode(sha256(convert_to(asset.row_data::text,'UTF8')),'hex') as rev
+    from jsonb_array_elements(med->'assets') as asset(row_data)
+    where exists(select 1 from m where m.id=asset.row_data->>'message_id')
   )
   select jsonb_build_object(
     'account_id',msg->>'account_id','room',p_conversation_id,'limit',lim,
