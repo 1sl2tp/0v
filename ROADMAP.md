@@ -292,3 +292,5 @@ User requests original image audit. Existing authenticated standalone lab strips
 - v13.243 candidate: Issue #230 S4 lifecycle/anchor coverage; exact CI and native PWA evidence pending.
 
 - v13.244 candidate NOTIFY-01 #203: parent scoped ACK, directory freshness, diagnostic states. Next: actual browser RPC fixture, verify deployed RPC/coverage and cross-device/Push without production mutation. GEO-MOBILE-01 #232: inventory, geometry matrix and RULE-AUDIT-01 gate next, no KB changes.
+
+- v13.245 candidate COMPOSER-01 #235: stable mobile live composer draft width across focus/blur using existing CSS selector, retain 82% empty and 94% active/nonempty; single/multiline browser regression at 735/390px. Native evidence and full CI pending; branch based on v13.244 candidate 021d25b, must integrate final release head before merge.
