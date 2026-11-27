@@ -462,3 +462,6 @@ User requests mobile-only review: screenshots show excessive text whitespace, un
 
 ### MOBILE-DIRECTORY-01 v13.270 candidate / #287, #288
 User approved 12 mobile directory requirements; main v13.269 and successful Pages workflow 46080216549 for 00d78c6 verified; direct HTTP and native E4 unavailable. Baseline probe c08f6d5 still pending at time of candidate. Reuse Main/Layout, Avatar, Typography, Contact, Surface, ScrollController. Candidate code and test assertions prepared; CI pending, no production changes. Native E4 and speed measurements of v13.269 stay pending. Next: inspect baseline and candidate CI, fix regressions, verify release; then MOBILE-NAV-01 proposal.
+
+### MOBILE-NAV-01 v13.271 / #289
+v13.270 E2 CI 5/5, Pages deployment success 46081699866 at bf16345; E4 BLOCKED. Approved 8/8. Candidate targets edge gesture, directory anchor, history-return and same pending room guard; existing auth/cache/draft behavior retained. Tests added; CI pending. Further cross-width live navigation proof and native acceptance pending. No v13.272 until release.
