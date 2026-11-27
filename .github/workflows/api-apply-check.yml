@@ -21,6 +21,7 @@ jobs:
           node -e "const fs=require('fs'),v=require('./version.json');if(!fs.readFileSync(v.entry).equals(fs.readFileSync(v.snapshot)))process.exit(1)"
       - name: Install browser test tools
         run: |
+          sudo apt-get update
           npm install --no-save --no-package-lock playwright
           npx playwright install --with-deps chromium webkit
       - name: Verify CALLBACK-01 on Chromium and WebKit

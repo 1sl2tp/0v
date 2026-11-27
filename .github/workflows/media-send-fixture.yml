@@ -1,0 +1,51 @@
+name: MEDIA-SEND-01 private fixture
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: fixture_only
+          POSTGRES_DB: media_fixture_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d media_fixture_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python -m pip install --only-binary=:all: -r fixtures/media-send/requirements.lock
+      - run: python -m unittest discover -s fixtures/media-send -p 'test_*.py'
+      - run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - run: psql -X -v ON_ERROR_STOP=1 -f fixtures/media-send/test.sql
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGUSER: postgres
+          PGDATABASE: media_fixture_ci
+          PGPASSWORD: fixture_only
+
+      - run: bash fixtures/media-send/race.sh
+
+      - run: PGPASSWORD=fixture_only psql -h localhost -U postgres -d media_fixture_ci -X -v ON_ERROR_STOP=1 -f fixtures/media-send/rls-test.sql
+
+      - run: PGPASSWORD=fixture_only psql -h localhost -U postgres -d media_fixture_ci -X -v ON_ERROR_STOP=1 -f fixtures/media-send/trigger-test.sql
+
+      - run: PGPASSWORD=fixture_only psql -h localhost -U postgres -d media_fixture_ci -X -v ON_ERROR_STOP=1 -f fixtures/media-send/qr-attest-test.sql
+
+      - run: PGPASSWORD=fixture_only psql -h localhost -U postgres -d media_fixture_ci -X -v ON_ERROR_STOP=1 -f fixtures/media-send/worker-role-test.sql
+
+      - run: PGPASSWORD=fixture_only psql -h localhost -U postgres -d media_fixture_ci -X -v ON_ERROR_STOP=1 -f fixtures/media-send/quick-recipient-test.sql
