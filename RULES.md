@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.268)
+## 00. Chỉ mục rule đang có hiệu lực (v13.269)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -16,7 +16,7 @@ Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đa
 | Scroll | SCROLL-01 (01a–01h), LIVE-MEDIA-SCROLL-01–07, LIVE-MEDIA-JUMP-01–04, LIVE-THREAD-BOUNDARY-01, KB-05, SC-16, FL-10, KB-RESTORE-02 | SCROLL-01 supersedes conflicting live tail intent semantics after each accepted migration phase; existing keyboard geometry and QA exceptions remain |
 | Material / edge | SURFACE-MOBILE-OPTICS-01–02, SURFACE-CONTEXT-01–04, SURFACE-01–02 (cấu trúc chung), SURFACE-API-01–05 | SUR-01–03, GL-01–08 và SURFACE-03 về lựa chọn vật liệu |
 | Desktop layout | DESKTOP-01–04 | chiều rộng cột desktop trước v13.18 |
-| Bill layout | LIVE-BILL-PAIR-01, GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
+| Bill layout | MOBILE-BILL-LAYOUT-01, LIVE-BILL-PAIR-01, GEO-ADAPT-01 | CARD-03 cũ bắt buộc hai cột |
 | Geometry / Layout | GEO-API-01–08, GEO-ADAPT-03, DESKTOP-04, BOTTOM-04, COMP-04 | phép đo chỉ hợp với composer một hàng |
 Các rule nghiệp vụ, bảo mật, thao tác không bị thay thế nếu không được nêu rõ. Khi sửa một owner, phải đối chiếu các owner khác và ghi kết quả chưa kiểm chứng.
 
@@ -1972,3 +1972,7 @@ Draft.bind(el,context) creates a text transaction adapter for each current Quick
 
 ## BILL-ROOT02-UI-01 — Nghiệm thu bộ đọc cha độc lập (v13.268)
 Owner: BillAuditList / CardController / BillRoot02Comparison. Chỉ trang bill độc lập; dùng phiên Admin MFA hiện có, conversation_id và asset_id từ RPC đã phân quyền. Một thao tác chủ động, một request, không tự thử lại; khóa đọc cũ/mới khi có tác vụ. Không chuyển OCR cũ vào prompt. So sánh nguyên văn 10 trường với OCR máy chủ; khác không đồng nghĩa sai, thiếu không đồng nghĩa ảnh không có. Kết quả v5 chỉ trong bộ nhớ theo phiên và nguồn, xóa khi đăng xuất/đổi nguồn. Không lưu xác minh, không ghi thu, không chạm keyboard. Nghiệm thu E2 CI, E3 Pages, E4 Admin thật + Gemini, 10 trường có nhãn ảnh gốc. Backend chat #451 phải phát hành trước UI.
+
+
+## MOBILE-BILL-LAYOUT-01 — v13.269 (GEO-MOBILE-01 / STT 2)
+- Standalone bill review uses Layout's existing bill-pair auto-fit minimum column profile on mobile (<=767px); a narrow available width stacks image above results, wide available width permits two columns. Desktop retains existing two-column review. Do not force two columns from the consumer when the available width cannot fit both 260px tracks. Keep original message/image/receipt IDs, Card and Typography, button and input owners. No changes to financial logic, OCR, transport, cache, scroll or keyboard. E1 browser matrix required, E2 CI, E3 Pages, E4 actual mobile separately.
