@@ -1092,3 +1092,7 @@ Exact 3781954 all 4 workflows green: private SQL job 140400497211 Python 5 tests
 
 ### MEDIA-SEND-01 stage D CI correction
 Exact head 81b1898: API 45969162251, Bank 45969162370, SNAPSHOT 45969162235 success; media workflow 45969155334 failed as invalid workflow, zero jobs. YAML plain scalar pip command contains ': ' in --only-binary=:all: -r. Use literal block, retain all tests. Both dependency versions verified on PyPI. No runtime, SQL production or keyboard edits. New CI required.
+
+
+### Stage E — private QR verification boundary (candidate only)
+Private server target reads active actor/session/contact/room, configured recipient and canonical storage metadata; attestation revalidates exact object version/hash/recipient revision, QR-specific commit requires private proof and unchanged recipient. No public/browser grants; privileged configuration must be provisioned by authorized operator, and revisions must change on every update. Candidate Python HTTPS downloader derives fixed Supabase host/path from trusted config, rejects redirects, bounds bytes and verifies type/length; orchestrator decodes actual bytes, re-reads target and calls private attestation, never sends. Tests use injected callbacks; no live download or deployment. No DB worker role, authenticated endpoint, cleanup or real Storage integration yet. Need secure role binding, configured recipient management, and integration fixture before deployment. RULE-GATE/QUICK/KB-LOCK; no HTML changes.
