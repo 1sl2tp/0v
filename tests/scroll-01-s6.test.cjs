@@ -44,3 +44,9 @@ test('repeated grow and native clamp shrink reset budget only for changed geomet
 test('successful arrival alone does not replenish same geometry conflict budget',()=>{
  const f=fixture(),S=f.controller,m=f.messages;S.flushTailFrame();S.flushTailFrame();m.scrollTop=0;S.flushTailFrame();S.flushTailFrame();m.scrollTop=0;S.flushTailFrame();assert.equal(f.counts().writes,2);assert.equal(S.tail,null);
 });
+
+test('native shrink observation updates target before shared frame without a position write',()=>{
+ const f=fixture(),S=f.controller,m=f.messages;S.flushTailFrame();
+ for(let n=0;n<5;n++){m.scrollHeight=1540;S.flushTailFrame();assert.equal(m.scrollTop,740);const writes=f.counts().writes;m.scrollHeight=1500;m.scrollTop=700;S.userMoved();assert.equal(S.tail.target,'700:800');assert.equal(S.tail.attempts,0);assert.equal(f.counts().writes,writes)}
+ assert.equal(f.counts().writes,6);assert(S.tail);
+});
