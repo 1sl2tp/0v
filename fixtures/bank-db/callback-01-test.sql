@@ -106,6 +106,7 @@ end;
 $$;
 \ir ../../references/0v-admin-read.sql
 \ir ../../references/0v-callback-01-server.sql
+\ir ../../references/0v-callback-01-display.sql
 insert into public.v21_accounts(id,auth_user_id,role,contact_group) values
 ('00000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','admin',null),
 ('00000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','user','customer'),
@@ -137,6 +138,12 @@ do $$ declare a uuid;b uuid;room uuid; result jsonb; begin
  insert into public.v21_contact_private_phones(contact_account_id,phone_secondary,edited_by_account_id) values('00000000-0000-0000-0000-000000000002','+84900000001','00000000-0000-0000-0000-000000000001');
  result:=public.v0_callback_contact(room,'090 000 0002');
  if result->>'phone_primary' is distinct from '0900000002' or result->>'phone_secondary' is distinct from '+84900000001' then raise exception 'phone save'; end if;
+ -- Legacy linked notice may offer a manual callback, but cannot auto-reply.
+ if not exists(select 1 from jsonb_array_elements(result->'events') e join public.zalo_message_links l on l.chat_message_id=(e->>'message_id')::uuid where l.zalo_message_id='plain' and e->>'provenance'='linked_notice_text' and e->>'auto_reply_id' is null) then raise exception 'legacy display missing'; end if;
+ insert into public.v21_messages(conversation_id,sender_account_id,client_id,body) values(room,'00000000-0000-0000-0000-000000000002','fixture-local-text','Cuộc gọi nhỡ');
+ result:=public.v0_callback_contact(room);
+ if exists(select 1 from jsonb_array_elements(result->'events') e join public.v21_messages m on m.id=(e->>'message_id')::uuid where m.client_id='fixture-local-text') then raise exception 'unlinked text offered callback'; end if;
+ if (select count(*) from public.v21_messages where body='Em sẽ gọi lại ngay ạ.')<>2 then raise exception 'display caused reply'; end if;
  result:=public.v0_callback_contact(room,'0900000003');
  if result->>'phone_primary' is distinct from '0900000002' then raise exception 'existing number overwrite'; end if;
  begin perform public.v0_callback_contact(room,'bad'); raise exception 'invalid phone accepted'; exception when sqlstate '22023' then null; end;
