@@ -1,3 +1,37 @@
+-- BANK-NOCLOCK-CURRENT-01: common read-only proof owner; no public RPC/grants.
+CREATE OR REPLACE FUNCTION v0_private.bill_verified_bank_clock(r public.chat_bank_bill_receipts,p_sent_at timestamptz)
+RETURNS jsonb LANGUAGE sql STABLE SECURITY INVOKER SET search_path='' AS $clock$
+ SELECT CASE WHEN r.status='received' AND r.ledger_id IS NOT NULL AND r.amount_vnd>0
+   AND r.transfer_at_vn IS NOT NULL AND r.receiving_account='2901181999999'
+   AND upper(btrim(r.receiving_name))='BUI XUAN TUNG'
+   AND nullif(btrim(r.raw_read->>'transfer_time_printed_vn'),'') IS NULL
+   AND coalesce(r.raw_read->>'time_date_conflict','false')='false'
+   AND coalesce(r.raw_read->>'clock_text_conflict','false')='false'
+   AND coalesce(r.raw_read->>'printed_date_invalid','false')='false'
+   AND coalesce(r.raw_read->>'date_swap_suspected','false')='false'
+   AND coalesce(r.raw_read->>'ocr_iso_date_conflict','false')='false'
+   AND r.raw_read->>'transfer_date_vn'=to_char(r.transfer_at_vn,'YYYY-MM-DD')
+   AND r.raw_read->>'transfer_date_printed_vn'=to_char(r.transfer_at_vn,'DD/MM/YYYY')
+   AND r.raw_read#>>'{manual_datetime_correction,source}'='independent_agribank_credit_notification'
+   AND r.raw_read#>>'{manual_datetime_correction,reason}'='bank_noclock_current_01'
+   AND r.raw_read#>>'{manual_datetime_correction,bank_time_precision}'='minute'
+   AND r.sent_at=p_sent_at
+   AND EXISTS(SELECT 1 FROM public.chat_bank_app_collection_links k
+     JOIN public.taphoa_agribank_notifications n ON n.id=k.notification_id
+     JOIN public.taphoa_debt_ledger l ON l.id=k.ledger_id AND l.customer_account_id=r.customer_account_id
+       AND l.entry_type='collection' AND l.amount_vnd=-(r.amount_vnd::numeric/1000)
+     WHERE k.receipt_id=r.id AND k.ledger_id=r.ledger_id
+       AND n.id::text=r.raw_read#>>'{manual_datetime_correction,bank_notice_id}'
+       AND n.package_name='com.vnpay.Agribank3g' AND n.status='credit_candidate'
+       AND n.is_own_transfer=false AND n.bank_credit_account='2901181999999'
+       AND n.amount_vnd=r.amount_vnd AND n.transfer_at AT TIME ZONE 'Asia/Ho_Chi_Minh'=r.transfer_at_vn
+       AND p_sent_at>=n.transfer_at AND p_sent_at<=n.transfer_at+interval '120 seconds')
+ THEN jsonb_build_object('source','agribank_linked_credit','date_vn',to_char(r.transfer_at_vn,'DD/MM/YYYY'),
+   'time_vn',to_char(r.transfer_at_vn,'HH24:MI'),'sent_time_vn',to_char(p_sent_at AT TIME ZONE 'Asia/Ho_Chi_Minh','HH24:MI:SS'))
+ END
+$clock$;
+REVOKE ALL ON FUNCTION v0_private.bill_verified_bank_clock(public.chat_bank_bill_receipts,timestamptz) FROM PUBLIC,anon,authenticated,service_role;
+
 -- Review-only candidate: existing private read API, no table writes or new grants.
 -- Apply only after isolated tests and separate rollout review. Preserve existing owner and ACL.
 CREATE OR REPLACE FUNCTION v0_private.admin_media(p_conversation_id uuid)
@@ -48,6 +82,7 @@ BEGIN
             ELSE btrim(r.raw_read->>'transfer_time_printed_vn') END
             = CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END
           THEN CASE WHEN r.raw_read->>'transaction_time_precision'='second' THEN to_char(r.transfer_at_vn,'HH24:MI:SS') ELSE to_char(r.transfer_at_vn,'HH24:MI') END END,
+        'bank_clock',v0_private.bill_verified_bank_clock(r,m.created_at),
         'receiving_account',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_account,200) END,'receiving_name',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_name,200) END,
         'ocr_rechecked_account',CASE WHEN memo_only.flag THEN NULL WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999' AND ar.reviewed_account='2901181999999' THEN ar.reviewed_account WHEN regexp_replace(coalesce(r.receiving_account,''),'[[:space:]]','','g')='290118199999'
           AND r.raw_read->'account_digit_recheck'->>'source'='independent_focused_vision'
@@ -71,7 +106,7 @@ BEGIN
         'transfer_reference',left(r.transfer_reference,200),'sending_bank',left(r.sending_bank,200),'receiving_bank',CASE WHEN memo_only.flag THEN NULL ELSE left(r.receiving_bank,200) END
       ) END AS bill_receipt
     FROM public.v21_media_assets a
-    JOIN (SELECT id FROM public.v21_messages WHERE conversation_id=p_conversation_id AND deleted_at IS NULL ORDER BY created_at DESC,id DESC LIMIT 100) m ON m.id=a.message_id
+    JOIN (SELECT id,created_at FROM public.v21_messages WHERE conversation_id=p_conversation_id AND deleted_at IS NULL ORDER BY created_at DESC,id DESC LIMIT 100) m ON m.id=a.message_id
     LEFT JOIN public.chat_bank_bill_receipts r ON r.media_asset_id=a.id AND r.message_id=a.message_id
       AND r.customer_account_id=a.owner_account_id AND r.customer_account_id<>me
       AND EXISTS(SELECT 1 FROM public.v21_conversations c WHERE c.id=p_conversation_id AND r.customer_account_id IN(c.member_a,c.member_b))
