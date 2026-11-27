@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.262)
+## 00. Chỉ mục rule đang có hiệu lực (v13.263)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1933,3 +1933,11 @@ All active linked Zalo users; trusted server metadata only; Contact/Message/Popu
 - E0 exact #272 head 315cf8b cache-browser job 140388274217: 24/24 geometry checks no issues in the tested visible primary regions, but all 24 OwnerRuntime and FamilyRegistry calls ReferenceError; public audit functions absent; S4 0/7 controls in registry scope, 6/7 declared. No conclusion that all live geometry or native devices pass.
 - E1 move existing pure TableController, Motion, Responsive, State, Theme and frozen OwnerRuntime declarations unchanged to shared boundary before live/demo dispatch. Demo initialization and existing detailed demo diagnostics remain; live explicit apicheck=1 exposes aggregate counts only, no IDs/classes/text or arbitrary element access. FamilyRegistry.auditNodes extends the same audit selector to S4 root/descendants. S4 buttons bind existing Button; native select, details/summary, report, option and container explicitly PROVISIONAL Diagnostic with roles, not fictitious Input profile. No new geometry, keyboard or scroll writer. Other undeclared/provisional nodes remain visible in counts, not suppressed. No production data/auth/SQL or cache policy changes.
 - Test: 24 states on Chromium/WebKit, assert OwnerRuntime initialized, no MISSING-PARENT, S4 7/7 included and declared parent, zero geometry issues in existing checks, aggregate-only live diagnostics, wrong-parent negative control. Retain existing demo checks. Seven classic scripts parse, four KB-LOCK ranges byte-identical against v13.261. Sources reread Astryx Stack c56d72759ad2f6f86102228e22c3123530b32894 and Adobe Virtualizer 3959c1cc7666f0384d31af2c770c6902662cdcb1 in preceding audit; reuse existing ownership. RULE-GATE, GEO-MOBILE-01a, RULE-AUDIT-01a, KB-LOCK apply. E2/E3/E4 pending; rollback v13.261. Cache metadata default stays off pending E4.
+
+
+## QUICK-MESSAGE-01 (v13.263 candidate)
+- QUICK-01: QuickMessageAPI owns template registry only; native Popup, Input and Button remain owners of controls. Slash at start opens one existing dialog, selection inserts draft only; never submit or bypass ACK/idempotency. No extra geometry, inset or focus calls. Native keyboard acceptance pending.
+- QUICK-02: Template store and explicitly operator-confirmed account settings scoped to current session, not persisted or synchronized; no OCR-derived account, no external QR service. Missing verified settings block STK. QR disabled until real media transport and verified QR source; business templates unavailable until authorized reads. Recheck session, room and original draft before applying. Demo isolated.
+- QUICK-03: Validate aliases, reserve business commands, cap templates and body, explicit create/edit/delete, preserve four KB-LOCK ranges. CI fixture only, no real messages or finance writes.
+
+- QUICK-04: Per-tab sessionStorage envelope schema 1 keyed to approved account, validates template and recipient fields at restore, replaces old account envelope, clears on explicit logout. F5 in same session retains templates; never claim durable multi-device persistence. Storage errors degrade to memory only. Demo never uses live envelope. No media or finance mutation.
