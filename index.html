@@ -3335,7 +3335,7 @@ function mountLiveChat(root){
   }catch{if(scope===owner&&pending.get(id)?.key===key){pending.set(id,{key,body,message:LiveChatSnapshotPolicy.localMessage(key,body,at,true)});liveDirectoryHints.delete(id);renderDirectory();if(selected===id){if(!draft.value.trim())draft.value=body;const node=thread.querySelector('[data-live-message-id="'+CSS.escape(message.id)+'"]');const meta=node?.querySelector('[data-ui-slot~="meta"]');if(meta){meta.textContent='!';meta.dataset.sendError='true'};setSendStatus('Chưa xác nhận gửi. Bấm Gửi để thử lại cùng tin.')}else if(!drafts.get(id))drafts.set(id,body)}}
   finally{if(scope===owner){sending=false;updateComposer();if(liveSyncDirty)wakeLiveSync(owner)}}
  }
- async function signout(){try{QuickMessageAPI.forget(sessionStorage)}catch{}eraseBillProgress();const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();try{const result=await client?.auth.signOut({scope:'local'});if(result?.error)throw result.error;show('guest');status.textContent='Đã đăng xuất.'}catch{bootStatus.textContent='Chưa xác nhận đăng xuất. Thử lại.';retryBoot.hidden=false}}
+ async function signout(){eraseBillProgress();try{QuickMessageAPI.forget(sessionStorage)}catch{}const k=viewKey();if(k)try{sessionStorage.removeItem(k)}catch{}clear();try{const result=await client?.auth.signOut({scope:'local'});if(result?.error)throw result.error;show('guest');status.textContent='Đã đăng xuất.'}catch{bootStatus.textContent='Chưa xác nhận đăng xuất. Thử lại.';retryBoot.hidden=false}}
  login.addEventListener('submit',e=>{e.preventDefault();void connect(true)});
  // Restore only this origin's authenticated admin session, never import a CHAT token.
  void connect(false);
