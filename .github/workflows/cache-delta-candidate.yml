@@ -1,0 +1,15 @@
+name: CACHE-LIFECYCLE-01 delta policy candidate
+on:
+  pull_request:
+    paths: ['references/cache-lifecycle-01/**', '.github/workflows/cache-delta-candidate.yml']
+permissions:
+  contents: read
+jobs:
+  delta-policy:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test references/cache-lifecycle-01/delta-policy.test.cjs
