@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.248)
+## 00. Chỉ mục rule đang có hiệu lực (v13.249)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -1838,3 +1838,9 @@ S2: fixed media slot geometry in MediaController; 1–4 images and error/retry; 
 
 ### CALLBACK-01 — Zalo missed call
 All active linked Zalo users; trusted server metadata only; Contact/Message/Popup/Input/Button owners. Phone in scoped memory only, no keyboard or scroll owner changes. Auto-reply disabled until backend acceptance.
+
+
+## SNAPSHOT-01 — Nội dung đã biết không được rơi về trạng thái chưa tải (v13.249 candidate)
+- Parent LiveChatSnapshotPolicy: snapshot phải giữ metadata media và callback ID cùng scope tài khoản/hội thoại; không ghi phone, token hoặc quyền gọi vào cache. Khi metadata chưa về, không chiếu tin media-only chưa biết hoặc cuộc gọi chưa phân loại thành dòng text giả; dữ liệu đã biết giữ nguyên khi RPC lỗi. Prefetch giới hạn 3 hội thoại, dùng RPC hiện hữu, chỉ lưu snapshot đủ inventory và phân loại.
+- Message/Media là projection con; callback ID cached chỉ dùng hiển thị, thao tác gọi luôn kiểm tra scope và quyền server. Khi chưa có phone state xác thực trong RAM, đọc lại và yêu cầu thao tác Gọi rõ ràng. Thay đổi loại callback là structural projection, giao ScrollController hiện hữu. Popup mở thì hoãn cập nhật nền hội thoại, khi đóng đánh thức sync hiện hữu. Input native giữ paste/selection; Dán số chỉ đọc clipboard khi bấm, không tự lưu/gọi. Không thay API bàn phím, không viết scrollTop, không thêm owner viewport.
+- Native Safari/PWA và ảnh cold cache/F5 không được coi đã đạt chỉ vì fixture; chưa có durable blob cache nên không hứa ảnh chưa lưu hoặc đã bị evict hiện tức thì.
