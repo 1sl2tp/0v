@@ -1964,3 +1964,7 @@ E2 PR #278 exact head 6c9b086: 3/3 successful; browser job 140448029809 Chromium
 
 ### INPUT-UNIFIED-01a v13.266 candidate
 Draft.bind(el,context) creates a text transaction adapter for each current QuickMessage attachment. capture() issues immutable session/room/navigation epoch/revision/original text/selection token. valid() rejects stale tokens, composition, disabled/read-only; insert(token,{text,mode}) uses native setRangeText, exact slash replacement or captured selection, max 8000, consumes successful token and emits one input event; applying guard blocks recursive slash triggers. No focus, resize, viewport, send, media, storage or financial writes. Existing native typing remains owner; no claim that native undo is preserved across programmatic setRangeText. QuickMessage uses adapter for templates and verified STK text only; QR stays blocked. Existing draft restore and send paths unchanged. Attachment migration, profile policy, undo/native E4 and full matrix remain pending.
+
+
+## WORK-PARENT-01 — đề xuất vòng đời công việc (lab, chưa active)
+Đọc [references/WORK-PARENT-01.md](references/WORK-PARENT-01.md). Nhóm KH = customer; NCC A Anh Đạt, thuốc lá, hàng U, xác nhận ID trước live. Một card cha cho một mục tiêu, trạng thái derive từ bước con. Không thay owner hiện có hoặc quyền tài chính. Chưa tích hợp Main; KB-LOCK và 4 vùng protected giữ nguyên. Chưa nghiệm thu production.
