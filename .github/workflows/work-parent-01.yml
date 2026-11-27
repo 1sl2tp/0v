@@ -1,0 +1,19 @@
+name: WORK-PARENT-01 isolated lab
+on:
+  pull_request:
+    paths:
+      - 'labs/work-parent-01/**'
+      - 'references/WORK-PARENT-01.md'
+      - '.github/workflows/work-parent-01.yml'
+permissions:
+  contents: read
+jobs:
+  synthetic-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node labs/work-parent-01/work-lifecycle.test.mjs
+      - run: node audit-design.cjs
