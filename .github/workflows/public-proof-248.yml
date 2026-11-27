@@ -1,0 +1,33 @@
+name: Verify public Pages v13.248
+on:
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/public-proof-248.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Compare public release manifest and bytes
+        run: |
+          python - <<'PY'
+          import urllib.request, json, hashlib, time
+          origin='https://1sl2tp.github.io/0v/'
+          expected='v13.248'
+          blob='4b07e7db9c9a293a25c03e8338aac70aa9d2a25d'
+          def read(path):
+              req=urllib.request.Request(origin+path+'?_proof='+str(time.time_ns()),headers={'Cache-Control':'no-cache','User-Agent':'0v-public-proof'})
+              with urllib.request.urlopen(req,timeout=15) as r:
+                  if r.status!=200: raise RuntimeError('Unexpected HTTP status')
+                  return r.read()
+          def git_blob(data):
+              return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          manifest=json.loads(read('version.json'))
+          index=read('index.html')
+          snapshot=read('release-v13.248.html')
+          print(json.dumps({'expected':expected,'publicVersion':manifest.get('version'),'publicManifestBlob':manifest.get('gitBlobSha'),'indexBlob':git_blob(index),'snapshotBlob':git_blob(snapshot)}))
+          assert manifest.get('version')==expected and manifest.get('gitBlobSha')==blob and git_blob(index)==blob and git_blob(snapshot)==blob, 'Public version or bytes do not match'
+          PY
