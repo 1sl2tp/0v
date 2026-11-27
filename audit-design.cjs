@@ -409,6 +409,23 @@ result.checks.liveCacheMediaKnowledge=cachedCoverage&&billAuditSrc.includes('kno
 const ackMsg={id:'a',date:2,text:'ack'},serverMsg={id:'a',date:3,text:'server'};result.checks.liveConfirmedMerge=lp.mergeConfirmed([{id:'b',date:1}],[ackMsg]).map(m=>m.id).join(',')==='b,a'&&lp.mergeConfirmed([serverMsg],[ackMsg])[0].text==='server'&&lp.readContext({visible:true,focused:true,screen:'chat',pending:false,overlay:false,room:'r'})&&!lp.readContext({visible:true,focused:true,screen:'chat',pending:false,overlay:true,room:'r'});result.pass=result.pass&&result.checks.liveConfirmedMerge;
 const localProjection=lp.localMessage('k','abc',1000),failedProjection=lp.localMessage('k','abc',1000,true);result.checks.liveInstantMessage=localProjection.id==='pending:k'&&localProjection.text==='abc'&&localProjection.mine===true&&failedProjection.time==='!'&&lp.mergeConfirmed([],[localProjection]).length===1;result.pass=result.pass&&result.checks.liveInstantMessage;
 
+const draftSource=billAuditSrc.slice(billAuditSrc.indexOf('const Draft=Object.freeze({'),billAuditSrc.indexOf('/* QUICK-MESSAGE-01:'));
+const draftAPI=new Function(draftSource+';return Draft')();
+function draftTransactionCheck(){
+ const handlers={},node={value:'abc DEF xyz',selectionStart:4,selectionEnd:7,addEventListener(k,f){(handlers[k]??=[]).push(f)},setRangeText(t,a,b){this.value=this.value.slice(0,a)+t+this.value.slice(b);this.selectionStart=this.selectionEnd=a+t.length}};
+ let session={},room='r',epoch=1,ime=false,notices=0;
+ const emit=k=>{for(const f of handlers[k]||[])f()};
+ const ed=draftAPI.bind(node,()=>({session,room,epoch}),{composing:()=>ime,notify:()=>{notices++;emit('input')}});
+ let t=ed.capture();if(!ed.insert(t,{text:'Việt'})||node.value!=='abc Việt xyz'||node.selectionStart!==8||notices!==1||ed.insert(t,{text:'again'}))return false;
+ node.value='/camon';node.selectionStart=node.selectionEnd=6;emit('input');t=ed.capture();if(!ed.insert(t,{text:'Cảm ơn!',mode:'slash'})||node.value!=='Cảm ơn!'||notices!==2)return false;
+ t=ed.capture();if(ed.insert(t,{text:'x',mode:'slash'}))return false;
+ epoch++;if(ed.insert(t,{text:'x'}))return false;t=ed.capture();room='other';if(ed.insert(t,{text:'x'}))return false;t=ed.capture();session={};if(ed.insert(t,{text:'x'}))return false;
+ t=ed.capture();emit('input');if(ed.insert(t,{text:'x'}))return false;t=ed.capture();ime=true;if(ed.insert(t,{text:'x'})||ed.capture()!==null)return false;ime=false;
+ t=ed.capture();emit('compositionstart');if(ed.insert(t,{text:'x'}))return false;t=ed.capture();node.value='other';if(ed.insert(t,{text:'x'}))return false;
+ return notices===2&&!ed.applying();
+}
+result.checks.draftTransaction=draftTransactionCheck();result.pass=result.pass&&result.checks.draftTransaction;
+
 const quickSource=billAuditSrc.slice(billAuditSrc.indexOf('const QuickMessageAPI='),billAuditSrc.indexOf('const Main=Object.freeze({'));
 const quick=new Function(quickSource+';return QuickMessageAPI')(),qa=quick.create(),qb=quick.create();
 result.checks.quickMessagePolicy=qa.resolve('stk').blocked&&qa.resolve('qr').blocked&&qa.resolve('no').blocked&&qa.save('test','hello')&&!qa.save('stk','bad')&&!qa.save('test','other')&&qa.save('test2','changed','test')&&qa.resolve('test2').text==='changed'&&qb.resolve('test2').blocked&&qa.remove('test2')&&qa.resolve('test2').blocked&&!qa.configure({institution:'Bank',number:'12345678',name:'Test'})&&qa.configure({institution:'Bank',number:'12345678',name:'Test',confirmed:true})&&qa.resolve('stk').text.includes('12345678')&&qb.resolve('stk').blocked;
