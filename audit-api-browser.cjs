@@ -412,7 +412,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.ok((await root02.innerText()).includes('OLD MEMO'));
  assert.ok((await root02.innerText()).includes('TEST LINE 2'));
  assert.equal(await pg.evaluate(()=>window.root02FixtureCalls),1);
- assert.deepEqual(await pg.evaluate(()=>window.root02FixtureBody),{conversation_id:'room',asset_id:'asset-a'});
+ assert.deepEqual(await pg.evaluate(()=>window.root02FixtureBody),{conversation_id:'room',asset_id:'asset-'+originalBytes.name.match(/BILL-bill-([abc])/)[1]});
  assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls),2);
  assert.ok(await review.getByRole('button',{name:'✓ Đã lưu xác minh',exact:true}).count());
  await pg.reload();await pg.locator('[data-simple-bill-review]').first().getByRole('button',{name:'✓ Đã lưu xác minh',exact:true}).waitFor();assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls||0),0);assert.equal(await pg.evaluate(()=>window.root02FixtureCalls||0),0);assert.equal(await pg.locator('[data-root02-comparison] .business-row').count(),0);
