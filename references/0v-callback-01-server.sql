@@ -34,7 +34,10 @@ begin
  select chat_message_id into prior from public.zalo_message_links where direction='inbound' and zalo_message_id=btrim(p_zalo_message_id);
  if prior is not null then
    -- A legacy text message is never promoted into a new callback event on replay.
-   return prior;
+   if exists(select 1 from public.zalo_message_links l join public.v21_messages m on m.id=l.chat_message_id join public.v21_conversations c on c.id=m.conversation_id
+     where l.direction='inbound' and l.chat_message_id=prior and l.zalo_id=btrim(p_zalo_id) and l.zalo_message_id=btrim(p_zalo_message_id) and l.chat_account_id=lk.chat_account_id
+       and m.deleted_at is null and m.sender_account_id=lk.chat_account_id and lk.chat_account_id in(c.member_a,c.member_b) and lk.linked_by_account_id in(c.member_a,c.member_b)) then return prior; end if;
+   return null;
  end if;
  mid:=public.v21_zalo_ingress(p_zalo_id,p_zalo_message_id,'Cuộc gọi nhỡ',p_event_at);
  if mid is null then return null; end if;
