@@ -2,7 +2,10 @@
 const {chromium,webkit}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const origin='https://1sl2tp.github.io/0v/';
-const html=fs.readFileSync('index.html','utf8');
+const sourceHTML=fs.readFileSync('index.html','utf8'),fixtureBoundary='function appShellActive(){';
+assert.equal(sourceHTML.split(fixtureBoundary).length,2);
+// Only the intercepted synthetic HTML exposes internal owners. No production global.
+const html=sourceHTML.replace(fixtureBoundary,'window.__fixtureOwners=()=>({Message,ContentAPI,MediaController,ScrollController});\n'+fixtureBoundary);
 const admin='00000000-0000-4000-8000-000000000001',peer='00000000-0000-4000-8000-000000000002',room='30000000-0000-4000-8000-000000000001';
 const ids=[1,2,3,4].map(i=>'40000000-0000-4000-8000-00000000000'+i);
 const sdk='('+function(admin,peer,room,ids){
@@ -59,6 +62,7 @@ const sdk='('+function(admin,peer,room,ids){
  const stageReport=await page.evaluate(()=>({stats:crmCacheStats(),tiles:[...document.querySelectorAll('#messages [data-image-state=ready]')].map(t=>({phase:t.dataset.imagePhase,complete:t.querySelector('img')?.complete,width:t.querySelector('img')?.naturalWidth,hidden:t.querySelector('[data-fixed-image-status]')?.hidden})),queued:document.querySelectorAll('#messages [data-live-fixed-image][data-media-paint-pending]').length}));
  assert.equal(stageReport.tiles.length,2);assert(stageReport.tiles.every(t=>t.phase==='ready'&&t.complete&&t.width>0&&t.hidden));assert.equal(stageReport.queued,0);assert(stageReport.stats.phases.cache?.count>=2);assert(stageReport.stats.phases.decode?.count>=2);assert(stageReport.stats.phases.paint?.count>=2);
  const layout=await page.evaluate(async()=>{
+  const {Message,ContentAPI,MediaController,ScrollController}=window.__fixtureOwners();
   const row=(p,t,mode='chat',kind='text',day='d')=>({dataset:{contentParty:p,contentTime:t,contentMode:mode,contentKind:kind,messageDay:day}});
   const results=[];for(const minute of [0,5,10,11]){const a=row('A','09:00','document'),b=row('A','09:'+String(minute).padStart(2,'0'));Message.flow(a,b);results.push([b.dataset.messageRhythm,b.dataset.contentDocumentRun||null])}
   const a=row('A','09:00'),b=row('B','09:01');Message.flow(a,b);const turn=b.dataset.contentShortTurn;
