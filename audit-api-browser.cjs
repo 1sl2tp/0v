@@ -146,10 +146,13 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  // Isolated synthetic two-room matrix after existing regression suites; no real data or extra production API.
  const navTwoRoomMatrix=async()=>{
    const original=pg.viewportSize(),matrix=[];
-   await pg.evaluate(()=>{sessionStorage.setItem('fixture-nav-matrix','1');sessionStorage.setItem('0v.view.v1:a',JSON.stringify({screen:'contacts',directoryScroll:0}))});
-   await pg.reload({waitUntil:'domcontentloaded'});
-   await pg.locator('#contacts [data-id=b]').waitFor({state:'visible'});
    const back=()=>pg.locator('.conversation .panel-head [data-go=contacts]').click();
+   // Use the actual route owner: pagehide persists the current screen and would overwrite a manually seeded route.
+   await back();
+   await pg.waitForFunction(()=>{const app=document.querySelector('#app'),v=JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null');return !app.hidden&&app.dataset.screen==='contacts'&&v?.screen==='contacts'});
+   await pg.evaluate(()=>sessionStorage.setItem('fixture-nav-matrix','1'));
+   await pg.reload({waitUntil:'domcontentloaded'});
+   await pg.locator('#contacts [data-id=b]').waitFor({state:'visible'}).catch(async e=>{console.error('MOBILE-NAV-01 matrix boot diagnostic',JSON.stringify(await pg.evaluate(()=>({screen:document.querySelector('#app')?.dataset.screen,appHidden:document.querySelector('#app')?.hidden,rowHidden:document.querySelector('#contacts [data-id=b]')?.hidden,query:document.querySelector('#search')?.value,saved:JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null'),calls:window.calls}))));throw e});
    const open=id=>pg.locator('#contacts [data-id='+id+']').click();
    const ready=room=>pg.waitForFunction(room=>{const app=document.querySelector('#app'),m=document.querySelector('#messages');return !app.hidden&&app.dataset.screen==='chat'&&m.dataset.liveRoom===room&&!document.querySelector('#composer').inert&&!!m.querySelector('[data-live-message-id]')},room);
    for(const width of [320,375,390,430]){
