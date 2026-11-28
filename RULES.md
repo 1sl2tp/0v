@@ -2106,3 +2106,8 @@ E0 #310 9b15010 2/2, job 140897388929, 64/64, KB baseline true; squash 0f6c39f. 
 
 ## v13.287 — GEO-SHELL-EDGE-02 (diagnostics only)
 - v13.286 passed top/frame viewport alignment 0px on both browser engines; no evidence justifies changing layout or keyboard. Existing edgecheck measured only app edges, not actual controls. Extend opt-in local `?live=1&edgecheck=1` with header/control distances, composer/frame bottom, safe-area subtraction and keyboard state. Browser warm F5 asserts actual control distances versus padding; native device and desktop measurements remain pending. No normal-route UI, viewport writer, keyboard, backend, SQL or ledger changes. OS chrome cannot be inferred from screen minus innerHeight.
+
+## MOBILE-DIRECTORY-TOP-02 — #319 phương án B (candidate; chưa phát hành)
+- Live mobile/PWA: one row group selector / shared Tất cả, Chưa đọc / existing search and utility; all seven group labels available in one existing Popup menu. Fixed group width, selected label and aria-pressed, full 44px touch targets, no horizontal filter scroll, existing safe-area ownership. Desktop keeps the nine direct filters.
+- One exclusive filter state and one renderDirectory/Collection projection; selection of a group replaces the previous filter, not AND. Reuse Button, Layout, Popup, Icon. No change to Input, viewport, focus/scroll anchor, composer, Surface protected range, backend, SQL, cache or ledger.
+- E1 staged separate branch; browser fixture 320/375/390/430 × Chromium/WebKit, each group via actual click, primary selection, Escape, stable list top and non-overlap, desktop 1024/1440. Must pass full CI 5/5, confirm Pages of predecessor and native device acceptance separately. No version bump until promoted to a coherent release.
