@@ -468,3 +468,12 @@ v13.270 E2 CI 5/5, Pages deployment success 46081699866 at bf16345; E4 BLOCKED. 
 
 ### MOBILE-MEDIA-VIEW-01 v13.272 / #291
 v13.271 CI 5/5 + Pages success 46085450245 at 569e7be; E4 BLOCKED. Approved 28/11/2026. Candidate quiet cache progress, ready-only viewer, fit swipe and history anchor restore. Tests added; CI pending, isolated cold/warm metrics and native gesture/device evidence pending.
+
+
+
+## MOBILE-POPUP-01 — v13.273
+- Mobile <=767px: Popup parent sets explicit level width caps (300/320/360/640px), 12px inset/pad, 8px gap, min 44px button via existing touch token, one Surface edge, existing typography. Content wraps and scrolls; legitimate content/viewport height changes remain allowed. Directory anchor uses popup viewport, callback has reserved caption space. Media stage keeps its gesture/layout owner and existing cache.
+- Popup.open optional validated profile directory/menu or callback/form assigned before showModal; PopupController primes its own rect before showing and retains one RAF/listener lifecycle and native close/focus. No new root/focus/scroll/keyboard writer, no new dialog owner or background mutation. Retain same room/draft and current ScrollController/media anchor. Four KB ranges unchanged.
+- CI: 32 synthetic live parent cases, 4 widths × 4 levels × Chromium/WebKit; bounds, first/stable geometry, width on content change, touch targets, busy/close/focus, draft and scroll; retain actual directory/callback/viewer regression. Physical Safari/PWA/Android IME and paste/gesture acceptance separate. Rollback v13.272.
+
+- v13.272 E2 CI 5/5, E3 Pages deployment 46087896854 at 4fd443e success; viewer 8/8 anchor drift 0, warm fixture 0 bytes. Native E4 blocked. User approved all eight scope items; v13.273 candidate pending E2.
