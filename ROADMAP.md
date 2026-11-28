@@ -491,3 +491,10 @@ v13.271 CI 5/5 + Pages success 46085450245 at 569e7be; E4 BLOCKED. Approved 28/1
 - Test Chromium/WebKit 320/375/390/430, interior return and reject vertical/left/multi/cancel/selection/media/composer; preserve draft on reopen, existing edge/outside/anchor/2-room/long-press and media tests retained. Synthetic touch events, not physical Safari/PWA. Rollback v13.274.
 
 - v13.274 E2 CI 5/5, 16/16 A/B exact clipboard mock, E3 Pages 46089777737 success 00aeb7e; E4 BLOCKED. User reports swipe failure, approved fix v13.275; E2 pending.
+
+
+## MOBILE-NOTIFY-UI-01 — v13.276
+- User approved 8/8. Contact.projectUnread owns projection only: explicit positive safe integer or unknown dot, zero clears, invalid numeric cannot clear known badge; one keyed badge, exact accessible count, visual cap 99+, repeat same value does not mutate. Mobile avatar grid cell centered then bottom-aligned by avatar size token, fixed 16px count/10px dot, no transition or pointer interception; name/preview/time tracks and row height fixed. Contact.projectRoute distinguishes open chat from last selected directory row (aria-current only open), no extra notification effect, receipt/Push/ACK remains existing ReadStateController/NotificationController unchanged.
+- Demo receive/typing controls blocked on live including typingtest query, no live typing signal proven so no invented state. Does not activate actual typing or additional alerts. Tests Chromium/WebKit 320/375/390/430: dot/1/9/99/123/10000/0, avatar bounds, fixed row/preview/time/identity, repeat no mutation, invalid guard, correct route, demo blocked. Retain actual scoped delayed ACK and NotificationController regression; physical device/multi-device Push not proven. Rollback v13.275.
+
+- v13.275 E2 5/5; 8/8 nav matrix; E3 Pages 46090770382 success 7338b02; E4 BLOCKED. Approved MOBILE-NOTIFY-UI-01; E2 pending.
