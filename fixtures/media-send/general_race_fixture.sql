@@ -26,7 +26,7 @@ begin
  select * into r from forward_fixture.committed where room=p_room and sha=p_sha and bytes=p_bytes;
  if found then
   -- Never return another actor's canonical ACK as this caller's own send.
-  response:=jsonb_build_object('state','already_present','room',p_room,'sha256',p_sha,'size',p_bytes,'client_id',p_key);
+  response:=jsonb_build_object('state','already_present','account',p_actor,'room',p_room,'sha256',p_sha,'size',p_bytes,'mime',p_mime,'client_id',p_key);
  else
   insert into forward_fixture.committed(actor,client_key,room,sha,bytes,mime) values(p_actor,p_key,p_room,p_sha,p_bytes,p_mime) returning * into r;
   response:=jsonb_build_object('state','committed','account',r.actor,'client_id',r.client_key,'room',r.room,'sha256',r.sha,'size',r.bytes,'mime',r.mime,'message_id',r.message_id,'asset_id',r.asset_id);
