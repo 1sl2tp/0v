@@ -251,8 +251,25 @@ async function cacheFirstPriorityProof(){
    for(const k of ['row','avatar','name','preview','time'])for(const prop of ['x','y','w','h'])assert(near(a[k][prop],b[k][prop]),JSON.stringify({width,k,prop,result}));
    const badgeProof=await pg.evaluate(()=>{const row=document.querySelector('#contacts [data-id=c]'),old=row.querySelector('.unread-count'),prior=old?(old.dataset.unreadKind==='dot'?'•':Number(old.textContent)):0;const measure=()=>row.getBoundingClientRect().height;const initial=measure();try{window.__fixtureContactUpdate(row,{unread:1});const first=row.querySelector('.unread-count');window.__fixtureContactUpdate(row,{unread:123});const second=row.querySelector('.unread-count'),after=measure(),content=getComputedStyle(second,'::after').content;window.__fixtureContactUpdate(row,{unread:0});return {same:first===second,initial,after,overflow:second.dataset.unreadOverflow,full:second.getAttribute('aria-label'),content,cleared:!row.querySelector('.unread-count')}}finally{window.__fixtureContactUpdate(row,{unread:prior})}});
    assert(badgeProof.same&&near(badgeProof.initial,badgeProof.after)&&badgeProof.overflow==='true'&&badgeProof.full.includes('123')&&badgeProof.content.includes('99+')&&badgeProof.cleared,JSON.stringify(badgeProof));
+   // MOBILE-DIRECTORY-TOP-02: use actual mobile UI, never hidden filter clicks.
+   const topProof=()=>pg.evaluate(()=>{const d=document.querySelector('.directory'),f=d.querySelector('.filters'),l=d.querySelector('.contacts'),ids=['#directoryGroupButton','[data-filter="Tất cả"]','[data-filter="Chưa đọc"]','#searchToggle','#directoryMenuButton'],boxes=ids.map(k=>{const n=d.querySelector(k),r=n.getBoundingClientRect();return {k,x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}}),r=d.getBoundingClientRect();return {width:innerWidth,top:l.getBoundingClientRect().top,overflow:f.scrollWidth-f.clientWidth,valid:boxes.every(b=>b.w>=43.9&&b.h>=43.9&&b.x>=r.left-1&&b.right<=r.right+1)&&boxes.every((b,i)=>!i||boxes[i-1].right<=b.x+1),boxes}});
+   const initialTop=await topProof();assert(initialTop.valid&&initialTop.overflow<=1,JSON.stringify(initialTop));
+   const group=pg.locator('#directoryGroupButton'),menu=pg.getByRole('dialog',{name:'Nhóm danh bạ',exact:true});
+   for(const label of ['KH','CM','Bạn bè','Khác','NCC','NV','Nhóm']){
+     await group.click();await menu.waitFor({state:'visible'});await menu.getByRole('button',{name:label,exact:true}).click();await menu.waitFor({state:'hidden'});
+     await pg.waitForFunction(label=>document.querySelector('#directoryGroupButton')?.dataset.selectedGroup===label,label);
+     assert.equal(await group.getAttribute('aria-pressed'),'true');assert.equal(await group.textContent(),label);
+     assert.equal(await pg.locator('[data-filter][aria-pressed=true]').count(),1);
+     const afterTop=await topProof();assert(afterTop.valid&&afterTop.overflow<=1&&near(initialTop.top,afterTop.top),JSON.stringify(afterTop));
+   }
+   await group.click();await menu.waitFor({state:'visible'});await pg.keyboard.press('Escape');await menu.waitFor({state:'hidden'});await pg.waitForFunction(()=>document.querySelector('#directoryGroupButton').getAttribute('aria-expanded')==='false');
+   assert.equal(await group.getAttribute('aria-pressed'),'true');
+   for(const label of ['Chưa đọc','Tất cả']){await pg.locator('[data-filter="'+label+'"]').click();assert.equal(await group.getAttribute('aria-pressed'),'false');assert.equal(await pg.locator('[data-filter="'+label+'"]').getAttribute('aria-pressed'),'true');const afterTop=await topProof();assert(afterTop.valid&&afterTop.overflow<=1&&near(initialTop.top,afterTop.top),JSON.stringify(afterTop))}
+   await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});
+   console.log('MOBILE-DIRECTORY-TOP-02 '+(webkitTail?'WebKit':'Chromium')+' PASS',JSON.stringify({width,groups:7,primary:2,top:initialTop}));
    directoryBaseline.push(result);
  }
+ for(const width of [1024,1440]){await pg.setViewportSize({width,height:844});assert.equal(await pg.locator('#directoryGroupButton').isVisible(),false);for(const label of ['Tất cả','Chưa đọc','KH','CM','Bạn bè','Khác','NCC','NV','Nhóm']){const b=pg.locator('[data-filter="'+label+'"]');assert(await b.isVisible());await b.click();assert.equal(await b.getAttribute('aria-pressed'),'true')}await pg.locator('[data-filter="Tất cả"]').click();console.log('MOBILE-DIRECTORY-TOP-02 desktop PASS '+width)}
  if(directoryViewport)await pg.setViewportSize(directoryViewport);
  console.log('MOBILE-DIRECTORY-01 E1 live directory geometry (fixture)',JSON.stringify(directoryBaseline));
  const navMatrix=[];const navViewport=pg.viewportSize();for(const width of [320,375,390,430]){await pg.setViewportSize({width,height:844});
