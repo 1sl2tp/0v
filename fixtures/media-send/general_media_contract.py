@@ -89,6 +89,7 @@ def validate_receipt(m, receipt):
             "sha256":m.sha256,"sizeBytes":m.size}
     if state=="committed":
         result["messageId"]=validate_ack(m,receipt)
+        result["destinationAssetId"]=m.asset_id
     elif state=="already_present":
         if receipt.get("message_id") is not None or receipt.get("asset_id") is not None:
             raise ValueError("duplicate receipt contains message identity")
