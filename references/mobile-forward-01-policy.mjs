@@ -50,7 +50,7 @@ export async function executeForward({preview,readInventory,sendOfficialImage,is
    if(!ack||ack.clientId!==item.clientId||ack.destinationRoom!==current.destinationRoom||ack.sha256!==item.sha256||ack.sizeBytes!==item.sizeBytes)fail('unverified_ack');
    if(ack.state==='already_present'){
     // Authorized canonical duplicate receipt, never a new send ACK.
-    if(ack.messageId!=null)fail('unexpected_duplicate_message');
+    if(ack.messageId!=null||ack.destinationAssetId!=null||ack.assetId!=null)fail('unexpected_duplicate_identity');
     skippedDuringSend++;
    }else if(ack.state==='committed'&&validId(ack.messageId)){confirmed++}
    else fail('unverified_ack');
