@@ -21,3 +21,17 @@ echo '0v isolated bill-read permission and projection checks passed'
 
 psql -X -v ON_ERROR_STOP=1 -f fixtures/bank-db/callback-01-test.sql
 echo 'CALLBACK-01 server fixture passed'
+
+# Additional media acceptance, CI-only, after ALL original bank assertions pass.
+# Use the ephemeral local PostgreSQL service, but a separate database.
+if [[ -f fixtures/media-send/general_race_fixture.sh ]]; then
+  echo 'MEDIA-SEND independent database fixture start'
+  test "$(psql -X -Atc 'select current_database()')" = bank_fixture_ci
+  psql -X -v ON_ERROR_STOP=1 -c 'CREATE DATABASE forward_fixture_ci'
+  bash fixtures/media-send/general_race_fixture.sh
+  test "$(psql -X -Atc 'select current_database()')" = bank_fixture_ci
+  echo 'MEDIA-SEND independent database fixture PASS'
+  python3 -m venv "$tmp/media-venv"
+  "$tmp/media-venv/bin/python" -m pip install --only-binary=:all: Pillow==13.0.0
+  "$tmp/media-venv/bin/python" -m unittest discover -s fixtures/media-send -p 'test_general*.py' -v
+fi
