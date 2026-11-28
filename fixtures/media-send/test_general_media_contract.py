@@ -1,5 +1,8 @@
 import unittest
-from general_media_contract import make_manifest,validate_ticket,validate_verified_object,validate_ack,validate_receipt,validate_source_snapshot
+from hashlib import sha256
+from io import BytesIO
+from PIL import Image
+from general_media_contract import make_manifest,validate_ticket,validate_verified_object,validate_ack,validate_receipt,validate_source_snapshot,validate_storage_evidence
 def id(n): return "00000000-0000-4000-8000-"+str(n).zfill(12)
 def manifest(**extra):
     return make_manifest(**({"account":id(1),"room":id(2),"source_asset":id(3),"sha256":"a"*64,"size":100,"mime":"image/jpeg"}|extra))
@@ -54,4 +57,20 @@ class MediaContract(unittest.TestCase):
             with self.assertRaises(ValueError): validate_source_snapshot(m,room,session,s,s|patch)
             with self.assertRaises(ValueError): validate_source_snapshot(m,room,session,s|patch,s)
         with self.assertRaises(ValueError): validate_source_snapshot(m,m.room,session,s,s)
+    def test_storage_evidence_exact_original_bytes_and_versions(self):
+        for fmt,mime in (("JPEG","image/jpeg"),("PNG","image/png")):
+            buf=BytesIO(); Image.new("RGB",(32,24),(22,44,66)).save(buf,format=fmt)
+            data=buf.getvalue(); m=manifest(sha256=sha256(data).hexdigest(),size=len(data),mime=mime)
+            room=id(10); session=id(5); user=id(7)
+            s={"viewer_account":m.account,"session":session,"room":room,"asset_id":m.source_asset,"sha256":m.sha256,"size":m.size,"mime":m.mime,"message_id":id(6),"object_id":id(11),"object_version":"s1","storage_key":"synthetic-source","authorized":True,"deleted":False}
+            t={"storage_key":m.storage_key,"owner":user,"sha256":m.sha256,"size":m.size,"mime":m.mime,"object_id":id(8),"object_version":"t1","width":32,"height":24}
+            def check(sb=s,sa=s,sd=data,tb=t,ta=t,td=data):
+                return validate_storage_evidence(m,room,session,user,sb,sa,sd,tb,ta,td)
+            self.assertEqual(check()["object_version"],"t1")
+            for patch in ({"object_version":"t2"},{"object_id":id(9)},{"owner":id(9)},{"storage_key":"other"},{"size":m.size+1},{"sha256":"b"*64},{"mime":"image/gif"}):
+                with self.assertRaises(ValueError): check(ta=t|patch)
+            with self.assertRaises(ValueError): check(sa=s|{"authorized":False})
+            with self.assertRaises(ValueError): check(sd=data[:-1])
+            with self.assertRaises(ValueError): check(td=data[:-1]+bytes([data[-1]^1]))
+            with self.assertRaises(ValueError): check(tb=t|{"width":31},ta=t|{"width":31})
 if __name__=="__main__": unittest.main()
