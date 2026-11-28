@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.287)
+## 00. Chỉ mục rule đang có hiệu lực (v13.288)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -2106,3 +2106,8 @@ E0 #310 9b15010 2/2, job 140897388929, 64/64, KB baseline true; squash 0f6c39f. 
 
 ## v13.287 — GEO-SHELL-EDGE-02 (diagnostics only)
 - v13.286 passed top/frame viewport alignment 0px on both browser engines; no evidence justifies changing layout or keyboard. Existing edgecheck measured only app edges, not actual controls. Extend opt-in local `?live=1&edgecheck=1` with header/control distances, composer/frame bottom, safe-area subtraction and keyboard state. Browser warm F5 asserts actual control distances versus padding; native device and desktop measurements remain pending. No normal-route UI, viewport writer, keyboard, backend, SQL or ledger changes. OS chrome cannot be inferred from screen minus innerHeight.
+
+## v13.288 — MOBILE-DIRECTORY-TOP-02 — #319 phương án B (candidate; chưa phát hành)
+- Live mobile/PWA: one row group selector / shared Tất cả, Chưa đọc / existing search and utility; all seven group labels available in one existing Popup menu. Fixed group width, selected label and aria-pressed, full 44px touch targets, no horizontal filter scroll, existing safe-area ownership. Desktop keeps the nine direct filters.
+- One exclusive filter state and one renderDirectory/Collection projection; selection of a group replaces the previous filter, not AND. Reuse Button, Layout, Popup, Icon. No change to Input, viewport, focus/scroll anchor, composer, Surface protected range, backend, SQL, cache or ledger.
+- E1 promoted to release candidate on main v13.287; browser fixture 320/375/390/430 × Chromium/WebKit, each group via actual click, primary selection, Escape, stable list top and non-overlap, desktop 1024/1440. Must pass full CI 5/5, confirm Pages of predecessor and native device acceptance separately. Version and three HTML entry/snapshot files synchronized; CI pending. Predecessor e0981d4 CI 5/5 merged; Pages E3 pending direct/deployment evidence.
