@@ -24,14 +24,25 @@ echo 'CALLBACK-01 server fixture passed'
 
 # Additional media acceptance, CI-only, after ALL original bank assertions pass.
 # Use the ephemeral local PostgreSQL service, but a separate database.
-if [[ -f fixtures/media-send/general_race_fixture.sh ]]; then
-  echo 'MEDIA-SEND independent database fixture start'
-  test "$(psql -X -Atc 'select current_database()')" = bank_fixture_ci
-  psql -X -v ON_ERROR_STOP=1 -c 'CREATE DATABASE forward_fixture_ci'
-  bash fixtures/media-send/general_race_fixture.sh
-  test "$(psql -X -Atc 'select current_database()')" = bank_fixture_ci
-  echo 'MEDIA-SEND independent database fixture PASS'
-  python3 -m venv "$tmp/media-venv"
-  "$tmp/media-venv/bin/python" -m pip install --only-binary=:all: Pillow==13.0.0
-  "$tmp/media-venv/bin/python" -m unittest discover -s fixtures/media-send -p 'test_general*.py' -v
-fi
+# Fail closed: media acceptance is mandatory once this fixture is present on main.
+for required in general_race_fixture.sh general_race_fixture.sql general_image_verify.py general_media_contract.py test_general_image_verify.py test_general_media_contract.py png_verify.py; do
+  test -f "fixtures/media-send/$required"
+done
+echo 'MEDIA-SEND independent database fixture start'
+test "$(psql -X -Atc 'select current_database()')" = bank_fixture_ci
+psql -X -v ON_ERROR_STOP=1 -c 'CREATE DATABASE forward_fixture_ci'
+bash fixtures/media-send/general_race_fixture.sh
+test "$(psql -X -Atc 'select current_database()')" = bank_fixture_ci
+echo 'MEDIA-SEND independent database fixture PASS'
+python3 -m venv "$tmp/media-venv"
+"$tmp/media-venv/bin/python" -m pip install --only-binary=:all: Pillow==13.0.0
+"$tmp/media-venv/bin/python" - <<'PY'
+import sys, unittest
+suite = unittest.defaultTestLoader.discover("fixtures/media-send", pattern="test_general*.py")
+count = suite.countTestCases()
+if count < 16:
+    sys.exit(f"MEDIA-SEND incomplete test discovery: {count} < 16")
+result = unittest.TextTestRunner(verbosity=2).run(suite)
+if not result.wasSuccessful() or result.testsRun != count or result.skipped or result.expectedFailures:
+    sys.exit("MEDIA-SEND incomplete or failed execution")
+PY
