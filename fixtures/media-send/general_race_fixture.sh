@@ -21,6 +21,17 @@ wait "$c";wait "$d"
 test "$(grep -h -c '"state": "committed"' "$tmp/c" "$tmp/d" | awk '{s+=$1} END{print s}')" = 1
 test "$(grep -h -c '"state": "already_present"' "$tmp/c" "$tmp/d" | awk '{s+=$1} END{print s}')" = 1
 test "$(psql -X -Atc "select count(*) from forward_fixture.committed where room='roomB'")" = 1
+# A duplicate receipt must replay identically, and cannot be reused for new bytes.
+if grep -q '"state": "already_present"' "$tmp/c"; then
+ duplicate_actor=actorA; duplicate_key=keyB; duplicate_file="$tmp/c"
+else
+ duplicate_actor=actorB; duplicate_key=keyC; duplicate_file="$tmp/d"
+fi
+post "$duplicate_actor" "$duplicate_key" roomB b >"$tmp/duplicate_replay"
+cmp "$duplicate_file" "$tmp/duplicate_replay"
+if post "$duplicate_actor" "$duplicate_key" roomB c >"$tmp/duplicate_conflict" 2>&1;then echo 'expected duplicate receipt conflict';exit 1;fi
+grep -q manifest_conflict "$tmp/duplicate_conflict"
+test "$(psql -X -Atc "select count(*) from forward_fixture.receipt where room='roomB'")" = 2
 if post actorA keyA roomA c >"$tmp/conflict" 2>&1;then echo 'expected manifest conflict';exit 1;fi
 grep -q manifest_conflict "$tmp/conflict"
 psql -X -qAt -v ON_ERROR_STOP=1 <<'SQL'
@@ -29,6 +40,7 @@ select forward_fixture.commit_mock('actorA','keyD','roomC',repeat('d',64),100,'i
 rollback;
 SQL
 test "$(psql -X -Atc "select count(*) from forward_fixture.committed where room='roomC'")" = 0
+test "$(psql -X -Atc "select count(*) from forward_fixture.receipt where room='roomC'")" = 0
 post actorA keyD roomC d >"$tmp/retry"
 grep -q '"state": "committed"' "$tmp/retry"
-echo 'PASS: same-key ACK, cross-actor dedup, manifest conflict, rollback/retry'
+echo 'PASS: same-key ACK, cross-actor dedup, duplicate receipt replay/conflict, rollback/retry'
