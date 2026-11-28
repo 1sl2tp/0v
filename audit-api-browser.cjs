@@ -254,6 +254,16 @@ async function cacheFirstPriorityProof(){
    // MOBILE-DIRECTORY-TOP-02: use actual mobile UI, never hidden filter clicks.
    const topProof=()=>pg.evaluate(()=>{const d=document.querySelector('.directory'),f=d.querySelector('.filters'),l=d.querySelector('.contacts'),ids=['#directoryGroupButton','[data-filter="Tất cả"]','[data-filter="Chưa đọc"]','#searchToggle','#directoryMenuButton'],boxes=ids.map(k=>{const n=d.querySelector(k),r=n.getBoundingClientRect();return {k,x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}}),r=d.getBoundingClientRect();return {width:innerWidth,top:l.getBoundingClientRect().top,overflow:f.scrollWidth-f.clientWidth,valid:boxes.every(b=>b.w>=43.9&&b.h>=43.9&&b.x>=r.left-1&&b.right<=r.right+1)&&boxes.every((b,i)=>!i||boxes[i-1].right<=b.x+1),boxes}});
    const initialTop=await topProof();assert(initialTop.valid&&initialTop.overflow<=1,JSON.stringify(initialTop));
+   const glassProof=await pg.evaluate(()=>{
+    const html=document.documentElement,app=document.querySelector('#app'),d=app.querySelector('.directory'),old=html.dataset.floating;
+    const selectors=['#directoryGroupButton','.directory-primary-filters>button.active','#searchToggle','#directoryMenuButton','.composer','#jumpBottom'];
+    const nodes=selectors.map(k=>document.querySelector(k));if(nodes.some(n=>!n))throw Error('missing glass consumer');
+    const read=()=>nodes.map((n,i)=>{const c=getComputedStyle(n,i===5?'::before':null),r=n.getBoundingClientRect();return {shadow:c.boxShadow,background:c.backgroundImage,filter:c.backdropFilter||c.webkitBackdropFilter||'none',w:r.width,h:r.height,x:r.x,y:r.y}});
+    try{html.dataset.floating='1';const on=read(),railStyle=getComputedStyle(d,'::before'),rail={shadow:railStyle.boxShadow,content:railStyle.content},r=d.querySelector('.contacts').getBoundingClientRect();html.dataset.floating='0';const off=read(),flat=getComputedStyle(d,'::before').content;return {on,off,rail,flat,top:r.top,after:d.querySelector('.contacts').getBoundingClientRect().top}}finally{if(old===undefined)delete html.dataset.floating;else html.dataset.floating=old}
+   });
+   assert(glassProof.rail.shadow!=='none'&&glassProof.on.every(x=>x.shadow!=='none'),JSON.stringify(glassProof));assert(glassProof.flat==='none',JSON.stringify(glassProof));assert(Math.abs(glassProof.top-glassProof.after)<=1,JSON.stringify(glassProof));for(let i=0;i<4;i++){const a=glassProof.on[i],b=glassProof.off[i];assert(['w','h','x','y'].every(k=>Math.abs(a[k]-b[k])<=1),JSON.stringify(glassProof))}
+   console.log('MOBILE-GLASS-03 paint + directory geometry PASS '+width,JSON.stringify(glassProof));
+
    const group=pg.locator('#directoryGroupButton'),menu=pg.getByRole('dialog',{name:'Nhóm danh bạ',exact:true});
    for(const label of ['KH','CM','Bạn bè','Khác','NCC','NV','Nhóm']){
      await group.click();await menu.waitFor({state:'visible'});await menu.getByRole('button',{name:label,exact:true}).click();await menu.waitFor({state:'hidden'});
