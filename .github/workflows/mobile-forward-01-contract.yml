@@ -1,0 +1,26 @@
+name: MOBILE-FORWARD-01 isolated contract
+on:
+  pull_request:
+    paths:
+      - 'references/mobile-forward-01-*'
+      - 'tests/mobile-forward-01-browser.cjs'
+      - 'tests/mobile-forward-01-policy.test.mjs'
+      - '.github/workflows/mobile-forward-01-contract.yml'
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/mobile-forward-01-policy.test.mjs
+      - name: Install browser test tools
+        run: |
+          sudo apt-get update
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium webkit
+      - name: Verify isolated mobile lab
+        run: node tests/mobile-forward-01-browser.cjs
