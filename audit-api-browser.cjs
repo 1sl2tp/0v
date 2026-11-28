@@ -144,6 +144,30 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const swipeFixture=async(start,dx,dy)=>pg.evaluate(({start,dx,dy})=>{const node=document.querySelector('.conversation');for(const [type,f] of [['touchstart',0],['touchmove',.5],['touchend',1]]){const point={clientX:start+dx*f,clientY:280+dy*f};const event=new Event(type,{bubbles:true});Object.defineProperties(event,{touches:{value:type==='touchend'?[]:[point]},changedTouches:{value:[point]}});node.dispatchEvent(event)}return document.querySelector('#app').dataset.screen},{start,dx,dy});
 
  // Isolated synthetic two-room matrix after existing regression suites; no real data or extra production API.
+ const mobileBackMatrix=async()=>{
+  const original=pg.viewportSize(),proof=[];
+  const gesture=async(mode)=>pg.evaluate(mode=>{
+   const app=document.querySelector('#app'),thread=document.querySelector('#messages'),node=mode==='media'?thread.querySelector('[data-live-media-key]'):mode==='composer'?document.querySelector('#draft'):thread.querySelector('[data-live-message-id] [data-content-parent]')||thread;
+   if(!node)throw Error('Missing gesture target '+mode);
+   const selection=window.getSelection();if(mode==='selection'){const r=document.createRange();r.selectNodeContents(node);selection.removeAllRanges();selection.addRange(r)}
+   const fire=(type,x,y,ids=[91])=>{const points=ids.map(identifier=>({identifier,clientX:x,clientY:y})),event=new Event(type,{bubbles:true,cancelable:true});Object.defineProperties(event,{touches:{value:type==='touchend'||type==='touchcancel'?[]:points},changedTouches:{value:points}});node.dispatchEvent(event)};
+   fire('touchstart',Math.round(innerWidth*.35),280);
+   const x=Math.round(innerWidth*.35);if(mode==='vertical')fire('touchmove',x+12,350);else if(mode==='left')fire('touchmove',x-75,280);else if(mode==='multi')fire('touchmove',x+50,280,[91,92]);else fire('touchmove',x+40,280);
+   if(mode==='cancel')fire('touchcancel',x+75,280);else fire('touchend',mode==='left'?x-100:x+100,mode==='vertical'?400:280);
+   if(mode==='selection')selection.removeAllRanges();return app.dataset.screen;
+  },mode);
+  for(const width of [320,375,390,430]){
+   await pg.setViewportSize({width,height:844});await pg.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});
+   assert(await pg.locator('#messages').evaluate(el=>getComputedStyle(el).touchAction.includes('pan-y')));
+   const before=await pg.locator('#draft').inputValue();
+   for(const mode of ['vertical','left','multi','cancel','selection','media','composer'])assert.equal(await gesture(mode),'chat',mode+' '+width);
+   assert.equal(await gesture('back'),'contacts');
+   await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelector('[data-live-message-id=m]'));
+   assert.equal(await pg.locator('#draft').inputValue(),before);assert.notEqual(await pg.evaluate(()=>document.activeElement?.id),'draft');
+   proof.push({width,interiorBack:true,vertical:true,left:true,multi:true,cancel:true,selection:true,media:true,composer:true,draft:true});
+  }
+  if(original)await pg.setViewportSize(original);console.log('MOBILE-NAV-01b interior swipe matrix',JSON.stringify(proof));
+ };
  const navTwoRoomMatrix=async()=>{
    const original=pg.viewportSize(),matrix=[];
    const back=()=>pg.locator('.conversation .panel-head [data-go=contacts]').click();
@@ -332,7 +356,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 
    await away();await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='600px');await raf();assert(await pg.locator('#messages').evaluate(m=>m.scrollTop<=1));await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='');await pg.locator('#jumpBottom').tap();await tail();
    const navWidthProof=[];const navOriginal=pg.viewportSize();for(const width of [320,375,390,430]){await pg.setViewportSize({width,height:844});await raf();assert.equal(await swipeFixture(50,120,0),'chat');assert.equal(await swipeFixture(12,20,120),'chat');assert.equal(await swipeFixture(12,120,0),'contacts');await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelector('[data-live-message-id=m]'));assert.notEqual(await pg.evaluate(()=>document.activeElement?.id),'draft');navWidthProof.push({width,edge:true,nonedge:true,vertical:true,reopen:true,focused:false})}if(navOriginal)await pg.setViewportSize(navOriginal);console.log('MOBILE-NAV-01 WebKit route matrix',JSON.stringify(navWidthProof));
-   await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await navTwoRoomMatrix();assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
+   await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await mobileBackMatrix();await navTwoRoomMatrix();assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
  }
  // Live directory idempotent refresh: no avatar/row recreation on equal payload.
  await pg.evaluate(()=>{window.stableContact=document.querySelector('#contacts [data-id=c]');window.stableAvatar=window.stableContact.querySelector('img');window.stableName=window.stableContact.querySelector('.identity b');window.stableStamp=window.stableContact.querySelector('.time');window.directoryBefore=window.calls.filter(x=>x==='directory').length;document.querySelector('#directoryRefresh').click()});
@@ -611,7 +635,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.deepEqual(errors,[]);
  assert.deepEqual(await savedChatRoute(),chatRouteBeforeBills,'standalone bill route must not overwrite saved chat route');
  await pg.goto('https://1sl2tp.github.io/0v/');await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'}).catch(async e=>{console.error('NOTIFY-01 bill roundtrip diagnostic',JSON.stringify(await pg.evaluate(()=>({saved:JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null')?.screen,screen:document.querySelector('#app')?.dataset.screen,hidden:document.querySelector('#app')?.hidden,inert:document.querySelector('#composer')?.inert,logged:sessionStorage.getItem('fixture-logged')==='1',messages:document.querySelectorAll('#messages [data-live-message-id]').length,calls:window.calls,bootVisible:!document.querySelector('#liveBoot')?.hidden}))),errors);throw e});assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');
- await pg.setViewportSize({width:390,height:844});await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
+ await pg.setViewportSize({width:390,height:844});await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await mobileBackMatrix();await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
  assert.deepEqual(errors,[]);await pg.close();console.log('0v live login, directory, messages and logout passed (synthetic only)');
