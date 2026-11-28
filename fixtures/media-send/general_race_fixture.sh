@@ -61,3 +61,24 @@ post actorA keyD roomC d >"$tmp/retry"
 grep -q '"state": "committed"' "$tmp/retry"
 grep -q '"asset_id": "00000000-0000-4000-8000-000000000004"' "$tmp/retry"
 echo 'PASS: same-key ACK, cross-actor dedup, duplicate receipt replay/conflict, rollback/retry, reserved asset identity'
+
+# Cross-language assertion: use the actual pure manifest generator and ACK
+# validator against the disposable fixture, not a separately invented UUID.
+PYTHONPATH=fixtures/media-send python3 - <<'PY'
+import json, subprocess
+from general_media_contract import make_manifest, validate_receipt
+def query(sql):
+    return subprocess.check_output(["psql","-X","-qAt","-v","ON_ERROR_STOP=1","-c",sql],text=True).strip()
+assert query("select current_database()") == "forward_fixture_ci"
+m=make_manifest("00000000-0000-4000-8000-000000000021",
+                "00000000-0000-4000-8000-000000000022",
+                "00000000-0000-4000-8000-000000000023","e"*64,100,"image/png")
+# Every interpolated value is generated from fixed synthetic literals above.
+sql=f"select forward_fixture.commit_mock('{m.account}','{m.client_id}','{m.room}','{m.sha256}',{m.size},'{m.mime}','{m.asset_id}'::uuid)"
+receipt=json.loads(query(sql))
+assert receipt["asset_id"] == m.asset_id
+assert validate_receipt(m,receipt)["messageId"] == receipt["message_id"]
+assert json.loads(query(sql)) == receipt
+assert query(f"select asset_id from forward_fixture.committed where actor='{m.account}' and client_key='{m.client_id}'") == m.asset_id
+print("PASS: Python manifest = PostgreSQL reserved asset = canonical ACK; exact replay")
+PY
