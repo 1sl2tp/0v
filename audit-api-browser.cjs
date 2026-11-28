@@ -84,6 +84,17 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    const full=await inventory(),d0=downloads,t=performance.now(),hit=await durableImageCache.get('fixture/pressure-fill-8',owner,fetch,true),hitMs=performance.now()-t,miss=await durableImageCache.get('fixture/pressure-fill-0',owner,fetch,true);
    return {initial,near,full,downloads,bytes,warmDownloads:downloads-d0,warmHitBytes:hit?.size||0,evictedMiss:miss===null,hitMs,writeMs:times,writeErrors:cacheMetrics.durableWriteErrors-baseErrors,successfulWrites:cacheMetrics.durableWrites-baseWrites}
   },
+  async pressureQueueLifecycle(){
+   const P=window.__fixtureLeaseProbe,blob=window.fixturePressureBlob,owner=scope;P.pressureStart();let release;
+   window.__pressureHoldPrepare=new Promise(r=>release=r);const base=auditBlobCache.stats().prepareCalls;
+   const work=Array.from({length:4},(_,i)=>auditBlobCache.image('fixture/pressure-cancel-'+i,owner,'image/png',false,async()=>blob));
+   const settled=Promise.allSettled(work);let ready=false;
+   try{const started=performance.now();while(auditBlobCache.stats().prepareCalls<base+4||window.__pressureDecode.active<2){if(performance.now()-started>10000)throw Error('queue fixture timeout');await new Promise(r=>setTimeout(r,10))}ready=true;auditBlobCache.clear()}finally{release();delete window.__pressureHoldPrepare}
+   const outcomes=await settled,old=P.pressureStop();if(!ready)throw Error('queue fixture not ready');
+   P.pressureStart();const bad=auditBlobCache.image('fixture/pressure-invalid',owner,'image/png',false,async()=>new Blob(['invalid'],{type:'image/png'})),good=auditBlobCache.image('fixture/pressure-valid',owner,'image/png',false,async()=>blob);
+   const recovery=await Promise.allSettled([bad,good]),next=P.pressureStop();
+   return {oldStarted:old.calls,oldPeak:old.peak,stale:outcomes.filter(x=>x.status==='rejected'&&x.reason?.message==='stale_scope').length,invalidRejected:recovery[0].status==='rejected',validRecovered:recovery[1].status==='fulfilled',recoveryPeak:next.peak}
+  },
   async pressureClean(){await durableImageCache.purge();delete window.fixturePressureBlob},
   async preparePressure(){
    const canvas=document.createElement('canvas');canvas.width=2048;canvas.height=1536;const ctx=canvas.getContext('2d');ctx.fillStyle='#294660';ctx.fillRect(0,0,2048,1536);ctx.fillStyle='#e7c888';for(let i=0;i<32;i++)ctx.fillRect(i*64,0,20,1536);window.fixturePressureBlob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));canvas.width=canvas.height=1;if(!window.fixturePressureBlob)throw Error('large PNG unavailable');
@@ -95,7 +106,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
   stats(){return {...auditBlobCache.stats(),screenLeases:[...liveImageResources.values()].reduce((n,r)=>n+r.leases.size,0),groups:liveImageResources.size}}
  };\n`+leaseBoundary);
  const webkitFixture=webkitTail?leaseFixture.replace("async prepareLiveImage(data,mime,bill){","async prepareLiveImage(data,mime,bill){try{return await this.__fixtureOriginalPrepare(data,mime,bill)}catch(e){(window.__fixtureMediaErrors??=[]).push({name:e.name,message:e.message,type:data?.type,size:data?.size});throw e}},\n async __fixtureOriginalPrepare(data,mime,bill){"):leaseFixture;
- const pressureFixture=webkitFixture.replace("async prepareLiveImage(data,mime,bill){","async prepareLiveImage(data,mime,bill){const p=window.__pressureDecode;if(!p)return this.__pressureOriginalPrepare(data,mime,bill);p.calls++;p.active++;p.peak=Math.max(p.peak,p.active);try{return await this.__pressureOriginalPrepare(data,mime,bill)}catch(e){p.errors++;throw e}finally{p.active--}},\n async __pressureOriginalPrepare(data,mime,bill){");
+ const pressureFixture=webkitFixture.replace("async prepareLiveImage(data,mime,bill){","async prepareLiveImage(data,mime,bill){const p=window.__pressureDecode;if(!p)return this.__pressureOriginalPrepare(data,mime,bill);p.calls++;p.active++;p.peak=Math.max(p.peak,p.active);try{if(window.__pressureHoldPrepare)await window.__pressureHoldPrepare;return await this.__pressureOriginalPrepare(data,mime,bill)}catch(e){p.errors++;throw e}finally{p.active--}},\n async __pressureOriginalPrepare(data,mime,bill){");
  await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:pressureFixture}));
  await pg.route('**/storage/v1/object/public/v21-avatars/fixture/avatar.jpg',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="gray"/></svg>'}));
  await pg.goto('https://1sl2tp.github.io/0v/?live=1&scrolls4=1');
@@ -355,9 +366,9 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    const warmPressure=await pg.evaluate(()=>window.__fixtureLeaseProbe.pressureWarm());
    const pressureReport={large,downloads:pressureAfter.downloads-pressureBefore.downloads,bytes:pressureAfter.downloadBytes-pressureBefore.downloadBytes,decodeMs:pressureAfter.ram.decodeMs-pressureBefore.ram.decodeMs,prepareMs:pressureAfter.ram.prepareMs-pressureBefore.ram.prepareMs,ramBytes:pressureAfter.ram.bytes,decodedBytes:pressureAfter.ram.decodedBytes,decode:pressureDecode,warm:warmPressure,anchorSame:anchorAfter.reading?.id===anchorBefore.id,anchorDrift:Math.abs((anchorAfter.reading?.offset??Infinity)-anchorBefore.offset),intent:anchorAfter.intent};
    console.log('CACHE-RESOLVE-04e LARGE '+(webkitTail?'WebKit':'Chromium'),JSON.stringify(pressureReport));
-   assert(pressureReport.downloads===8&&pressureReport.bytes===8*large.blobBytes&&pressureDecode.calls===8&&pressureDecode.errors===0&&pressureReport.decodedBytes<=24*1024*1024&&pressureReport.ramBytes<=64*1024*1024&&warmPressure.downloads===0&&warmPressure.bytes===0&&warmPressure.prepareCalls===0&&pressureReport.anchorSame&&pressureReport.anchorDrift<=1&&anchorAfter.intent==='READING_HISTORY',JSON.stringify(pressureReport));
+   assert(pressureReport.downloads===8&&pressureReport.bytes===8*large.blobBytes&&pressureDecode.calls===8&&pressureDecode.peak<=2&&pressureDecode.errors===0&&pressureReport.decodedBytes<=24*1024*1024&&pressureReport.ramBytes<=64*1024*1024&&warmPressure.downloads===0&&warmPressure.bytes===0&&warmPressure.prepareCalls===0&&pressureReport.anchorSame&&pressureReport.anchorDrift<=1&&anchorAfter.intent==='READING_HISTORY',JSON.stringify(pressureReport));
    // Keep downstream regression state isolated from the artificial IDB and large images.
-   await back();await pg.evaluate(()=>window.__fixtureLeaseProbe.pressureClean());await pg.reload({waitUntil:'domcontentloaded'});await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});
+   await back();const life=await pg.evaluate(()=>window.__fixtureLeaseProbe.pressureQueueLifecycle());console.log('CACHE-RESOLVE-04e QUEUE LIFECYCLE '+(webkitTail?'WebKit':'Chromium'),JSON.stringify(life));assert(life.oldStarted===2&&life.oldPeak===2&&life.stale===4&&life.invalidRejected&&life.validRecovered&&life.recoveryPeak<=2,JSON.stringify(life));await pg.evaluate(()=>window.__fixtureLeaseProbe.pressureClean());await pg.reload({waitUntil:'domcontentloaded'});await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});
    await pg.evaluate(()=>sessionStorage.removeItem('fixture-nav-matrix'));if(original)await pg.setViewportSize(original);
    console.log('MOBILE-NAV-01 two-room/reload matrix',JSON.stringify(matrix));
  };
