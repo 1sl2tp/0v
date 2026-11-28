@@ -1,5 +1,5 @@
 import unittest
-from general_media_contract import make_manifest,validate_ticket,validate_verified_object,validate_ack,validate_receipt
+from general_media_contract import make_manifest,validate_ticket,validate_verified_object,validate_ack,validate_receipt,validate_source_snapshot
 def id(n): return "00000000-0000-4000-8000-"+str(n).zfill(12)
 def manifest(**extra):
     return make_manifest(**({"account":id(1),"room":id(2),"source_asset":id(3),"sha256":"a"*64,"size":100,"mime":"image/jpeg"}|extra))
@@ -46,4 +46,12 @@ class MediaContract(unittest.TestCase):
         for patch in ({"account":id(9)},{"client_id":"wrong"},{"room":id(9)},{"sha256":"b"*64},{"size":101},{"size":100.0},{"mime":"image/png"},{"message_id":id(6)},{"asset_id":id(9)},{"state":"uploaded"}):
             with self.assertRaises(ValueError): validate_receipt(m,dup|patch)
         with self.assertRaises(ValueError): validate_receipt(m,None)
+    def test_source_snapshot_authorization_and_version(self):
+        m=manifest(); room=id(10); session=id(5)
+        s={"viewer_account":m.account,"session":session,"room":room,"asset_id":m.source_asset,"sha256":m.sha256,"size":m.size,"mime":m.mime,"message_id":id(6),"object_id":id(8),"object_version":"v1","storage_key":"synthetic-source.jpg","authorized":True,"deleted":False}
+        self.assertTrue(validate_source_snapshot(m,room,session,s,dict(s)))
+        for patch in ({"viewer_account":id(9)},{"session":id(9)},{"room":m.room},{"asset_id":id(9)},{"sha256":"b"*64},{"size":101},{"size":100.0},{"mime":"image/png"},{"authorized":False},{"deleted":True},{"object_version":"v2"},{"object_id":id(9)},{"message_id":id(9)},{"storage_key":"other.jpg"}):
+            with self.assertRaises(ValueError): validate_source_snapshot(m,room,session,s,s|patch)
+            with self.assertRaises(ValueError): validate_source_snapshot(m,room,session,s|patch,s)
+        with self.assertRaises(ValueError): validate_source_snapshot(m,m.room,session,s,s)
 if __name__=="__main__": unittest.main()
