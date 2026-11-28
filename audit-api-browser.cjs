@@ -190,7 +190,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
      }
      update(row,{unread:-1});update(row,{unread:NaN});invalidPreserves=row.querySelector('.unread-count')===badge&&badge.textContent==='10000';
      update(row,{unread:0});cleared=!row.querySelector('.unread-count')&&row.dataset.contactUnread==='false'&&stable();
-     const demoBlocked=window.receiveDemo('kh','Không được chèn tin mẫu')===null&&document.querySelector('#incomingDemo').hidden&&!document.querySelector('.typing-test')&&!document.querySelector('.is-typing');
+     const demoBlocked=typeof window.receiveDemo==='undefined'&&document.querySelector('#incomingDemo').hidden&&!document.querySelector('.typing-test')&&!document.querySelector('.is-typing');
      return {same,aligned,geometryOK,values,noReplay,invalidPreserves,cleared,demoBlocked,last:row.dataset.contactView==='last'&&!row.hasAttribute('aria-current')}
     }finally{update(row,{unread:prior})}
    });
