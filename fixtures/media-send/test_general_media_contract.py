@@ -41,11 +41,11 @@ class MediaContract(unittest.TestCase):
             with self.assertRaises(ValueError): validate_ack(m,a|x)
     def test_normalized_receipt_committed_and_duplicate(self):
         m=manifest(); a=ack(m)
-        expected={"state":"committed","clientId":m.client_id,"destinationRoom":m.room,"sha256":m.sha256,"sizeBytes":m.size,"messageId":id(6)}
+        expected={"state":"committed","clientId":m.client_id,"destinationRoom":m.room,"sha256":m.sha256,"sizeBytes":m.size,"messageId":id(6),"destinationAssetId":m.asset_id}
         self.assertEqual(validate_receipt(m,a),expected)
         dup={k:v for k,v in a.items() if k not in ("message_id","asset_id")}
         dup["state"]="already_present"
-        self.assertEqual(validate_receipt(m,dup),{k:v for k,v in (expected|{"state":"already_present"}).items() if k!="messageId"})
+        self.assertEqual(validate_receipt(m,dup),{k:v for k,v in (expected|{"state":"already_present"}).items() if k not in ("messageId","destinationAssetId")})
         for patch in ({"account":id(9)},{"client_id":"wrong"},{"room":id(9)},{"sha256":"b"*64},{"size":101},{"size":100.0},{"mime":"image/png"},{"message_id":id(6)},{"asset_id":id(9)},{"state":"uploaded"}):
             with self.assertRaises(ValueError): validate_receipt(m,dup|patch)
         with self.assertRaises(ValueError): validate_receipt(m,None)
@@ -86,4 +86,16 @@ class MediaContract(unittest.TestCase):
             self.assertEqual(m.client_id,"0v:"+client)
             self.assertEqual(m.asset_id,asset)
             self.assertNotEqual(m.client_id,"0v:forward:"+m.room+":"+m.source_asset)
+    def test_receipt_identity_namespaces_are_distinct(self):
+        m=manifest()
+        ui_key="0v:forward:"+m.room+":"+m.source_asset
+        result=validate_receipt(m,ack(m))
+        self.assertEqual(result["clientId"],m.client_id)
+        self.assertEqual(result["destinationAssetId"],m.asset_id)
+        self.assertNotEqual(result["clientId"],ui_key)
+        self.assertNotEqual(result["destinationAssetId"],m.source_asset)
+        for patch in ({"client_id":ui_key},{"asset_id":m.source_asset},
+                      {"asset_id":m.client_id[3:]},{"client_id":"0v:"+m.asset_id}):
+            with self.assertRaises(ValueError):
+                validate_receipt(m,ack(m)|patch)
 if __name__=="__main__": unittest.main()
