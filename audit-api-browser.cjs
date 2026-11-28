@@ -84,6 +84,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    const full=await inventory(),d0=downloads,t=performance.now(),hit=await durableImageCache.get('fixture/pressure-fill-8',owner,fetch,true),hitMs=performance.now()-t,miss=await durableImageCache.get('fixture/pressure-fill-0',owner,fetch,true);
    return {initial,near,full,downloads,bytes,warmDownloads:downloads-d0,warmHitBytes:hit?.size||0,evictedMiss:miss===null,hitMs,writeMs:times,writeErrors:cacheMetrics.durableWriteErrors-baseErrors,successfulWrites:cacheMetrics.durableWrites-baseWrites}
   },
+  async pressureClean(){await durableImageCache.purge();delete window.fixturePressureBlob},
   async preparePressure(){
    const canvas=document.createElement('canvas');canvas.width=2048;canvas.height=1536;const ctx=canvas.getContext('2d');ctx.fillStyle='#294660';ctx.fillRect(0,0,2048,1536);ctx.fillStyle='#e7c888';for(let i=0;i<32;i++)ctx.fillRect(i*64,0,20,1536);window.fixturePressureBlob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));canvas.width=canvas.height=1;if(!window.fixturePressureBlob)throw Error('large PNG unavailable');
    return {blobBytes:window.fixturePressureBlob.size,width:2048,height:1536}
@@ -336,9 +337,11 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    await back();
    // CACHE-RESOLVE-04e: isolate pressure from previous fixture state. No production traffic or data.
    await pg.reload({waitUntil:'domcontentloaded'});await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});await open('c');await ready('room');
+   await pg.locator('#messages [data-live-image-group]').evaluateAll(groups=>groups.forEach(g=>g.dispatchEvent(new Event('0v-load-media'))));
+   await pg.waitForFunction(()=>{const imgs=[...document.querySelectorAll('#messages [data-image-state=ready] img')];return imgs.length>=4&&imgs.every(x=>x.complete&&x.naturalWidth>0)},{},{timeout:20000});await frames();
    await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});
    await pg.waitForFunction(()=>window.__fixtureScrollState().intent==='READING_HISTORY'&&document.querySelector('#messages').scrollTop<=1);
-   const pressureIdb=await pg.evaluate(()=>window.__fixtureLeaseProbe.durablePressure());
+   const pressureIdb=await pg.evaluate(async()=>{const P=window.__fixtureLeaseProbe;P.pressureStart();const data=await P.durablePressure();return {...data,frameSample:P.pressureStop()}});
    console.log('CACHE-RESOLVE-04e IDB '+(webkitTail?'WebKit':'Chromium'),JSON.stringify(pressureIdb));
    assert(pressureIdb.near.bytes>=28*1024*1024&&pressureIdb.full.bytes<=32*1024*1024&&pressureIdb.full.count<=256&&pressureIdb.successfulWrites===9&&pressureIdb.writeErrors===0&&pressureIdb.downloads===9&&pressureIdb.warmDownloads===0&&pressureIdb.warmHitBytes===4*1024*1024&&pressureIdb.evictedMiss&&!pressureIdb.full.first&&pressureIdb.full.last,JSON.stringify(pressureIdb));
    const large=await pg.evaluate(()=>window.__fixtureLeaseProbe.preparePressure());const anchorBefore=await pg.evaluate(()=>window.__fixtureScrollState().saved.reading);assert(anchorBefore?.id);
@@ -354,7 +357,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    console.log('CACHE-RESOLVE-04e LARGE '+(webkitTail?'WebKit':'Chromium'),JSON.stringify(pressureReport));
    assert(pressureReport.downloads===8&&pressureReport.bytes===8*large.blobBytes&&pressureDecode.calls===8&&pressureDecode.errors===0&&pressureReport.decodedBytes<=24*1024*1024&&pressureReport.ramBytes<=64*1024*1024&&warmPressure.downloads===0&&warmPressure.bytes===0&&warmPressure.prepareCalls===0&&pressureReport.anchorSame&&pressureReport.anchorDrift<=1&&anchorAfter.intent==='READING_HISTORY',JSON.stringify(pressureReport));
    // Keep downstream regression state isolated from the artificial IDB and large images.
-   await back();await pg.reload({waitUntil:'domcontentloaded'});await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});
+   await back();await pg.evaluate(()=>window.__fixtureLeaseProbe.pressureClean());await pg.reload({waitUntil:'domcontentloaded'});await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});
    await pg.evaluate(()=>sessionStorage.removeItem('fixture-nav-matrix'));if(original)await pg.setViewportSize(original);
    console.log('MOBILE-NAV-01 two-room/reload matrix',JSON.stringify(matrix));
  };
