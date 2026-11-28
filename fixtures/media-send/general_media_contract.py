@@ -95,3 +95,31 @@ def validate_receipt(m, receipt):
     else:
         raise ValueError("receipt state")
     return result
+
+
+def validate_source_snapshot(m, source_room, session, before, after):
+    """Fixture for the official owner's source-read boundary.
+    Both snapshots must come from the authenticated owner after authorization,
+    never from client data. This is not an authorization or Storage adapter.
+    Reject changed/deleted/revoked source between authorized reads.
+    """
+    canonical_uuid(source_room)
+    canonical_uuid(session)
+    if source_room == m.room:
+        raise ValueError("source room")
+    expected={"viewer_account":m.account,"session":session,"room":source_room,
+              "asset_id":m.source_asset,"sha256":m.sha256,"size":m.size,"mime":m.mime}
+    fields=("message_id","object_id","object_version","storage_key")
+    for snapshot in (before,after):
+        if not isinstance(snapshot,dict) or any(snapshot.get(k)!=v for k,v in expected.items()):
+            raise ValueError("source mismatch")
+        if type(snapshot.get("size")) is not int or snapshot.get("authorized") is not True or snapshot.get("deleted") is not False:
+            raise ValueError("source unavailable")
+        for k in ("message_id","object_id"):
+            canonical_uuid(snapshot.get(k))
+        for k in ("object_version","storage_key"):
+            if not isinstance(snapshot.get(k),str) or not snapshot[k]:
+                raise ValueError("source object identity")
+    if any(before[k]!=after[k] for k in fields):
+        raise ValueError("source changed")
+    return True
