@@ -484,3 +484,10 @@ v13.271 CI 5/5 + Pages success 46085450245 at 569e7be; E4 BLOCKED. Approved 28/1
 - Test live synthetic Chromium/WebKit 320/375/390/430 x A/B, reject move/cancel/selection; copy, ID, disabled write, anchor/draft, existing popup/media/nav regression. Raw Unicode policy case; physical long press/native clipboard/text selection and device acceptance pending. Rollback v13.273.
 
 - v13.273 E2 5/5, popup 32/32, anchor drift 0, E3 deployment 46088638840 success d50965d; E4 blocked. User approved 8/8 scope; v13.274 candidate pending E2.
+
+
+## MOBILE-NAV-01b — v13.275
+- User reports swipe back fails. E0 source: v13.271 edge-only <=24px; Safari native edge may intercept, actual device unverified. Supersedes edge-only rule for live chat reading area only: rightward horizontal gesture can start inside #messages plain text/blank area, retain edge elsewhere and existing demo behavior except stronger cancellation guards. Single touch ID/route epoch, no dialog, no selected text, no input/buttons/links/media/bill; cancel on vertical/left/multi/touchcancel or scroll drift >2px. Lock at >=14px and 1.5x horizontal dominance, commit on release >=min(64px,17% width), dy<.65dx and <=1s. Thresholds local design choices. Existing routeBack/Main/ScrollController retain route/draft/anchor ownership. Mobile reading region touch-action pan-y pinch-zoom; passive listeners, no preventDefault or keyboard focus/geometry writer; native browser edge still not guaranteed. No new gesture overlay, backend/SQL/ledger/cache change.
+- Test Chromium/WebKit 320/375/390/430, interior return and reject vertical/left/multi/cancel/selection/media/composer; preserve draft on reopen, existing edge/outside/anchor/2-room/long-press and media tests retained. Synthetic touch events, not physical Safari/PWA. Rollback v13.274.
+
+- v13.274 E2 CI 5/5, 16/16 A/B exact clipboard mock, E3 Pages 46089777737 success 00aeb7e; E4 BLOCKED. User reports swipe failure, approved fix v13.275; E2 pending.
