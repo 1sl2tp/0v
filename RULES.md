@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.284)
+## 00. Chỉ mục rule đang có hiệu lực (v13.285)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -2094,3 +2094,7 @@ E0 #310 9b15010 2/2, job 140897388929, 64/64, KB baseline true; squash 0f6c39f. 
 ## v13.284 — BOOT-FIRST-PAINT-01
 - User reports boot shell still visibly loading on iPhone. Align compact 64px rows, 44px avatars, safe-area header, search placeholder and route-specific noninteractive composer. Hide ordinary restore text visually, retain accessible status and visible error/retry. No private cached data before fresh ACL.
 - Start authenticated session and directory reads concurrently after LiveAuthAPI approval; consume first directory once, validate account and fresh admin before projecting. Start encrypted package preflight in parallel with directory; bound blocking hydration to 120ms, late result never overwrites newer RAM snapshots, background persistence stays in P4. No changes to backend/SQL/ledger or keyboard owners. Fresh ACL still required; full instant cold render is not guaranteed. Candidate CI and iPhone acceptance pending.
+
+## v13.285 — BOOT-FIRST-PAINT-02
+- v13.284 exact head ab3ace6 passed 5/5; merged 01e2939. Synthetic warm F5 visible text Chromium 465ms/WebKit 531ms; media thread 463/678ms; fixture getSession imposes ~350ms artificial latency. Not physical-device evidence. Public Pages HTTP access unavailable from assistant.
+- Preload pinned Supabase SDK at initial HTML head on live routes only. Start existing context/AAL/factor reads together after getSession; all original gates still required. Prefetch only encrypted package record during auth (no decrypt, no private DOM); later bind account/generation and fresh admin, decrypt and intersect fresh directory ACL/revision before render. No new persisted key or offline authority. Keep P4 writes, keyboard, backend, SQL, ledger unchanged. Add held-context parallel gate fixture on both engines; corruption, expiry, removed room, account switch and F5 regressions retained. Exact CI and native timing pending.
