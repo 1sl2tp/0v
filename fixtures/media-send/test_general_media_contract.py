@@ -73,4 +73,17 @@ class MediaContract(unittest.TestCase):
             with self.assertRaises(ValueError): check(sd=data[:-1])
             with self.assertRaises(ValueError): check(td=data[:-1]+bytes([data[-1]^1]))
             with self.assertRaises(ValueError): check(tb=t|{"width":31},ta=t|{"width":31})
+    def test_shared_mobile_client_identity_vectors(self):
+        # Identical synthetic vectors in #297 mobile-forward-01-policy.test.mjs.
+        vectors=[
+            (21,2,1,100,"ec41e4fd-a38d-5b22-8d13-43faa6813c5d","def7d78f-c874-52e7-9486-e00e1aa7f087"),
+            (22,2,1,100,"767036da-c7ec-5d60-ba81-adfc645078ea","6f93e758-e55a-5fda-8e40-33045e30458d"),
+            (21,3,1,100,"1c970cae-454b-55e4-9c86-28fec25498c7","d97bd0e2-b054-5da5-b686-a7a33c64ed38"),
+            (21,2,4,100,"2d8c1415-b022-5e0f-8a4f-aaf15a7c194d","a4354c8d-657f-50ea-97a7-bd5bd8bbfb08"),
+            (21,2,1,101,"aee147fc-8f40-5e66-87ca-393cf09be055","f24dc62c-cf7a-5685-80a1-a3294ca2262e")]
+        for actor,room,h,size,client,asset in vectors:
+            m=make_manifest(id(actor),id(room),id(101),str(h).zfill(64),size,"image/jpeg")
+            self.assertEqual(m.client_id,"0v:"+client)
+            self.assertEqual(m.asset_id,asset)
+            self.assertNotEqual(m.client_id,"0v:forward:"+m.room+":"+m.source_asset)
 if __name__=="__main__": unittest.main()
