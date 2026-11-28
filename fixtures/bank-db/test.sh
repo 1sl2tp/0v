@@ -40,8 +40,8 @@ python3 -m venv "$tmp/media-venv"
 import sys, unittest
 suite = unittest.defaultTestLoader.discover("fixtures/media-send", pattern="test_general*.py")
 count = suite.countTestCases()
-if count < 18:
-    sys.exit(f"MEDIA-SEND incomplete test discovery: {count} < 18")
+if count < 19:
+    sys.exit(f"MEDIA-SEND incomplete test discovery: {count} < 19")
 result = unittest.TextTestRunner(verbosity=2).run(suite)
 if not result.wasSuccessful() or result.testsRun != count or result.skipped or result.expectedFailures:
     sys.exit("MEDIA-SEND incomplete or failed execution")
