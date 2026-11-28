@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.280)
+## 00. Chỉ mục rule đang có hiệu lực (v13.281)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -2059,3 +2059,9 @@ Owner: BillAuditList / CardController / BillRoot02Comparison. Chỉ trang bill �
 - Stage 2b design gate: package only after fresh server authority, owner/epoch/revision-bound encrypted records, atomic replacement with bounded retention at existing cache owner, no duplicate writers, no plaintext persistent directory. Continue using current sessionStorage thread snapshot and media ACL proof; do not infer authorization from cache. P0 visible state/P1 realtime never wait on P4; cancel stale work at revoke/account switch. Measure before changing runtime. No version increment, keyboard/backend/SQL/ledger untouched in this E0 PR.
 
 - E0 extension d122a32: record warmSnapshot flag; F5 restored text+3 media tiles with post-reload downloads/bytes/durable hits, F5 text snapshot miss (only session snapshot removed; not a fully cold device), and synthetic foreground/pageshow resume timing at 390px. Existing 32/32 regression matrix retained. No installed PWA evidence; no runtime changes. CI must pass on new exact head before interpreting results.
+
+
+## CACHE-PREWARM-02 — v13.281 candidate
+E0 #310 9b15010 2/2, job 140897388929, 64/64, KB baseline true; squash 0f6c39f. Warm F5 text Chromium/WebKit 463.2/500ms, F5 media 593.1/717ms, 3 downloads 1197/1112 bytes, 0 durable hits; synthetic resume 99.4/97ms. Stage candidate uses existing prewarm owner, starts after authorized directory, one background room or one image per 250ms tick, top 12 authorized rows by unread/recent, newest eight images per room, retry failed work after 30s, resume on chat/contacts/foreground, yield P0/P1, no parallel prewarm writer. Cache coverage and before-open metrics count actual prepared RAM variants without LRU touch, no personal payload. New fixture requires readiness before opening and zero post-open downloads/bytes. Scope/revoke/epoch and existing image revision/ACL maintained. This stage is bounded prewarm, not encrypted directory/text package, full history or native PWA proof. E2 pending 5/5, E3/E4 pending. Backend/SQL/ledger/keyboard unchanged except version label normalization.
+
+- CI 4d2685e audit-design job 140901851711 failed only liveTailReadContract stale literal (owner rearm changed) and RULE version index. Updated literal to assert actual current-owner rearm, updated RULE version heading; no runtime or gate bypass. Rerun exact candidate CI; browser proof still pending.
