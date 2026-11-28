@@ -87,9 +87,10 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
   async pressureQueueLifecycle(){
    const P=window.__fixtureLeaseProbe,blob=window.fixturePressureBlob,owner=scope;P.pressureStart();let release;
    window.__pressureHoldPrepare=new Promise(r=>release=r);const base=auditBlobCache.stats().prepareCalls;
-   const work=Array.from({length:4},(_,i)=>auditBlobCache.image('fixture/pressure-cancel-'+i,owner,'image/png',false,async()=>blob));
+   const payloads=Array.from({length:4},()=>blob.slice(0,blob.size,blob.type));if(new Set(payloads).size!==4)throw Error('pressure fixture distinct Blob identity');
+   const work=payloads.map((payload,i)=>auditBlobCache.image('fixture/pressure-cancel-'+i,owner,'image/png',false,async()=>payload));
    const settled=Promise.allSettled(work);let ready=false;
-   try{const started=performance.now();while(auditBlobCache.stats().prepareCalls<base+4||window.__pressureDecode.active<2){if(performance.now()-started>10000)throw Error('queue fixture timeout');await new Promise(r=>setTimeout(r,10))}ready=true;auditBlobCache.clear()}finally{release();delete window.__pressureHoldPrepare}
+   try{const started=performance.now();while(auditBlobCache.stats().prepareCalls<base+4||window.__pressureDecode.active<2){if(performance.now()-started>10000)throw Error('queue fixture timeout '+JSON.stringify({prepareDelta:auditBlobCache.stats().prepareCalls-base,active:window.__pressureDecode.active,calls:window.__pressureDecode.calls,preparedHits:auditBlobCache.stats().preparedHits}));await new Promise(r=>setTimeout(r,10))}ready=true;auditBlobCache.clear()}finally{release();delete window.__pressureHoldPrepare}
    const outcomes=await settled,old=P.pressureStop();if(!ready)throw Error('queue fixture not ready');
    P.pressureStart();const bad=auditBlobCache.image('fixture/pressure-invalid',owner,'image/png',false,async()=>new Blob(['invalid'],{type:'image/png'})),good=auditBlobCache.image('fixture/pressure-valid',owner,'image/png',false,async()=>blob);
    const recovery=await Promise.allSettled([bad,good]),next=P.pressureStop();
