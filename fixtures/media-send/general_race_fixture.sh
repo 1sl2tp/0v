@@ -4,9 +4,19 @@ set -euo pipefail
 export PGHOST=127.0.0.1 PGPORT=5432 PGUSER=postgres PGDATABASE=forward_fixture_ci PGPASSWORD=fixture_only
 psql -X -v ON_ERROR_STOP=1 -f fixtures/media-send/general_race_fixture.sql
 tmp=$(mktemp -d);trap 'rm -rf "$tmp"' EXIT
-post(){ psql -X -qAt -v ON_ERROR_STOP=1 <<SQL
+post(){
+ local asset
+ case "$2" in
+ keyA) asset=00000000-0000-4000-8000-000000000001;;
+ keyB) asset=00000000-0000-4000-8000-000000000002;;
+ keyC) asset=00000000-0000-4000-8000-000000000003;;
+ keyD) asset=00000000-0000-4000-8000-000000000004;;
+ *) return 1;;
+ esac
+ asset=${5:-$asset}
+ psql -X -qAt -v ON_ERROR_STOP=1 <<SQL
 begin;
-select forward_fixture.commit_mock('$1','$2','$3',repeat('$4',64),100,'image/jpeg');
+select forward_fixture.commit_mock('$1','$2','$3',repeat('$4',64),100,'image/jpeg','$asset'::uuid);
 select pg_sleep(0.3);
 commit;
 SQL
@@ -14,6 +24,9 @@ SQL
 post actorA keyA roomA a >"$tmp/a" & a=$!
 post actorA keyA roomA a >"$tmp/b" & b=$!
 wait "$a";wait "$b";cmp "$tmp/a" "$tmp/b"
+grep -q '"asset_id": "00000000-0000-4000-8000-000000000001"' "$tmp/a"
+if post actorA keyA roomA a 00000000-0000-4000-8000-000000000009 >"$tmp/asset_conflict" 2>&1; then echo "expected reserved asset conflict";exit 1;fi
+grep -q manifest_conflict "$tmp/asset_conflict"
 test "$(psql -X -Atc "select count(*) from forward_fixture.committed where room='roomA'")" = 1
 post actorA keyB roomB b >"$tmp/c" & c=$!
 post actorB keyC roomB b >"$tmp/d" & d=$!
@@ -29,6 +42,9 @@ else
 fi
 post "$duplicate_actor" "$duplicate_key" roomB b >"$tmp/duplicate_replay"
 cmp "$duplicate_file" "$tmp/duplicate_replay"
+if grep -q '"asset_id"\|"message_id"' "$duplicate_file"; then echo "duplicate leaks identity";exit 1;fi
+if post "$duplicate_actor" "$duplicate_key" roomB b 00000000-0000-4000-8000-000000000009 >"$tmp/duplicate_asset_conflict" 2>&1;then echo "expected duplicate reserved asset conflict";exit 1;fi
+grep -q manifest_conflict "$tmp/duplicate_asset_conflict"
 if post "$duplicate_actor" "$duplicate_key" roomB c >"$tmp/duplicate_conflict" 2>&1;then echo 'expected duplicate receipt conflict';exit 1;fi
 grep -q manifest_conflict "$tmp/duplicate_conflict"
 test "$(psql -X -Atc "select count(*) from forward_fixture.receipt where room='roomB'")" = 2
@@ -36,11 +52,12 @@ if post actorA keyA roomA c >"$tmp/conflict" 2>&1;then echo 'expected manifest c
 grep -q manifest_conflict "$tmp/conflict"
 psql -X -qAt -v ON_ERROR_STOP=1 <<'SQL'
 begin;
-select forward_fixture.commit_mock('actorA','keyD','roomC',repeat('d',64),100,'image/png');
+select forward_fixture.commit_mock('actorA','keyD','roomC',repeat('d',64),100,'image/jpeg','00000000-0000-4000-8000-000000000004'::uuid);
 rollback;
 SQL
 test "$(psql -X -Atc "select count(*) from forward_fixture.committed where room='roomC'")" = 0
 test "$(psql -X -Atc "select count(*) from forward_fixture.receipt where room='roomC'")" = 0
 post actorA keyD roomC d >"$tmp/retry"
 grep -q '"state": "committed"' "$tmp/retry"
-echo 'PASS: same-key ACK, cross-actor dedup, duplicate receipt replay/conflict, rollback/retry'
+grep -q '"asset_id": "00000000-0000-4000-8000-000000000004"' "$tmp/retry"
+echo 'PASS: same-key ACK, cross-actor dedup, duplicate receipt replay/conflict, rollback/retry, reserved asset identity'
