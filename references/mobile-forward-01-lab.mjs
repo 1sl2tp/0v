@@ -33,9 +33,9 @@ send.addEventListener('click',async()=>{
  setStatus('Đang gửi thử ảnh mẫu…');
  try{const result=await executeForward({preview:p,readInventory:async()=>inventory(opts),isCurrent:()=>!cancelled&&serial===epoch,sendOfficialImage:async item=>{
  await new Promise(r=>setTimeout(r,35));const messageId=id(nextId++);records.get(item.destinationRoom).push({assetId:id(nextId++),messageId,roomId:item.destinationRoom,kind:'image',sha256:item.sha256,sizeBytes:item.sizeBytes,at:base+100000,sortIndex:0});
- return {clientId:item.clientId,destinationRoom:item.destinationRoom,sha256:item.sha256,messageId};
- },onProgress:({confirmed,total})=>{progress.value=confirmed;setStatus('Đã xác nhận mô phỏng '+confirmed+'/'+total+' ảnh')}});
- progress.value=result.confirmed;setStatus(result.state==='confirmed'?'Hoàn tất mô phỏng '+result.confirmed+' ảnh. Không gửi ảnh thật.':'Đã dừng. '+result.confirmed+' ảnh mẫu xác nhận. Kiểm tra lại trước khi tiếp tục.');
+ return {clientId:item.clientId,destinationRoom:item.destinationRoom,sha256:item.sha256,sizeBytes:item.sizeBytes,state:'committed',messageId};
+ },onProgress:({confirmed,skippedDuringSend,total})=>{progress.value=confirmed+skippedDuringSend;setStatus('Đã xác nhận mô phỏng '+confirmed+'/'+total+' ảnh · bỏ trùng thêm '+skippedDuringSend)}});
+ progress.value=result.confirmed+result.skippedDuringSend;setStatus(result.state==='confirmed'?'Hoàn tất mô phỏng '+result.confirmed+' ảnh. Bỏ trùng thêm '+result.skippedDuringSend+'. Không gửi ảnh thật.':'Đã dừng. '+result.confirmed+' ảnh mẫu xác nhận. Kiểm tra lại trước khi tiếp tục.');
  }catch{setStatus('Danh sách đã đổi hoặc phiên không còn hợp lệ. Kiểm tra lại.')}
  finally{running=false;stop.disabled=true;for(const f of fields)f.disabled=false;preview=null;request=null;send.disabled=true}
 });
