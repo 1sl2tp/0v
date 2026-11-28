@@ -477,3 +477,10 @@ v13.271 CI 5/5 + Pages success 46085450245 at 569e7be; E4 BLOCKED. Approved 28/1
 - CI: 32 synthetic live parent cases, 4 widths × 4 levels × Chromium/WebKit; bounds, first/stable geometry, width on content change, touch targets, busy/close/focus, draft and scroll; retain actual directory/callback/viewer regression. Physical Safari/PWA/Android IME and paste/gesture acceptance separate. Rollback v13.272.
 
 - v13.272 E2 CI 5/5, E3 Pages deployment 46087896854 at 4fd443e success; viewer 8/8 anchor drift 0, warm fixture 0 bytes. Native E4 blocked. User approved all eight scope items; v13.273 candidate pending E2.
+
+
+## MOBILE-MESSAGE-ACTIONS-01 — v13.274
+- Mobile live only, Message.actionRecord/bindActions/openActions/closeActions owns read-only projection bound to canonical message ID, room, active session and connected row. No copy of formatted DOM, no pending/localAck or stale scope. Long press release >=500ms, <=10px travel, <=1px scroll drift; cancel on pointer cancellation/movement/leaving; selection and interactive descendants/media/bill/link take precedence. Keyboard ContextMenu/Shift+F10 on row; native text selection unchanged. No timer, focus or scroll writer; Popup owns modal lifecycle, close on room/nav/auth clear. Clipboard explicit click only; failure displayed, no false success. Info includes exact ID and local timestamp/side. B has disabled edit/recall; A cannot see those; reply/forward disabled on both. No write adapter verified: current admin actions SQL exposes send text, not L05. No new RPC, financial, SQL, backend, cache or keyboard modification.
+- Test live synthetic Chromium/WebKit 320/375/390/430 x A/B, reject move/cancel/selection; copy, ID, disabled write, anchor/draft, existing popup/media/nav regression. Raw Unicode policy case; physical long press/native clipboard/text selection and device acceptance pending. Rollback v13.273.
+
+- v13.273 E2 5/5, popup 32/32, anchor drift 0, E3 deployment 46088638840 success d50965d; E4 blocked. User approved 8/8 scope; v13.274 candidate pending E2.
