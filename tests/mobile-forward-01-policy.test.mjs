@@ -75,3 +75,16 @@ test('isolated canonical client identity vectors agree with MEDIA-SEND-02; lab k
  // The lab correlation key must never be mistaken for a canonical receipt key.
  assert.match(item.clientId,/^0v:forward:/);
 });
+
+test('offline ACK boundary: canonical ID is not a lab correlation ID and duplicate cannot expose asset identity',async()=>{
+ const data=input(),preview=planForward(data);
+ for(const patch of [
+  {clientId:'0v:ec41e4fd-a38d-5b22-8d13-43faa6813c5d',destinationAssetId:'def7d78f-c874-52e7-9486-e00e1aa7f087'},
+  {state:'already_present',messageId:null,destinationAssetId:id(901)},
+  {state:'already_present',messageId:null,assetId:id(901)}
+ ]){
+  let calls=0;
+  const result=await executeForward({preview,readInventory:async()=>data,isCurrent:()=>true,sendOfficialImage:async x=>{calls++;return {...ack(x),...patch}}});
+  assert.equal(calls,1);assert.equal(result.state,'reconcile_required');assert.equal(result.confirmed,0);assert.equal(result.skippedDuringSend,0);
+ }
+});
