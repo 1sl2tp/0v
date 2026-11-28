@@ -465,3 +465,6 @@ User approved 12 mobile directory requirements; main v13.269 and successful Page
 
 ### MOBILE-NAV-01 v13.271 / #289
 v13.270 E2 CI 5/5, Pages deployment success 46081699866 at bf16345; E4 BLOCKED. Approved 8/8. Candidate targets edge gesture, directory anchor, history-return and same pending room guard; existing auth/cache/draft behavior retained. Tests added; CI pending. Further cross-width live navigation proof and native acceptance pending. No v13.272 until release.
+
+### MOBILE-MEDIA-VIEW-01 v13.272 / #291
+v13.271 CI 5/5 + Pages success 46085450245 at 569e7be; E4 BLOCKED. Approved 28/11/2026. Candidate quiet cache progress, ready-only viewer, fit swipe and history anchor restore. Tests added; CI pending, isolated cold/warm metrics and native gesture/device evidence pending.

@@ -68,7 +68,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  // Expose only the internal paint entry in the intercepted synthetic fixture; never in the shipped HTML.
  const liveFixtureSource=require('node:fs').readFileSync('index.html','utf8'),fixtureBoundary='function appShellActive(){';
  assert.equal(liveFixtureSource.split(fixtureBoundary).length,2);
- const instrumentedLiveFixture=liveFixtureSource.replace('const DraftMedia=(()=>{','window.__fixtureContactUpdate=(row,patch)=>Contact.update(row,patch);\nconst DraftMedia=(()=>{').replace("if(!ThreadBillAutoPolicy.uuid(owner.accountId))return;liveSyncOwner=owner;","if(!ThreadBillAutoPolicy.uuid(owner.accountId)){window.__fixtureEnableSync=()=>{window.fixtureAllowSync=true;startLiveSync(owner)};if(!window.fixtureAllowSync)return;}liveSyncOwner=owner;").replace(fixtureBoundary,'window.__fixtureProjectionPending=()=>!!ScrollController.projectionJob;window.__fixtureMountScrollS4=()=>mountScrollS4();window.__fixtureQueuePaint=(...args)=>ScrollController.imagePaint(...args);\nwindow.__fixtureFixedGallery=(...args)=>MediaController.fixedGallery(...args);window.__fixtureFixedState=(...args)=>MediaController.fixedImageState(...args);\nwindow.__fixtureDirectoryCapture=(el)=>ScrollController.captureDirectoryPosition(el);window.__fixtureDirectoryRestore=(el,pos)=>ScrollController.restoreDirectoryPosition(el,pos);window.__fixtureAnchor=(el)=>ScrollController.captureReadingAnchor(el);window.__fixtureRestore=(...args)=>ScrollController.restoreReadingAnchor(...args);window.__fixtureReservePart=(...args)=>MediaController.reservePart(...args);window.__fixtureManualState=()=>ScrollController.manual;window.__fixtureScrollState=()=>({edge:ScrollController.edge(),visual:ScrollController.visualEdge(),intent:ScrollController.intentState(),tailTarget:ScrollController.tail?.target??null,tailAttempts:ScrollController.tail?.attempts??null,saved:ScrollController.savedPosition()});\n'+fixtureBoundary);
+ const instrumentedLiveFixture=liveFixtureSource.replace("if(new URLSearchParams(location.search).get('cachecheck')==='1')window.crmCacheStats=","window.crmCacheStats=").replace('const DraftMedia=(()=>{','window.__fixtureContactUpdate=(row,patch)=>Contact.update(row,patch);\nconst DraftMedia=(()=>{').replace("if(!ThreadBillAutoPolicy.uuid(owner.accountId))return;liveSyncOwner=owner;","if(!ThreadBillAutoPolicy.uuid(owner.accountId)){window.__fixtureEnableSync=()=>{window.fixtureAllowSync=true;startLiveSync(owner)};if(!window.fixtureAllowSync)return;}liveSyncOwner=owner;").replace(fixtureBoundary,'window.__fixtureProjectionPending=()=>!!ScrollController.projectionJob;window.__fixtureMountScrollS4=()=>mountScrollS4();window.__fixtureQueuePaint=(...args)=>ScrollController.imagePaint(...args);\nwindow.__fixtureFixedGallery=(...args)=>MediaController.fixedGallery(...args);window.__fixtureFixedState=(...args)=>MediaController.fixedImageState(...args);\nwindow.__fixtureDirectoryCapture=(el)=>ScrollController.captureDirectoryPosition(el);window.__fixtureDirectoryRestore=(el,pos)=>ScrollController.restoreDirectoryPosition(el,pos);window.__fixtureAnchor=(el)=>ScrollController.captureReadingAnchor(el);window.__fixtureRestore=(...args)=>ScrollController.restoreReadingAnchor(...args);window.__fixtureReservePart=(...args)=>MediaController.reservePart(...args);window.__fixtureManualState=()=>ScrollController.manual;window.__fixtureScrollState=()=>({edge:ScrollController.edge(),visual:ScrollController.visualEdge(),intent:ScrollController.intentState(),tailTarget:ScrollController.tail?.target??null,tailAttempts:ScrollController.tail?.attempts??null,saved:ScrollController.savedPosition()});\n'+fixtureBoundary);
  const webkitFixture=webkitTail?instrumentedLiveFixture.replace("async prepareLiveImage(data,mime,bill){","async prepareLiveImage(data,mime,bill){try{return await this.__fixtureOriginalPrepare(data,mime,bill)}catch(e){(window.__fixtureMediaErrors??=[]).push({name:e.name,message:e.message,type:data?.type,size:data?.size});throw e}},\n async __fixtureOriginalPrepare(data,mime,bill){"):instrumentedLiveFixture;
  await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:webkitFixture}));
  await pg.route('**/storage/v1/object/public/v21-avatars/fixture/avatar.jpg',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="gray"/></svg>'}));
@@ -81,7 +81,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.equal(await pg.getByText('Kiểm tra phê duyệt thiết bị',{exact:true}).count(),0);
  // Set mobile viewport before navigation so default live routing and floating profile both apply.
  await pg.setViewportSize({width:390,height:844});
- await pg.goto('https://1sl2tp.github.io/0v/?v=13.168&r=1');
+ await pg.goto('https://1sl2tp.github.io/0v/?live=1&v=13.168&r=1&cachecheck=1');
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  await pg.waitForFunction(()=>Array.isArray(window.calls));
  assert.deepEqual(await pg.evaluate(()=>window.calls),[]);
@@ -176,7 +176,44 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    await pg.evaluate(()=>sessionStorage.removeItem('fixture-nav-matrix'));if(original)await pg.setViewportSize(original);
    console.log('MOBILE-NAV-01 two-room/reload matrix',JSON.stringify(matrix));
  };
+
+ // First room entry and warm revisits are measured separately on the existing synthetic fixture.
+ const mediaCounters=()=>pg.evaluate(()=>window.crmCacheStats());
+ const mediaDelta=(before,after)=>Object.fromEntries(['downloads','downloadBytes','durableHits','displayReadyCount','displayReadyMs','displayRequestMs'].map(k=>[k,after[k]-before[k]]));
+ const firstMediaStart=async()=>({stats:await mediaCounters(),at:Date.now()});
+ const firstMediaFinish=async(start,controlledHold)=>{const delta=mediaDelta(start.stats,await mediaCounters());assert(Object.values(delta).every(Number.isFinite));assert(delta.downloads>0&&delta.downloadBytes>0&&delta.displayReadyCount>0,JSON.stringify(delta));console.log('MOBILE-MEDIA-VIEW-01 cold first room (synthetic; controlled hold='+controlledHold+')',JSON.stringify({...delta,wallMs:Date.now()-start.at}));};
+ const mobileMediaMatrix=async()=>{
+   const original=pg.viewportSize(),proof=[];
+   const group=pg.locator('[data-live-message-id=m] [data-live-image-group="3"]');
+   await group.locator('[data-image-state=ready]').nth(2).waitFor({state:'attached'});
+   const stage=pg.locator('[data-media-viewer-stage]');
+   const swipe=async(dx,dy)=>stage.evaluate((el,{dx,dy})=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;for(const [type,f] of [['pointerdown',0],['pointermove',.5],['pointerup',1]])el.dispatchEvent(new PointerEvent(type,{pointerId:71,pointerType:'touch',clientX:x+dx*f,clientY:y+dy*f,bubbles:true,cancelable:true,button:0}))},{dx,dy});
+   for(const width of [320,375,390,430]){
+     await pg.setViewportSize({width,height:844});await group.locator('.media-tile').first().scrollIntoViewIfNeeded();
+     await pg.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});
+      const anchorBefore=await pg.evaluate(()=>({pos:window.__fixtureScrollState().saved,room:document.querySelector('#messages').dataset.liveRoom}));
+      await group.locator('.media-tile').first().click();await stage.waitFor({state:'visible'});
+     await pg.waitForFunction(()=>document.querySelector('[data-media-viewer-stage]').dataset.mediaZoom==='1');
+     assert.equal(await stage.getAttribute('data-mobile-live-viewer'),'true');
+     const box=await stage.boundingBox();assert(box.width>0&&box.width<=width&&box.height>0);
+     assert.equal(await stage.getAttribute('data-media-index'),'0');await swipe(-100,0);assert.equal(await stage.getAttribute('data-media-index'),'1');
+     await swipe(0,100);assert.equal(await stage.getAttribute('data-media-index'),'1');
+     await pg.getByRole('button',{name:'Phóng to',exact:true}).click();assert.equal(await stage.getAttribute('data-media-zoom'),'1.5');await swipe(-100,0);assert.equal(await stage.getAttribute('data-media-index'),'1');
+     await pg.getByRole('button',{name:'Vừa khung',exact:true}).click();await stage.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;const p=(type,id,dx)=>el.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',clientX:x+dx,clientY:y,bubbles:true,cancelable:true,button:0}));p('pointerdown',81,-30);p('pointerdown',82,30);p('pointermove',81,-60);p('pointermove',82,60);p('pointerup',81,-60);p('pointerup',82,60)});assert(Number(await stage.getAttribute('data-media-zoom'))>1);assert.equal(await stage.getAttribute('data-media-index'),'1');await pg.getByRole('button',{name:'Vừa khung',exact:true}).click();await swipe(100,0);assert.equal(await stage.getAttribute('data-media-index'),'0');
+     await pg.getByRole('button',{name:'Đóng',exact:true}).click();await stage.waitFor({state:'detached'});
+     await pg.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});
+      const anchorAfter=await pg.evaluate(()=>({pos:window.__fixtureScrollState().saved,room:document.querySelector('#messages').dataset.liveRoom}));
+      assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');assert.equal(anchorAfter.room,anchorBefore.room);
+      const anchorDrift=Math.abs(anchorAfter.pos.top-anchorBefore.pos.top);
+      if(!anchorBefore.pos.pinned&&anchorBefore.pos.reading){assert.equal(anchorAfter.pos.reading?.id,anchorBefore.pos.reading.id);assert(Math.abs(anchorAfter.pos.reading.offset-anchorBefore.pos.reading.offset)<=1,JSON.stringify({anchorBefore,anchorAfter}));}
+      assert(anchorDrift<=1,JSON.stringify({width,anchorBefore,anchorAfter}));
+      proof.push({width,stageWidth:box.width,stageHeight:box.height,swipe:true,verticalIgnored:true,zoomPan:true,pinch:true,closeRoom:true,anchorDrift,readingAnchor:anchorBefore.pos.reading?.id??null,pinned:anchorBefore.pos.pinned});
+   }
+   if(original)await pg.setViewportSize(original);console.log('MOBILE-MEDIA-VIEW-01 viewer matrix',JSON.stringify(proof));
+   const warmAt=Date.now(),cacheBefore=await mediaCounters();assert(Number.isFinite(cacheBefore.downloadBytes)&&Number.isFinite(cacheBefore.displayReadyMs));await pg.locator('.conversation .panel-head [data-go=contacts]').click();await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelectorAll('[data-live-message-id=m] [data-image-state=ready] img').length===3);await pg.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});const cacheAfter=await pg.evaluate(()=>window.crmCacheStats());const delta=Object.fromEntries(['downloads','downloadBytes','durableHits','displayReadyCount','displayReadyMs','displayRequestMs'].map(k=>[k,cacheAfter[k]-cacheBefore[k]]));assert(Object.values(delta).every(Number.isFinite));console.log('MOBILE-MEDIA-VIEW-01 warm reopen counters (synthetic; delta, not guaranteed zero)',JSON.stringify({...delta,wallMs:Date.now()-warmAt}));
+ };
  if(webkitTail){
+   const cold=await firstMediaStart();
    await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).tap();
    await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
    const diagnose=async(label)=>{console.error('WebKit '+label,JSON.stringify(await pg.evaluate(()=>{const m=document.querySelector('#messages'),group=document.querySelector('[data-live-message-id="m"] [data-live-image-group="3"]');return {screen:document.querySelector('#app')?.dataset.screen,inert:document.querySelector('#composer')?.inert,top:m?.scrollTop,extent:m?.scrollHeight,height:m?.clientHeight,group:!!group,tiles:group?.querySelectorAll('.media-tile').length,pending:group?.dataset.mediaPaintPending,button:group?.querySelector('button')?.textContent,disabled:group?.querySelector('button')?.disabled,calls:window.calls,mediaErrors:window.__fixtureMediaErrors||[]}})),errors)}; 
@@ -187,6 +224,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    // This suite measures tail scroll, not IntersectionObserver auto-load timing. Use the existing load control if still idle.
    await group.evaluate(el=>{const b=el.querySelector('[data-image-state=idle]');if(b)b.click()});
    await pg.waitForFunction(()=>document.querySelectorAll('[data-live-message-id="m"] [data-live-image-group="3"] [data-image-state=ready] img').length===3).catch(async e=>{await diagnose('image');throw e});
+   await firstMediaFinish(cold,false);
    const tail=()=>pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3&&document.querySelector('#jumpBottom').hidden});
    const away=async()=>{await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>document.querySelector('#messages').scrollTop<=1&&!document.querySelector('#jumpBottom').hidden)};
    const raf=()=>pg.evaluate(()=>new Promise(resolve=>{let n=6;const step=()=>--n?requestAnimationFrame(step):resolve();requestAnimationFrame(step)}));
@@ -219,7 +257,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 
    await away();await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='600px');await raf();assert(await pg.locator('#messages').evaluate(m=>m.scrollTop<=1));await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='');await pg.locator('#jumpBottom').tap();await tail();
    const navWidthProof=[];const navOriginal=pg.viewportSize();for(const width of [320,375,390,430]){await pg.setViewportSize({width,height:844});await raf();assert.equal(await swipeFixture(50,120,0),'chat');assert.equal(await swipeFixture(12,20,120),'chat');assert.equal(await swipeFixture(12,120,0),'contacts');await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelector('[data-live-message-id=m]'));assert.notEqual(await pg.evaluate(()=>document.activeElement?.id),'draft');navWidthProof.push({width,edge:true,nonedge:true,vertical:true,reopen:true,focused:false})}if(navOriginal)await pg.setViewportSize(navOriginal);console.log('MOBILE-NAV-01 WebKit route matrix',JSON.stringify(navWidthProof));
-   await navTwoRoomMatrix();assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
+   await mobileMediaMatrix();await navTwoRoomMatrix();assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
  }
  // Live directory idempotent refresh: no avatar/row recreation on equal payload.
  await pg.evaluate(()=>{window.stableContact=document.querySelector('#contacts [data-id=c]');window.stableAvatar=window.stableContact.querySelector('img');window.stableName=window.stableContact.querySelector('.identity b');window.stableStamp=window.stableContact.querySelector('.time');window.directoryBefore=window.calls.filter(x=>x==='directory').length;document.querySelector('#directoryRefresh').click()});
@@ -230,6 +268,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 
  await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tìm kiếm',exact:true}).click();await pg.getByLabel('Tìm kiếm danh bạ',{exact:true}).fill('khong-co');await pg.getByText('Không tìm thấy danh bạ phù hợp.',{exact:true}).waitFor({state:'visible'});await pg.getByLabel('Tìm kiếm danh bạ',{exact:true}).fill('Liên hệ');await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).waitFor({state:'visible'});await pg.getByRole('button',{name:'Đóng tìm kiếm',exact:true}).click();
  assert.equal(await pg.getByText('Khách hàng mẫu',{exact:true}).count(),0);
+ const cold=await firstMediaStart();
  await pg.evaluate(()=>{window.fixtureHoldImages=new Promise(resolve=>window.fixtureReleaseImages=resolve)});
  await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).click();
  await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
@@ -246,6 +285,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const pendingGeometry=pendingState.height;
  // Fixed slots have pre-reserved geometry; pixels must become ready even during an active touch.
  await pg.waitForFunction(()=>document.querySelectorAll('[data-live-message-id=m] [data-live-image-group="3"] [data-image-state=ready] img').length===3);
+ await firstMediaFinish(cold,true);
  const fixedDuringTouch=await pg.evaluate(()=>{const m=document.querySelector('#messages'),g=m.querySelector('[data-live-message-id=m] [data-live-image-group="3"]'),r=g.getBoundingClientRect();return {width:r.width,height:r.height,top:m.scrollTop,extent:m.scrollHeight,clientHeight:m.clientHeight,queued:g.dataset.mediaPaintPending==='true',tiles:g.querySelectorAll('.media-tile').length,ready:[...g.querySelectorAll('img')].every(x=>x.complete&&x.naturalWidth>0),intent:window.__fixtureScrollState().intent}});
  assert.equal(fixedDuringTouch.tiles,3);assert(fixedDuringTouch.ready&&!fixedDuringTouch.queued);assert.equal(fixedDuringTouch.intent,'USER_SCROLLING');for(const key of ['width','height','top','extent','clientHeight'])assert(Math.abs(fixedDuringTouch[key]-pendingState[key])<=1,JSON.stringify({key,before:pendingState,after:fixedDuringTouch}));console.log('CACHE-RESOLVE-04c fixed images during touch',JSON.stringify({before:pendingState,after:fixedDuringTouch}));
  await pg.evaluate(()=>{const m=document.querySelector('#messages'),t=new Touch({identifier:6,target:m,clientX:150,clientY:350});m.dispatchEvent(new TouchEvent('touchend',{bubbles:true,touches:[],changedTouches:[t]}))});
@@ -496,7 +536,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.deepEqual(errors,[]);
  assert.deepEqual(await savedChatRoute(),chatRouteBeforeBills,'standalone bill route must not overwrite saved chat route');
  await pg.goto('https://1sl2tp.github.io/0v/');await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'}).catch(async e=>{console.error('NOTIFY-01 bill roundtrip diagnostic',JSON.stringify(await pg.evaluate(()=>({saved:JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null')?.screen,screen:document.querySelector('#app')?.dataset.screen,hidden:document.querySelector('#app')?.hidden,inert:document.querySelector('#composer')?.inert,logged:sessionStorage.getItem('fixture-logged')==='1',messages:document.querySelectorAll('#messages [data-live-message-id]').length,calls:window.calls,bootVisible:!document.querySelector('#liveBoot')?.hidden}))),errors);throw e});assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');
- await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
+ await pg.setViewportSize({width:390,height:844});await mobileMediaMatrix();await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
  assert.deepEqual(errors,[]);await pg.close();console.log('0v live login, directory, messages and logout passed (synthetic only)');
