@@ -25,7 +25,7 @@ echo 'CALLBACK-01 server fixture passed'
 # Additional media acceptance, CI-only, after ALL original bank assertions pass.
 # Use the ephemeral local PostgreSQL service, but a separate database.
 # Fail closed: media acceptance is mandatory once this fixture is present on main.
-for required in general_race_fixture.sh general_race_fixture.sql general_image_verify.py general_media_contract.py test_general_image_verify.py test_general_media_contract.py png_verify.py; do
+for required in general_race_fixture.sh general_race_fixture.sql general_image_verify.py general_media_contract.py test_general_image_verify.py test_general_media_contract.py general_auth_contract.py test_general_auth_contract.py png_verify.py; do
   test -f "fixtures/media-send/$required"
 done
 echo 'MEDIA-SEND independent database fixture start'
@@ -40,8 +40,8 @@ python3 -m venv "$tmp/media-venv"
 import sys, unittest
 suite = unittest.defaultTestLoader.discover("fixtures/media-send", pattern="test_general*.py")
 count = suite.countTestCases()
-if count < 16:
-    sys.exit(f"MEDIA-SEND incomplete test discovery: {count} < 16")
+if count < 18:
+    sys.exit(f"MEDIA-SEND incomplete test discovery: {count} < 18")
 result = unittest.TextTestRunner(verbosity=2).run(suite)
 if not result.wasSuccessful() or result.testsRun != count or result.skipped or result.expectedFailures:
     sys.exit("MEDIA-SEND incomplete or failed execution")
