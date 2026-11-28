@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.291)
+## 00. Chỉ mục rule đang có hiệu lực (v13.292)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -2140,3 +2140,8 @@ E0 #310 9b15010 2/2, job 140897388929, 64/64, KB baseline true; squash 0f6c39f. 
 
 ### MOBILE-GLASS-06 E0 — gradient/edge depth, v13.291 unchanged
 - Baseline released #323 6161026, Pages 46161459590 success. E0 only: baseline vs gradient (brighter highlight, darker lower stop) vs edge alpha .22 vs combined; all existing mobile elevation tokens none, same 1px borders, no new layers, no production overrides. Actual visible directory rail/controls and composer/jump/popup via live fixture, both engines × 320/375/390/430. Rotate order, record computed paint, contrast estimate, actual travel, JS/rAF p95/max/slow, geometry and anchor drift, popup separate ticks. Top may have no scroll range; report rather than claim scroll performance if span=0. Existing accessible fallback/keyboard checks retained. Restore all fixture tokens/scroll. Require same geometry/border width/no shadow, estimated text contrast ≥4.5 where measurable. Review candidate vs same-run baseline and v13.291 thresholds (WebKit scroll p95≤25ms, slow≤2/24; popup p95≤40ms, slow≤6/24); select only after evidence and visual/device review. No change to runtime, version, four keyboard ranges, backend, SQL or ledger. Native E4 remains pending.
+
+
+### MOBILE-GLASS-06 v13.292 — selected gradient-only profile B
+- E0 #324 dd7d512 CI 2/2 job 141030163005, 64/64 profile cases. WebKit A/B/C/D directory p95 17–20/18–21/17–21/17–21ms, room 19–25/19–22/19–23/19–23ms; slow room 1/0/0/0 per96, popup 8/6/11/10 per96; popup p95 A24–30 B24–31 C25–30 D25–29ms. Chromium all zero slow. All spans240px, anchor/geometry drift0; minimum estimated Top contrast A/C8.80, B/D11.46, room A/C11.78 B/D12.74. Select B because gradient improves estimated contrast, fewer slow popup frames in this run, no darker edge required. Small differences not proof of universal superiority; native visual/device review remains E4 BLOCKED.
+- E1 modifies only shared mobile face/rail tokens to measured B, retains edge alpha .12, no shadow, existing accessibility/optional blur, desktop/geometry/keyboard unchanged. Baseline/gradient/edge/combined remain explicit matched token controls plus actual candidate without overrides; verify computed paint equals B, differs from old gradient; 240px travel, same geometry/contrast and no shadow; candidate scroll p95≤25ms slow≤2/24 and popup p95≤40ms slow≤6/24. CI exact head 5/5 before merge and Pages; native not claimed. Four protected ranges byte-identical, backend SQL ledger untouched.
