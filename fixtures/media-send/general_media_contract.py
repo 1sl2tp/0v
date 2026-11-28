@@ -71,3 +71,27 @@ def validate_ack(m,ack):
     canonical_uuid(ack.get("message_id"))
     if ack.get("state")!="committed": raise ValueError("uncommitted")
     return ack["message_id"]
+
+
+def validate_receipt(m, receipt):
+    """Pure normalization for an authenticated owner's canonical receipt.
+    A duplicate receipt is not a message ACK; never expose another sender's IDs.
+    Does not authorize a request or certify that a live owner exists.
+    """
+    if not isinstance(receipt, dict):
+        raise ValueError("receipt")
+    expected={"account":m.account,"room":m.room,"client_id":m.client_id,
+              "sha256":m.sha256,"size":m.size,"mime":m.mime}
+    if any(receipt.get(k)!=v for k,v in expected.items()) or type(receipt.get("size")) is not int:
+        raise ValueError("receipt mismatch")
+    state=receipt.get("state")
+    result={"state":state,"clientId":m.client_id,"destinationRoom":m.room,
+            "sha256":m.sha256,"sizeBytes":m.size}
+    if state=="committed":
+        result["messageId"]=validate_ack(m,receipt)
+    elif state=="already_present":
+        if receipt.get("message_id") is not None or receipt.get("asset_id") is not None:
+            raise ValueError("duplicate receipt contains message identity")
+    else:
+        raise ValueError("receipt state")
+    return result
