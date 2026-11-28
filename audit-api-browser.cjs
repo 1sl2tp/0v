@@ -168,6 +168,42 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
   }
   if(original)await pg.setViewportSize(original);console.log('MOBILE-NAV-01b interior swipe matrix',JSON.stringify(proof));
  };
+ const mobileNotifyMatrix=async()=>{
+  const original=pg.viewportSize(),proof=[];
+  const back=()=>pg.locator('.conversation .panel-head [data-go=contacts]').click();
+  await back();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='contacts');
+  for(const width of [320,375,390,430]){
+   await pg.setViewportSize({width,height:844});
+   const result=await pg.evaluate(async()=>{
+    const row=document.querySelector('#contacts [data-id=c]'),avatar=row.querySelector('.avatar'),stamp=row.querySelector('.time'),preview=row.querySelector('.identity small'),update=window.__fixtureContactUpdate;
+    const old=row.querySelector('.unread-count'),prior=old?(old.dataset.unreadKind==='dot'?'•':Number(old.textContent)):0;
+    const frame=()=>new Promise(requestAnimationFrame);await frame();await frame();
+    const geometry=()=>[row,avatar,stamp,preview].map(el=>{const r=el.getBoundingClientRect();return [r.x,r.y,r.width,r.height]});
+    const before=geometry(),stable=()=>geometry().every((r,i)=>r.every((n,j)=>Math.abs(n-before[i][j])<=1)),anchor=badge=>{const a=avatar.getBoundingClientRect(),b=badge.getBoundingClientRect();return Math.abs(b.bottom-a.bottom)<=2&&Math.abs(b.right-a.right)<=2&&b.left>=a.left-1&&b.top>=a.top};
+    let same=true,aligned=true,geometryOK=true,values=true,noReplay=true,invalidPreserves=true,cleared=false;
+    try{
+     update(row,{unread:0});update(row,{unread:'•'});const badge=row.querySelector('.unread-count');
+     for(const value of ['•',1,9,99,123,10000]){
+      update(row,{unread:value});const next=row.querySelector('.unread-count');same&&=next===badge&&row.querySelectorAll('.unread-count').length===1;
+      aligned&&=anchor(next);geometryOK&&=stable();values&&=next.textContent===String(value)&&next.getAttribute('aria-label')===(value==='•'?'Có tin chưa đọc':value+' tin chưa đọc')&&(Number(value)>99?getComputedStyle(next,'::after').content.includes('99+'):next.dataset.unreadOverflow==='false');
+      const mo=new MutationObserver(()=>{});mo.observe(next,{attributes:true,childList:true,characterData:true,subtree:true});update(row,{unread:value});noReplay&&=mo.takeRecords().length===0;mo.disconnect();
+     }
+     update(row,{unread:-1});update(row,{unread:NaN});invalidPreserves=row.querySelector('.unread-count')===badge&&badge.textContent==='10000';
+     update(row,{unread:0});cleared=!row.querySelector('.unread-count')&&row.dataset.contactUnread==='false'&&stable();
+     const demoBlocked=typeof window.receiveDemo==='undefined'&&document.querySelector('#incomingDemo').hidden&&!document.querySelector('.typing-test')&&!document.querySelector('.is-typing');
+     return {same,aligned,geometryOK,values,noReplay,invalidPreserves,cleared,demoBlocked,last:row.dataset.contactView==='last'&&!row.hasAttribute('aria-current')}
+    }finally{update(row,{unread:prior})}
+   });
+   assert(Object.values(result).every(Boolean),JSON.stringify({width,...result}));
+   await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelector('[data-live-message-id=m]'));
+   assert(await pg.locator('#contacts [data-id=c]').evaluate(row=>row.dataset.contactView==='open'&&row.getAttribute('aria-current')==='true'));
+   await back();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='contacts');
+   assert(await pg.locator('#contacts [data-id=c]').evaluate(row=>row.dataset.contactView==='last'&&!row.hasAttribute('aria-current')));
+   proof.push({width,...result,open:true,returned:true});
+  }
+  await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelector('[data-live-message-id=m]'));
+  if(original)await pg.setViewportSize(original);console.log('MOBILE-NOTIFY-UI-01 projection matrix',JSON.stringify(proof));
+ };
  const navTwoRoomMatrix=async()=>{
    const original=pg.viewportSize(),matrix=[];
    const back=()=>pg.locator('.conversation .panel-head [data-go=contacts]').click();
@@ -356,7 +392,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 
    await away();await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='600px');await raf();assert(await pg.locator('#messages').evaluate(m=>m.scrollTop<=1));await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='');await pg.locator('#jumpBottom').tap();await tail();
    const navWidthProof=[];const navOriginal=pg.viewportSize();for(const width of [320,375,390,430]){await pg.setViewportSize({width,height:844});await raf();assert.equal(await swipeFixture(50,120,0),'chat');assert.equal(await swipeFixture(12,20,120),'chat');assert.equal(await swipeFixture(12,120,0),'contacts');await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelector('[data-live-message-id=m]'));assert.notEqual(await pg.evaluate(()=>document.activeElement?.id),'draft');navWidthProof.push({width,edge:true,nonedge:true,vertical:true,reopen:true,focused:false})}if(navOriginal)await pg.setViewportSize(navOriginal);console.log('MOBILE-NAV-01 WebKit route matrix',JSON.stringify(navWidthProof));
-   await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await mobileBackMatrix();await navTwoRoomMatrix();assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
+   await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await mobileBackMatrix();await mobileNotifyMatrix();await navTwoRoomMatrix();assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
  }
  // Live directory idempotent refresh: no avatar/row recreation on equal payload.
  await pg.evaluate(()=>{window.stableContact=document.querySelector('#contacts [data-id=c]');window.stableAvatar=window.stableContact.querySelector('img');window.stableName=window.stableContact.querySelector('.identity b');window.stableStamp=window.stableContact.querySelector('.time');window.directoryBefore=window.calls.filter(x=>x==='directory').length;document.querySelector('#directoryRefresh').click()});
@@ -635,7 +671,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.deepEqual(errors,[]);
  assert.deepEqual(await savedChatRoute(),chatRouteBeforeBills,'standalone bill route must not overwrite saved chat route');
  await pg.goto('https://1sl2tp.github.io/0v/');await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'}).catch(async e=>{console.error('NOTIFY-01 bill roundtrip diagnostic',JSON.stringify(await pg.evaluate(()=>({saved:JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null')?.screen,screen:document.querySelector('#app')?.dataset.screen,hidden:document.querySelector('#app')?.hidden,inert:document.querySelector('#composer')?.inert,logged:sessionStorage.getItem('fixture-logged')==='1',messages:document.querySelectorAll('#messages [data-live-message-id]').length,calls:window.calls,bootVisible:!document.querySelector('#liveBoot')?.hidden}))),errors);throw e});assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');
- await pg.setViewportSize({width:390,height:844});await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await mobileBackMatrix();await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
+ await pg.setViewportSize({width:390,height:844});await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await mobileBackMatrix();await mobileNotifyMatrix();await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
  assert.deepEqual(errors,[]);await pg.close();console.log('0v live login, directory, messages and logout passed (synthetic only)');

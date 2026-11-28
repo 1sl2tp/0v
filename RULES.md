@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.275)
+## 00. Chỉ mục rule đang có hiệu lực (v13.276)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -2012,3 +2012,8 @@ Owner: BillAuditList / CardController / BillRoot02Comparison. Chỉ trang bill �
 ## MOBILE-NAV-01b — v13.275
 - User reports swipe back fails. E0 source: v13.271 edge-only <=24px; Safari native edge may intercept, actual device unverified. Supersedes edge-only rule for live chat reading area only: rightward horizontal gesture can start inside #messages plain text/blank area, retain edge elsewhere and existing demo behavior except stronger cancellation guards. Single touch ID/route epoch, no dialog, no selected text, no input/buttons/links/media/bill; cancel on vertical/left/multi/touchcancel or scroll drift >2px. Lock at >=14px and 1.5x horizontal dominance, commit on release >=min(64px,17% width), dy<.65dx and <=1s. Thresholds local design choices. Existing routeBack/Main/ScrollController retain route/draft/anchor ownership. Mobile reading region touch-action pan-y pinch-zoom; passive listeners, no preventDefault or keyboard focus/geometry writer; native browser edge still not guaranteed. No new gesture overlay, backend/SQL/ledger/cache change.
 - Test Chromium/WebKit 320/375/390/430, interior return and reject vertical/left/multi/cancel/selection/media/composer; preserve draft on reopen, existing edge/outside/anchor/2-room/long-press and media tests retained. Synthetic touch events, not physical Safari/PWA. Rollback v13.274.
+
+
+## MOBILE-NOTIFY-UI-01 — v13.276
+- User approved 8/8. Contact.projectUnread owns projection only: explicit positive safe integer or unknown dot, zero clears, invalid numeric cannot clear known badge; one keyed badge, exact accessible count, visual cap 99+, repeat same value does not mutate. Mobile avatar grid cell centered then bottom-aligned by avatar size token, fixed 16px count/10px dot, no transition or pointer interception; name/preview/time tracks and row height fixed. Contact.projectRoute distinguishes open chat from last selected directory row (aria-current only open), no extra notification effect, receipt/Push/ACK remains existing ReadStateController/NotificationController unchanged.
+- Demo receive/typing controls blocked on live including typingtest query, no live typing signal proven so no invented state. Does not activate actual typing or additional alerts. Tests Chromium/WebKit 320/375/390/430: dot/1/9/99/123/10000/0, avatar bounds, fixed row/preview/time/identity, repeat no mutation, invalid guard, correct route, demo blocked. Retain actual scoped delayed ACK and NotificationController regression; physical device/multi-device Push not proven. Rollback v13.275.
