@@ -81,7 +81,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.equal(await pg.getByText('Kiểm tra phê duyệt thiết bị',{exact:true}).count(),0);
  // Set mobile viewport before navigation so default live routing and floating profile both apply.
  await pg.setViewportSize({width:390,height:844});
- await pg.goto('https://1sl2tp.github.io/0v/?v=13.168&r=1');
+ await pg.goto('https://1sl2tp.github.io/0v/?v=13.168&r=1&cachecheck=1');
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  await pg.waitForFunction(()=>Array.isArray(window.calls));
  assert.deepEqual(await pg.evaluate(()=>window.calls),[]);
@@ -176,6 +176,29 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    await pg.evaluate(()=>sessionStorage.removeItem('fixture-nav-matrix'));if(original)await pg.setViewportSize(original);
    console.log('MOBILE-NAV-01 two-room/reload matrix',JSON.stringify(matrix));
  };
+
+ const mobileMediaMatrix=async()=>{
+   const original=pg.viewportSize(),proof=[];
+   const group=pg.locator('[data-live-message-id=m] [data-live-image-group="3"]');
+   await group.locator('[data-image-state=ready]').nth(2).waitFor({state:'attached'});
+   const stage=pg.locator('[data-media-viewer-stage]');
+   const swipe=async(dx,dy)=>stage.evaluate((el,{dx,dy})=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;for(const [type,f] of [['pointerdown',0],['pointermove',.5],['pointerup',1]])el.dispatchEvent(new PointerEvent(type,{pointerId:71,pointerType:'touch',clientX:x+dx*f,clientY:y+dy*f,bubbles:true,cancelable:true,button:0}))},{dx,dy});
+   for(const width of [320,375,390,430]){
+     await pg.setViewportSize({width,height:844});await group.locator('.media-tile').first().scrollIntoViewIfNeeded();
+     await group.locator('.media-tile').first().click();await stage.waitFor({state:'visible'});
+     await pg.waitForFunction(()=>document.querySelector('[data-media-viewer-stage]').dataset.mediaZoom==='1');
+     assert.equal(await stage.getAttribute('data-mobile-live-viewer'),'true');
+     const box=await stage.boundingBox();assert(box.width>0&&box.width<=width&&box.height>0);
+     assert.equal(await stage.getAttribute('data-media-index'),'0');await swipe(-100,0);assert.equal(await stage.getAttribute('data-media-index'),'1');
+     await swipe(0,100);assert.equal(await stage.getAttribute('data-media-index'),'1');
+     await pg.getByRole('button',{name:'Phóng to',exact:true}).click();assert.equal(await stage.getAttribute('data-media-zoom'),'1.5');await swipe(-100,0);assert.equal(await stage.getAttribute('data-media-index'),'1');
+     await pg.getByRole('button',{name:'Vừa khung',exact:true}).click();await swipe(100,0);assert.equal(await stage.getAttribute('data-media-index'),'0');
+     await pg.getByRole('button',{name:'Đóng',exact:true}).click();await stage.waitFor({state:'detached'});
+     assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');proof.push({width,stageWidth:box.width,stageHeight:box.height,swipe:true,verticalIgnored:true,zoomPan:true,closeRoom:true});
+   }
+   if(original)await pg.setViewportSize(original);console.log('MOBILE-MEDIA-VIEW-01 viewer matrix',JSON.stringify(proof));
+   console.log('MOBILE-MEDIA-VIEW-01 cache counters (synthetic session)',JSON.stringify(await pg.evaluate(()=>window.crmCacheStats?.()??null)));
+ };
  if(webkitTail){
    await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).tap();
    await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
@@ -219,7 +242,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 
    await away();await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='600px');await raf();assert(await pg.locator('#messages').evaluate(m=>m.scrollTop<=1));await pg.locator('[data-live-message-id="old-22"]').evaluate(e=>e.style.minHeight='');await pg.locator('#jumpBottom').tap();await tail();
    const navWidthProof=[];const navOriginal=pg.viewportSize();for(const width of [320,375,390,430]){await pg.setViewportSize({width,height:844});await raf();assert.equal(await swipeFixture(50,120,0),'chat');assert.equal(await swipeFixture(12,20,120),'chat');assert.equal(await swipeFixture(12,120,0),'contacts');await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelector('[data-live-message-id=m]'));assert.notEqual(await pg.evaluate(()=>document.activeElement?.id),'draft');navWidthProof.push({width,edge:true,nonedge:true,vertical:true,reopen:true,focused:false})}if(navOriginal)await pg.setViewportSize(navOriginal);console.log('MOBILE-NAV-01 WebKit route matrix',JSON.stringify(navWidthProof));
-   await navTwoRoomMatrix();assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
+   await mobileMediaMatrix();await navTwoRoomMatrix();assert.deepEqual(errors,[]);console.log('WebKit mobile live tail tap, late batch and user-away passed',JSON.stringify(batch));await pg.close();return;
  }
  // Live directory idempotent refresh: no avatar/row recreation on equal payload.
  await pg.evaluate(()=>{window.stableContact=document.querySelector('#contacts [data-id=c]');window.stableAvatar=window.stableContact.querySelector('img');window.stableName=window.stableContact.querySelector('.identity b');window.stableStamp=window.stableContact.querySelector('.time');window.directoryBefore=window.calls.filter(x=>x==='directory').length;document.querySelector('#directoryRefresh').click()});
@@ -496,7 +519,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  assert.deepEqual(errors,[]);
  assert.deepEqual(await savedChatRoute(),chatRouteBeforeBills,'standalone bill route must not overwrite saved chat route');
  await pg.goto('https://1sl2tp.github.io/0v/');await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'}).catch(async e=>{console.error('NOTIFY-01 bill roundtrip diagnostic',JSON.stringify(await pg.evaluate(()=>({saved:JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null')?.screen,screen:document.querySelector('#app')?.dataset.screen,hidden:document.querySelector('#app')?.hidden,inert:document.querySelector('#composer')?.inert,logged:sessionStorage.getItem('fixture-logged')==='1',messages:document.querySelectorAll('#messages [data-live-message-id]').length,calls:window.calls,bootVisible:!document.querySelector('#liveBoot')?.hidden}))),errors);throw e});assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');
- await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
+ await pg.setViewportSize({width:390,height:844});await mobileMediaMatrix();await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
  assert.deepEqual(errors,[]);await pg.close();console.log('0v live login, directory, messages and logout passed (synthetic only)');
