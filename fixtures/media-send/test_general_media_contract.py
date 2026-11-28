@@ -1,5 +1,5 @@
 import unittest
-from general_media_contract import make_manifest,validate_ticket,validate_verified_object,validate_ack
+from general_media_contract import make_manifest,validate_ticket,validate_verified_object,validate_ack,validate_receipt
 def id(n): return "00000000-0000-4000-8000-"+str(n).zfill(12)
 def manifest(**extra):
     return make_manifest(**({"account":id(1),"room":id(2),"source_asset":id(3),"sha256":"a"*64,"size":100,"mime":"image/jpeg"}|extra))
@@ -36,4 +36,14 @@ class MediaContract(unittest.TestCase):
         self.assertEqual(validate_ack(m,a),id(6))
         for x in ({"state":"uploaded"},{"room":id(9)},{"account":id(9)},{"client_id":"wrong"},{"asset_id":id(9)},{"sha256":"b"*64},{"size":101},{"mime":"image/png"},{"message_id":None}):
             with self.assertRaises(ValueError): validate_ack(m,a|x)
+    def test_normalized_receipt_committed_and_duplicate(self):
+        m=manifest(); a=ack(m)
+        expected={"state":"committed","clientId":m.client_id,"destinationRoom":m.room,"sha256":m.sha256,"sizeBytes":m.size,"messageId":id(6)}
+        self.assertEqual(validate_receipt(m,a),expected)
+        dup={k:v for k,v in a.items() if k not in ("message_id","asset_id")}
+        dup["state"]="already_present"
+        self.assertEqual(validate_receipt(m,dup),{k:v for k,v in (expected|{"state":"already_present"}).items() if k!="messageId"})
+        for patch in ({"account":id(9)},{"client_id":"wrong"},{"room":id(9)},{"sha256":"b"*64},{"size":101},{"size":100.0},{"mime":"image/png"},{"message_id":id(6)},{"asset_id":id(9)},{"state":"uploaded"}):
+            with self.assertRaises(ValueError): validate_receipt(m,dup|patch)
+        with self.assertRaises(ValueError): validate_receipt(m,None)
 if __name__=="__main__": unittest.main()
