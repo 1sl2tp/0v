@@ -177,6 +177,11 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    console.log('MOBILE-NAV-01 two-room/reload matrix',JSON.stringify(matrix));
  };
 
+ // First room entry and warm revisits are measured separately on the existing synthetic fixture.
+ const mediaCounters=()=>pg.evaluate(()=>window.crmCacheStats());
+ const mediaDelta=(before,after)=>Object.fromEntries(['downloads','downloadBytes','durableHits','displayReadyCount','displayReadyMs','displayRequestMs'].map(k=>[k,after[k]-before[k]]));
+ const firstMediaStart=async()=>({stats:await mediaCounters(),at:Date.now()});
+ const firstMediaFinish=async(start,controlledHold)=>{const delta=mediaDelta(start.stats,await mediaCounters());assert(Object.values(delta).every(Number.isFinite));assert(delta.downloads>0&&delta.downloadBytes>0&&delta.displayReadyCount>0,JSON.stringify(delta));console.log('MOBILE-MEDIA-VIEW-01 cold first room (synthetic; controlled hold='+controlledHold+')',JSON.stringify({...delta,wallMs:Date.now()-start.at}));};
  const mobileMediaMatrix=async()=>{
    const original=pg.viewportSize(),proof=[];
    const group=pg.locator('[data-live-message-id=m] [data-live-image-group="3"]');
@@ -185,7 +190,9 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    const swipe=async(dx,dy)=>stage.evaluate((el,{dx,dy})=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;for(const [type,f] of [['pointerdown',0],['pointermove',.5],['pointerup',1]])el.dispatchEvent(new PointerEvent(type,{pointerId:71,pointerType:'touch',clientX:x+dx*f,clientY:y+dy*f,bubbles:true,cancelable:true,button:0}))},{dx,dy});
    for(const width of [320,375,390,430]){
      await pg.setViewportSize({width,height:844});await group.locator('.media-tile').first().scrollIntoViewIfNeeded();
-     await group.locator('.media-tile').first().click();await stage.waitFor({state:'visible'});
+     await pg.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});
+      const anchorBefore=await pg.evaluate(()=>({pos:window.__fixtureScrollState().saved,room:document.querySelector('#messages').dataset.liveRoom}));
+      await group.locator('.media-tile').first().click();await stage.waitFor({state:'visible'});
      await pg.waitForFunction(()=>document.querySelector('[data-media-viewer-stage]').dataset.mediaZoom==='1');
      assert.equal(await stage.getAttribute('data-mobile-live-viewer'),'true');
      const box=await stage.boundingBox();assert(box.width>0&&box.width<=width&&box.height>0);
@@ -194,12 +201,19 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
      await pg.getByRole('button',{name:'Phóng to',exact:true}).click();assert.equal(await stage.getAttribute('data-media-zoom'),'1.5');await swipe(-100,0);assert.equal(await stage.getAttribute('data-media-index'),'1');
      await pg.getByRole('button',{name:'Vừa khung',exact:true}).click();await stage.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;const p=(type,id,dx)=>el.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',clientX:x+dx,clientY:y,bubbles:true,cancelable:true,button:0}));p('pointerdown',81,-30);p('pointerdown',82,30);p('pointermove',81,-60);p('pointermove',82,60);p('pointerup',81,-60);p('pointerup',82,60)});assert(Number(await stage.getAttribute('data-media-zoom'))>1);assert.equal(await stage.getAttribute('data-media-index'),'1');await pg.getByRole('button',{name:'Vừa khung',exact:true}).click();await swipe(100,0);assert.equal(await stage.getAttribute('data-media-index'),'0');
      await pg.getByRole('button',{name:'Đóng',exact:true}).click();await stage.waitFor({state:'detached'});
-     assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');proof.push({width,stageWidth:box.width,stageHeight:box.height,swipe:true,verticalIgnored:true,zoomPan:true,pinch:true,closeRoom:true});
+     await pg.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});
+      const anchorAfter=await pg.evaluate(()=>({pos:window.__fixtureScrollState().saved,room:document.querySelector('#messages').dataset.liveRoom}));
+      assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');assert.equal(anchorAfter.room,anchorBefore.room);
+      const anchorDrift=Math.abs(anchorAfter.pos.top-anchorBefore.pos.top);
+      if(!anchorBefore.pos.pinned&&anchorBefore.pos.reading){assert.equal(anchorAfter.pos.reading?.id,anchorBefore.pos.reading.id);assert(Math.abs(anchorAfter.pos.reading.offset-anchorBefore.pos.reading.offset)<=1,JSON.stringify({anchorBefore,anchorAfter}));}
+      assert(anchorDrift<=1,JSON.stringify({width,anchorBefore,anchorAfter}));
+      proof.push({width,stageWidth:box.width,stageHeight:box.height,swipe:true,verticalIgnored:true,zoomPan:true,pinch:true,closeRoom:true,anchorDrift,readingAnchor:anchorBefore.pos.reading?.id??null,pinned:anchorBefore.pos.pinned});
    }
    if(original)await pg.setViewportSize(original);console.log('MOBILE-MEDIA-VIEW-01 viewer matrix',JSON.stringify(proof));
-   const cacheBefore=await pg.evaluate(()=>window.crmCacheStats());assert(Number.isFinite(cacheBefore.downloadBytes)&&Number.isFinite(cacheBefore.displayReadyMs));await pg.locator('.conversation .panel-head [data-go=contacts]').click();await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelectorAll('[data-live-message-id=m] [data-image-state=ready] img').length===3);await pg.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});const cacheAfter=await pg.evaluate(()=>window.crmCacheStats());const delta=Object.fromEntries(['downloads','downloadBytes','durableHits','displayReadyCount','displayReadyMs','displayRequestMs'].map(k=>[k,cacheAfter[k]-cacheBefore[k]]));assert(Object.values(delta).every(Number.isFinite));console.log('MOBILE-MEDIA-VIEW-01 warm reopen counters (synthetic; delta, not guaranteed zero)',JSON.stringify(delta));
+   const warmAt=Date.now(),cacheBefore=await mediaCounters();assert(Number.isFinite(cacheBefore.downloadBytes)&&Number.isFinite(cacheBefore.displayReadyMs));await pg.locator('.conversation .panel-head [data-go=contacts]').click();await pg.locator('#contacts [data-id=c]').click();await pg.waitForFunction(()=>document.querySelector('#app').dataset.screen==='chat'&&!document.querySelector('#composer').inert&&document.querySelectorAll('[data-live-message-id=m] [data-image-state=ready] img').length===3);await pg.evaluate(async()=>{for(let i=0;i<6;i++)await new Promise(requestAnimationFrame)});const cacheAfter=await pg.evaluate(()=>window.crmCacheStats());const delta=Object.fromEntries(['downloads','downloadBytes','durableHits','displayReadyCount','displayReadyMs','displayRequestMs'].map(k=>[k,cacheAfter[k]-cacheBefore[k]]));assert(Object.values(delta).every(Number.isFinite));console.log('MOBILE-MEDIA-VIEW-01 warm reopen counters (synthetic; delta, not guaranteed zero)',JSON.stringify({...delta,wallMs:Date.now()-warmAt}));
  };
  if(webkitTail){
+   const cold=await firstMediaStart();
    await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).tap();
    await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
    const diagnose=async(label)=>{console.error('WebKit '+label,JSON.stringify(await pg.evaluate(()=>{const m=document.querySelector('#messages'),group=document.querySelector('[data-live-message-id="m"] [data-live-image-group="3"]');return {screen:document.querySelector('#app')?.dataset.screen,inert:document.querySelector('#composer')?.inert,top:m?.scrollTop,extent:m?.scrollHeight,height:m?.clientHeight,group:!!group,tiles:group?.querySelectorAll('.media-tile').length,pending:group?.dataset.mediaPaintPending,button:group?.querySelector('button')?.textContent,disabled:group?.querySelector('button')?.disabled,calls:window.calls,mediaErrors:window.__fixtureMediaErrors||[]}})),errors)}; 
@@ -210,6 +224,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    // This suite measures tail scroll, not IntersectionObserver auto-load timing. Use the existing load control if still idle.
    await group.evaluate(el=>{const b=el.querySelector('[data-image-state=idle]');if(b)b.click()});
    await pg.waitForFunction(()=>document.querySelectorAll('[data-live-message-id="m"] [data-live-image-group="3"] [data-image-state=ready] img').length===3).catch(async e=>{await diagnose('image');throw e});
+   await firstMediaFinish(cold,false);
    const tail=()=>pg.waitForFunction(()=>{const m=document.querySelector('#messages');return Math.abs(m.scrollHeight-m.clientHeight-m.scrollTop)<3&&document.querySelector('#jumpBottom').hidden});
    const away=async()=>{await pg.locator('#messages').evaluate(m=>{m.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,bubbles:true}));m.scrollTop=0});await pg.waitForFunction(()=>document.querySelector('#messages').scrollTop<=1&&!document.querySelector('#jumpBottom').hidden)};
    const raf=()=>pg.evaluate(()=>new Promise(resolve=>{let n=6;const step=()=>--n?requestAnimationFrame(step):resolve();requestAnimationFrame(step)}));
@@ -253,6 +268,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
 
  await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tìm kiếm',exact:true}).click();await pg.getByLabel('Tìm kiếm danh bạ',{exact:true}).fill('khong-co');await pg.getByText('Không tìm thấy danh bạ phù hợp.',{exact:true}).waitFor({state:'visible'});await pg.getByLabel('Tìm kiếm danh bạ',{exact:true}).fill('Liên hệ');await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).waitFor({state:'visible'});await pg.getByRole('button',{name:'Đóng tìm kiếm',exact:true}).click();
  assert.equal(await pg.getByText('Khách hàng mẫu',{exact:true}).count(),0);
+ const cold=await firstMediaStart();
  await pg.evaluate(()=>{window.fixtureHoldImages=new Promise(resolve=>window.fixtureReleaseImages=resolve)});
  await pg.locator('#contacts').getByText('Liên hệ kiểm thử',{exact:true}).click();
  await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'});
@@ -269,6 +285,7 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const pendingGeometry=pendingState.height;
  // Fixed slots have pre-reserved geometry; pixels must become ready even during an active touch.
  await pg.waitForFunction(()=>document.querySelectorAll('[data-live-message-id=m] [data-live-image-group="3"] [data-image-state=ready] img').length===3);
+ await firstMediaFinish(cold,true);
  const fixedDuringTouch=await pg.evaluate(()=>{const m=document.querySelector('#messages'),g=m.querySelector('[data-live-message-id=m] [data-live-image-group="3"]'),r=g.getBoundingClientRect();return {width:r.width,height:r.height,top:m.scrollTop,extent:m.scrollHeight,clientHeight:m.clientHeight,queued:g.dataset.mediaPaintPending==='true',tiles:g.querySelectorAll('.media-tile').length,ready:[...g.querySelectorAll('img')].every(x=>x.complete&&x.naturalWidth>0),intent:window.__fixtureScrollState().intent}});
  assert.equal(fixedDuringTouch.tiles,3);assert(fixedDuringTouch.ready&&!fixedDuringTouch.queued);assert.equal(fixedDuringTouch.intent,'USER_SCROLLING');for(const key of ['width','height','top','extent','clientHeight'])assert(Math.abs(fixedDuringTouch[key]-pendingState[key])<=1,JSON.stringify({key,before:pendingState,after:fixedDuringTouch}));console.log('CACHE-RESOLVE-04c fixed images during touch',JSON.stringify({before:pendingState,after:fixedDuringTouch}));
  await pg.evaluate(()=>{const m=document.querySelector('#messages'),t=new Touch({identifier:6,target:m,clientX:150,clientY:350});m.dispatchEvent(new TouchEvent('touchend',{bubbles:true,touches:[],changedTouches:[t]}))});
