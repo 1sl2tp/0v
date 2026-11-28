@@ -201,7 +201,7 @@ async function cacheFirstPriorityProof(){
  const readyForBoot=room=>pg.waitForFunction(room=>{const a=document.querySelector('#app'),m=document.querySelector('#messages');return !a.hidden&&a.dataset.screen==='chat'&&m.dataset.liveRoom===room&&!!m.querySelector('[data-live-message-id]')},room);
  await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:phaseFixture}));
  await pg.route('**/storage/v1/object/public/v21-avatars/fixture/avatar.jpg',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="gray"/></svg>'}));
- await pg.goto('https://1sl2tp.github.io/0v/?live=1&scrolls4=1');
+ await pg.goto('https://1sl2tp.github.io/0v/?live=1&scrolls4=1&cachepackage=0');
  await pg.locator('[data-scroll-s4]').waitFor({state:'attached'}).catch(async e=>{console.error('S4 bootstrap diagnostic',errors,await pg.evaluate(()=>({screen:document.querySelector('#app')?.dataset.screen,app:!!document.querySelector('#app'),probe:!!document.querySelector('[data-scroll-s4]')})));throw e});await pg.locator('[data-scroll-s4] summary').click();await pg.locator('[data-scroll-s4]').getByRole('button',{name:'Tắt S4',exact:true}).click();assert.equal(await pg.locator('[data-scroll-s4]').count(),0);
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  await pg.waitForFunction(()=>Array.isArray(window.calls));
@@ -210,7 +210,7 @@ async function cacheFirstPriorityProof(){
  assert.equal(await pg.getByText('Kiểm tra phê duyệt thiết bị',{exact:true}).count(),0);
  // Set mobile viewport before navigation so default live routing and floating profile both apply.
  await pg.setViewportSize({width:390,height:844});
- await pg.goto('https://1sl2tp.github.io/0v/?live=1&v=13.168&r=1&cachecheck=1');
+ await pg.goto('https://1sl2tp.github.io/0v/?live=1&v=13.168&r=1&cachecheck=1&cachepackage=0');
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  await pg.waitForFunction(()=>Array.isArray(window.calls));
  assert.deepEqual(await pg.evaluate(()=>window.calls),[]);
@@ -438,8 +438,8 @@ async function cacheFirstPriorityProof(){
    const deniedF5=await durableGroup.evaluate(el=>({ready:el.querySelectorAll('[data-image-state=ready] img').length,denied:el.querySelectorAll('[data-image-state=error] img').length}));assert.equal(deniedF5.ready,2);assert.equal(deniedF5.denied,0);
    console.log('CACHE-FIRST-01 F5 DURABLE DENIED '+(webkitTail?'WebKit':'Chromium'),JSON.stringify(deniedF5));
    await pg.evaluate(()=>sessionStorage.removeItem('fixture-durable-f5'));await back();
-   // Opt-in package candidate: exercise actual shared P4 store and F5 restore.
-   await pg.goto('https://1sl2tp.github.io/0v/?live=1&cachecheck=1&cachepackage=1');await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});await open('c');await ready('room');
+   // Default encrypted package: exercise actual shared P4 store and F5 restore without opt-in.
+   await pg.goto('https://1sl2tp.github.io/0v/?live=1&cachecheck=1');await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});await open('c');await ready('room');
    await pg.waitForFunction(()=>window.crmCacheStats().packageWrites>0&&window.crmCacheStats().packageSnapshotCount>0&&!Object.keys(sessionStorage).some(k=>k.startsWith('0v.thread.snapshot.v1:a:')),{},{timeout:30000});
    const packageRecord=await pg.evaluate(()=>new Promise((resolve,reject)=>{const q=indexedDB.open('0v-image-cache-v1',1);q.onerror=()=>reject(q.error);q.onsuccess=()=>{const db=q.result,tx=db.transaction('images','readonly'),r=tx.objectStore('images').get(JSON.stringify(['a',null,'package-v1']));r.onsuccess=()=>{const v=r.result;resolve({encrypted:v?.data instanceof ArrayBuffer,iv:v?.iv?.length,plain:!!v?.snapshots||!!v?.directory,size:v?.size})};tx.oncomplete=()=>db.close();tx.onabort=tx.onerror=()=>reject(tx.error)}}));assert(packageRecord.encrypted&&packageRecord.iv===12&&!packageRecord.plain&&packageRecord.size>16,JSON.stringify(packageRecord));
    await pg.reload({waitUntil:'domcontentloaded'});await ready('room');await pg.waitForFunction(()=>window.crmCacheStats().packageRestores>0);
@@ -470,7 +470,7 @@ async function cacheFirstPriorityProof(){
    await pg.evaluate(()=>{window.fixtureStage2Revoked=false});await pg.getByRole('button',{name:'Thử kết nối lại',exact:true}).click();await ready('room');await pg.waitForFunction(()=>window.crmCacheStats().packageSnapshotCount>0);await back();
    await pg.evaluate(()=>sessionStorage.setItem('fixture-stage2-account','other-fixture-admin'));await pg.reload({waitUntil:'domcontentloaded'});await pg.getByText('Admin B fixture',{exact:true}).waitFor({state:'visible'});assert.equal(await pg.locator('[data-live-message-id=m]').count(),0);assert.equal(await pg.evaluate(()=>window.crmCacheStats().packageRestores),0);
    console.log('CACHE-FIRST-01 PACKAGE REVOKE/SWITCH '+(webkitTail?'WebKit':'Chromium')+' PASS');
-   await pg.evaluate(()=>{sessionStorage.removeItem('fixture-stage2-account');sessionStorage.removeItem('0v.view.v1:a')});await pg.goto('https://1sl2tp.github.io/0v/?live=1&cachecheck=1');await pg.locator('#contacts [data-id=b]').waitFor({state:'visible'});
+   await pg.evaluate(()=>{sessionStorage.removeItem('fixture-stage2-account');sessionStorage.removeItem('0v.view.v1:a')});await pg.goto('https://1sl2tp.github.io/0v/?live=1&cachecheck=1&cachepackage=0');await pg.locator('#contacts [data-id=b]').waitFor({state:'visible'});
    // Reset the synthetic page between state and lease scenarios, preserving the directory route.
    await pg.reload({waitUntil:'domcontentloaded'});await pg.locator('#contacts [data-id=b]').waitFor({state:'visible'});
    // CACHE-04d E0: same-room detached groups, actual MediaController + auditBlobCache.
@@ -1022,8 +1022,23 @@ async function cacheFirstPriorityProof(){
  await pg.getByRole('button',{name:'Làm mới danh sách ảnh',exact:true}).click();await pg.waitForFunction(()=>window.calls.filter(x=>x==='bill-audit').length===2);assert.equal(await pg.evaluate(()=>window.ocrFixtureCalls||0),0);
  assert.deepEqual(errors,[]);
  assert.deepEqual(await savedChatRoute(),chatRouteBeforeBills,'standalone bill route must not overwrite saved chat route');
- await pg.goto('https://1sl2tp.github.io/0v/');await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'}).catch(async e=>{console.error('NOTIFY-01 bill roundtrip diagnostic',JSON.stringify(await pg.evaluate(()=>({saved:JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null')?.screen,screen:document.querySelector('#app')?.dataset.screen,hidden:document.querySelector('#app')?.hidden,inert:document.querySelector('#composer')?.inert,logged:sessionStorage.getItem('fixture-logged')==='1',messages:document.querySelectorAll('#messages [data-live-message-id]').length,calls:window.calls,bootVisible:!document.querySelector('#liveBoot')?.hidden}))),errors);throw e});assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');
- await pg.setViewportSize({width:390,height:844});await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await mobileBackMatrix();await mobileNotifyMatrix();await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
+ await pg.goto('https://1sl2tp.github.io/0v/?cachepackage=0');await pg.getByText('Tin nhắn kiểm thử',{exact:true}).waitFor({state:'visible'}).catch(async e=>{console.error('NOTIFY-01 bill roundtrip diagnostic',JSON.stringify(await pg.evaluate(()=>({saved:JSON.parse(sessionStorage.getItem('0v.view.v1:a')||'null')?.screen,screen:document.querySelector('#app')?.dataset.screen,hidden:document.querySelector('#app')?.hidden,inert:document.querySelector('#composer')?.inert,logged:sessionStorage.getItem('fixture-logged')==='1',messages:document.querySelectorAll('#messages [data-live-message-id]').length,calls:window.calls,bootVisible:!document.querySelector('#liveBoot')?.hidden}))),errors);throw e});assert.equal(await pg.locator('#app').getAttribute('data-screen'),'chat');
+ await pg.setViewportSize({width:390,height:844});await mobileMediaMatrix();await mobilePopupMatrix();await mobileMessageActionsMatrix();await mobileBackMatrix();await mobileNotifyMatrix();await navTwoRoomMatrix();await pg.setViewportSize({width:390,height:844});
+ // Real live path must reach the shared ReleaseUpdater, not return before it starts.
+ const releaseOrigin='https://1sl2tp.github.io/0v/',releaseCurrent='v13.283',releaseNext='v13.284';let releaseReady=false;
+ await pg.route(releaseOrigin+'version.json*',r=>r.fulfill({json:{version:releaseReady?releaseNext:releaseCurrent,entry:'index.html',snapshot:'release-'+(releaseReady?releaseNext:releaseCurrent)+'.html',gitBlobSha:'a'.repeat(40)}}));
+ await pg.route(releaseOrigin+'index.html*',r=>r.fulfill({contentType:'text/html',body:phaseFixture.replaceAll(releaseCurrent,releaseNext)}));
+ await pg.route(releaseOrigin+'?*',r=>{const u=new URL(r.request().url());return r.fulfill({contentType:'text/html',body:u.searchParams.get('v')==='13.284'?phaseFixture.replaceAll(releaseCurrent,releaseNext):phaseFixture})});
+ await pg.goto(releaseOrigin+'?cachepackage=0');
+ await pg.waitForFunction(()=>!document.querySelector('#app').hidden&&typeof window.releaseStatus==='function');
+ if(await pg.locator('#app').getAttribute('data-screen')==='chat')await pg.locator('.conversation .panel-head [data-go=contacts]').click();
+ await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});await pg.locator('#contacts [data-id=c]').click();
+ await pg.locator('[data-live-message-id=m]').waitFor();await pg.locator('#draft').fill('Giữ bản nháp khi cập nhật');await pg.locator('#draft').blur();releaseReady=true;await pg.evaluate(()=>window.dispatchEvent(new Event('focus')));
+ await pg.waitForFunction(v=>window.releaseStatus?.().pending===v&&window.releaseStatus().state==='deferred'&&window.releaseStatus().blockers.includes('draft'),releaseNext);assert.equal(await pg.locator('#draft').inputValue(),'Giữ bản nháp khi cập nhật');
+ await pg.locator('#draft').fill('');await pg.locator('#draft').blur();await pg.locator('.conversation .panel-head [data-go=contacts]').click();
+ await pg.waitForURL(u=>u.searchParams.get('v')==='13.284',{timeout:30000});await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});assert((await pg.title()).endsWith(releaseNext));assert.equal(new URL(pg.url()).searchParams.get('cachepackage'),'0');
+ console.log('RELEASE LIVE SAFE UPGRADE '+(webkitTail?'WebKit':'Chromium')+' PASS');
+ await pg.getByRole('button',{name:'Mở tiện ích',exact:true}).click();const utility=pg.getByRole('dialog',{name:'Tiện ích'});await utility.waitFor();assert(await utility.getByRole('button',{name:'Công việc',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'Làm mới danh bạ',exact:true}).isVisible());assert(await utility.getByRole('button',{name:'S4 · Đo cuộn',exact:true}).isVisible());assert.equal(await pg.locator('[data-live-account-actions]').isVisible(),false);await utility.getByRole('button',{name:'Đăng xuất',exact:true}).click();
  await pg.getByRole('heading',{name:'Đăng nhập 0v'}).waitFor({state:'visible'});
  assert.equal(await pg.getByText('Tin nhắn kiểm thử',{exact:true}).count(),0);
  assert.deepEqual(errors,[]);await pg.close();console.log('0v live login, directory, messages and logout passed (synthetic only)');
