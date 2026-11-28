@@ -439,7 +439,7 @@ async function cacheFirstPriorityProof(){
    await pg.evaluate(()=>sessionStorage.removeItem('fixture-durable-f5'));await back();
    // Opt-in package candidate: exercise actual shared P4 store and F5 restore.
    await pg.goto('https://1sl2tp.github.io/0v/?live=1&cachecheck=1&cachepackage=1');await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});await open('c');await ready('room');
-   await pg.waitForFunction(()=>window.crmCacheStats().packageWrites>0&&!Object.keys(sessionStorage).some(k=>k.startsWith('0v.thread.snapshot.v1:a:')),{},{timeout:30000});
+   await pg.waitForFunction(()=>window.crmCacheStats().packageWrites>0&&window.crmCacheStats().packageSnapshotCount>0&&!Object.keys(sessionStorage).some(k=>k.startsWith('0v.thread.snapshot.v1:a:')),{},{timeout:30000});
    const packageRecord=await pg.evaluate(()=>new Promise((resolve,reject)=>{const q=indexedDB.open('0v-image-cache-v1',1);q.onerror=()=>reject(q.error);q.onsuccess=()=>{const db=q.result,tx=db.transaction('images','readonly'),r=tx.objectStore('images').get(JSON.stringify(['a',null,'package-v1']));r.onsuccess=()=>{const v=r.result;resolve({encrypted:v?.data instanceof ArrayBuffer,iv:v?.iv?.length,plain:!!v?.snapshots||!!v?.directory,size:v?.size})};tx.oncomplete=()=>db.close();tx.onabort=tx.onerror=()=>reject(tx.error)}}));assert(packageRecord.encrypted&&packageRecord.iv===12&&!packageRecord.plain&&packageRecord.size>16,JSON.stringify(packageRecord));
    await pg.reload({waitUntil:'domcontentloaded'});await ready('room');await pg.waitForFunction(()=>window.crmCacheStats().packageRestores>0);
    assert(await pg.evaluate(()=>!Object.keys(sessionStorage).some(k=>k.startsWith('0v.thread.snapshot.v1:a:'))));
@@ -448,7 +448,11 @@ async function cacheFirstPriorityProof(){
    await pg.evaluate(()=>sessionStorage.setItem('fixture-stage2-directory-hold','1'));await pg.reload({waitUntil:'domcontentloaded'});await pg.waitForFunction(()=>window.fixtureStage2DirectoryHeld===true);
    assert(await pg.evaluate(()=>document.querySelector('#app').hidden));await pg.evaluate(()=>{sessionStorage.removeItem('fixture-stage2-directory-hold');window.fixtureStage2DirectoryRelease()});await ready('room');
    console.log('CACHE-FIRST-01 PACKAGE AUTH GATE '+(webkitTail?'WebKit':'Chromium')+' PASS');
-   await back();await pg.goto('https://1sl2tp.github.io/0v/?live=1&cachecheck=1');await pg.locator('#contacts [data-id=b]').waitFor({state:'visible'});
+   await pg.evaluate(async()=>{window.fixtureStage2Revoked=true;await window.__fixtureVerifyActiveSession()});assert.equal(await pg.locator('#app').isVisible(),false);assert.equal(await pg.locator('[data-live-message-id]').count(),0);await pg.waitForFunction(async()=>await window.__fixtureLeaseProbe.p4Inventory()===0);
+   await pg.evaluate(()=>{window.fixtureStage2Revoked=false});await pg.getByRole('button',{name:'Thử kết nối lại',exact:true}).click();await pg.locator('#contacts [data-id=c]').waitFor({state:'visible'});await open('c');await ready('room');await pg.waitForFunction(()=>window.crmCacheStats().packageSnapshotCount>0);
+   await pg.evaluate(()=>sessionStorage.setItem('fixture-stage2-account','other-fixture-admin'));await pg.reload({waitUntil:'domcontentloaded'});await pg.getByText('Admin B fixture',{exact:true}).waitFor({state:'visible'});assert.equal(await pg.locator('[data-live-message-id=m]').count(),0);assert.equal(await pg.evaluate(()=>window.crmCacheStats().packageRestores),0);
+   console.log('CACHE-FIRST-01 PACKAGE REVOKE/SWITCH '+(webkitTail?'WebKit':'Chromium')+' PASS');
+   await pg.evaluate(()=>{sessionStorage.removeItem('fixture-stage2-account');sessionStorage.removeItem('0v.view.v1:a')});await pg.goto('https://1sl2tp.github.io/0v/?live=1&cachecheck=1');await pg.locator('#contacts [data-id=b]').waitFor({state:'visible'});
    // Reset the synthetic page between state and lease scenarios, preserving the directory route.
    await pg.reload({waitUntil:'domcontentloaded'});await pg.locator('#contacts [data-id=b]').waitFor({state:'visible'});
    // CACHE-04d E0: same-room detached groups, actual MediaController + auditBlobCache.
