@@ -918,6 +918,8 @@ html[data-floating] #app>[data-ui-slot~="conversation"] [data-content-party][dat
 #app a[x-apple-data-detectors]:not([data-content-link]){color:inherit!important;font:inherit!important;text-decoration:underline dotted 1px!important;text-underline-offset:.23em!important}
 /* Main directory mobile live: one compact toolbar and one floating Popup owner. */
 #directoryMenuButton{display:none}
+#app[data-live-chat=true]>.directory>.filters>.directory-group-toggle{display:none}
+#app[data-live-chat=true]>.directory>.filters>.directory-primary-filters{display:contents}
 dialog[data-directory-menu=true]{left:auto;right:calc(12px + max(0px,env(safe-area-inset-right)));top:calc(var(--popup-top,0px) + var(--safe-visible-top,env(safe-area-inset-top)) + 52px);transform:none;width:min(260px,calc(var(--popup-width,100vw) - 24px));max-height:calc(var(--popup-height,100dvh) - 76px);overflow:auto;box-shadow:0 8px 28px rgba(0,0,0,.12);border-radius:18px}
 dialog[data-directory-menu=true]>button{display:block;width:100%;margin:0;text-align:start;border:0;border-radius:8px}
 dialog[data-directory-menu=true]>h3{margin:4px 8px;font-size:var(--type-body)}
@@ -937,8 +939,14 @@ dialog[data-directory-menu=true]>button:last-child{border-top:1px solid var(--li
  #app[data-live-chat=true]>.directory>.panel-head{grid-column:2;grid-row:1;align-self:stretch;height:auto;min-height:calc(var(--touch) + var(--safe-visible-top,0px) + 8px);padding:calc(var(--safe-visible-top,0px) + 4px) max(8px,var(--safe-visible-right,0px)) 4px 4px;gap:4px;border:0}
  #app[data-live-chat=true]>.directory>.panel-head>:is(strong,.label-version,[data-go=crm]){display:none}
  #app[data-live-chat=true]>.directory #directoryMenuButton{display:grid}
- #app[data-live-chat=true]>.directory>.filters{grid-column:1;grid-row:1;align-items:center;min-width:0;padding-block:calc(var(--safe-visible-top,0px) + 4px) 4px;padding-inline-end:4px;gap:var(--gap-xs);overflow-x:auto;flex-wrap:nowrap}
- #app[data-live-chat=true]>.directory>.filters>button{flex:0 0 auto;padding-inline:10px}
+ /* MOBILE-DIRECTORY-TOP-02: same directory grid and filter owner; one compact mobile row. */
+ #app[data-live-chat=true]>.directory>.filters{grid-column:1;grid-row:1;align-items:center;min-width:0;padding-block:calc(var(--safe-visible-top,0px) + 4px) 4px;padding-inline-start:max(8px,var(--safe-visible-left,0px));padding-inline-end:4px;gap:var(--gap-sm);overflow:visible;flex-wrap:nowrap}
+ #app[data-live-chat=true]>.directory>.filters>button[data-filter]{display:none}
+ #app[data-live-chat=true]>.directory>.filters>.directory-group-toggle{display:grid;place-items:center;flex:0 0 60px;width:60px;min-width:var(--touch);height:var(--touch);min-height:var(--touch);padding:0 4px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink)}
+ #app[data-live-chat=true]>.directory>.filters>.directory-group-toggle[aria-pressed=true]{background:var(--soft);border-color:var(--line-medium);font-weight:var(--weight-medium)}
+ #app[data-live-chat=true]>.directory>.filters>.directory-primary-filters{display:flex;flex:1 1 0;min-width:0;align-items:stretch;gap:0;background:var(--soft);border-radius:999px}
+ #app[data-live-chat=true]>.directory>.filters>.directory-primary-filters>button{flex:1 1 auto;min-width:var(--touch);min-height:var(--touch);padding-inline:4px;border:0;border-radius:999px;background:transparent;color:var(--ink);box-shadow:none}
+ #app[data-live-chat=true]>.directory>.filters>.directory-primary-filters>button.active{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line);font-weight:var(--weight-medium)}
  #app[data-live-chat=true]>.directory>.search-zone{grid-column:1/3;grid-row:2;padding-block:4px 8px}
  #app[data-live-chat=true]>.directory>.contacts{grid-column:1/3;grid-row:3;min-height:0;padding-bottom:var(--safe-visible-bottom,0px)}
  #app[data-live-chat=true]>.directory>.dir-bottom{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);padding:0;border:0;pointer-events:none}
@@ -2925,7 +2933,19 @@ function mountLiveChat(root){
  function setSearchOpen(open,focus=false){directory.dataset.searchOpen=String(open);searchToggle.setAttribute('aria-expanded',String(open));searchToggle.setAttribute('aria-label',open?'Đóng tìm kiếm':'Mở tìm kiếm');if(open&&focus)search.focus({preventScroll:true});if(!open){search.blur();search.value='';renderDirectory()}}
  searchToggle.addEventListener('click',()=>setSearchOpen(directory.dataset.searchOpen!=='true',true));
  search.addEventListener('keydown',e=>{if(e.key!=='Escape'||isTextComposing(search,e)||e.keyCode===229)return;if(search.value!==''){e.preventDefault();search.value='';renderDirectory();return}if(getComputedStyle(searchToggle).display!=='none'&&directory.dataset.searchOpen==='true'){e.preventDefault();setSearchOpen(false);searchToggle.focus({preventScroll:true})}});
- const liveFilters=root.querySelector('[data-ui-slot~="filters"]');if(liveFilters){const labels=['Tất cả','Chưa đọc','KH','CM','Bạn bè','Khác','NCC','NV','Nhóm'];liveFilters.replaceChildren(...labels.map((label,i)=>{const b=Button.create({text:label,kind:'outline',onClick:()=>{filter=label;for(const x of liveFilters.querySelectorAll('[data-filter]'))x.classList.toggle('active',x.dataset.filter===label);renderDirectory()}});b.dataset.filter=label;b.classList.toggle('active',i===0);return b}))}
+ const liveFilters=root.querySelector('[data-ui-slot~="filters"]');
+ if(liveFilters){
+  const labels=['Tất cả','Chưa đọc','KH','CM','Bạn bè','Khác','NCC','NV','Nhóm'],groups=labels.slice(2);
+  const groupButton=Button.create({kind:'text',className:'directory-group-toggle',icon:'directory',label:'Nhóm danh bạ',onClick:openGroups});
+  groupButton.id='directoryGroupButton';groupButton.setAttribute('aria-haspopup','dialog');groupButton.setAttribute('aria-expanded','false');groupButton.dataset.releaseReadonly='true';
+  const buttons=labels.map(label=>{const b=Button.create({text:label,kind:'outline',onClick:()=>selectFilter(label)});b.dataset.filter=label;return b});
+  const primary=Layout.create({kind:'row',gap:'zero',className:'directory-primary-filters',children:buttons.slice(0,2)});
+  primary.setAttribute('role','group');primary.setAttribute('aria-label','Bộ lọc chính');
+  function projectFilter(){for(const b of buttons){const active=b.dataset.filter===filter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))}const grouped=groups.includes(filter);groupButton.setAttribute('aria-pressed',String(grouped));groupButton.setAttribute('aria-label',grouped?'Nhóm danh bạ: '+filter:'Nhóm danh bạ');const label=grouped?filter:'';if(groupButton.dataset.selectedGroup!==label){groupButton.dataset.selectedGroup=label;groupButton.replaceChildren(grouped?document.createTextNode(label):Icon.create('directory'));Button.bind(groupButton);if(grouped)groupButton.dataset.buttonTextRole='caption'}}
+  function selectFilter(label){if(!labels.includes(label))return;filter=label;projectFilter();renderDirectory()}
+  function openGroups(){const dialog=Popup.open({type:'menu',profile:'directory',title:'Nhóm danh bạ',description:groups.includes(filter)?'Đang lọc: '+filter:undefined,actions:groups.map(label=>({kind:'text',text:label,onClick:d=>{d.addEventListener('close',()=>selectFilter(label),{once:true});Popup.close(d)}})),onDispose:()=>groupButton.setAttribute('aria-expanded','false')});if(dialog){groupButton.setAttribute('aria-expanded','true');for(const btn of dialog.querySelectorAll('button'))btn.dataset.releaseReadonly='true'}}
+  liveFilters.replaceChildren(groupButton,primary,...buttons.slice(2));projectFilter();
+ }
  const auditPanel=$live('#moduleContent'),auditFilters=document.createElement('select'),auditSort=document.createElement('select'),auditBankGroup=Layout.slot({name:'bill-group-strip',attrs:{role:'group','aria-label':'Nhóm phân loại ảnh'}}),auditSearch=Input.create({type:'search',label:'Tìm bill',placeholder:'Mã bill, tên, tiền, STK, mã giao dịch'});
  auditBankGroup.style.cssText='display:flex;flex-direction:row;flex-wrap:wrap;gap:6px;align-items:center;min-width:0';
  if(standaloneBills){auditSearch.placeholder='Tìm một hoặc nhiều mã ảnh';auditSearch.setAttribute('aria-label','Tìm mã ảnh')}
