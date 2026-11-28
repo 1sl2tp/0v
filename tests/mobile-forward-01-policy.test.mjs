@@ -51,3 +51,27 @@ test('reject mismatched byte count, missing committed state, and duplicate recei
   assert.equal(result.state,'reconcile_required');assert.equal(result.confirmed,0);assert.equal(calls,1);
  }
 });
+
+test('isolated canonical client identity vectors agree with MEDIA-SEND-02; lab key stays correlation only',async()=>{
+ // Test-only RFC 9562 UUIDv5 computation; no application adapter or network.
+ const {createHash}=await import('node:crypto');
+ const ns=Buffer.from('ab9e85c7a8f14b8496aad3aa7ce5b4d8','hex');
+ function v5(name){const b=createHash('sha1').update(ns).update(name,'utf8').digest().subarray(0,16);b[6]=(b[6]&15)|80;b[8]=(b[8]&63)|128;const h=b.toString('hex');return [h.slice(0,8),h.slice(8,12),h.slice(12,16),h.slice(16,20),h.slice(20)].join('-')}
+ const vectors=[
+ [21,2,1,100,'ec41e4fd-a38d-5b22-8d13-43faa6813c5d','def7d78f-c874-52e7-9486-e00e1aa7f087'],
+ [22,2,1,100,'767036da-c7ec-5d60-ba81-adfc645078ea','6f93e758-e55a-5fda-8e40-33045e30458d'],
+ [21,3,1,100,'1c970cae-454b-55e4-9c86-28fec25498c7','d97bd0e2-b054-5da5-b686-a7a33c64ed38'],
+ [21,2,4,100,'2d8c1415-b022-5e0f-8a4f-aaf15a7c194d','a4354c8d-657f-50ea-97a7-bd5bd8bbfb08'],
+ [21,2,1,101,'aee147fc-8f40-5e66-87ca-393cf09be055','f24dc62c-cf7a-5685-80a1-a3294ca2262e']];
+ for(const [actor,room,h,size,client,asset] of vectors){
+  const name=[id(actor),id(room),hash(h),size].join(':');
+  assert.equal('0v:'+v5('client:'+name),'0v:'+client);
+  assert.equal(v5('asset:'+name),asset);
+ }
+ const item=planForward(input()).items[0];
+ assert.equal(item.sha256,hash(1));
+ assert.equal(item.sizeBytes,100);
+ assert.notEqual(item.clientId,'0v:'+vectors[0][4]);
+ // The lab correlation key must never be mistaken for a canonical receipt key.
+ assert.match(item.clientId,/^0v:forward:/);
+});
