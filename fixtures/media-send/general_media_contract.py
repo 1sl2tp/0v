@@ -123,3 +123,31 @@ def validate_source_snapshot(m, source_room, session, before, after):
     if any(before[k]!=after[k] for k in fields):
         raise ValueError("source changed")
     return True
+
+
+def validate_storage_evidence(m, source_room, session, auth_user,
+                              source_before, source_after, source_bytes,
+                              target_before, target_after, target_bytes):
+    """Offline evidence composition only; no network, write, grant or send.
+    Trusted snapshots must be obtained by the authorized official owner.
+    The eventual commit transaction must still recheck current authorization
+    and the exact destination object identity under its own lock.
+    """
+    from general_image_verify import verify_general_image
+    validate_source_snapshot(m, source_room, session, source_before, source_after)
+    for target in (target_before,target_after):
+        if not isinstance(target,dict) or type(target.get("size")) is not int:
+            raise ValueError("target evidence")
+        validate_verified_object(m,target,auth_user)
+    keys=("object_id","object_version","storage_key","owner","sha256","size","mime","width","height")
+    if any(target_before[k]!=target_after[k] for k in keys):
+        raise ValueError("target changed")
+    src=verify_general_image(source_bytes,m.size,m.sha256,m.mime)
+    dst=verify_general_image(target_bytes,m.size,m.sha256,m.mime)
+    if source_bytes!=target_bytes or src!=dst:
+        raise ValueError("original bytes changed")
+    if (dst["width"],dst["height"])!=(target_after["width"],target_after["height"]):
+        raise ValueError("target dimensions")
+    return {"object_id":target_after["object_id"],"object_version":target_after["object_version"],
+            "sha256":dst["sha256"],"size":dst["size"],"mime":dst["mime_type"],
+            "width":dst["width"],"height":dst["height"]}
