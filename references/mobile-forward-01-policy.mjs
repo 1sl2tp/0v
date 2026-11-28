@@ -42,16 +42,21 @@ export async function executeForward({preview,readInventory,sendOfficialImage,is
  const current=planForward(await readInventory());
  if(!isCurrent())fail('session_changed');
  if(signature(preview)!==signature(current))fail('preview_changed');
- let confirmed=0;
+ let confirmed=0,skippedDuringSend=0;
  for(const item of current.items){
-  if(!isCurrent())return {state:'stopped',confirmed,reason:'session_changed'};
+  if(!isCurrent())return {state:'stopped',confirmed,skippedDuringSend,reason:'session_changed'};
   try{
    const ack=await sendOfficialImage(Object.freeze({...item,sourceRoom:current.sourceRoom,destinationRoom:current.destinationRoom}));
-   if(!ack||ack.clientId!==item.clientId||ack.destinationRoom!==current.destinationRoom||!validId(ack.messageId)||ack.sha256!==item.sha256)fail('unverified_ack');
-   confirmed++;
-  }catch{return {state:'reconcile_required',confirmed,uncertainClientId:item.clientId}}
-  if(!isCurrent())return {state:'stopped',confirmed,reason:'session_changed'};
-  try{onProgress({confirmed,total:current.items.length})}catch{/* UI callback cannot cause replay */}
+   if(!ack||ack.clientId!==item.clientId||ack.destinationRoom!==current.destinationRoom||ack.sha256!==item.sha256||ack.sizeBytes!==item.sizeBytes)fail('unverified_ack');
+   if(ack.state==='already_present'){
+    // Authorized canonical duplicate receipt, never a new send ACK.
+    if(ack.messageId!=null)fail('unexpected_duplicate_message');
+    skippedDuringSend++;
+   }else if(ack.state==='committed'&&validId(ack.messageId)){confirmed++}
+   else fail('unverified_ack');
+  }catch{return {state:'reconcile_required',confirmed,skippedDuringSend,uncertainClientId:item.clientId}}
+  if(!isCurrent())return {state:'stopped',confirmed,skippedDuringSend,reason:'session_changed'};
+  try{onProgress({confirmed,skippedDuringSend,total:current.items.length})}catch{/* UI callback cannot cause replay */}
  }
- return {state:'confirmed',confirmed};
+ return {state:'confirmed',confirmed,skippedDuringSend};
 }
