@@ -1,7 +1,7 @@
 # RULE — CHAT CRM 0v
 Nguồn chuẩn cho mọi quy tắc mới của CHAT CRM. **Mốc bàn phím đang được bảo vệ: v13.27 (2026-11-24), người dùng xác nhận “ngon rồi” sau khi thử sửa lỗi giật/rơi lúc thoát bàn phím.** Snapshot: [release-v13.27.html](release-v13.27.html); commit triển khai 220eeedc3fd2e51fc7ac3a519ec2a582e33d8e91; blob 2b350f1522a6f11f955948d969fa0d5f11a3de1d. Mốc v11.1 chỉ là lịch sử. Xác nhận người dùng không đồng nghĩa đã chạy đầy đủ ma trận thiết bị.
 
-## 00. Chỉ mục rule đang có hiệu lực (v13.282)
+## 00. Chỉ mục rule đang có hiệu lực (v13.283)
 Đọc theo owner và phạm vi, không theo thứ tự xuất hiện của CSS hoặc số version. Bảng dưới là nguồn lựa chọn rule hiện hành; các mục cũ có số liệu khác chỉ lưu lịch sử, không dùng để tạo CSS mới. Không áp dụng đồng thời hai rule thay thế nhau.
 
 | Owner | Quy tắc hiện hành | Quy tắc lịch sử bị thay thế trong phạm vi tương ứng |
@@ -2081,3 +2081,12 @@ E0 #310 9b15010 2/2, job 140897388929, 64/64, KB baseline true; squash 0f6c39f. 
 - CI e4ef2c5: 4/5; API job 140908893299 Chromium package F5 encrypted record 7917 B, IV 12, plain=false, restores=2; auth gate PASS. Failure at audit-api-browser.cjs:452 waiting for contact button visible after reauthorization although saved chat route restored (button present but hidden). Test-only fix 23aac57 waits ready('room'), verifies repersistence, then explicitly back before account switch. No runtime change, WebKit not reached; rerun exact head. Do not promote opt-in until all CI gates pass.
 
 - E2 exact 5d20467 CI 5/5, API job 140910709062: Chromium/WebKit package F5 AES-GCM record 7917 B, IV 12, plain=false, restores=2; authority gate, revoke/switch, P0/P1 held write and revoke held write PASS; F5 unchanged media 0 downloads/0 B/3 hits, changed one 238/166 B, denied image absent. P4 peak 1 on both; Chromium 10/40 slow frames, WebKit 2/39. Test-only 30cb20f adds corrupt/expired, simulated quota-like transaction abort and recovery, removed room. Exact new-head CI pending; actual device quota and native PWA not established. Keep package default OFF; public Pages verification unavailable. No backend, SQL, ledger or keyboard modifications in new test commit.
+
+## v13.283 — live release updater + encrypted cache default
+- #313 merged ca9266d, exact 300b25a 5/5, job 140914964091 Chromium/WebKit package F5, corrupt, expired, simulated transaction abort/recovery, removed room, auth gate, revoke/switch and P0/P1 held-write PASS. Main v13.282; public Pages HTTP not accessible, native PWA/quota not proven.
+- Source diagnosis: live branch returned before the demo-only ReleaseUpdater initialization. Reuse the existing updater factory in live and demo; live only auto-navigates from idle authorized directory, with no unsent drafts, pending sends, dialogs or native picker, and matching public entry version. Preserve query and route; no forced reload in chat. Older running versions need one manual reload to receive this fix. No Service Worker introduced.
+- Default encrypted package on normal chat, explicit cachepackage=0 rollback, standalone bills excluded; fresh ACL, P4 queue, size cap and revision rules unchanged. Existing plaintext fixture runs explicitly opt-out, default package tests without flag and new live release regression added. Candidate CI pending; real Pages and device verification still required. Keyboard/backend/SQL/ledger unchanged except displayed version metadata.
+
+### v13.283 — instant boot shell / parallel cache read
+- Reported Safari startup white screen “Đang khôi phục phiên…” (28 Nov). Public, noninteractive route-shaped shell is shown immediately; no cached contact name, text, image, or other private payload before fresh authorization. Shell reuses root palette; standalone bill workspace unchanged.
+- After fresh admin/MFA session, begin encrypted package read in parallel with directory RPC; hydrate only after fresh directory membership + revision checks, never display revoked-room data. Keep P0/P1/P4 and keyboard/backend/SQL/ledger unchanged. Held-directory fixture requires visible chat-shaped shell and zero private messages/contacts. CI and physical-device timing pending.
