@@ -3,7 +3,24 @@ const webkitTail=process.argv.includes('--webkit-tail');
 const {pathToFileURL}=require('node:url');
 const assert=require('node:assert/strict');
 const url=pathToFileURL(process.cwd()+'/index.html').href;
+async function cacheFirstPriorityProof(){
+ const html=require('node:fs').readFileSync('index.html','utf8'),start=html.indexOf('const auditBlobCache='),end=html.indexOf(' async function downloadLiveMedia',start);assert(start>=0&&end>start);
+ class TestBlob{constructor(size=100){this.size=size}}
+ const owner={},io=[],decode=[],release={},decodeRelease={};let serial=0;
+ const media={normalizeMime:x=>x,async prepareLiveImage(data){decode.push(data.tag);await new Promise(r=>decodeRelease[data.tag]=r);return {blob:data,width:32,height:32,displayUrl:'blob:fixture-'+(++serial),decoded:{},decodeMs:1}}};
+ const cache=new Function('scope','Blob','MediaController','URL','performance',html.slice(start,end)+';return auditBlobCache;')(owner,TestBlob,media,{revokeObjectURL(){}},{now:()=>0});
+ const spin=async predicate=>{for(let i=0;i<500;i++){if(predicate())return;await Promise.resolve()}throw Error('priority fixture timeout '+JSON.stringify({io,decode}))};
+ const fetch=k=>{io.push(k);return new Promise(r=>release[k]=()=>r(new TestBlob()))};
+ const get=(k,p)=>cache.get(k,owner,fetch,false,false,null,()=>{},p);
+ const jobs=[get('bg1',3),get('bg2',3),get('fg1',2)];await spin(()=>io.length===2);assert.deepEqual(io,['bg1','fg1']);
+ jobs.push(get('bg2',2));release.fg1();await spin(()=>io.length===3);assert.deepEqual(io,['bg1','fg1','bg2']);release.bg1();release.bg2();await Promise.all(jobs);assert.equal(cache.stats().joined,1);cache.clear();
+ const img=(k,p)=>cache.image(k,owner,'image/png',false,async()=>Object.assign(new TestBlob(),{tag:k}),false,false,null,()=>{},p);
+ const j1=img('db1',3);await spin(()=>decode.length===1);const j2=img('db2',3),j3=img('df1',2);await spin(()=>decode.length===2);assert.deepEqual(decode,['db1','df1']);const j4=img('db2',2);decodeRelease.df1();await spin(()=>decode.length===3);assert.deepEqual(decode,['db1','df1','db2']);decodeRelease.db1();decodeRelease.db2();await Promise.all([j1,j2,j3,j4]);assert.equal(cache.stats().preparedHits,1);
+ const a=html.indexOf('const LiveChatSnapshotPolicy='),b=html.indexOf('const ThreadDeltaPolicy=',a),policy=new Function(html.slice(a,b)+';return LiveChatSnapshotPolicy;')();assert(policy.needsRefresh(null,10));assert(!policy.needsRefresh({msgs:[{date:20},{date:10}]},20));assert(policy.needsRefresh({msgs:[{date:20}]},21));
+ console.log('CACHE-FIRST-01 PRIORITY PASS',JSON.stringify({io,decode,sharedPromotion:true,stalePolicy:true}));
+}
 (async()=>{
+ await cacheFirstPriorityProof();
  const browser=await (webkitTail?webkit:chromium).launch({headless:true});
  try{
  if(!webkitTail){
