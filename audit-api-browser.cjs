@@ -72,9 +72,9 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
  const leaseBoundary=' function mediaPart(asset,owner,n){';
  assert.equal(instrumentedLiveFixture.split(leaseBoundary).length,2);
  const leaseFixture=instrumentedLiveFixture.replace(leaseBoundary,` window.__fixtureLeaseProbe={
-  append(i){const box=mediaImageGroup([{id:'lease-'+i,storage_key:'fixture/lease-'+i+'.png',mime_type:'image/png',kind:'image',width:32,height:32}],scope,choice);box.dataset.leaseProbe=String(i);thread.append(box);box.dispatchEvent(new Event('0v-load-media'));return true},
+  append(i,slot=i){const box=mediaImageGroup([{id:'lease-'+i,storage_key:'fixture/lease-'+i+'.png',mime_type:'image/png',kind:'image',width:32,height:32}],scope,choice);box.dataset.leaseProbe=String(slot);thread.append(box);box.dispatchEvent(new Event('0v-load-media'));return true},
   async prime(){for(let i=0;i<256;i++)await auditBlobCache.get('lease-prime-'+i,scope,async()=>new Blob(['fixture'],{type:'image/png'}));return auditBlobCache.stats()},
-  stats(){return {...auditBlobCache.stats(),screenLeases:mediaDisplayLeases.size}}
+  stats(){return {...auditBlobCache.stats(),screenLeases:[...liveImageResources.values()].reduce((n,r)=>n+r.leases.size,0),groups:liveImageResources.size}}
  };\n`+leaseBoundary);
  const webkitFixture=webkitTail?leaseFixture.replace("async prepareLiveImage(data,mime,bill){","async prepareLiveImage(data,mime,bill){try{return await this.__fixtureOriginalPrepare(data,mime,bill)}catch(e){(window.__fixtureMediaErrors??=[]).push({name:e.name,message:e.message,type:data?.type,size:data?.size});throw e}},\n async __fixtureOriginalPrepare(data,mime,bill){"):leaseFixture;
  await pg.route(/^https:\/\/1sl2tp\.github\.io\/0v\/(?:\?.*)?$/,r=>r.fulfill({contentType:'text/html; charset=utf-8',body:webkitFixture}));
@@ -261,12 +261,28 @@ const url=pathToFileURL(process.cwd()+'/index.html').href;
    const afterEviction=await pg.evaluate(()=>window.__fixtureLeaseProbe.prime());
    const retained=await pg.evaluate(urls=>urls.filter(u=>!window.__leaseRevoked.has(u)).length,removed);
    assert.equal(await pg.locator('[data-lease-probe]').count(),0);assert.equal(afterEviction.entries,256);assert(afterEviction.evictions>=12);
-   console.log('CACHE-04d BASELINE',JSON.stringify({engine:webkitTail?'WebKit':'Chromium',before,afterDetach,afterEviction,removed:12,retainedAfterEviction:retained,downloads:afterNet.downloads-beforeNet.downloads,bytes:afterNet.downloadBytes-beforeNet.downloadBytes,warmDownloads:warmNet.downloads-afterNet.downloads,warmBytes:warmNet.downloadBytes-afterNet.downloadBytes}));
-   // Baseline reproducer, NOT acceptance: v13.276 retains every detached URL until room clear.
-   assert.equal(retained,12,'baseline must reproduce detached-retired lease retention');
+   console.log('CACHE-04d CANDIDATE',JSON.stringify({engine:webkitTail?'WebKit':'Chromium',before,afterDetach,afterEviction,removed:12,retainedAfterEviction:retained,downloads:afterNet.downloads-beforeNet.downloads,bytes:afterNet.downloadBytes-beforeNet.downloadBytes,warmDownloads:warmNet.downloads-afterNet.downloads,warmBytes:warmNet.downloadBytes-afterNet.downloadBytes}));
+   assert.equal(retained,0,'detached retired URLs must be reclaimed');
+   assert(afterDetach.screenLeases<=before.screenLeases+8,'detached fixture leases must not accumulate');
+   const appendReady=async(i,slot)=>{await pg.evaluate(([i,slot])=>window.__fixtureLeaseProbe.append(i,slot),[i,slot]);const group=pg.locator('[data-lease-probe="'+slot+'"]');await group.locator('[data-image-state=ready] img').waitFor({state:'attached'});return group};
+   const a=await appendReady(13,'a'),duplicate=await appendReady(13,'duplicate'),visible=await appendReady(14,'visible');
+   const shared=await a.locator('img').getAttribute('src'),other=await visible.locator('img').getAttribute('src');assert.equal(await duplicate.locator('img').getAttribute('src'),shared);
+   // Move within same mutation batch; must preserve group and cached URL.
+   await visible.evaluate(e=>{const parent=e.parentNode;e.remove();parent.append(e)});
+   await a.locator('.media-tile').click();const viewer=pg.locator('[data-media-viewer-stage]');await viewer.waitFor({state:'visible'});
+   await a.evaluate(e=>e.remove());await pg.evaluate(()=>window.__fixtureLeaseProbe.prime());
+   const revoked=url=>pg.evaluate(u=>window.__leaseRevoked.has(u),url);
+   assert.equal(await revoked(shared),false);assert.equal(await revoked(other),false);
+   await duplicate.evaluate(e=>e.remove());assert.equal(await revoked(shared),false);
+   assert(await viewer.locator('img').evaluate(e=>e.complete&&e.naturalWidth>0));
+   assert(await pg.evaluate(async url=>{const img=new Image();img.src=url;try{await img.decode();return img.naturalWidth>0}catch{return false}},shared));
+   await pg.getByRole('dialog',{name:'Xem ảnh'}).getByRole('button',{name:'Đóng',exact:true}).click();await viewer.waitFor({state:'detached'});await pg.waitForFunction(u=>window.__leaseRevoked.has(u),shared);
+   assert.equal(await revoked(other),false);await visible.evaluate(e=>e.remove());await pg.waitForFunction(u=>window.__leaseRevoked.has(u),other);
+   console.log('CACHE-04d VIEWER SHARED PASS',JSON.stringify({engine:webkitTail?'WebKit':'Chromium',retainedWhileViewer:true,retainedWhileConnected:true,revokedAfterLastConsumer:true,reparentPreserved:true}));
+
    await back();await open('b');await ready('room-b');
    const revokedAfterSwitch=await pg.evaluate(urls=>urls.filter(u=>window.__leaseRevoked.has(u)).length,removed);
-   assert.equal(revokedAfterSwitch,12);console.log('CACHE-04d BASELINE room clear revoked',revokedAfterSwitch);
+   assert.equal(revokedAfterSwitch,12);console.log('CACHE-04d CANDIDATE room clear revoked',revokedAfterSwitch);
    await back();
    await pg.evaluate(()=>sessionStorage.removeItem('fixture-nav-matrix'));if(original)await pg.setViewportSize(original);
    console.log('MOBILE-NAV-01 two-room/reload matrix',JSON.stringify(matrix));
